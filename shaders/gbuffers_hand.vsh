@@ -11,7 +11,7 @@ varying vec4 glcolor;
 
 void main() {
 	gl_Position = ftransform();
-	coord= getCoord();
+	coord   = getCoord();
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 }
