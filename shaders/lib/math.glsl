@@ -137,6 +137,14 @@ float acosf(float x) {
     return HALF_PI - asinf(x);
 }
 
+float smootherstep(float x) { // Second derivative zero as well
+    return saturate( cb(x) * (x * (6. * x - 15.) + 10.) );
+}
+float smootherstep(float edge0, float edge1, float x) {
+    x = saturate((x - edge0) * (1. / (edge1 - edge0)));
+    return cb(x) * (x * (6. * x - 15.) + 10.);
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Randomization and Dither Patterns
 
