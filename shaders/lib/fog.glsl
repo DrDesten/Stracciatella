@@ -4,5 +4,6 @@
 } */
 
 float fogFactor(vec3 viewPos, float far) {
-    return smoothstep(0, sq(far), sqmag(viewPos) * (1. / FOG_DISTANCE));
+    float farSQ = sq(far);
+    return smoothstep(farSQ * (1.414 * FOG_START / FOG_DISTANCE), farSQ, sqmag(viewPos) * (1.414 / FOG_DISTANCE));
 }
