@@ -4,11 +4,13 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-#include "/lib/fog.glsl"
-#include "/lib/sky.glsl"
 
 uniform vec3  fogColor;
+uniform int   isEyeInWater;
 uniform float far;
+
+#include "/lib/fog.glsl"
+#include "/lib/sky.glsl"
 
 #if FOG_QUALITY == 1
 uniform vec3  sunDir;
