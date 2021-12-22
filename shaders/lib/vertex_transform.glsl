@@ -26,6 +26,8 @@ mat3 getTBN(vec4 tangentAttribute) {
 	return mat3(tangent, cross(tangent, normal), normal);
 }
 
+
+
 vec3 getView() {
     return mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
 }
@@ -38,6 +40,11 @@ vec3 viewToClip(vec3 viewPos) {
 vec4 viewToClip(vec4 viewPos) {
     return gl_ProjectionMatrix * viewPos;
 }
+vec4 viewToPlayer(vec4 viewPos) {
+    return gbufferModelViewInverse * viewPos;
+}
+
+
 
 vec3 getPlayer() {
     return mat3(gbufferModelViewInverse) * getView() + gbufferModelViewInverse[3].xyz;
@@ -45,18 +52,26 @@ vec3 getPlayer() {
 vec4 getPlayer4() {
     return gbufferModelViewInverse * getView4();
 }
-
-vec4 viewToPlayer(vec4 viewPos) {
-    return gbufferModelViewInverse * viewPos;
-}
 vec3 playerToView(vec3 playerPos) {
-    return mat3(gbufferModelView) * playerPos + gbufferModelView[3].xyz;
+    return transformMAD(playerPos, gbufferModelView);
 }
 vec4 playerToView(vec4 playerPos) {
     return gbufferModelView * playerPos;
 }
 vec4 playerToClip(vec4 playerPos) {
+    return projectHomogeneousMAD(transformMAD(playerPos.xyz, gbufferModelView), gl_ProjectionMatrix);
+}
+/* vec4 playerToClip(vec4 playerPos) {
     return gl_ProjectionMatrix * (gbufferModelView * playerPos);
+} */
+
+
+
+vec3 getWorld() {
+    return getPlayer() + cameraPosition;
+}
+vec4 worldToClip(vec3 worldPos) {
+    return playerToClip(vec4(worldPos - cameraPosition, 1));
 }
 
 

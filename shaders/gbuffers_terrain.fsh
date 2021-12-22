@@ -4,11 +4,13 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-#include "/lib/fog.glsl"
-#include "/lib/sky.glsl"
 
 uniform vec3  fogColor;
+uniform int   isEyeInWater;
 uniform float far;
+
+#include "/lib/fog.glsl"
+#include "/lib/sky.glsl"
 
 #if FOG_QUALITY == 1
 uniform vec3  sunDir;
@@ -28,13 +30,15 @@ void main() {
 	color.rgb *= glcolor.rgb * glcolor.a;
 	color.rgb *= getLightmap(lmcoord);
 
-	float fog = fogFactor(viewPos, far);
+	float fog  = fogFactor(viewPos, far);
 
 	#if FOG_QUALITY == 1
-	color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset), fog);
+	float cave = saturate(lmcoord.y * 4 - 0.25);
+	color.rgb  = mix(color.rgb, mix(fogColor, getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset), cave), fog);
 	#else
 	color.rgb = mix(color.rgb, fogColor, fog);
 	#endif
+
 
 	FD0 = color; //gcolor
 }
