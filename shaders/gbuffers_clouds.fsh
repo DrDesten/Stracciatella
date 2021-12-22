@@ -8,9 +8,9 @@
 varying vec2 coord;
 varying vec4 glcolor;
 
+/* DRAWBUFFERS:0 */
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 
-/* DRAWBUFFERS:0 */
 	FD0 = color; //gcolor
 }
