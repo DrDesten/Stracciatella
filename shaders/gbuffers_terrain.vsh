@@ -12,9 +12,9 @@
 	uniform float  frameTimeCounter;
 	
 	vec3 wavyChaotic(vec3 worldPos, float amount, float speed) {
-		vec2 seed = frameTimeCounter * vec2(1.5 * WAVING_BLOCKS_SPEED, -2. * WAVING_BLOCKS_SPEED);
-		seed     += (worldPos.xz * 0.5) + (worldPos.y * 0.25);
-		vec2 XZ   = sin(seed) * WAVING_BLOCKS_AMOUNT;
+		vec2 seed = frameTimeCounter * vec2(1.5 * speed, -2. * speed);
+		seed     += worldPos.xz + (worldPos.y * 0.25);
+		vec2 XZ   = sin(seed) * amount;
 		return vec3(XZ.x, -1e-3, XZ.y);
 	}
 
@@ -54,6 +54,22 @@ void main() {
 
 		}
 
+		#ifdef WAVING_LANTERNS
+
+		// Waving Lanterns
+		if (mc_Entity.x == 1034) {
+
+			vec3 worldPos = getWorld();
+			vec3 offset   = wavyChaotic(worldPos, (WAVING_BLOCKS_AMOUNT * 0.3), WAVING_BLOCKS_SPEED);
+
+			worldPos     += offset * (1 - fract(worldPos.y - 0.01));
+
+			gl_Position   = worldToClip(worldPos);
+
+		}
+
+		#endif
+
 		// Waving Blocks All Vertices
 		if (mc_Entity.x == 1032     // Upper section of 2-Tall plants
 		#ifdef WAVING_LEAVES
@@ -79,7 +95,7 @@ void main() {
 
 			vec3  worldPos = getWorld();
 			float flowHeight = fract(worldPos.y + 0.01);
-			
+
 			vec3 offset   = wavySineY(worldPos, WAVING_LIQUIDS_AMOUNT * flowHeight, WAVING_LIQUIDS_SPEED);
 			worldPos     += offset;
 
