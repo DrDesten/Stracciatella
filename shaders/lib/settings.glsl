@@ -25,6 +25,9 @@
  #define WAVING
 #endif
 
+#define CLOUDS 0  // [0 1 2]
+#define CLOUD_HEIGHT 196
+
 #define CREDITS 0 // [0 1]
 #ifdef CREDITS
 #endif
