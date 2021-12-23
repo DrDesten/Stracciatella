@@ -115,17 +115,23 @@ void main() {
 
 	#ifdef RAIN_PUDDLES
 
-		vec3 worldPos = getWorld();
+		puddle = 0;
 
-		blockCoords = floor(worldPos.xz + 0.5);
+		if (isRainSmooth > 1e-10) {
 
-		puddle  = saturate(lmcoord.y * 32 - 30);                     // Only blocks exposed to sky
-		puddle *= saturate(gl_Normal.y);                             // Only blocks facing up
-		puddle *= float(mc_Entity.x != 1033 && mc_Entity.x != 1020); // Not Leaves and not lava
+			vec3 worldPos = getWorld();
 
-		puddle *= saturate(noise(worldPos.xz * 0.25) * 4 - 2.5);       // Puddles
-		puddle *= saturate(gl_Color.a * 3 - 2);                      // No puddle in cavities
-		puddle *= isRainSmooth;                                      // Rain
+			blockCoords = floor(worldPos.xz + 0.5);
+
+			puddle  = saturate(lmcoord.y * 32 - 30);                     // Only blocks exposed to sky
+			puddle *= saturate(gl_Normal.y);                             // Only blocks facing up
+			puddle *= float(mc_Entity.x != 1033 && mc_Entity.x != 1020); // Not Leaves and not lava
+
+			puddle *= saturate(noise(worldPos.xz * 0.25) * 4 - 2.5);       // Puddles
+			puddle *= saturate(gl_Color.a * 3 - 2);                      // No puddle in cavities
+			puddle *= isRainSmooth;                                      // Rain
+
+		}
 
 	#endif
 
