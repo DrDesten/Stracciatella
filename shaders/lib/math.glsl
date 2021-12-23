@@ -14,7 +14,7 @@ bool closeTo(float a, float b, float epsilon) {
     return abs(a-b) < epsilon;
 }
 
-float fstep(float edge, float x) { // Fast step() function with no branching of if 
+float fstep(float edge, float x) { // Fast step() function with no branching
     return clamp((x - edge) * 1e35, 0, 1);
 }
 
@@ -437,59 +437,4 @@ float angle(vec2 v) {
     float ang = HALF_PI - atan(v.x / v.y);
     if(v.y < 0) {ang = ang + PI;}
     return ang;
-}
-
-
-////////////////////////////////////////////////////////////////////////
-// (Un)Packing Functions
-
-vec3 Int24ToVec3_asfloat(float x) {
-    int ix = int(x * 16777216.);
-    return vec3(
-        ix & 255,          // Bitwise AND. Masks the first 8 bits (255 -> 11111111 in binary, AND operation zeros out all other bits)
-        (ix >> 8)  & 255,  // Bitshift down by 8. Moves the first 8 bits out. Afterwards, selecting the first 8 bits again (this isolates bit 9-16)
-        (ix >> 16) & 255   // Same principle
-    ) * (1./255);
-}
-vec3 Int24ToVec3(int x) {
-    return vec3(
-        x & 255,          // Bitwise AND. Masks the first 8 bits (255 -> 11111111 in binary, AND operation zeros out all other bits)
-        (x >> 8)  & 255,  // Bitshift down by 8. Moves the first 8 bits out. Afterwards, selecting the first 8 bits again (this isolates bit 9-16)
-        (x >> 16) & 255   // Same principle
-    ) * (1./255);
-}
-
-
-vec2 Int16ToVec2_asfloat(float x) {
-    int ix = int(x * 65536.);
-    return vec2(
-        ix & 255,        // Bitwise AND. Masks the first 8 bits (255 -> 11111111 in binary, AND operation zeros out all other bits)
-        (ix >> 8) & 255  // Bitshift down by 8. Moves the first 8 bits out. Afterwards, selecting the first 8 bits again (this isolates bit 9-16)
-    ) * (1./255);
-}
-vec2 Int16ToVec2(int x) {
-    return vec2(
-        x & 255,         // Bitwise AND. Masks the first 8 bits (255 -> 11111111 in binary, AND operation zeros out all other bits)
-        (x >> 8) & 255   // Bitshift down by 8. Moves the first 8 bits out. Afterwards, selecting the first 8 bits again (this isolates bit 9-16)
-    ) * (1./255);
-}
-
-
-
-int Vec3ToInt24(vec3 x) {
-    ivec3 ix = ivec3(x * 255.);
-    return ix.x + (ix.y << 8) + (ix.z << 16);
-}
-float Vec3ToInt24_asfloat(vec3 x) {
-    ivec3 ix = ivec3(x * 255.);
-    return float( ix.x + (ix.y << 8) + (ix.z << 16) ) * (1./16777216.);
-}
-
-int Vec2ToInt16(vec2 x) {
-    ivec2 ix = ivec2(x * 255.);
-    return ix.x + (ix.y << 8);
-}
-float Vec2ToInt16_asfloat(vec2 x) {
-    ivec2 ix = ivec2(x * 255.);
-    return float( ix.x + (ix.y << 8) ) * (1./65536.);
 }
