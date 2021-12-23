@@ -46,8 +46,9 @@ void main() {
 			vec3  worldPos = getWorld();
 			float flowHeight = fract(worldPos.y + 0.01);
 			
-			vec3 offset   = wavySineY(worldPos, WAVING_LIQUIDS_AMOUNT * flowHeight, WAVING_LIQUIDS_SPEED * 2.);
-			worldPos     += offset;
+			float offset  = wavySineY(worldPos, WAVING_LIQUIDS_AMOUNT * flowHeight, WAVING_LIQUIDS_SPEED * 2.).y;
+			offset       -= WAVING_LIQUIDS_AMOUNT * flowHeight * 0.5;
+			worldPos.y   += offset;
 
 			gl_Position   = worldToClip(worldPos);
 

@@ -7,7 +7,6 @@
 #ifdef WAVING
 
 	#include "/lib/vertex_transform.glsl"
-	attribute vec4 mc_Entity;
 	attribute vec2 mc_midTexCoord;
 	uniform float  frameTimeCounter;
 	
@@ -27,10 +26,18 @@
 	#include "/lib/vertex_transform_simple.glsl"
 #endif
 
+attribute vec4 mc_Entity;
+
 varying vec2 lmcoord;
 varying vec2 coord;
 varying vec4 glcolor;
 varying vec3 viewPos;
+
+#ifdef RAIN_PUDDLES
+uniform float isRainSmooth;
+varying float puddle;
+varying vec2  blockCoords;
+#endif
 
 
 void main() {
@@ -96,13 +103,30 @@ void main() {
 			vec3  worldPos = getWorld();
 			float flowHeight = fract(worldPos.y + 0.01);
 
-			vec3 offset   = wavySineY(worldPos, WAVING_LIQUIDS_AMOUNT * flowHeight, WAVING_LIQUIDS_SPEED);
-			worldPos     += offset;
+			float offset  = wavySineY(worldPos, WAVING_LIQUIDS_AMOUNT * flowHeight, WAVING_LIQUIDS_SPEED).y;
+			offset       -= WAVING_LIQUIDS_AMOUNT * flowHeight * 0.5;
+			worldPos.y   += offset;
 
 			gl_Position   = worldToClip(worldPos);
 
 		}
 	
+	#endif
+
+	#ifdef RAIN_PUDDLES
+
+		vec3 worldPos = getWorld();
+
+		blockCoords = floor(worldPos.xz + 0.5);
+
+		puddle  = saturate(lmcoord.y * 32 - 30);                     // Only blocks exposed to sky
+		puddle *= saturate(gl_Normal.y);                             // Only blocks facing up
+		puddle *= float(mc_Entity.x != 1033 && mc_Entity.x != 1020); // Not Leaves and not lava
+
+		puddle *= saturate(noise(worldPos.xz * 0.25) * 4 - 2.5);       // Puddles
+		puddle *= saturate(gl_Color.a * 3 - 2);                      // No puddle in cavities
+		puddle *= isRainSmooth;                                      // Rain
+
 	#endif
 
 }

@@ -9,7 +9,7 @@ varying vec2 lmcoord;
 varying vec2 coord;
 varying vec4 glcolor;
 
-uniform int precipitation;
+uniform float temperature;
 
 /* DRAWBUFFERS:04 */
 void main() {
@@ -17,11 +17,11 @@ void main() {
 	color.rgb *= getLightmap(lmcoord);
 
 	float rain = 0;
-	if (precipitation == 1) { // Rain
+	if (temperature >= 0.15) { // Rain
 		rain    = step(0.01, color.a);
-		color.a = rain * 0.2;
+		color.a = rain * 0.5;
 	}
 
 	FD0 = color; //gcolor
-	FD1 = vec4(rain, 0, 0, rain * 0.1);
+	FD1 = vec4(rain, 0, 0, 0.25);
 }

@@ -30,12 +30,17 @@ void main() {
 	color.rgb *= glcolor.rgb * glcolor.a;
 	color.rgb *= getLightmap(lmcoord);
 
-	float fog = fogFactor(viewPos, far);
-	
-	#if FOG_QUALITY == 1
-	color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset), fog);
-	#else
-	color.rgb = mix(color.rgb, fogColor, fog);
+
+	#ifdef FOG
+
+		float fog = fogFactor(viewPos, far);
+		
+		#if FOG_QUALITY == 1
+		color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset), fog);
+		#else
+		color.rgb = mix(color.rgb, fogColor, fog);
+		#endif
+
 	#endif
 
 	FD0 = color; //gcolor
