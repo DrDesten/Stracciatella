@@ -27,6 +27,10 @@
 
 #define CLOUDS 0  // [0 1 2]
 #define CLOUD_HEIGHT 196
+#define CLOUD_SIZE 2000
+#define CLOUD_THICKNESS 5.0
+
+#define CLOUD_STEPS 10
 
 #define CREDITS 0 // [0 1]
 #ifdef CREDITS
