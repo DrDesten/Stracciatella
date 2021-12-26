@@ -19,17 +19,28 @@ vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 
 uniform sampler2D colortex4; // Effects
 
+#ifdef FOG
+#include "/lib/transform.glsl"
+#include "/lib/fog_sky.glsl"
 
+uniform int  isEyeInWater;
+uniform vec2 playerLMCSmooth;
+uniform vec3 fogColor;
+#endif
 
 /* DRAWBUFFERS:0 */
 void main() {
 	float rain = texture2D(colortex4, coord).r;
-	//coord      = (coord - 0.499) * (rain * 0.2 + 1) + 0.5;
 	coord     += sin(vec2(rain * (TWO_PI * 10))) * 0.05;
 
 	vec3 color = getAlbedo(coord);
 
-	//color = vec3(rain);
+	if (isEyeInWater != 0) {
+		vec3 viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
+		float fogFac = fogExp(viewPos, FOG_UNDERWATER_DENSITY * exp(playerLMCSmooth.y * -3 + 3));
+
+		color = mix(color, fogColor * (playerLMCSmooth.y * 0.6 + 0.4), fogFac);
+	}
 
 	
 

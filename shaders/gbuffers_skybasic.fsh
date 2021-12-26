@@ -8,6 +8,7 @@
 uniform vec2 screenSizeInverse;
 uniform vec3 fogColor;
 uniform vec3 skyColor;
+//uniform int  isEyeInWater;
 
 uniform vec3  sunDir;
 uniform vec3  up;
@@ -27,9 +28,13 @@ void main() {
 	#ifdef SUN_SIZE_CHANGE
 		sunDot = sunDot * (SUN_SIZE * 0.25) + sunDot;
 	#endif
+
+	//sunDot        = isEyeInWater == 0 ? sunDot : 1.5;
 	float fogArea = smoothstep(-sunDot * 0.5 - 0.1, 0.05, dot(viewDir, -up)); // Adding sunDot to the upper smoothstep limit to increase fog close to sun
 
 	vec3  newFogColor = mix(fogColor, vec3(1,0.4,0), (sunDot / (1 + sunDot)) * sunset); // Make fog Color change for sunsets
+	//newFogColor       = isEyeInWater == 0 ? newFogColor : fogColor;
+
 	color = mix(skyColor, starData.rgb, starData.a);
 	color = mix(color, newFogColor, fogArea);
 

@@ -10,12 +10,12 @@ uniform vec3  fogColor;
 uniform int   isEyeInWater;
 uniform float far;
 
-#include "/lib/fog.glsl"
-#include "/lib/sky.glsl"
+#include "/lib/fog_sky.glsl"
 
 #ifdef FOG
 
 uniform mat4 gbufferModelViewInverse;
+
 #if FOG_QUALITY == 1
 uniform vec3  sunDir;
 uniform vec3  up;
@@ -39,29 +39,14 @@ void main() {
 
 	#ifdef FOG
 
-		float fog;
-		if (isEyeInWater == 0) {
+		float fog = fogFactor(viewPos, far, gbufferModelViewInverse);
 
-			fog  = fogFactor(viewPos, far, gbufferModelViewInverse);
-
-			#if FOG_QUALITY == 1
-			float cave = saturate(lmcoord.y * 4 - 0.25);
-			color.rgb  = mix(color.rgb, mix(fogColor, getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset), cave), fog);
-			#else
-			color.rgb = mix(color.rgb, fogColor, fog);
-			#endif
-
-		} else {
-
-			fog  = fogExp(viewPos, isEyeInWater * FOG_UNDERWATER_DENSITY);
-
-			#if FOG_QUALITY == 1
-			color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset), fog);
-			#else
-			color.rgb = mix(color.rgb, fogColor, fog);
-			#endif
-
-		}
+		#if FOG_QUALITY == 1
+		float cave = saturate(lmcoord.y * 4 - 0.25);
+		color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, isEyeInWater), cave), fog);
+		#else
+		color.rgb = mix(color.rgb, fogColor, fog);
+		#endif
 
 	#endif
 
