@@ -22,6 +22,8 @@
 		return vec3(0, sin(seed) * amount, 0);
 	}
 
+#elif defined RAIN_PUDDLES
+	#include "/lib/vertex_transform.glsl"
 #else
 	#include "/lib/vertex_transform_simple.glsl"
 #endif
@@ -100,7 +102,7 @@ void main() {
 		// Waving Liquids
 		if (mc_Entity.x == 1020) {
 
-			vec3  worldPos = getWorld();
+			vec3  worldPos  = getWorld();
 			float flowHeight = fract(worldPos.y + 0.01);
 
 			float offset  = wavySineY(worldPos, WAVING_LIQUIDS_AMOUNT * flowHeight, WAVING_LIQUIDS_SPEED).y;
@@ -115,8 +117,6 @@ void main() {
 
 	#ifdef RAIN_PUDDLES
 
-		puddle = 0;
-
 		if (isRainSmooth > 1e-10) {
 
 			vec3 worldPos = getWorld();
@@ -127,7 +127,7 @@ void main() {
 			puddle *= saturate(gl_Normal.y);                             // Only blocks facing up
 			puddle *= float(mc_Entity.x != 1033 && mc_Entity.x != 1020); // Not Leaves and not lava
 
-			puddle *= saturate(noise(worldPos.xz * 0.25) * 4 - 2.5);       // Puddles
+			puddle *= saturate(noise(worldPos.xz * 0.25) * 4 - 2.5);     // Puddles
 			puddle *= saturate(gl_Color.a * 3 - 2);                      // No puddle in cavities
 			puddle *= isRainSmooth;                                      // Rain
 

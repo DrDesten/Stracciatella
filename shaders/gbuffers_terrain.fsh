@@ -9,12 +9,12 @@ uniform vec3  fogColor;
 uniform int   isEyeInWater;
 uniform float far;
 
-#include "/lib/fog.glsl"
-#include "/lib/sky.glsl"
+#include "/lib/fog_sky.glsl"
 
 #ifdef FOG
 
 uniform mat4 gbufferModelViewInverse;
+
 #if FOG_QUALITY == 1
 uniform vec3  sunDir;
 uniform vec3  up;
@@ -32,6 +32,7 @@ varying vec3 viewPos;
 #ifdef RAIN_PUDDLES
 uniform sampler2D colortex7;
 uniform float     frameTimeCounter;
+uniform float     isRainSmooth;
 varying float     puddle;
 varying vec2      blockCoords;
 #endif
@@ -45,42 +46,31 @@ void main() {
 
 	#ifdef RAIN_PUDDLES
 
-		vec2 waterTextureSize = vec2(textureSize(colortex7, 0));
-		vec2 waterCoords      = vec2(blockCoords.x, blockCoords.y * (waterTextureSize.x / waterTextureSize.y));
-		waterCoords.y        += (waterTextureSize.x / waterTextureSize.y) * round(frameTimeCounter * 2);
-		vec4 waterTexture     = texture2D(colortex7, waterCoords);
-		waterTexture.rgb      = waterTexture.rgb * vec3(0.2, 0.3, 0.8);
+		if (isRainSmooth > 1e-10) {
 
-		color.rgb = mix(color.rgb, waterTexture.rgb, puddle * waterTexture.a);
+			vec2 waterTextureSize = vec2(textureSize(colortex7, 0));
+			vec2 waterCoords      = vec2(blockCoords.x, blockCoords.y * (waterTextureSize.x / waterTextureSize.y));
+			waterCoords.y        += (waterTextureSize.x / waterTextureSize.y) * round(frameTimeCounter * 2);
+			vec4 waterTexture     = texture2D(colortex7, waterCoords);
+			waterTexture.rgb      = waterTexture.rgb * vec3(0.2, 0.27, 0.7);
+
+			color.rgb = mix(color.rgb, waterTexture.rgb, puddle * waterTexture.a);
+
+		}
 
 	#endif
 
 
 	#ifdef FOG
 
-		float fog;
-		if (isEyeInWater == 0) {
+		float fog = fogFactor(viewPos, far, gbufferModelViewInverse);
 
-			fog  = fogFactor(viewPos, far, gbufferModelViewInverse);
-
-			#if FOG_QUALITY == 1
-			float cave = saturate(lmcoord.y * 4 - 0.25);
-			color.rgb  = mix(color.rgb, mix(fogColor, getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset), cave), fog);
-			#else
-			color.rgb = mix(color.rgb, fogColor, fog);
-			#endif
-
-		} else {
-
-			fog  = fogExp(viewPos, isEyeInWater * FOG_UNDERWATER_DENSITY);
-
-			#if FOG_QUALITY == 1
-			color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset), fog);
-			#else
-			color.rgb = mix(color.rgb, fogColor, fog);
-			#endif
-
-		}
+		#if FOG_QUALITY == 1
+		float cave = saturate(lmcoord.y * 4 - 0.25);
+		color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, isEyeInWater), cave), fog);
+		#else
+		color.rgb = mix(color.rgb, fogColor, fog);
+		#endif
 
 
 	#endif
