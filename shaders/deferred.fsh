@@ -15,6 +15,9 @@ uniform float far;
 uniform float rainStrength;
 #endif
 
+uniform vec3 skyColor;
+uniform vec3 fogColor;
+
 /* DRAWBUFFERS:0 */
 void main() {
 	vec3 color = getAlbedo(coord);
@@ -35,7 +38,7 @@ void main() {
 		if (rayLength > 0. && (wsDist > rayLength || screenPos.z == 1)) {
 			vec4  cloudTexture = texture2D(colortex4, cloudCoords);
 			float cloudOpacity = cloudTexture.a * smoothstep(-far*7.5, -far, -rayLength) * (1 - rainStrength);
-			color.rgb = mix(color.rgb, cloudTexture.rgb, cloudOpacity);
+			color.rgb = mix(color.rgb, vec3(0.95,0.97,1.0) * mean(fogColor), cloudOpacity);
 		}
 
 	#elif CLOUDS == 2
