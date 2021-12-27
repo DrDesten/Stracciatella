@@ -5,15 +5,14 @@
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
-uniform vec3  fogColor;
-uniform int   isEyeInWater;
-uniform float far;
-
 #include "/lib/fog_sky.glsl"
 
 #ifdef FOG
 
-uniform mat4 gbufferModelViewInverse;
+uniform mat4  gbufferModelViewInverse;
+uniform vec3  fogColor;
+uniform int   isEyeInWater;
+uniform float far;
 
 #if FOG_QUALITY == 1
 uniform vec3  sunDir;
@@ -30,7 +29,7 @@ varying vec4 glcolor;
 varying vec3 viewPos;
 
 #ifdef RAIN_PUDDLES
-uniform sampler2D colortex7;
+uniform sampler2D colortex4;
 uniform float     frameTimeCounter;
 uniform float     isRainSmooth;
 varying float     puddle;
@@ -48,11 +47,12 @@ void main() {
 
 		if (isRainSmooth > 1e-10) {
 
-			vec2 waterTextureSize = vec2(textureSize(colortex7, 0));
-			vec2 waterCoords      = vec2(blockCoords.x, blockCoords.y * (waterTextureSize.x / waterTextureSize.y));
-			waterCoords.y        += (waterTextureSize.x / waterTextureSize.y) * round(frameTimeCounter * 2);
-			vec4 waterTexture     = texture2D(colortex7, waterCoords);
-			waterTexture.rgb      = waterTexture.rgb * vec3(0.2, 0.27, 0.7);
+			vec2  waterTextureSize   = vec2(textureSize(colortex4, 0));
+			float waterTextureAspect = waterTextureSize.x / waterTextureSize.y;
+			vec2  waterCoords        = vec2(blockCoords.x, blockCoords.y * waterTextureAspect);
+			waterCoords.y           += waterTextureAspect * round(frameTimeCounter * 2);
+			vec4  waterTexture       = texture2D(colortex4, waterCoords);
+			waterTexture.rgb         = waterTexture.rgb * vec3(0.2, 0.27, 0.7);
 
 			color.rgb = mix(color.rgb, waterTexture.rgb, puddle * waterTexture.a);
 

@@ -7,9 +7,15 @@
 
 /*
 const int colortex0Format = RGBA8; // Color Buffer
-const int colortex4Format = R8;    // Effects Buffer
+const int colortex1Format = R8;    // Empty Buffer
+const int colortex2Format = R8;    // Empty Buffer
+const int colortex3Format = R8;    // Effects Buffer
 
-const vec4 colortex4ClearColor = vec4(0)
+const vec4 colortex3ClearColor = vec4(0)
+
+const bool colortex0Clear = false; 
+const bool colortex1Clear = false; 
+const bool colortex2Clear = false; 
 */
 
 
@@ -17,7 +23,7 @@ const float sunPathRotation = -15; // [-50 -49 -48 -47 -46 -45 -44 -43 -42 -41 -
 
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 
-uniform sampler2D colortex4; // Effects
+uniform sampler2D colortex3; // Effects
 
 #ifdef FOG
 #include "/lib/transform.glsl"
@@ -30,8 +36,11 @@ uniform vec3 fogColor;
 
 /* DRAWBUFFERS:0 */
 void main() {
-	float rain = texture2D(colortex4, coord).r;
-	coord     += sin(vec2(rain * (TWO_PI * 10))) * 0.05;
+	
+	#ifdef RAIN_EFFECTS
+		float rain = texture2D(colortex3, coord).r;
+		coord     += sin(vec2(rain * (TWO_PI * 10))) * 0.1;
+	#endif
 
 	vec3 color = getAlbedo(coord);
 

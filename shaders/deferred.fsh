@@ -9,7 +9,7 @@ vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 
 #if CLOUDS != 0
 #include "/lib/transform.glsl"
-uniform sampler2D colortex7; // Clouds
+uniform sampler2D colortex4; // Clouds
 uniform float frameTimeCounter;
 uniform float far;
 uniform float rainStrength;
@@ -33,7 +33,7 @@ void main() {
 		cloudCoords      = fract(cloudCoords * (1. / CLOUD_SIZE));
 
 		if (rayLength > 0. && (wsDist > rayLength || screenPos.z == 1)) {
-			vec4  cloudTexture = texture2D(colortex7, cloudCoords);
+			vec4  cloudTexture = texture2D(colortex4, cloudCoords);
 			float cloudOpacity = cloudTexture.a * smoothstep(-far*7.5, -far, -rayLength) * (1 - rainStrength);
 			color.rgb = mix(color.rgb, cloudTexture.rgb, cloudOpacity);
 		}
@@ -54,7 +54,7 @@ void main() {
 
 		if (rayLength > 0. && (wsDist > rayLength || screenPos.z == 1)) {
 
-			vec4  cloudTexture        = texture2D(colortex7, cloudCoords);
+			vec4  cloudTexture        = texture2D(colortex4, cloudCoords);
 
 			if (cloudTexture.a > 0.5 && false) {
 
@@ -71,7 +71,7 @@ void main() {
 				for (int i = 0; i < CLOUD_STEPS; i++) {
 					cloudSpaceRay += cloudSpaceRayStep;
 
-					vec4 ct = texture2D(colortex7, fract(cloudSpaceRay.xy));
+					vec4 ct = texture2D(colortex4, fract(cloudSpaceRay.xy));
 					if (ct.a > 0.5) {
 						color.rgb  = ct.rgb;
 						thickness += (1. / CLOUD_STEPS);
@@ -91,7 +91,7 @@ void main() {
 
 			} else {
 
-				vec2 cloudSize          = vec2(textureSize(colortex7, 0));
+				vec2 cloudSize          = vec2(textureSize(colortex4, 0));
 				vec2 cloudPixelSize     = 1. / cloudSize;
 				vec2 cloudPixelCoord    = fract(cloudCoords * cloudSize);
 				vec2 cloudPixelEdgeDist = 0.5 - abs(cloudPixelCoord - 0.5);
@@ -108,7 +108,7 @@ void main() {
 
 					ray += passThroughCloudTexelSpaceStep.xy;
 
-					vec4 cloudTex = texture2D(colortex7, ray);
+					vec4 cloudTex = texture2D(colortex4, ray);
 
 					if (cloudTex.a > 0.5) {
 						color.rgb = cloudTex.rgb;

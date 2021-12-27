@@ -45,6 +45,10 @@
 
 #define RAIN_PUDDLES
 
+
+#define RAIN_EFFECTS
+
+
 #define CREDITS 0 // [0 1]
 #ifdef CREDITS
 #endif
