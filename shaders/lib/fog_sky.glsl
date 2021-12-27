@@ -21,14 +21,14 @@ vec3 getSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColo
 
 float fogFactor(vec3 viewPos, float far) {
     float farSQ     = sq(far);
-    return smoothstep( farSQ * (1.414 * FOG_START / FOG_DISTANCE), farSQ, sqmag(viewPos) * (1.414 / FOG_DISTANCE));
+    return smoothstep( farSQ * (1.414 * FOG_START / FOG_END), farSQ, sqmag(viewPos) * (1.414 / FOG_END));
 }
 
 float fogFactor(vec3 viewPos, float far, mat4 gbufferModelViewInverse) {
     float farSQ     = sq(far);
     vec3  playerPos = mat3(gbufferModelViewInverse) * viewPos;
     playerPos.y    *= 0.25;
-    return smoothstep( farSQ * (1.414 * FOG_START / FOG_DISTANCE), farSQ, sqmag(playerPos) * (1.414 / FOG_DISTANCE));
+    return smoothstep( farSQ * (1.414 * FOG_START / FOG_END), farSQ, sqmag(playerPos) * (1.414 / FOG_END));
 }
 
 float fogExp(vec3 viewPos, float density) {
