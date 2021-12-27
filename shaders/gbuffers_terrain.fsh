@@ -31,21 +31,29 @@ varying vec3 viewPos;
 #ifdef RAIN_PUDDLES
 uniform sampler2D colortex4;
 uniform float     frameTimeCounter;
-uniform float     isRainSmooth;
+uniform float     rainPuddle;
 varying float     puddle;
 varying vec2      blockCoords;
+#endif
+
+#ifdef CUSTOM_LIGHTMAP
+uniform float customLightmapBlend;
 #endif
 
 /* DRAWBUFFERS:0 */
 void main() {
 	vec4 color = getAlbedo(coord);
-	color.rgb *= glcolor.rgb * glcolor.a;
-	color.rgb *= getLightmap(lmcoord);
+	color.rgb *= glcolor.rgb;
 
+	#ifndef CUSTOM_LIGHTMAP
+	color.rgb *= getLightmap(lmcoord) * glcolor.a;
+	#else
+	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
+	#endif
 
 	#ifdef RAIN_PUDDLES
 
-		if (isRainSmooth > 1e-10) {
+		if (rainPuddle > 1e-10) {
 
 			vec2  waterTextureSize   = vec2(textureSize(colortex4, 0));
 			float waterTextureAspect = waterTextureSize.x / waterTextureSize.y;
