@@ -23,8 +23,8 @@ void main() {
 	#ifdef RAIN_EFFECTS
 		float rain = 0;
 		if (temperature >= 0.15) { // Rain
-			rain    = step(0.01, color.a);
-			color.a = rain * 0.5;
+			rain    = fstep(0.01, color.a);
+			color.a = rain * RAIN_OPACITY;
 		}
 	#endif
 
