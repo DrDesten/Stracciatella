@@ -36,7 +36,7 @@ varying vec4 glcolor;
 varying vec3 viewPos;
 
 #ifdef RAIN_PUDDLES
-uniform float isRainSmooth;
+uniform float rainPuddle;
 varying float puddle;
 varying vec2  blockCoords;
 #endif
@@ -117,7 +117,7 @@ void main() {
 
 	#ifdef RAIN_PUDDLES
 
-		if (isRainSmooth > 1e-10) {
+		if (rainPuddle > 1e-10) {
 
 			vec3 worldPos = getWorld();
 
@@ -129,7 +129,7 @@ void main() {
 
 			puddle *= saturate(noise(worldPos.xz * 0.25) * 4 - 2.5);     // Puddles
 			puddle *= saturate(gl_Color.a * 3 - 2);                      // No puddle in cavities
-			puddle *= isRainSmooth;                                      // Rain
+			puddle *= rainPuddle;                                      // Rain
 
 		}
 
