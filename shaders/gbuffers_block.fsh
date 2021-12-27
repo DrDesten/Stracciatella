@@ -5,15 +5,15 @@
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
-uniform vec3  fogColor;
-uniform int   isEyeInWater;
-uniform float far;
 
 #include "/lib/fog_sky.glsl"
 
 #ifdef FOG
 
-uniform mat4 gbufferModelViewInverse;
+uniform mat4  gbufferModelViewInverse;
+uniform vec3  fogColor;
+uniform int   isEyeInWater;
+uniform float far;
 
 #if FOG_QUALITY == 1
 uniform vec3  sunDir;
@@ -34,7 +34,6 @@ void main() {
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb * glcolor.a;
 	color.rgb *= getLightmap(lmcoord);
-
 
 	#ifdef FOG
 
