@@ -45,7 +45,11 @@ vec3 getSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColo
 	return mix(skyColor, fogColor, fogArea);
 }
 
-
+vec3 getCustomFogColor(float rainStrength, float daynight) {
+    vec3 fogRainColor  = mix(vec3(FOG_NIGHT_RAIN_R, FOG_NIGHT_RAIN_G, FOG_NIGHT_RAIN_B), vec3(FOG_DAY_RAIN_R, FOG_DAY_RAIN_G, FOG_DAY_RAIN_B), daynight); 
+    vec3 fogClearColor = mix(vec3(FOG_NIGHT_R, FOG_NIGHT_G, FOG_NIGHT_B),                vec3(FOG_DAY_R, FOG_DAY_G, FOG_DAY_B), daynight);
+    return mix(fogClearColor, fogRainColor, rainStrength);
+}
 
 
 

@@ -14,17 +14,17 @@
 	uniform int   isEyeInWater;
 	uniform float far;
 
+	#ifdef CUSTOM_SKY
+		uniform float daynight;
+		uniform float rainStrength;
+	#endif
+
 	#if FOG_QUALITY == 1
 
 		uniform vec3  sunDir;
 		uniform vec3  up;
 		uniform float sunset;
 		uniform vec3  skyColor;
-
-		#ifdef CUSTOM_SKY
-		uniform float daynight;
-		uniform float rainStrength;
-		#endif
 
 	#endif
 
@@ -81,16 +81,22 @@ void main() {
 
 		#if FOG_QUALITY == 1
 
-		float cave        = saturate(lmcoord.y * 4 - 0.25);
-		
-		#ifndef CUSTOM_SKY
-			color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, isEyeInWater), cave), fog);
-		#else
-			color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight, isEyeInWater), cave), fog);
-		#endif
+			float cave        = saturate(lmcoord.y * 4 - 0.25);
+			
+			#ifndef CUSTOM_SKY
+				color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, isEyeInWater), cave), fog);
+			#else
+				color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight, isEyeInWater), cave), fog);
+			#endif
 
 		#else
-		color.rgb = mix(color.rgb, fogColor, fog);
+
+			#ifndef FOG_CUSTOM_COLOR
+				color.rgb = mix(color.rgb, fogColor, fog);
+			#else
+				color.rgb = mix(color.rgb, getCustomFogColor(rainStrength, daynight), fog);
+			#endif
+
 		#endif
 
 	#endif
