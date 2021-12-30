@@ -4,6 +4,7 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
+#include "/lib/fog_sky.glsl"
 
 uniform vec2 screenSizeInverse;
 uniform vec3 fogColor;
@@ -12,27 +13,23 @@ uniform vec3 skyColor;
 uniform vec3  sunDir;
 uniform vec3  up;
 uniform float sunset;
+#ifdef CUSTOM_SKY
+uniform float daynight;
+uniform float rainStrength;
+#endif
 
 varying vec4 starData; //rgb = star color, a = flag for weather or not this pixel is a star.
 varying vec3 viewPos;
 
-vec2 screenPos = gl_FragCoord.xy * screenSizeInverse;
-
 /* DRAWBUFFERS:0 */
 void main() {
-	vec3 color;
-
-	vec3  viewDir = normalize(viewPos);
-	float sunDot  = sq(dot(viewDir, sunDir) * 0.5 + 0.5);
-	#ifdef SUN_SIZE_CHANGE
-		sunDot = sunDot * (SUN_SIZE * 0.25) + sunDot;
+	#ifndef CUSTOM_SKY
+	vec3 color = getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset);
+	#else
+	vec3 color = getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight);
 	#endif
-	float fogArea = smoothstep(-sunDot * 0.5 - 0.1, 0.05, dot(viewDir, -up)); // Adding sunDot to the upper smoothstep limit to increase fog close to sun
 
-	vec3  newFogColor = mix(fogColor, vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B), (sunDot / (1 + sunDot)) * sunset); // Make fog Color change for sunsets
-
-	color = mix(skyColor, starData.rgb, starData.a);
-	color = mix(color, newFogColor, fogArea);
+	color      = mix(color, starData.rgb, starData.a);
 
 	FD0 = vec4(color, 1.0); //gcolor
 }

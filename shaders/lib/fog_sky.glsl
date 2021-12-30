@@ -8,9 +8,35 @@ vec3 getSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColo
 	#endif
 
 	float fogArea     = smoothstep(-sunDot * 0.5 - 0.1, 0.05, dot(viewDir, -up)); // Adding sunDot to the upper smoothstep limit to increase fog close to sun
-	vec3  newFogColor = mix(fogColor, vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B), (sunDot / (1 + sunDot)) * sunset); // Make fog Color change for sunsets
+    
+    #ifdef SKY_CUSTOM_SUNSET
+	    fogColor = mix(fogColor, vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B), (sunDot / (1 + sunDot)) * sunset); // Make fog Color change for sunsets
+    #endif
 
-	return mix(skyColor, newFogColor, fogArea);
+	return mix(skyColor, fogColor, fogArea);
+}
+
+vec3 getSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset, float rainStrength, float daynight) {
+    float sunDot  = sq(dot(viewDir, sunDir) * 0.5 + 0.5);
+	#ifdef SUN_SIZE_CHANGE
+		sunDot = sunDot * (SUN_SIZE * 0.25) + sunDot;
+	#endif
+
+	float fogArea     = smoothstep(-sunDot * 0.5 - 0.1, 0.05, dot(viewDir, -up)); // Adding sunDot to the upper smoothstep limit to increase fog close to sun
+
+    #ifdef SKY_CUSTOM_COLOR
+	    skyColor = mix(vec3(SKY_DAY_R, SKY_DAY_G, SKY_DAY_B), vec3(SKY_DAY_RAIN_R, SKY_DAY_RAIN_G, SKY_DAY_RAIN_B), rainStrength); // Custom Sky Color
+    #endif
+    #ifdef FOG_CUSTOM_COLOR
+	    fogColor = mix(vec3(FOG_DAY_R, FOG_DAY_G, FOG_DAY_B), vec3(FOG_DAY_RAIN_R, FOG_DAY_RAIN_G, FOG_DAY_RAIN_B), rainStrength); // Custom Fog Color
+    #endif
+
+    #ifdef SKY_CUSTOM_SUNSET
+	    fogColor = mix(fogColor, vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B), (sunDot / (1 + sunDot)) * sunset); // Make fog Color change for sunsets
+    #endif
+
+
+	return mix(skyColor, fogColor, fogArea);
 }
 
 
@@ -55,6 +81,13 @@ float expHeightFog(float dist, float cameraY, float pixelY) {
 vec3 getFogSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset, int isEyeInWater) {
     if (isEyeInWater == 0) {
         return getSkyColor(viewDir, sunDir, up, skyColor, fogColor, sunset);
+    } else {
+        return fogColor;
+    }
+}
+vec3 getFogSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset, float rainStrength, float daynight, int isEyeInWater) {
+    if (isEyeInWater == 0) {
+        return getSkyColor(viewDir, sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight);
     } else {
         return fogColor;
     }
