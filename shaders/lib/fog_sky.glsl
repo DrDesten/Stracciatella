@@ -36,6 +36,21 @@ float fogExp(vec3 viewPos, float density) {
 }
 
 
+float expFogDensity(float worldHeight) {
+    worldHeight = exp(-(worldHeight - FOG_EXP_START) * ( 1. / (FOG_EXP_END - FOG_EXP_START)) );
+    return (worldHeight);
+}
+float expFogDensityIntegral(float worldHeight) {
+    worldHeight = exp((worldHeight - FOG_EXP_START) * ( -1. / (FOG_EXP_END - FOG_EXP_START)) ) * (FOG_EXP_END - FOG_EXP_START);
+    return (worldHeight);
+}
+float expHeightFog(float dist, float cameraY, float pixelY) {
+    float fogDensity = (expFogDensityIntegral(pixelY) - expFogDensityIntegral(cameraY)) / (cameraY - pixelY);
+    fogDensity       = fogDensity * dist * FOG_EXP_DENSITY;
+    return 1 - exp(-fogDensity);
+}
+
+
 
 vec3 getFogSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset, int isEyeInWater) {
     if (isEyeInWater == 0) {

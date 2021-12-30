@@ -9,17 +9,17 @@
 
 #ifdef FOG
 
-uniform mat4  gbufferModelViewInverse;
-uniform vec3  fogColor;
-uniform int   isEyeInWater;
-uniform float far;
+	uniform mat4  gbufferModelViewInverse;
+	uniform vec3  fogColor;
+	uniform int   isEyeInWater;
+	uniform float far;
 
-#if FOG_QUALITY == 1
-uniform vec3  sunDir;
-uniform vec3  up;
-uniform float sunset;
-uniform vec3  skyColor;
-#endif
+	#if FOG_QUALITY == 1
+	uniform vec3  sunDir;
+	uniform vec3  up;
+	uniform float sunset;
+	uniform vec3  skyColor;
+	#endif
 
 #endif
 
@@ -29,15 +29,15 @@ varying vec4 glcolor;
 varying vec3 viewPos;
 
 #ifdef RAIN_PUDDLES
-uniform sampler2D colortex4;
-uniform float     frameTimeCounter;
-uniform float     rainPuddle;
-varying float     puddle;
-varying vec2      blockCoords;
+	uniform sampler2D colortex4;
+	uniform float     frameTimeCounter;
+	uniform float     rainPuddle;
+	varying float     puddle;
+	varying vec2      blockCoords;
 #endif
 
 #ifdef CUSTOM_LIGHTMAP
-uniform float customLightmapBlend;
+	uniform float customLightmapBlend;
 #endif
 
 /* DRAWBUFFERS:0 */
@@ -79,7 +79,6 @@ void main() {
 		#else
 		color.rgb = mix(color.rgb, fogColor, fog);
 		#endif
-
 
 	#endif
 
