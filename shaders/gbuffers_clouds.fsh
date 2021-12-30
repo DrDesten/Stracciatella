@@ -35,7 +35,7 @@ void main() {
 
 	#ifdef FOG
 
-		float fog = fogFactor(viewPos, far, gbufferModelViewInverse);
+		float fog = fogFactor(viewPos * (1/1.414), far, gbufferModelViewInverse);
 
 		#if FOG_QUALITY == 1
 		color.rgb = mix(color.rgb, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, isEyeInWater), fog);
