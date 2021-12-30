@@ -11,10 +11,6 @@ value.FOG_QUALITY.1=Fancy
 option.FOG_START=Fog Start
 option.FOG_END=Fog End
 
-screen.SKY_COLOR_CONFIG=Sky Colors
-option.SKY_SUNSET_R=Sky Sunset §cR
-option.SKY_SUNSET_G=Sky Sunset §2G
-option.SKY_SUNSET_B=Sky Sunset §9B
 
 option.sunPathRotation=Sun Angle
 
@@ -22,6 +18,41 @@ option.SUN_SIZE_CHANGE=Manipulate Sun Size
 option.SUN_SIZE=Sun Size
 
 
+option.SKY_CUSTOM_SUNSET=Custom Sunset Color
+screen.SKY_CUSTOM_SUNSET_CONFIG=Sunset Color Configuration
+option.SKY_SUNSET_R=Sky Sunset §cR
+option.SKY_SUNSET_G=Sky Sunset §2G
+option.SKY_SUNSET_B=Sky Sunset §9B
+
+option.SKY_CUSTOM_COLOR=Custom Sky Color
+screen.SKY_CUSTOM_COLOR_CONFIG=Sky Color Configuration
+option.SKY_DAY_R=Sky Day §cR
+option.SKY_DAY_G=Sky Day §2G
+option.SKY_DAY_B=Sky Day §9B
+option.SKY_DAY_RAIN_R=Sky Day Rain §cR
+option.SKY_DAY_RAIN_G=Sky Day Rain §2G
+option.SKY_DAY_RAIN_B=Sky Day Rain §9B
+option.SKY_NIGHT_R=Sky Night §cR
+option.SKY_NIGHT_G=Sky Night §2G
+option.SKY_NIGHT_B=Sky Night §9B
+option.SKY_NIGHT_RAIN_R=Sky Night Rain §cR
+option.SKY_NIGHT_RAIN_G=Sky Night Rain §2G
+option.SKY_NIGHT_RAIN_B=Sky Night Rain §9B
+
+option.FOG_CUSTOM_COLOR=Custom Fog Color
+screen.FOG_CUSTOM_COLOR_CONFIG=Fog Color Configuration
+option.FOG_DAY_R=Fog Day §cR
+option.FOG_DAY_G=Fog Day §2G
+option.FOG_DAY_B=Fog Day §9B
+option.FOG_DAY_RAIN_R=Fog Day Rain §cR
+option.FOG_DAY_RAIN_G=Fog Day Rain §2G
+option.FOG_DAY_RAIN_B=Fog Day Rain §9B
+option.FOG_NIGHT_R=Fog Night §cR
+option.FOG_NIGHT_G=Fog Night §2G
+option.FOG_NIGHT_B=Fog Night §9B
+option.FOG_NIGHT_RAIN_R=Fog Night Rain §cR
+option.FOG_NIGHT_RAIN_G=Fog Night Rain §2G
+option.FOG_NIGHT_RAIN_B=Fog Night Rain §9B
 
 ///////////////////////////////////////////////////////////
 // WAVING
@@ -51,6 +82,8 @@ screen.CUSTOM_LIGHTMAP_COLOR_CONFIG=Custom Lightmap Colors
 option.LIGHTMAP_SKYLIGHT_AO=Skylight AO
 option.LIGHTMAP_BLOCKLIGHT_AO=Blocklight AO
 
+option.LIGHTMAP_BLOCKLIGHT_REDUCTION=Adaptive Blocklight Reduction
+
 option.LIGHTMAP_SKY_DAY_R=Skylight Day §cR
 option.LIGHTMAP_SKY_DAY_G=Skylight Day §2G
 option.LIGHTMAP_SKY_DAY_B=Skylight Day §9B
@@ -70,8 +103,19 @@ screen.WEATHER=Weather
 option.RAIN_EFFECTS=Rain Effects
 option.RAIN_EFFECTS_STRENGTH=Rain Refraction Strength
 option.RAIN_OPACITY=Rain Opacity
-option.RAIN_PUDDLES=Rain Puddles
 
+option.RAIN_PUDDLES=Rain Puddles
+option.RAIN_PUDDLES_COVERAGE=Rain Puddle Coverage
+option.RAIN_PUDDLES_SIZE=Rain Puddle Size
+option.RAIN_PUDDLES_DEPTH=Rain Puddle Opacity
+
+///////////////////////////////////////////////////////////
+// WATER
+///////////////////////////////////////////////////////////
+
+screen.WATER=Water
+option.FOG_UNDERWATER_DENSITY=Underwater Fog Density 
+option.FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE=Depth Influence
 
 option.CREDITS=§k###
 value.CREDITS.0=§r by §cDrDesten §r§k:###

@@ -16,20 +16,24 @@ uniform vec4  entityColor;
 	uniform int   isEyeInWater;
 	uniform float far;
 
+	#ifdef CUSTOM_SKY
+		uniform float daynight;
+		uniform float rainStrength;
+	#endif
+
 	#if FOG_QUALITY == 1
 
 		uniform vec3  sunDir;
 		uniform vec3  up;
 		uniform float sunset;
 		uniform vec3  skyColor;
-		#ifdef CUSTOM_SKY
-		uniform float daynight;
-		uniform float rainStrength;
-
-		#endif
 		
 	#endif
 
+#endif
+
+#ifdef CUSTOM_LIGHTMAP
+	uniform float customLightmapBlend;
 #endif
 
 varying vec2 lmcoord;
@@ -41,24 +45,35 @@ varying vec3 viewPos;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 	color.rgb  = mix(color.rgb, entityColor.rgb, entityColor.a);
-	color.rgb *= getLightmap(lmcoord);
 	
-
+	#ifndef CUSTOM_LIGHTMAP
+	color.rgb *= getLightmap(lmcoord);
+	#else
+	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, 1);
+	#endif
+	
 	#ifdef FOG
 
 		float fog = fogFactor(viewPos, far, gbufferModelViewInverse);
 
 		#if FOG_QUALITY == 1
 
-		float cave = saturate(lmcoord.y * 4 - 0.25);
-		#ifndef CUSTOM_SKY
-			color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, isEyeInWater), cave), fog);
-		#else
-			color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight, isEyeInWater), cave), fog);
-		#endif
+			float cave = saturate(lmcoord.y * 4 - 0.25);
+			
+			#ifndef CUSTOM_SKY
+				color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, isEyeInWater), cave), fog);
+			#else
+				color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight, isEyeInWater), cave), fog);
+			#endif
 
 		#else
-		color.rgb = mix(color.rgb, fogColor, fog);
+
+			#ifndef FOG_CUSTOM_COLOR
+				color.rgb = mix(color.rgb, fogColor, fog);
+			#else
+				color.rgb = mix(color.rgb, getCustomFogColor(rainStrength, daynight), fog);
+			#endif
+
 		#endif
 
 	#endif
