@@ -28,7 +28,7 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
     vec3 blockLight = blocklightColor * (
         saturate(lmcoord.x * lmcoord.x * 1.1) *                          // Blocklight
         (AO * LIGHTMAP_BLOCKLIGHT_AO + (1. - LIGHTMAP_BLOCKLIGHT_AO)) *  // Blocklight AO
-        (mean(skyLight) * -0.5 + 1)                                      // Reduce Blocklight when it's bright
+        (mean(skyLight) * -LIGHTMAP_BLOCKLIGHT_REDUCTION + 1)                                      // Reduce Blocklight when it's bright
     );
 
     return blockLight + skyLight;
