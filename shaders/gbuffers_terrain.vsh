@@ -127,9 +127,9 @@ void main() {
 			puddle *= saturate(gl_Normal.y);                             // Only blocks facing up
 			puddle *= float(mc_Entity.x != 1033 && mc_Entity.x != 1020); // Not Leaves and not lava
 
-			puddle *= saturate(noise(worldPos.xz * 0.25) * 4 - 2.5);     // Puddles
+			puddle *= saturate(noise(worldPos.xz * RAIN_PUDDLES_SIZE) * RAIN_PUDDLES_DEPTH - (RAIN_PUDDLES_DEPTH * (1 - RAIN_PUDDLES_COVERAGE) - RAIN_PUDDLES_COVERAGE)); // Puddles
 			puddle *= saturate(gl_Color.a * 3 - 2);                      // No puddle in cavities
-			puddle *= rainPuddle;                                      // Rain
+			puddle *= rainPuddle;                                        // Rain
 
 		}
 
