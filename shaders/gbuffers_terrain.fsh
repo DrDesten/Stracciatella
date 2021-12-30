@@ -52,12 +52,6 @@ void main() {
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb;
 
-	#ifndef CUSTOM_LIGHTMAP
-	color.rgb *= getLightmap(lmcoord) * glcolor.a;
-	#else
-	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
-	#endif
-
 	#ifdef RAIN_PUDDLES
 
 		if (rainPuddle > 1e-10) {
@@ -67,12 +61,18 @@ void main() {
 			vec2  waterCoords        = vec2(blockCoords.x, blockCoords.y * waterTextureAspect);
 			waterCoords.y           += waterTextureAspect * round(frameTimeCounter * 2);
 			vec4  waterTexture       = texture2D(colortex4, waterCoords);
-			waterTexture.rgb         = waterTexture.rgb * vec3(0.2, 0.27, 0.7);
+			waterTexture.rgb         = waterTexture.rgb * vec3(0.3, 0.4, 0.85);
 
 			color.rgb = mix(color.rgb, waterTexture.rgb, puddle * waterTexture.a);
 
 		}
 
+	#endif
+
+	#ifndef CUSTOM_LIGHTMAP
+	color.rgb *= getLightmap(lmcoord) * glcolor.a;
+	#else
+	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
 	#endif
 
 	#ifdef FOG
