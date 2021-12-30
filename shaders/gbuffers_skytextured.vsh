@@ -31,7 +31,7 @@ void main() {
 		bool isSun      = sunOrMoonAccurate(viewPos, sunPosition, moonPosition);
 
 		vec3 sunToVert  = viewPos.xyz - (isSun ? sunPosition : moonPosition);
-		viewPos.xyz    += (sunToVert - gbufferModelView[3].xyz) * SUN_SIZE;
+		viewPos.xyz    += (sunToVert - gbufferModelView[3].xyz) * (SUN_SIZE - 1);
 		gl_Position     = viewToClip(vec4(viewPos, 1));
 	#endif
 
