@@ -18,6 +18,10 @@ uniform vec3  sunDir;
 uniform vec3  up;
 uniform float sunset;
 uniform vec3  skyColor;
+#ifdef CUSTOM_SKY
+uniform float daynight;
+uniform float rainStrength;
+#endif
 #endif
 
 #endif
@@ -38,7 +42,13 @@ void main() {
 		float fog = fogFactor(viewPos * (1/1.414), far, gbufferModelViewInverse);
 
 		#if FOG_QUALITY == 1
-		color.rgb = mix(color.rgb, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, isEyeInWater), fog);
+
+		#ifndef CUSTOM_SKY
+			color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset), fog);
+		#else
+			color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight), fog);
+		#endif
+
 		#else
 		color.rgb = mix(color.rgb, fogColor, fog);
 		#endif

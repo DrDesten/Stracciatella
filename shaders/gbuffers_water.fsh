@@ -10,17 +10,24 @@
 
 #ifdef FOG
 
-uniform mat4  gbufferModelViewInverse;
-uniform vec3  fogColor;
-uniform int   isEyeInWater;
-uniform float far;
+	uniform mat4  gbufferModelViewInverse;
+	uniform vec3  fogColor;
+	uniform int   isEyeInWater;
+	uniform float far;
 
-#if FOG_QUALITY == 1
-uniform vec3  sunDir;
-uniform vec3  up;
-uniform float sunset;
-uniform vec3  skyColor;
-#endif
+	#if FOG_QUALITY == 1
+
+		uniform vec3  sunDir;
+		uniform vec3  up;
+		uniform float sunset;
+		uniform vec3  skyColor;
+		
+		#ifdef CUSTOM_SKY
+		uniform float daynight;
+		uniform float rainStrength;
+		#endif
+
+	#endif
 
 #endif
 
@@ -41,8 +48,15 @@ void main() {
 		float fog = fogFactor(viewPos, far, gbufferModelViewInverse);
 
 		#if FOG_QUALITY == 1
+
 		float cave = saturate(lmcoord.y * 4 - 0.25);
-		color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, isEyeInWater), cave), fog);
+
+		#ifndef CUSTOM_SKY
+			color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, isEyeInWater), cave), fog);
+		#else
+			color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight, isEyeInWater), cave), fog);
+		#endif
+
 		#else
 		color.rgb = mix(color.rgb, fogColor, fog);
 		#endif
