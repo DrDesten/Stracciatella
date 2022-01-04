@@ -74,9 +74,9 @@ void main() {
 	#endif
 
 	#ifndef CUSTOM_LIGHTMAP
-	color.rgb *= getLightmap(lmcoord) * glcolor.a;
+		color.rgb *= getLightmap(lmcoord) * glcolor.a;
 	#else
-	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
+		color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
 	#endif
 
 	#ifdef BLINKING_ORES
