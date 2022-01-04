@@ -20,15 +20,26 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
     
     const vec3 blocklightColor = vec3(LIGHTMAP_BLOCK_R, LIGHTMAP_BLOCK_G, LIGHTMAP_BLOCK_B);
 
+    #if LIGHTMAP_SKYLIGHT_CONTRAST != 50
+    lmcoord.y = pow(lmcoord.y, lightmap_skylight_contrast);
+    #endif
+    #if LIGHTMAP_BLOCKLIGHT_CONTRAST != 50
+    lmcoord.x = pow(lmcoord.x, lightmap_blocklight_contrast);
+    #endif
+
     vec3 skyLight   = mix(nightColor, dayColor, customLightmapBlend) * (
-        lmcoord.y *                                                      // Skylight
-        (AO * LIGHTMAP_SKYLIGHT_AO + (1. - LIGHTMAP_SKYLIGHT_AO))        // Skylight AO
+        lmcoord.y                                                       // Skylight
+        #if LIGHTMAP_SKYLIGHT_AO != 100
+        * (AO * lightmap_skylight_ao + (1. - lightmap_skylight_ao))     // Skylight AO
+        #endif
     );
 
     vec3 blockLight = blocklightColor * (
-        saturate(lmcoord.x * lmcoord.x * 1.1) *                          // Blocklight
-        (AO * LIGHTMAP_BLOCKLIGHT_AO + (1. - LIGHTMAP_BLOCKLIGHT_AO)) *  // Blocklight AO
-        (mean(skyLight) * -LIGHTMAP_BLOCKLIGHT_REDUCTION + 1)            // Reduce Blocklight when it's bright
+        saturate(lmcoord.x * lmcoord.x * 1.1)                            // Blocklight
+        #if LIGHTMAP_BLOCKLIGHT_AO != 100
+        * (AO * lightmap_blocklight_ao + (1. - lightmap_blocklight_ao))  // Blocklight AO
+        #endif
+        * (mean(skyLight) * -LIGHTMAP_BLOCKLIGHT_REDUCTION + 1)          // Reduce Blocklight when it's bright
     );
 
     return blockLight + skyLight;

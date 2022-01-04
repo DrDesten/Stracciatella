@@ -6,10 +6,10 @@
 #include "/lib/composite_basics.glsl"
 
 /*
-const int colortex0Format = RGBA8; // Color Buffer
-const int colortex1Format = R8;    // Empty Buffer
-const int colortex2Format = R8;    // Empty Buffer
-const int colortex3Format = R8;    // Effects Buffer
+const int colortex0Format = RGB8;  // Color
+const int colortex1Format = R8;    // FXAA Luma
+const int colortex2Format = R8;    // Empty
+const int colortex3Format = R8;    // Effects
 
 const vec4 colortex3ClearColor = vec4(0)
 
@@ -36,7 +36,7 @@ uniform vec2 playerLMCSmooth;
 uniform vec3 fogColor;
 #endif
 
-/* DRAWBUFFERS:0 */
+/* DRAWBUFFERS:01 */
 void main() {
 	
 	#ifdef RAIN_EFFECTS
@@ -53,7 +53,8 @@ void main() {
 		color = mix(color, fogColor * (playerLMCSmooth.y * 0.6 + 0.4), fogFac);
 	}
 
-	
+	float luma = luminance(color);
 
 	FD0 = vec4(color, 1.0);
+	FD1 = vec4(luma);
 }
