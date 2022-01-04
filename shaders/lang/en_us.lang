@@ -75,12 +75,14 @@ option.WAVING_LIQUIDS_SPEED=Waving Liquids Speed
 // LIGHTING
 ///////////////////////////////////////////////////////////
 
-screen.LIGHTING=Lighting
+screen.LIGHTING=Custom Lighting
 
 option.CUSTOM_LIGHTMAP=Custom Lightmap
 screen.CUSTOM_LIGHTMAP_COLOR_CONFIG=Custom Lightmap Colors
 option.LIGHTMAP_SKYLIGHT_AO=Skylight AO
 option.LIGHTMAP_BLOCKLIGHT_AO=Blocklight AO
+option.LIGHTMAP_SKYLIGHT_CONTRAST=Skylight Contrast
+option.LIGHTMAP_BLOCKLIGHT_CONTRAST=Blocklight Contrast
 
 option.LIGHTMAP_BLOCKLIGHT_REDUCTION=Adaptive Blocklight Reduction
 
@@ -116,6 +118,29 @@ option.RAIN_PUDDLES_DEPTH=Rain Puddle Opacity
 screen.WATER=Water
 option.FOG_UNDERWATER_DENSITY=Underwater Fog Density 
 option.FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE=Depth Influence
+
+
+
+///////////////////////////////////////////////////////////
+// UTILITIES
+///////////////////////////////////////////////////////////
+
+screen.UTILITIES=Utilities
+
+option.BLINKING_ORES=Blinking Ores
+screen.BLINKING_ORES_CONFIG=Blinking Ores Settings
+
+option.BLINKING_ORES_DIAMOND=Diamond
+option.BLINKING_ORES_ANCIENT_DEBRIS=Ancient Debris
+option.BLINKING_ORES_IRON=Iron
+option.BLINKING_ORES_GOLD=Gold
+option.BLINKING_ORES_COPPER=Copper
+option.BLINKING_ORES_REDSTONE=Redstone
+option.BLINKING_ORES_LAPIS=Lapis Lazuli
+option.BLINKING_ORES_EMERALD=Emerald
+option.BLINKING_ORES_COAL=Coal
+option.BLINKING_ORES_NETHER_QUARZ=Nether Quarz
+option.BLINKING_ORES_NETHER_GOLD=Nether Gold
 
 option.CREDITS=§k###
 value.CREDITS.0=§r by §cDrDesten §r§k:###

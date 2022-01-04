@@ -31,6 +31,8 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
         lmcoord.y                                                       // Skylight
         #if LIGHTMAP_SKYLIGHT_AO != 100
         * (AO * lightmap_skylight_ao + (1. - lightmap_skylight_ao))     // Skylight AO
+        #else
+        * AO
         #endif
     );
 
@@ -38,6 +40,8 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
         saturate(lmcoord.x * lmcoord.x * 1.1)                            // Blocklight
         #if LIGHTMAP_BLOCKLIGHT_AO != 100
         * (AO * lightmap_blocklight_ao + (1. - lightmap_blocklight_ao))  // Blocklight AO
+        #else
+        * AO
         #endif
         * (mean(skyLight) * -LIGHTMAP_BLOCKLIGHT_REDUCTION + 1)          // Reduce Blocklight when it's bright
     );

@@ -47,6 +47,10 @@ varying vec3 viewPos;
 	uniform float customLightmapBlend;
 #endif
 
+#ifdef BLINKING_ORES
+	varying float oreBlink;
+#endif
+
 /* DRAWBUFFERS:0 */
 void main() {
 	vec4 color = getAlbedo(coord);
@@ -73,6 +77,12 @@ void main() {
 	color.rgb *= getLightmap(lmcoord) * glcolor.a;
 	#else
 	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
+	#endif
+
+	#ifdef BLINKING_ORES
+	
+		color.rgb = mix(color.rgb, sqrt(color.rgb) * 0.9 + 0.1, oreBlink);
+
 	#endif
 
 	#ifdef FOG

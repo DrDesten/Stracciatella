@@ -4,11 +4,12 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 
+uniform float  frameTimeCounter;
+
 #ifdef WAVING
 
 	#include "/lib/vertex_transform.glsl"
 	attribute vec2 mc_midTexCoord;
-	uniform float  frameTimeCounter;
 	
 	vec3 wavyChaotic(vec3 worldPos, float amount, float speed) {
 		vec2 seed = frameTimeCounter * vec2(1.5 * speed, -2. * speed);
@@ -41,6 +42,9 @@ varying float puddle;
 varying vec2  blockCoords;
 #endif
 
+#ifdef BLINKING_ORES
+varying float oreBlink;
+#endif
 
 void main() {
 	gl_Position = ftransform();
@@ -48,6 +52,53 @@ void main() {
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 	viewPos = getView();
+
+	#ifdef BLINKING_ORES
+
+		oreBlink = sin(frameTimeCounter * 3) * 0.5 + 0.5;
+
+		switch (int(mc_Entity.x + 0.5)) {
+
+			#ifdef BLINKING_ORES_DIAMOND
+				case 2000: break;
+			#endif
+			#ifdef BLINKING_ORES_ANCIENT_DEBRIS
+				case 2001: break;
+			#endif
+			#ifdef BLINKING_ORES_IRON
+				case 2002: break;
+			#endif
+			#ifdef BLINKING_ORES_GOLD
+				case 2003: break;
+			#endif
+			#ifdef BLINKING_ORES_COPPER
+				case 2004: break;
+			#endif
+			#ifdef BLINKING_ORES_REDSTONE
+				case 2005: break;
+			#endif
+			#ifdef BLINKING_ORES_LAPIS
+				case 2006: break;
+			#endif
+			#ifdef BLINKING_ORES_EMERALD
+				case 2007: break;
+			#endif
+			#ifdef BLINKING_ORES_COAL
+				case 2008: break;
+			#endif
+			#ifdef BLINKING_ORES_NETHER_QUARZ
+				case 2009: break;
+			#endif
+			#ifdef BLINKING_ORES_NETHER_GOLD
+				case 2010: break;
+			#endif
+
+			default:
+				oreBlink = 0;
+		}
+
+	#endif
+	
 
 	#ifdef WAVING_BLOCKS
 
