@@ -42,7 +42,7 @@ void main() {
 
 	#ifdef FOG
 
-		float fog = fogFactor(viewPos * (1/1.414), far, gbufferModelViewInverse);
+		float fog = fogFactor(viewPos /* * (1/1.414) */, far, gbufferModelViewInverse);
 
 		#if FOG_QUALITY == 1
 
