@@ -44,6 +44,7 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
         * AO
         #endif
     );
+    skyLight = max(skyLight, vec3(LIGHTMAP_MINIMUM_LIGHT * AO));
 
     vec3 blockLight = blocklightColor * (
         saturate(lmcoord.x * lmcoord.x * 1.1)                            // Blocklight

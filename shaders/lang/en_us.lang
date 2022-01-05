@@ -92,6 +92,8 @@ option.LIGHTMAP_BLOCKLIGHT_AO=Blocklight AO
 option.LIGHTMAP_SKYLIGHT_CONTRAST=Skylight Contrast
 option.LIGHTMAP_BLOCKLIGHT_CONTRAST=Blocklight Contrast
 
+option.LIGHTMAP_MINIMUM_LIGHT=Minimum Light
+
 option.LIGHTMAP_BLOCKLIGHT_REDUCTION=Adaptive Blocklight Reduction
 option.LIGHTMAP_BLOCKLIGHT_REDUCTION.comment=Reduces blocklight when the sky is bright to avoid clipping. If the blocklight is too bright during daytime, increase this slider.
 
