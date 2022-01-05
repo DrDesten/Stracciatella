@@ -18,7 +18,16 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
     const vec3 dayColor   = vec3(LIGHTMAP_SKY_DAY_R, LIGHTMAP_SKY_DAY_G, LIGHTMAP_SKY_DAY_B);
     const vec3 nightColor = vec3(LIGHTMAP_SKY_NIGHT_R, LIGHTMAP_SKY_NIGHT_G, LIGHTMAP_SKY_NIGHT_B);
     
-    const vec3 blocklightColor = vec3(LIGHTMAP_BLOCK_R, LIGHTMAP_BLOCK_G, LIGHTMAP_BLOCK_B);
+    #ifndef LIGHTMAP_COMPLEX_BLOCKLIGHT
+        const vec3 blocklightColor = vec3(LIGHTMAP_BLOCK_R, LIGHTMAP_BLOCK_G, LIGHTMAP_BLOCK_B);
+    #else
+        #if LIGHTMAP_COMPLEX_BLOCKLIGHT_BLEND_CURVE != 50
+            float blocklightColorBlend = lightmap_complex_blocklight_blend_curve * lmcoord.x;
+            vec3  blocklightColor = mix(vec3(LIGHTMAP_COMPLEX_BLOCK_DARK_R, LIGHTMAP_COMPLEX_BLOCK_DARK_G, LIGHTMAP_COMPLEX_BLOCK_DARK_B), vec3(LIGHTMAP_COMPLEX_BLOCK_BRIGHT_R, LIGHTMAP_COMPLEX_BLOCK_BRIGHT_G, LIGHTMAP_COMPLEX_BLOCK_BRIGHT_B), blocklightColorBlend);
+        #else
+            vec3  blocklightColor = mix(vec3(LIGHTMAP_COMPLEX_BLOCK_DARK_R, LIGHTMAP_COMPLEX_BLOCK_DARK_G, LIGHTMAP_COMPLEX_BLOCK_DARK_B), vec3(LIGHTMAP_COMPLEX_BLOCK_BRIGHT_R, LIGHTMAP_COMPLEX_BLOCK_BRIGHT_G, LIGHTMAP_COMPLEX_BLOCK_BRIGHT_B), lmcoord.x);
+        #endif
+    #endif
 
     #if LIGHTMAP_SKYLIGHT_CONTRAST != 50
     lmcoord.y = pow(lmcoord.y, lightmap_skylight_contrast);
