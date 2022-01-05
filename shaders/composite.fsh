@@ -45,9 +45,13 @@ void main() {
 
 	vec3 color = getAlbedo(coord);
 
-	if (isEyeInWater != 0) {
+	if (isEyeInWater == 2) {
 		vec3  viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
-		viewPos      *= isEyeInWater == 2 ? 75 : 1;
+		float fogFac  = fogExp(viewPos, 2);
+
+		color = mix(color, fogColor * 0.75, fogFac);
+	} else if (isEyeInWater != 0) {
+		vec3  viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
 		float fogFac  = fogExp(viewPos, FOG_UNDERWATER_DENSITY * exp(playerLMCSmooth.y * -FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE + FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE));
 
 		color = mix(color, fogColor * (playerLMCSmooth.y * 0.6 + 0.4), fogFac);
