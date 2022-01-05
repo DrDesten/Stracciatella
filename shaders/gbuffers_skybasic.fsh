@@ -21,8 +21,11 @@ uniform float rainStrength;
 varying vec4 starData; //rgb = star color, a = flag for weather or not this pixel is a star.
 varying vec3 viewPos;
 
+#ifdef CUSTOM_STARS
 varying vec3  playerPos;
 uniform float normalizedTime;
+uniform float customStarBlend;
+#endif
 
 vec2 signNotZero(vec2 v) {
     return vec2((v.x >= 0.0) ? +1.0 : -1.0, (v.y >= 0.0) ? +1.0 : -1.0);
@@ -67,13 +70,13 @@ void main() {
 			float starNoise = starVoronoi(skyCoord * STAR_DENSITY, 0.85);
 			float stars     = fstep(starNoise, (STAR_SIZE * 1e-4 * STAR_DENSITY));
 
-			float starGlow = exp(-starNoise * star_glow_size) * STAR_GLOW_AMOUNT;
+			float starGlow = exp(-starNoise * star_glow_size) * STAR_GLOW_AMOUNT * customStarBlend;
 			stars          = saturate(stars + starGlow);
 			
 			float starMask = 1 - sky.a;
 			starMask      *= fstep(noise(skyCoord * 10), STAR_COVERAGE, 2);
 
-			color = mix(sky.rgb, vec3(1), stars * starMask);
+			color = mix(sky.rgb, vec3(1), stars * starMask * customStarBlend);
 
 		} else {
 
