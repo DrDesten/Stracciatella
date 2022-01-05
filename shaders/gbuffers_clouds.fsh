@@ -15,7 +15,6 @@
 
 	#ifdef CUSTOM_SKY
 		uniform float daynight;
-		uniform float rainStrength;
 	#endif
 
 	#if FOG_QUALITY == 1
@@ -29,6 +28,7 @@
 
 #endif
 
+uniform float rainStrength;
 
 varying vec2 coord;
 varying vec4 glcolor;
@@ -39,6 +39,8 @@ varying vec3 viewPos;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 	color.a    = fstep(0.1, color.a);
+
+	color.rgb  = mix(color.rgb, vec3(luminance(color.rgb)) * vec3(0.58,0.6,0.7), rainStrength);
 
 	#ifdef FOG
 
