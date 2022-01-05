@@ -1,7 +1,7 @@
 
 // SKY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-vec3 getSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset) {
+vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset) {
     float sunDot  = sq(dot(viewDir, sunDir) * 0.5 + 0.5);
 	#ifdef SUN_SIZE_CHANGE
 		sunDot = sunDot * (SUN_SIZE * 0.25) + sunDot;
@@ -13,10 +13,12 @@ vec3 getSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColo
 	    fogColor = mix(fogColor, vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B), (sunDot / (1 + sunDot)) * sunset); // Make fog Color change for sunsets
     #endif
 
-	return mix(skyColor, fogColor, fogArea);
+	return vec4(mix(skyColor, fogColor, fogArea), fogArea);
 }
 
-vec3 getSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset, float rainStrength, float daynight) {
+vec3 getSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset) { return getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset).rgb; }
+
+vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset, float rainStrength, float daynight) {
     float sunDot  = sq(dot(viewDir, sunDir) * 0.5 + 0.5);
 	#ifdef SUN_SIZE_CHANGE
 		sunDot = sunDot * (SUN_SIZE * 0.25) + sunDot;
@@ -41,9 +43,10 @@ vec3 getSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColo
 	    fogColor = mix(fogColor, vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B), (sunDot * 10 / (0.45 + sunDot * 9)) * sunset); // Make fog Color change for sunsets
     #endif
 
-
-	return mix(skyColor, fogColor, fogArea);
+	return vec4(mix(skyColor, fogColor, fogArea), fogArea);
 }
+
+vec3 getSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset, float rainStrength, float daynight) { return getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight).rgb; }
 
 vec3 getCustomFogColor(float rainStrength, float daynight) {
     vec3 fogRainColor  = mix(vec3(FOG_NIGHT_RAIN_R, FOG_NIGHT_RAIN_G, FOG_NIGHT_RAIN_B), vec3(FOG_DAY_RAIN_R, FOG_DAY_RAIN_G, FOG_DAY_RAIN_B), daynight); 

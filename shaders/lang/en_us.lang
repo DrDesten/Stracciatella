@@ -11,12 +11,13 @@ value.FOG_QUALITY.1=Fancy
 option.FOG_START=Fog Start
 option.FOG_END=Fog End
 
-
-option.sunPathRotation=Sun Angle
-
+screen.SUN_MOON_CONFIG=Sun and Moon
 option.SUN_SIZE_CHANGE=Manipulate Sun Size
 option.SUN_SIZE=Sun Size
+option.sunPathRotation=Sun Angle
 
+screen.STARS_CONFIG=Stars
+option.STAR_BRIGHTNESS=Star Brightness
 
 option.SKY_CUSTOM_SUNSET=Custom Sunset Color
 screen.SKY_CUSTOM_SUNSET_CONFIG=Sunset Color Configuration
