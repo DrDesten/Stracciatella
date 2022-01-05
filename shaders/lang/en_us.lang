@@ -17,7 +17,14 @@ option.SUN_SIZE=Sun Size
 option.sunPathRotation=Sun Angle
 
 screen.STARS_CONFIG=Stars
-option.STAR_BRIGHTNESS=Star Brightness
+option.STAR_BRIGHTNESS=Vanilla Star Brightness
+
+option.CUSTOM_STARS=Custom Stars
+option.STAR_SIZE=Size
+option.STAR_DENSITY=Density 
+option.STAR_COVERAGE=Coverage 
+option.STAR_GLOW_SIZE=Glow Radius 
+option.STAR_GLOW_AMOUNT=Glow Amount
 
 option.SKY_CUSTOM_SUNSET=Custom Sunset Color
 screen.SKY_CUSTOM_SUNSET_CONFIG=Sunset Color Configuration
