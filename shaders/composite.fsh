@@ -35,7 +35,7 @@ uniform vec2 playerLMCSmooth;
 uniform vec3 fogColor;
 #endif
 
-/* DRAWBUFFERS:01 */
+/* DRAWBUFFERS:0 */
 void main() {
 	
 	#ifdef RAIN_EFFECTS
@@ -47,13 +47,12 @@ void main() {
 
 	if (isEyeInWater != 0) {
 		vec3  viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
+		viewPos      *= isEyeInWater == 2 ? 75 : 1;
 		float fogFac  = fogExp(viewPos, FOG_UNDERWATER_DENSITY * exp(playerLMCSmooth.y * -FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE + FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE));
 
 		color = mix(color, fogColor * (playerLMCSmooth.y * 0.6 + 0.4), fogFac);
 	}
 
-	float luma = luminance(color);
 
 	FD0 = vec4(color, 1.0);
-	FD1 = vec4(luma);
 }
