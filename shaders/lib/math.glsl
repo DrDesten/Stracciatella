@@ -15,7 +15,10 @@ bool closeTo(float a, float b, float epsilon) {
 }
 
 float fstep(float edge, float x) { // Fast step() function with no branching
-    return clamp((x - edge) * 1e35, 0, 1);
+    return clamp((x - edge) * 1e36, 0, 1);
+}
+float fstep(float edge, float x, float slope) { // Fast step() function with no branching
+    return clamp((x - edge) * slope, 0, 1);
 }
 
 float sum(vec2 v) {
@@ -235,6 +238,82 @@ float fbm(vec2 x, int n, float scale, float falloff) {
 	}
 	return v;
 }
+
+float voronoiSmooth(vec2 coord, float size, int complexity, float time) {
+    vec2 uv  = coord;
+    
+    // Calculate Grid UVs (Also center at (0,0))
+    vec2 guv = fract(uv * size) - .5;
+    vec2 gid = floor(uv * size);
+
+    float minDistance = 1e3;
+
+    // Check neighboring Grid cells
+    for (int x = -complexity; x <= complexity; x++) {
+        for (int y = -complexity; y <= complexity; y++) {
+        
+            vec2 offset = vec2(x, y);
+            
+            // Get the id of current cell (pixel cell + offset by for loop)
+            vec2 id    = gid + offset;
+            // Get the uv difference to that cell (offset has to be subtracted)
+            vec2 relUV = guv - offset;
+            
+            // Get Random Point (adjust to range (-.5, .5))
+            vec2 p     = N22(id) - .5;
+            p          = vec2(sin(time * p.x), cos(time * p.y)) * .5;
+            
+            // Calculate Distance bewtween point and relative UVs)
+            vec2 tmp   = p - relUV;
+            float d    = dot(tmp, tmp);
+            
+            // Select the smallest distance
+            
+            float h     = smoothstep( 0.0, 2.0, 0.5 + (minDistance-d) * 1.);
+            minDistance = mix( minDistance, d, h ); // distance
+            
+        }
+    }
+
+    return minDistance;
+}
+
+float voronoi(vec2 coord, int search_radius) {
+    vec2 uv  = coord;
+    
+    // Calculate Grid UVs (Also center at (0,0))
+    vec2 guv = fract(uv) - .5;
+    vec2 gid = floor(uv);
+
+    float minDistance = 1e3;
+
+    // Check neighboring Grid cells
+    for (int x = -search_radius; x <= search_radius; x++) {
+        for (int y = -search_radius; y <= search_radius; y++) {
+        
+            vec2 offset = vec2(x, y);
+            
+            // Get the id of current cell (pixel cell + offset by for loop)
+            vec2 id    = gid + offset;
+            // Get the uv difference to that cell (offset has to be subtracted)
+            vec2 relUV = guv - offset;
+            
+            // Get Random Point (adjust to range (-.5, .5))
+            vec2 p     = N22(id) - .5;
+            
+            // Calculate Distance bewtween point and relative UVs)
+            vec2 tmp   = p - relUV;
+            float d    = dot(tmp, tmp);
+            
+            // Select the smallest distance
+            minDistance = min(d, minDistance);
+            
+        }
+    }
+
+    return minDistance;
+}
+
 
 ////////////////////////////////////////////////////////////////////////
 // Matrix Transformations

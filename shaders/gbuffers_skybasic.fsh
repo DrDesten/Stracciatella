@@ -36,29 +36,57 @@ vec2 octahedralEncode(vec3 v) {
     return result;
 }
 
+float starVoronoi(vec2 coord, float maxDeviation) {
+    vec2 guv = fract(coord) - 0.5;
+    vec2 gid = floor(coord);
+	vec2 p   = (N22(gid) - 0.5) * maxDeviation; // Get Point in grid cell
+	float d  = sqmag(p-guv);                    // Get distance to that point
+    return d;
+}
+
 /* DRAWBUFFERS:0 */
 void main() {
-	#ifndef CUSTOM_SKY
-	vec4 sky = getSkyColor_fogArea(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset);
-	#else
+	#ifdef CUSTOM_SKY
 	vec4 sky = getSkyColor_fogArea(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight);
+	#else
+	vec4 sky = getSkyColor_fogArea(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset);
 	#endif
 
-	float starMask = 1 - sky.a;
-	
-	vec3 color = mix(sky.rgb, saturate(starData.rgb * STAR_BRIGHTNESS), starData.a * starMask);
+	#ifdef CUSTOM_STARS
 
-	const mat2 skyRot = mat2(cos(sunPathRotation * (PI/180.)), sin(sunPathRotation * (PI/180.)), -sin(sunPathRotation * (PI/180.)), cos(sunPathRotation * (PI/180.)));
-	vec3 skyDir       = normalize(playerPos);
-	skyDir			  = vec3(skyDir.x, skyRot * skyDir.yz);
-	skyDir            = vec3(rotationMatrix2D(normalizedTime * -TWO_PI) * skyDir.xy, skyDir.z);
-	
+		vec3 color;
 
-	color = vec3(checkerboard(octahedralEncode(skyDir) * 25));
+		if (starData.a < 0.5) {
 
-	//color = fogColor;
-	//color = skyColor;
-	//color = starData.aaa;
+			const mat2 skyRot = mat2(cos(sunPathRotation * (PI/180.)), sin(sunPathRotation * (PI/180.)), -sin(sunPathRotation * (PI/180.)), cos(sunPathRotation * (PI/180.)));
+			vec3 skyDir       = normalize(playerPos);
+			skyDir			  = vec3(skyDir.x, skyRot * skyDir.yz);
+			skyDir            = vec3(rotationMatrix2D(normalizedTime * -TWO_PI) * skyDir.xy, skyDir.z);
+			vec2 skyCoord     = octahedralEncode(skyDir);
+
+			float starNoise = starVoronoi(skyCoord * STAR_DENSITY, 0.85);
+			float stars     = fstep(starNoise, (STAR_SIZE * 1e-4 * STAR_DENSITY));
+
+			float starGlow = exp(-starNoise * star_glow_size) * STAR_GLOW_AMOUNT;
+			stars          = saturate(stars + starGlow);
+			
+			float starMask = 1 - sky.a;
+			starMask      *= fstep(noise(skyCoord * 10), STAR_COVERAGE, 2);
+
+			color = mix(sky.rgb, vec3(1), stars * starMask);
+
+		} else {
+
+			color = vec3(0);
+
+		}
+
+	#else
+
+		float starMask = 1 - sky.a;
+		vec3  color = mix(sky.rgb, saturate(starData.rgb * STAR_BRIGHTNESS) * starMask, starData.a);
+
+	#endif
 
 	FD0 = vec4(color, 1.0); //gcolor
 }
