@@ -157,6 +157,8 @@ screen.UTILITIES=Utilities
 option.BLINKING_ORES=Blinking Ores
 screen.BLINKING_ORES_CONFIG=Blinking Ores Settings
 
+option.BLINKING_ORES_BRIGHTNESS=Blink Brightness
+
 option.BLINKING_ORES_DIAMOND=Diamond
 option.BLINKING_ORES_ANCIENT_DEBRIS=Ancient Debris
 option.BLINKING_ORES_IRON=Iron
@@ -168,6 +170,12 @@ option.BLINKING_ORES_EMERALD=Emerald
 option.BLINKING_ORES_COAL=Coal
 option.BLINKING_ORES_NETHER_QUARZ=Nether Quarz
 option.BLINKING_ORES_NETHER_GOLD=Nether Gold
+
+
+option.DITHERING=Dithering
+value.DITHERING.0=None
+value.DITHERING.1=Smart
+value.DITHERING.2=Full
 
 option.CREDITS=§k###
 value.CREDITS.0=§r by §cDrDesten §r§k:###

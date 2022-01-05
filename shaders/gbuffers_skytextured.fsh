@@ -12,5 +12,8 @@ varying vec4 glcolor;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 
+    #if DITHERING >= 2
+		color.rgb += ditherColor(gl_FragCoord.xy);
+	#endif
 	FD0 = color; //gcolor
 }

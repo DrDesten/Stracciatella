@@ -161,6 +161,10 @@ float Bayer2(vec2 a) {
 #define Bayer32(a)  (Bayer16(0.5 * (a)) * 0.25 + Bayer2(a))
 #define Bayer64(a)  (Bayer32(0.5 * (a)) * 0.25 + Bayer2(a))
 
+float ditherColor(vec2 co) {
+    return Bayer4(co) * (4./256) - (2./256);
+}
+
 float checkerboard(vec2 co) {
     co = floor(co);
     return fract(co.x * 0.5 + co.y * 0.5);
