@@ -85,6 +85,7 @@ option.LIGHTMAP_SKYLIGHT_CONTRAST=Skylight Contrast
 option.LIGHTMAP_BLOCKLIGHT_CONTRAST=Blocklight Contrast
 
 option.LIGHTMAP_BLOCKLIGHT_REDUCTION=Adaptive Blocklight Reduction
+option.LIGHTMAP_BLOCKLIGHT_REDUCTION.comment=Reduces blocklight when the sky is bright to avoid clipping. If the blocklight is too bright during daytime, increase this slider.
 
 option.LIGHTMAP_SKY_DAY_R=Skylight Day §cR
 option.LIGHTMAP_SKY_DAY_G=Skylight Day §2G
@@ -93,8 +94,24 @@ option.LIGHTMAP_SKY_NIGHT_R=Skylight Night §cR
 option.LIGHTMAP_SKY_NIGHT_G=Skylight Night §2G
 option.LIGHTMAP_SKY_NIGHT_B=Skylight Night §9B
 option.LIGHTMAP_BLOCK_R=Blocklight §cR
+option.LIGHTMAP_BLOCK_R.comment=Select blocklight color (torches, glowstone, etc.). If "Complex Blocklight" is enabled, this color will §cNOT§r be used.
 option.LIGHTMAP_BLOCK_G=Blocklight §2G
+option.LIGHTMAP_BLOCK_G.comment=Select blocklight color (torches, glowstone, etc.). If "Complex Blocklight" is enabled, this color will §cNOT§r be used.
 option.LIGHTMAP_BLOCK_B=Blocklight §9B
+option.LIGHTMAP_BLOCK_B.comment=Select blocklight color (torches, glowstone, etc.). If "Complex Blocklight" is enabled, this color will §cNOT§r be used.
+
+option.LIGHTMAP_COMPLEX_BLOCKLIGHT=Complex Blocklight
+option.LIGHTMAP_COMPLEX_BLOCKLIGHT.comment=Allows you to select two colors for blocklight. One for dark parts, one for bright parts
+option.LIGHTMAP_COMPLEX_BLOCKLIGHT_BLEND_CURVE=Blend Curve
+option.LIGHTMAP_COMPLEX_BLOCKLIGHT_BLEND_CURVE.comment=Higher: Emphasize "Bright" color. Lower: Emphasize "Dark" color. 50 = linear transition
+
+option.LIGHTMAP_COMPLEX_BLOCK_BRIGHT_R=Complex Blocklight Bright §cR
+option.LIGHTMAP_COMPLEX_BLOCK_BRIGHT_G=Complex Blocklight Bright §2G
+option.LIGHTMAP_COMPLEX_BLOCK_BRIGHT_B=Complex Blocklight Bright §9B
+option.LIGHTMAP_COMPLEX_BLOCK_DARK_R=Complex Blocklight Dark §cR
+option.LIGHTMAP_COMPLEX_BLOCK_DARK_G=Complex Blocklight Dark §2G
+option.LIGHTMAP_COMPLEX_BLOCK_DARK_B=Complex Blocklight Dark §9B
+
 
 
 ///////////////////////////////////////////////////////////
