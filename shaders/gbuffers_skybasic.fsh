@@ -24,12 +24,18 @@ varying vec3 viewPos;
 /* DRAWBUFFERS:0 */
 void main() {
 	#ifndef CUSTOM_SKY
-	vec3 color = getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset);
+	vec4 sky = getSkyColor_fogArea(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset);
 	#else
-	vec3 color = getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight);
+	vec4 sky = getSkyColor_fogArea(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight);
 	#endif
 
-	color      = mix(color, starData.rgb, starData.a);
+	float starMask = 1 - sky.a;
+	
+	vec3 color = mix(sky.rgb, saturate(starData.rgb * STAR_BRIGHTNESS), starData.a * starMask);
+
+	//color = fogColor;
+	//color = skyColor;
+	//color = starData.aaa;
 
 	FD0 = vec4(color, 1.0); //gcolor
 }
