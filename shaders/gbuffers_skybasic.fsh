@@ -91,5 +91,8 @@ void main() {
 
 	#endif
 
+	#if DITHERING >= 1
+		color += ditherColor(gl_FragCoord.xy);
+	#endif
 	FD0 = vec4(color, 1.0); //gcolor
 }

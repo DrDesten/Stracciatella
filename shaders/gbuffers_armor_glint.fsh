@@ -9,10 +9,13 @@ varying vec2 lmcoord;
 varying vec2 coord;
 varying vec4 glcolor;
 
+/* DRAWBUFFERS:0 */
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 	color.rgb *= getLightmap(lmcoord);
 
-/* DRAWBUFFERS:0 */
+	#if DITHERING >= 2
+		color.rgb += ditherColor(gl_FragCoord.xy);
+	#endif
 	FD0 = color; //gcolor
 }

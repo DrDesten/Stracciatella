@@ -81,7 +81,7 @@ void main() {
 
 	#ifdef BLINKING_ORES
 	
-		color.rgb = mix(color.rgb, sqrt(color.rgb) * 0.9 + 0.1, oreBlink);
+		color.rgb = mix(color.rgb, sqrt(color.rgb) * 0.9 + 0.1, oreBlink * BLINKING_ORES_BRIGHTNESS);
 
 	#endif
 
@@ -111,7 +111,8 @@ void main() {
 
 	#endif
 
-
-
+	#if DITHERING >= 1
+		color.rgb += ditherColor(gl_FragCoord.xy);
+	#endif
 	FD0 = color; //gcolor
 }

@@ -23,5 +23,8 @@ void main() {
 	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, 1);
 	#endif
 
+    #if DITHERING >= 2
+		color.rgb += ditherColor(gl_FragCoord.xy);
+	#endif
 	FD0 = color; //gcolor
 }

@@ -78,5 +78,8 @@ void main() {
 
 	#endif
 
+    #if DITHERING >= 2
+		color.rgb += ditherColor(gl_FragCoord.xy);
+	#endif
 	FD0 = color; //gcolor
 }

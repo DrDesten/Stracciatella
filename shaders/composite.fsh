@@ -57,6 +57,8 @@ void main() {
 		color = mix(color, fogColor * (playerLMCSmooth.y * 0.6 + 0.4), fogFac);
 	}
 
-
+	#if DITHERING >= 2
+		color.rgb += ditherColor(gl_FragCoord.xy);
+	#endif
 	FD0 = vec4(color, 1.0);
 }
