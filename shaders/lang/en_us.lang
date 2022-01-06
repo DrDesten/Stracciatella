@@ -198,6 +198,10 @@ value.DITHERING.2=Full
 option.WORLD_TIME_ANIMATION=World Time Animation
 option.WORLD_TIME_ANIMATION.comment=Uses the ingame time instead of irl time for animations, such as waving leaves or water. This can be useful for animation tools like replaymod.
 
-option.CREDITS=§k###
-value.CREDITS.0=§r by §cDrDesten §r§k:###
-value.CREDITS.1=§r§a pre-alpha §r§k:###
+
+
+option.SHADER_NAME=Stracciatella Shaders
+value.SHADER_NAME.0=v0.1
+
+option.CREDITS=by
+value.CREDITS.0=§cDrDesten

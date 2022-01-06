@@ -187,6 +187,16 @@ const float lightmap_complex_blocklight_blend_curve = ( ((100 - LIGHTMAP_COMPLEX
 //#define WORLD_TIME_ANIMATION
 
 
-#define CREDITS 0 // [0 1]
+
+
+
+
+
+
+#define SHADER_NAME 0 // [0]
+#ifdef SHADER_NAME
+#endif
+
+#define CREDITS 0 // [0]
 #ifdef CREDITS
 #endif
