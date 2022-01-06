@@ -181,8 +181,11 @@ const float lightmap_complex_blocklight_blend_curve = ( ((100 - LIGHTMAP_COMPLEX
 #define BLINKING_ORES_NETHER_GOLD
 
 
-
 #define DITHERING 1 // [0 1 2]
+
+
+//#define WORLD_TIME_ANIMATION
+
 
 #define CREDITS 0 // [0 1]
 #ifdef CREDITS
