@@ -26,6 +26,14 @@ option.STAR_COVERAGE=Coverage
 option.STAR_GLOW_SIZE=Glow Radius 
 option.STAR_GLOW_AMOUNT=Glow Amount
 
+option.SHOOTING_STARS=Shooting Stars
+option.SHOOTING_STARS.comment=§cOnly§r works with "Custom Stars" enabled.
+option.SHOOTING_STARS_ANGLE=Rotation
+option.SHOOTING_STARS_DENSITY=Density
+option.SHOOTING_STARS_SPEED=Speed
+option.SHOOTING_STARS_LENGTH=Trail Length
+option.SHOOTING_STARS_THICKNESS=Trail Thickness
+
 option.SKY_CUSTOM_SUNSET=Custom Sunset Color
 screen.SKY_CUSTOM_SUNSET_CONFIG=Sunset Color Configuration
 option.SKY_SUNSET_R=Sky Sunset §cR
@@ -89,8 +97,10 @@ option.CUSTOM_LIGHTMAP=Custom Lightmap
 screen.CUSTOM_LIGHTMAP_COLOR_CONFIG=Custom Lightmap Colors
 option.LIGHTMAP_SKYLIGHT_AO=Skylight AO
 option.LIGHTMAP_BLOCKLIGHT_AO=Blocklight AO
-option.LIGHTMAP_SKYLIGHT_CONTRAST=Skylight Contrast
-option.LIGHTMAP_BLOCKLIGHT_CONTRAST=Blocklight Contrast
+option.LIGHTMAP_SKYLIGHT_CONTRAST=Skylight Gamma
+option.LIGHTMAP_SKYLIGHT_CONTRAST.comment=Higher = Darker. Lower = Brighter.
+option.LIGHTMAP_BLOCKLIGHT_CONTRAST=Blocklight Gamma
+option.LIGHTMAP_BLOCKLIGHT_CONTRAST.comment=Higher = Darker. Lower = Brighter.
 
 option.LIGHTMAP_MINIMUM_LIGHT=Minimum Light
 
