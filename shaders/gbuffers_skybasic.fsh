@@ -90,7 +90,7 @@ void main() {
 			float starNoise = starVoronoi(skyCoord * STAR_DENSITY, 0.85);
 			float stars     = fstep(starNoise, (STAR_SIZE * 1e-4 * STAR_DENSITY));
 
-			float starGlow = exp(-starNoise * star_glow_size) * STAR_GLOW_AMOUNT * customStarBlend;
+			float starGlow = exp(-starNoise * star_glow_size) * STAR_GLOW_AMOUNT * (customStarBlend * 3 - 2);
 			stars          = saturate(stars + starGlow);
 			
 			stars         *= fstep(noise(skyCoord * 10), STAR_COVERAGE, 2);
