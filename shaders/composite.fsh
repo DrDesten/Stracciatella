@@ -21,10 +21,13 @@ const bool colortex2Clear = false;
 const float wetnessHalflife = 200;
 const float drynessHalflife = 400;
 
-
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 
-uniform sampler2D colortex3; // Effects
+
+
+#ifdef RAIN_EFFECTS
+uniform sampler2D colortex3; // Rain Effects
+#endif
 
 #ifdef FOG
 #include "/lib/transform.glsl"
@@ -34,6 +37,9 @@ uniform int  isEyeInWater;
 uniform vec2 playerLMCSmooth;
 uniform vec3 fogColor;
 #endif
+
+uniform float blindness;
+uniform float nightVision;
 
 /* DRAWBUFFERS:0 */
 void main() {
@@ -54,7 +60,12 @@ void main() {
 		vec3  viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
 		float fogFac  = fogExp(viewPos, FOG_UNDERWATER_DENSITY * exp(playerLMCSmooth.y * -FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE + FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE));
 
-		color = mix(color, fogColor * (playerLMCSmooth.y * 0.6 + 0.4), fogFac);
+		color = mix(color, fogColor * (playerLMCSmooth.y * 0.6 + 0.4), saturate(nightVision * -0.1 + fogFac));
+	}
+
+	if (blindness > 1e-10) {
+		vec3 viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
+		color *= saturate(1. / (sqmag(viewPos) * blindness));
 	}
 
 	#if DITHERING >= 2

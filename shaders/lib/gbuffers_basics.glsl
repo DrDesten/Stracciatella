@@ -6,6 +6,8 @@ uniform sampler2D lightmap; // lightmap
 #define FD2 gl_FragData[2]
 #define FD3 gl_FragData[3]
 
+uniform float nightVision;
+
 vec4 getAlbedo(vec2 coord) {
     return texture2D(texture, coord);
 }
@@ -44,7 +46,7 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
         * AO
         #endif
     );
-    skyLight = max(skyLight, vec3(LIGHTMAP_MINIMUM_LIGHT * AO));
+    skyLight = max(skyLight, vec3((nightVision * 0.5 + LIGHTMAP_MINIMUM_LIGHT) * AO));
 
     vec3 blockLight = blocklightColor * (
         saturate(lmcoord.x * lmcoord.x * 1.1)                            // Blocklight
