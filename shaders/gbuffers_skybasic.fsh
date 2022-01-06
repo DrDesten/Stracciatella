@@ -27,7 +27,9 @@ uniform float normalizedTime;
 uniform float customStarBlend;
 #endif
 
+#ifdef SHOOTING_STARS
 uniform float frameTimeCounter;
+#endif
 
 vec2 signNotZero(vec2 v) {
     return vec2((v.x >= 0.0) ? +1.0 : -1.0, (v.y >= 0.0) ? +1.0 : -1.0);
@@ -71,11 +73,14 @@ void main() {
 
 	#ifdef CUSTOM_STARS
 
-		vec3 color;
+		vec3 color = sky.rgb;
 
-		if (starData.a < 0.5) {
+		if (starData.a < 0.5 && customStarBlend > 1e-6 && playerPos.y > 0) {
 
 			vec3 playerDir = normalize(playerPos);
+
+			// STARS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 			const mat2 skyRot = mat2(cos(sunPathRotation * (PI/180.)), sin(sunPathRotation * (PI/180.)), -sin(sunPathRotation * (PI/180.)), cos(sunPathRotation * (PI/180.)));
 			vec3 skyDir       = vec3(playerDir.x, skyRot * playerDir.yz);
@@ -90,28 +95,35 @@ void main() {
 			
 			stars         *= fstep(noise(skyCoord * 10), STAR_COVERAGE, 2);
 
+			float starMask = 1 - sky.a;
+			stars         *= starMask;
 
-			vec2 shootingStarCoord = normalize(playerPos * vec3(1,3,1)).xz * 2;
 
-			vec2  lineDir      = rotation(0.57 * TWO_PI);
-			shootingStarCoord += lineDir * -frameTimeCounter * 2;
-			vec2  gridID       = floor(shootingStarCoord);
-			vec2  gridUV       = fract(shootingStarCoord) - 0.5;
+			#ifdef SHOOTING_STARS
+			// SHOOTING STARS ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				vec2 shootingStarCoord = normalize(playerPos * vec3(1,2,1)).xz * shooting_stars_length;
+
+				const vec2 lineDir = vec2(sin(SHOOTING_STARS_ANGLE * TWO_PI), cos(SHOOTING_STARS_ANGLE * TWO_PI));
+				shootingStarCoord -= frameTimeCounter * vec2(lineDir * 2 * SHOOTING_STARS_SPEED);
+				vec2  gridID       = floor(shootingStarCoord);
+				vec2  gridUV       = fract(shootingStarCoord) - 0.5;
+				
+				float shootingStars = shootingStar(gridUV, lineDir, (9e-8 * shooting_stars_thickness), (5e5 / shooting_stars_thickness));
+				shootingStars      *= fstep(shooting_stars_density, rand(gridID));
+
+				float shootingStarMask = saturate(playerDir.y * 2 - 0.3);
+				shootingStars         *= shootingStarMask;
+
+				stars = saturate(stars + shootingStars);
+
+			#endif
+
+
+			color = mix(color, vec3(1), stars * customStarBlend);
 			
-			float shootingStars = shootingStar(gridUV, lineDir, 1e-5, 1e6);
-			shootingStars      *= fstep(0.98, rand(gridID));
 
-
-			float starMask         = 1 - sky.a;
-			float shootingStarMask = saturate(playerDir.y * 2 - 0.3);
-
-			stars = saturate(stars * starMask + shootingStars * shootingStarMask);
-
-			color = mix(sky.rgb, vec3(1), stars * customStarBlend);
-			
-			//color = vec3(shootingStarMask);
-
-		} else {
+		} else if (starData.a >= 0.5) {
 
 			color = vec3(0);
 
