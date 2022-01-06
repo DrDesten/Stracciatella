@@ -27,6 +27,8 @@ uniform float normalizedTime;
 uniform float customStarBlend;
 #endif
 
+uniform float frameTimeCounter;
+
 vec2 signNotZero(vec2 v) {
     return vec2((v.x >= 0.0) ? +1.0 : -1.0, (v.y >= 0.0) ? +1.0 : -1.0);
 }
@@ -47,6 +49,18 @@ float starVoronoi(vec2 coord, float maxDeviation) {
     return d;
 }
 
+float shootingStar(vec2 coord, vec2 dir, float thickness, float slope) {
+	dir    *= 0.9;
+	vec2 pa = coord + (dir * 0.5);
+    float t = saturate(dot(pa, dir) * ( 1. / dot(dir,dir) ) );
+    float d = sqmag(dir * -t + pa);
+    return saturate((thickness - d) * slope + 1) * t;
+}
+
+vec2 rotation(float angle) {
+	return vec2(sin(angle), cos(angle));
+}
+
 /* DRAWBUFFERS:0 */
 void main() {
 	#ifdef CUSTOM_SKY
@@ -61,9 +75,10 @@ void main() {
 
 		if (starData.a < 0.5) {
 
+			vec3 playerDir = normalize(playerPos);
+
 			const mat2 skyRot = mat2(cos(sunPathRotation * (PI/180.)), sin(sunPathRotation * (PI/180.)), -sin(sunPathRotation * (PI/180.)), cos(sunPathRotation * (PI/180.)));
-			vec3 skyDir       = normalize(playerPos);
-			skyDir			  = vec3(skyDir.x, skyRot * skyDir.yz);
+			vec3 skyDir       = vec3(playerDir.x, skyRot * playerDir.yz);
 			skyDir            = vec3(rotationMatrix2D(normalizedTime * -TWO_PI) * skyDir.xy, skyDir.z);
 			vec2 skyCoord     = octahedralEncode(skyDir);
 
@@ -73,10 +88,28 @@ void main() {
 			float starGlow = exp(-starNoise * star_glow_size) * STAR_GLOW_AMOUNT * customStarBlend;
 			stars          = saturate(stars + starGlow);
 			
-			float starMask = 1 - sky.a;
-			starMask      *= fstep(noise(skyCoord * 10), STAR_COVERAGE, 2);
+			stars         *= fstep(noise(skyCoord * 10), STAR_COVERAGE, 2);
 
-			color = mix(sky.rgb, vec3(1), stars * starMask * customStarBlend);
+
+			vec2 shootingStarCoord = normalize(playerPos * vec3(1,3,1)).xz * 2;
+
+			vec2  lineDir      = rotation(0.57 * TWO_PI);
+			shootingStarCoord += lineDir * -frameTimeCounter * 2;
+			vec2  gridID       = floor(shootingStarCoord);
+			vec2  gridUV       = fract(shootingStarCoord) - 0.5;
+			
+			float shootingStars = shootingStar(gridUV, lineDir, 1e-5, 1e6);
+			shootingStars      *= fstep(0.98, rand(gridID));
+
+
+			float starMask         = 1 - sky.a;
+			float shootingStarMask = saturate(playerDir.y * 2 - 0.3);
+
+			stars = saturate(stars * starMask + shootingStars * shootingStarMask);
+
+			color = mix(sky.rgb, vec3(1), stars * customStarBlend);
+			
+			//color = vec3(shootingStarMask);
 
 		} else {
 
@@ -90,6 +123,7 @@ void main() {
 		vec3  color = mix(sky.rgb, saturate(starData.rgb * STAR_BRIGHTNESS) * starMask, starData.a);
 
 	#endif
+
 
 	#if DITHERING >= 1
 		color += ditherColor(gl_FragCoord.xy);

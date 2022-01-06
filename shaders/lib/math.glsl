@@ -176,12 +176,6 @@ float rand(float x) {
 float rand(vec2 x) {
     return fract(sin(x.x * 12.9898 + x.y * 78.233) * 4375.5453);
 }
-float rand11(float x) {
-    return rand(x) * 2 - 1;
-}
-float rand11(vec2 x) {
-    return rand(x) * 2 - 1;
-}
 
 vec2 N22(vec2 x) {
     return vec2(rand(x - 5), rand(x + 5));
@@ -448,6 +442,33 @@ vec3 gamma_inv(vec3 color) {
 
 /////////////////////////////////////////////////////////////////////////////////
 //                              OTHER FUNCTIONS
+
+float lineDist2P(vec2 coord, vec2 start, vec2 end) {
+    vec2 pa = coord - start;
+    vec2 ba = end - start;
+    float t = clamp(dot(pa, ba) / dot(ba, ba), 0, 1);
+    return sqmag(ba * -t + pa);
+}
+float line2P(vec2 coord, vec2 start, vec2 end, float thickness) {
+    return fstep(lineDist2P(coord, start, end), thickness * thickness);
+}
+float line2P(vec2 coord, vec2 start, vec2 end, float thickness, float slope) {
+    thickness = thickness * thickness;
+    return saturate((thickness - lineDist2P(coord, start, end)) * slope + 1);
+}
+
+float lineDist1P1V(vec2 coord, vec2 start, vec2 dir) {
+    vec2 pa = coord - start;
+    float t = dot(pa, dir) / dot(dir, dir);
+    return sqmag(dir * -t + pa);
+}
+float line1P1V(vec2 coord, vec2 start, vec2 dir, float thickness) {
+    return fstep(lineDist1P1V(coord, start, dir), thickness * thickness);
+}
+float line1P1V(vec2 coord, vec2 start, vec2 dir, float thickness, float slope) {
+    thickness = thickness * thickness;
+    return saturate((thickness - lineDist1P1V(coord, start, dir)) * slope + 1);
+}
 
 float map(float value, float min1, float max1, float min2, float max2) {
   return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
