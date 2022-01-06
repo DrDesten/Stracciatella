@@ -43,7 +43,7 @@ varying vec3 viewPos;
 /* DRAWBUFFERS:0 */
 void main() {
 	vec4 color = getAlbedo(coord);
-	color.rgb *= glcolor.rgb * glcolor.a;
+	color.rgb *= glcolor.rgb;
 	
 	#ifndef CUSTOM_LIGHTMAP
 	color.rgb *= getLightmap(lmcoord);

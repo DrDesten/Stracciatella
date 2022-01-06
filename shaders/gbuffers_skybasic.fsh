@@ -65,10 +65,11 @@ vec2 rotation(float angle) {
 
 /* DRAWBUFFERS:0 */
 void main() {
+	vec3 viewDir = normalize(viewPos);
 	#ifdef CUSTOM_SKY
-	vec4 sky = getSkyColor_fogArea(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight);
+	vec4 sky = getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight);
 	#else
-	vec4 sky = getSkyColor_fogArea(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset);
+	vec4 sky = getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset);
 	#endif
 
 	#ifdef CUSTOM_STARS
@@ -97,8 +98,7 @@ void main() {
 
 			float starMask = 1 - sky.a;
 			stars         *= starMask;
-
-
+			
 			#ifdef SHOOTING_STARS
 			// SHOOTING STARS ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -119,9 +119,10 @@ void main() {
 
 			#endif
 
+			// mix: <color> with <starcolor>, depending on <is there a star?> and <is it night?> and <is it blocked by sun or moon?>
+			color = mix(color, vec3(1), stars * customStarBlend * saturate(abs(dot(viewDir, sunDir)) * -200 + 199.5));
 
-			color = mix(color, vec3(1), stars * customStarBlend);
-			
+			//color = vec3(saturate(abs(dot(viewDir, sunDir)) * -200 + 199.5));
 
 		} else if (starData.a >= 0.5) {
 
