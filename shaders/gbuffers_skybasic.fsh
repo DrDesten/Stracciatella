@@ -42,6 +42,44 @@ vec2 octahedralEncode(vec3 v) {
     }
     return result;
 }
+vec3 octahedralDecode(vec2 o) {
+    vec3 v = vec3(o.x, o.y, 1.0 - abs(o.x) - abs(o.y));
+    if (v.z < 0.0) {
+        v.xy = (1.0 - abs(v.yx)) * signNotZero(v.xy);
+    }
+    return normalize(v);
+}
+
+
+
+vec2 cubemapCoords(vec3 direction) {
+    float l  = max(max(abs(direction.x), abs(direction.y)), abs(direction.z));
+    vec3 dir = direction / l;
+    vec3 absDir = abs(dir);
+    
+    vec2 coord;
+    if (absDir.x >= absDir.y && absDir.x > absDir.z) {
+        if (dir.x > 0) {
+            coord = vec2(0, 0.5) + (dir.zy * vec2(1, -1) + 1);
+        } else {
+            coord = vec2(2.0 / 3, 0.5) + (-dir.zy + 1);
+        }
+    } else if (absDir.y >= absDir.z) {
+        if (dir.y > 0) {
+            coord = vec2(1.0 / 3, 0) + (dir.xz * vec2(-1, 1) + 1);
+        } else {
+            coord = vec2(0, 0) + (-dir.xz + 1);
+        }
+    } else {
+        if (dir.z > 0) {
+            coord = vec2(1.0 / 3, 0.5) + (-dir.xy + 1);
+        } else {
+            coord = vec2(2.0 / 3, 0) + (dir.xy * vec2(1, -1) + 1);
+        }
+    }
+    return coord;
+}
+
 
 float starVoronoi(vec2 coord, float maxDeviation) {
     vec2 guv = fract(coord) - 0.5;
@@ -49,6 +87,12 @@ float starVoronoi(vec2 coord, float maxDeviation) {
 	vec2 p   = (N22(gid) - 0.5) * maxDeviation; // Get Point in grid cell
 	float d  = sqmag(p-guv);                    // Get distance to that point
     return d;
+}
+vec2 starVoronoi_getCoord(vec2 coord, float maxDeviation) {
+    vec2 guv = fract(coord) - 0.5;
+    vec2 gid = floor(coord);
+	vec2 p   = (N22(gid) - 0.5) * maxDeviation; // Get Point in grid cell
+    return p;
 }
 
 float shootingStar(vec2 coord, vec2 dir, float thickness, float slope) {
@@ -85,7 +129,7 @@ void main() {
 			const mat2 skyRot = mat2(cos(sunPathRotation * (PI/180.)), sin(sunPathRotation * (PI/180.)), -sin(sunPathRotation * (PI/180.)), cos(sunPathRotation * (PI/180.)));
 			vec3 skyDir       = vec3(playerDir.x, skyRot * playerDir.yz);
 			skyDir            = vec3(rotationMatrix2D(normalizedTime * -TWO_PI) * skyDir.xy, skyDir.z);
-			vec2 skyCoord     = octahedralEncode(skyDir);
+			vec2 skyCoord     = cubemapCoords(skyDir) * 0.35;
 
 			float starNoise = starVoronoi(skyCoord * STAR_DENSITY, 0.85);
 			float stars     = fstep(starNoise, (STAR_SIZE * 1e-4 * STAR_DENSITY));
