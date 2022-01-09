@@ -43,6 +43,8 @@ vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3
 	    fogColor = mix(fogColor, vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B), (sunDot * 10 / (0.45 + sunDot * 9)) * sunset); // Make fog Color change for sunsets
     #endif
 
+
+    //return vec4(vec3(sunset), fogArea);
 	return vec4(mix(skyColor, fogColor, fogArea), fogArea);
 }
 
