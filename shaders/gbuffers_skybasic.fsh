@@ -137,6 +137,7 @@ void main() {
 
 	#endif
 
+	//color = vec3(pow( cos( normalizedTime * PI * 4 ) * 0.5 + 0.5, 1 ));
 
 	#if DITHERING >= 1
 		color += ditherColor(gl_FragCoord.xy);
