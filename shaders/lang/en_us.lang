@@ -16,6 +16,11 @@ option.SUN_SIZE_CHANGE=Manipulate Sun Size
 option.SUN_SIZE=Sun Size
 option.sunPathRotation=Sun Angle
 
+option.HORIZON_CLIP=Hide under Horizon
+option.HORIZON_CLIP_HEIGHT=Transition Height
+option.HORIZON_CLIP_TRANSITION=Transition
+option.HORIZON_CLIP_TRANSITION.comment=Lower: Smoother transition. Higher: Shorter transition.
+
 screen.STARS_CONFIG=Stars
 option.STAR_BRIGHTNESS=Vanilla Star Brightness
 
