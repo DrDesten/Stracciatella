@@ -14,6 +14,10 @@ uniform vec3 moonPosition;
 varying vec2 coord;
 varying vec4 glcolor;
 
+#ifdef HORIZON_CLIP
+varying vec3 viewPos;
+#endif
+
 bool sunOrMoon(vec3 sunPosition, vec3 moonPosition) { // True = Sun, False = Moon
 	return sunPosition.z < moonPosition.z;
 }
@@ -35,6 +39,10 @@ void main() {
 		gl_Position     = viewToClip(vec4(viewPos, 1));
 	#endif
 
-	coord       = getCoord();
-	glcolor     = gl_Color;
+	coord   = getCoord();
+	glcolor = gl_Color;
+
+	#ifdef HORIZON_CLIP
+	viewPos = getView();
+	#endif
 }
