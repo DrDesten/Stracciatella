@@ -15,13 +15,13 @@ const mat4 VIEW_SCALE = mat4(
     0.0, 0.0, 0.0, 1.0
 );
 
-const float LineWidth = 5.0;
+const float LineWidth = LINE_THICKNESS;
 
 varying vec4 glcolor;
 
 void main() {
-    vec4 linePosStart = gl_ProjectionMatrix * VIEW_SCALE * gl_ModelViewMatrix * vec4(gl_Vertex, 1.0);
-    vec4 linePosEnd = gl_ProjectionMatrix * VIEW_SCALE * gl_ModelViewMatrix * vec4(gl_Vertex + gl_Normal, 1.0);
+    vec4 linePosStart = gl_ProjectionMatrix * VIEW_SCALE * gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1.0);
+    vec4 linePosEnd = gl_ProjectionMatrix * VIEW_SCALE * gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal, 1.0);
 
     vec3 ndc1 = linePosStart.xyz / linePosStart.w;
     vec3 ndc2 = linePosEnd.xyz / linePosEnd.w;
@@ -40,4 +40,7 @@ void main() {
     }
 
     glcolor = gl_Color;
+    #ifdef BLOCK_OUTLINE_SOLID
+    glcolor.a = 1;
+    #endif
 }
