@@ -91,7 +91,7 @@ void main() {
 
 		#if FOG_QUALITY == 1
 
-			float cave        = saturate(lmcoord.y * 4 - 0.25);
+			float cave        = 1;//saturate(lmcoord.y * 4 - 0.25);
 			
 			#ifndef CUSTOM_SKY
 				color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, isEyeInWater), cave), fog);
