@@ -126,5 +126,5 @@ void main() {
 
 	#endif
 
-	FD0 = vec4(color, 1.0); //gcolor
+	gl_FragData[0] = vec4(color, 1.0); //gcolor
 }
