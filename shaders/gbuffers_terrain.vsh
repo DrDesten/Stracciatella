@@ -137,7 +137,7 @@ void main() {
 		#ifdef WAVING_LANTERNS
 
 		// Waving Lanterns
-		if (mc_Entity.x == 1034) {
+		else if (mc_Entity.x == 1034) {
 
 			vec3 worldPos = getWorld();
 			vec3 offset   = wavyChaotic(worldPos, (WAVING_BLOCKS_AMOUNT * 0.3), WAVING_BLOCKS_SPEED);
@@ -151,7 +151,7 @@ void main() {
 		#endif
 
 		// Waving Blocks All Vertices
-		if (mc_Entity.x == 1032     // Upper section of 2-Tall plants
+		else if (mc_Entity.x == 1032     // Upper section of 2-Tall plants
 		#ifdef WAVING_LEAVES
 			|| mc_Entity.x == 1033  // Leaves
 		#endif
@@ -165,6 +165,21 @@ void main() {
 			gl_Position   = worldToClip(worldPos);
 
 		}
+
+		#ifdef WAVING_LILYPAD
+
+		else if (mc_Entity.x == 1035) {
+
+			vec3  worldPos  = getWorld();
+
+			float offset  = wavySineY(worldPos, WAVING_LIQUIDS_AMOUNT, WAVING_LIQUIDS_SPEED * 2).y;
+			worldPos.y   += offset;
+
+			gl_Position   = worldToClip(worldPos);
+
+		}
+		
+		#endif
 
 	#endif
 	

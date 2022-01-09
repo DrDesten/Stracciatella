@@ -11,7 +11,7 @@ varying vec3 viewPos;
 
 void main() {
 	gl_Position = ftransform();
-	coord   = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+	coord   = getCoord();
 	glcolor = gl_Color;
 	viewPos = getView();
 }
