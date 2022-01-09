@@ -12,5 +12,5 @@ void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 
 /* DRAWBUFFERS:0 */
-	FD0 = color; //gcolor
+	gl_FragData[0] = color; //gcolor
 }

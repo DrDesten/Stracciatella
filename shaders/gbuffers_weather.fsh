@@ -40,8 +40,8 @@ void main() {
     #if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
-	FD0 = color; //gcolor
+	gl_FragData[0] = color; //gcolor
 	#ifdef RAIN_EFFECTS
-	FD1 = vec4(rain, 0, 0, 0.25);
+	gl_FragData[1] = vec4(rain, 0, 0, 0.25);
 	#endif
 }

@@ -69,5 +69,5 @@ void main() {
 	#if DITHERING >= 1
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
-	FD0 = color; //gcolor
+	gl_FragData[0] = color; //gcolor
 }

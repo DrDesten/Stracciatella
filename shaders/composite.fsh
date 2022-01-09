@@ -29,14 +29,12 @@ vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 uniform sampler2D colortex3; // Rain Effects
 #endif
 
-#ifdef FOG
 #include "/lib/transform.glsl"
 #include "/lib/fog_sky.glsl"
 
 uniform int  isEyeInWater;
 uniform vec2 playerLMCSmooth;
 uniform vec3 fogColor;
-#endif
 
 uniform float blindness;
 uniform float nightVision;
@@ -71,5 +69,5 @@ void main() {
 	#if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
-	FD0 = vec4(color, 1.0);
+	gl_FragData[0] = vec4(color, 1.0);
 }
