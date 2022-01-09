@@ -86,11 +86,12 @@ option.WAVING_BLOCKS_AMOUNT=Waving Blocks Amount
 option.WAVING_BLOCKS_SPEED=Waving Blocks Speed
 option.WAVING_LEAVES=Waving Leaves
 option.WAVING_LANTERNS=Waving Lanterns
+option.WAVING_LILYPADS=Waving Lilypads
+option.WAVING_LILYPADS.comment=Controlled by "Waving Liquids Amount" and "Waving Liquids Speed".
 
 option.WAVING_LIQUIDS=Waving Liquids
 option.WAVING_LIQUIDS_AMOUNT=Waving Liquids Amount
 option.WAVING_LIQUIDS_SPEED=Waving Liquids Speed
-
 
 ///////////////////////////////////////////////////////////
 // LIGHTING
@@ -203,6 +204,10 @@ value.DITHERING.2=Full
 option.WORLD_TIME_ANIMATION=World Time Animation
 option.WORLD_TIME_ANIMATION.comment=Uses the ingame time instead of irl time for animations, such as waving leaves or water. This can be useful for animation tools like replaymod.
 
+option.BLOCK_OUTLINE_SOLID=Solid Block Outline
+option.LINE_THICKNESS.comment=Makes the block outline no longer transparent.
+option.LINE_THICKNESS=Line Thickness
+option.LINE_THICKNESS.comment=Applies to all non-UI lines, for example hit boxes.
 
 
 option.SHADER_NAME=Stracciatella Shaders

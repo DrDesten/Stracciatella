@@ -166,7 +166,7 @@ void main() {
 
 		}
 
-		#ifdef WAVING_LILYPAD
+		#ifdef WAVING_LILYPADS
 
 		else if (mc_Entity.x == 1035) {
 
