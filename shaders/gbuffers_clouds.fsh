@@ -38,13 +38,13 @@ varying vec3 viewPos;
 /* DRAWBUFFERS:0 */
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
-	color.a    = fstep(0.1, color.a);
+	color.a    = fstep(0.1, color.a); // Make clouds solid
 
 	color.rgb  = mix(color.rgb, vec3(luminance(color.rgb)) * vec3(0.58,0.6,0.7), rainStrength);
 
 	#ifdef FOG
 
-		float fog = fogFactor(viewPos * (1/1.414), far, gbufferModelViewInverse);
+		float fog = fogFactor(viewPos, min(far * 2, 350), gbufferModelViewInverse);
 
 		#if FOG_QUALITY == 1
 

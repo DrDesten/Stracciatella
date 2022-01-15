@@ -10,8 +10,12 @@ varying vec4 glcolor;
 
 /* DRAWBUFFERS:0 */
 void main() {
-	vec4 color = vec4(glcolor.rgb, fstep(0.1, glcolor.a));
+	vec4 color = glcolor;
 	color.rgb *= getLightmap(lmcoord);
+
+	#ifdef BLOCK_OUTLINE_SOLID
+    color.a = fstep(0.1, color.a);
+    #endif
 
     #if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);
