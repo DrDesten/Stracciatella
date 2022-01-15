@@ -1,4 +1,4 @@
-#version 130
+#version 120
 
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
