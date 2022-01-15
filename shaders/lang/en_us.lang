@@ -8,6 +8,7 @@ option.FOG=Fog
 option.FOG_QUALITY=Fog Quality
 value.FOG_QUALITY.0=Fast
 value.FOG_QUALITY.1=Fancy
+option.FOG_QUALITY.comment=Fast: Looks broken like the vanilla fog. Fancy: Does not look broken.
 option.FOG_START=Fog Start
 option.FOG_END=Fog End
 
@@ -15,11 +16,13 @@ screen.SUN_MOON_CONFIG=Sun and Moon
 option.SUN_SIZE_CHANGE=Manipulate Sun Size
 option.SUN_SIZE=Sun Size
 option.sunPathRotation=Sun Angle
+option.sunPathRotation.comment=Tilts the rotation axis of sun and moon. Vanilla is 0.
 
 option.HORIZON_CLIP=Hide under Horizon
 option.HORIZON_CLIP_HEIGHT=Transition Height
+option.HORIZON_CLIP_HEIGHT.comment=Lower: sun and moon appear lower. Higher: Sun and Moon appear higher.
 option.HORIZON_CLIP_TRANSITION=Transition
-option.HORIZON_CLIP_TRANSITION.comment=Lower: Smoother transition. Higher: Shorter transition.
+option.HORIZON_CLIP_TRANSITION.comment=Lower: Longer transition. Higher: Shorter transition.
 
 screen.STARS_CONFIG=Stars
 option.STAR_BRIGHTNESS=Vanilla Star Brightness
@@ -102,13 +105,16 @@ screen.LIGHTING=Custom Lighting
 option.CUSTOM_LIGHTMAP=Custom Lightmap
 screen.CUSTOM_LIGHTMAP_COLOR_CONFIG=Custom Lightmap Colors
 option.LIGHTMAP_SKYLIGHT_AO=Skylight AO
+option.LIGHTMAP_SKYLIGHT_AO.comment=Specifies the amount of ambient occlusion on skylight.
 option.LIGHTMAP_BLOCKLIGHT_AO=Blocklight AO
+option.LIGHTMAP_BLOCKLIGHT_AO.comment=Specifies the amount of ambient occlusion on blocklight.
 option.LIGHTMAP_SKYLIGHT_CONTRAST=Skylight Gamma
 option.LIGHTMAP_SKYLIGHT_CONTRAST.comment=Higher = Darker. Lower = Brighter.
 option.LIGHTMAP_BLOCKLIGHT_CONTRAST=Blocklight Gamma
 option.LIGHTMAP_BLOCKLIGHT_CONTRAST.comment=Higher = Darker. Lower = Brighter.
 
 option.LIGHTMAP_MINIMUM_LIGHT=Minimum Light
+option.LIGHTMAP_MINIMUM_LIGHT.comment=Restricts blocklight to never go below this value. Prevents caves from being pitch black (unless you set it to zero that is)
 
 option.LIGHTMAP_BLOCKLIGHT_REDUCTION=Adaptive Blocklight Reduction
 option.LIGHTMAP_BLOCKLIGHT_REDUCTION.comment=Reduces blocklight when the sky is bright to avoid clipping. If the blocklight is too bright during daytime, increase this slider.
@@ -161,6 +167,7 @@ option.RAIN_PUDDLES_DEPTH=Rain Puddle Opacity
 screen.WATER=Water
 option.FOG_UNDERWATER_DENSITY=Underwater Fog Density 
 option.FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE=Depth Influence
+option.FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE.comment=Higher: Depth will have a strong influence on fog density. Lower: Depth will have a weak influence on fog density. Zero:  Depth will have no influence on fog density.
 
 
 
@@ -200,14 +207,15 @@ option.DITHERING=Dithering
 value.DITHERING.0=None
 value.DITHERING.1=Smart
 value.DITHERING.2=Full
+option.DITHERING.comment=Removes Banding. Smart: Enables dithering in select programs. Full: Enables dithering in all programs.
 
 option.WORLD_TIME_ANIMATION=World Time Animation
-option.WORLD_TIME_ANIMATION.comment=Uses the ingame time instead of irl time for animations, such as waving leaves or water. This can be useful for animation tools like replaymod.
+option.WORLD_TIME_ANIMATION.comment=Uses the ingame time instead of irl time for animations, such as waving leaves or water. This can be useful for animation tools like replaymod, enable this when waving things seem jittery.
 
 option.BLOCK_OUTLINE_SOLID=Solid Block Outline
 option.LINE_THICKNESS.comment=Makes the block outline no longer transparent.
 option.LINE_THICKNESS=Line Thickness
-option.LINE_THICKNESS.comment=Applies to all non-UI lines, for example hit boxes.
+option.LINE_THICKNESS.comment=Applies to all non-UI lines, for example hit boxes. §c§n/!\§r Only works from versions 1.17 and onwards
 
 
 option.SHADER_NAME=Stracciatella Shaders
