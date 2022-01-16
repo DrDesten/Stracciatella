@@ -152,7 +152,6 @@ float smootherstep(float edge0, float edge1, float x) {
 // Randomization and Dither Patterns
 
 float Bayer2(vec2 a) {
-    a = floor(a);
     return fract(a.x * .5 + a.y * a.y * .75);
 }
 #define Bayer4(a)   (Bayer2 (0.5 * (a)) * 0.25 + Bayer2(a))
