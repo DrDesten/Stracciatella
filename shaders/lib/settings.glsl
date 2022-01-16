@@ -194,7 +194,7 @@ const float lightmap_complex_blocklight_blend_curve = ( ((100 - LIGHTMAP_COMPLEX
 #define BLOCK_OUTLINE_SOLID
 #define LINE_THICKNESS 3 // [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15]
 
-
+//#define VIGNETTE
 
 
 

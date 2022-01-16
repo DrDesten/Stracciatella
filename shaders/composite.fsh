@@ -66,6 +66,10 @@ void main() {
 		color *= saturate(1. / (sqmag(viewPos) * blindness));
 	}
 
+	#ifdef VIGNETTE
+		color *= saturate(exp(-sq(sqmag(coord * 1.5 - 0.75))));
+	#endif
+
 	#if DITHERING >= 2
 		color.rgb -= ditherColor(gl_FragCoord.xy);
 	#endif

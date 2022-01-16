@@ -161,8 +161,13 @@ float Bayer2(vec2 a) {
 #define Bayer32(a)  (Bayer16(0.5 * (a)) * 0.25 + Bayer2(a))
 #define Bayer64(a)  (Bayer32(0.5 * (a)) * 0.25 + Bayer2(a))
 
+float ign(vec2 co) { // Interlieved Gradient Noise, very noice noise ( ͡° ͜ʖ ͡°)
+    vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
+    return fract( magic.z * fract( dot(co, magic.xy) ) );
+}
+
 float ditherColor(vec2 co) {
-    return Bayer4(co) * (4./256) - (2./256);
+    return ign(co) * (4./256) - (2./256);
 }
 
 float checkerboard(vec2 co) {
@@ -174,7 +179,7 @@ float rand(float x) {
     return fract(sin(x * 12.9898) * 4375.5453123);
 }
 float rand(vec2 x) {
-    return fract(sin(x.x * 12.9898 + x.y * 78.233) * 4375.5453);
+    return fract(sin(dot(x, vec2(12.9898,78.233))) * 4375.5453);
 }
 
 vec2 N22(vec2 x) {

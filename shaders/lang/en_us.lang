@@ -217,6 +217,9 @@ option.LINE_THICKNESS.comment=Makes the block outline no longer transparent.
 option.LINE_THICKNESS=Line Thickness
 option.LINE_THICKNESS.comment=Applies to all non-UI lines, for example hit boxes. §c§n/!\§r Only works from versions 1.17 and onwards
 
+option.VIGNETTE=Vignette
+option.VIGNETTE.comment=Darkens screen borders.
+
 
 option.SHADER_NAME=Stracciatella Shaders
 value.SHADER_NAME.0=alpha 1.0
