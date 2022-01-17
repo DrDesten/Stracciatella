@@ -222,7 +222,7 @@ option.VIGNETTE.comment=Darkens screen borders.
 
 
 option.SHADER_NAME=Stracciatella Shaders
-value.SHADER_NAME.0=alpha 1.0
+value.SHADER_NAME.0=v1.0
 
 option.CREDITS=by
-value.CREDITS.0=§cDrDesten
+value.CREDITS.0=DrDesten
