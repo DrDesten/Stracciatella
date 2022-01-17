@@ -10,6 +10,7 @@ It is highly configurable and lets you craft your own personal vanilla experienc
 ## Full Feature List
 
 - Improved Fog
+  - Fog Start and Fog End controls
 - Customizeable Fog Color
 - Configurable Sun and Moon size
 - Configurable Sun Angle
