@@ -29,20 +29,30 @@ bool sunOrMoonAccurate(vec3 viewPos, vec3 sunPosition, vec3 moonPosition) { // T
 
 void main() {
 	#ifndef SUN_SIZE_CHANGE
+	
 		gl_Position = ftransform();
+		
+		#ifdef HORIZON_CLIP
+		viewPos = getView();
+		#endif
+
 	#else
-		vec3 viewPos    = getView();
+
+		#ifdef HORIZON_CLIP
+			viewPos = getView();
+		#else
+			vec3 viewPos = getView();
+		#endif
+
 		bool isSun      = sunOrMoonAccurate(viewPos, sunPosition, moonPosition);
 
 		vec3 sunToVert  = viewPos.xyz - (isSun ? sunPosition : moonPosition);
 		viewPos.xyz    += (sunToVert - gbufferModelView[3].xyz) * (SUN_SIZE - 1);
 		gl_Position     = viewToClip(vec4(viewPos, 1));
+
 	#endif
 
 	coord   = getCoord();
 	glcolor = gl_Color;
 
-	#ifdef HORIZON_CLIP
-	viewPos = getView();
-	#endif
 }
