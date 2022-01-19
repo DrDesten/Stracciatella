@@ -405,7 +405,7 @@ mat3 arbitraryTBN(vec3 normal) {
 ////////////////////////////////////////////////////////////////////////
 // Color-Specific functions
 
-vec3 saturation(vec3 col, float saturation) {
+/* vec3 saturation(vec3 col, float saturation) {
     float brightness = dot(col, vec3(0.299, 0.587, 0.112));
     return mix(vec3(brightness), col, saturation);
 }
@@ -414,7 +414,7 @@ vec3 contrast(vec3 col, float contrast) {
     vec3 lower = (contrast * col) * (col * col);
     vec3 upper = 1 - contrast * sq(col - 1);
     return mix(lower, upper, col);
-}
+} */
 
 float luminance(vec3 color) {
     return dot(color, vec3(0.2126, 0.7152, 0.0722));
