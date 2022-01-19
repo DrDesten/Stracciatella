@@ -39,6 +39,22 @@ uniform vec3 fogColor;
 uniform float blindness;
 uniform float nightVision;
 
+vec3 applyContrast(vec3 color, float contrast) {
+	color = color * 0.99 + 0.005;
+	vec3 colorHigh = 1 - 0.5 * pow(-2 * color + 2, vec3(contrast));
+	vec3 colorLow  =     0.5 * pow( 2 * color,     vec3(contrast));
+	return mix(colorLow, colorHigh, color);
+}
+vec3 applySaturation(vec3 color, float saturation) {;
+    return mix(vec3(luminance(color)), color, saturation);
+}
+vec3 applyVibrance(vec3 color, float vibrance) {
+	float luminance  = luminance(color);
+	float saturation = distance(vec3(luminance), color);
+	return applySaturation(color, (1 - saturation) * vibrance + 1);
+}
+
+
 /* DRAWBUFFERS:0 */
 void main() {
 	
@@ -67,7 +83,20 @@ void main() {
 	}
 
 	#ifdef VIGNETTE
-		color *= saturate(exp(-sq(sqmag(coord * 1.5 - 0.75))));
+		color *= saturate(exp(-sq(sqmag(coord * 1.5 - 0.75)))) * VIGNETTE_STRENGTH + (1 - VIGNETTE_STRENGTH);
+	#endif
+
+	#if CONTRAST != 50
+		const float contrastAmount = 1 / (1 - (CONTRAST / 101.)) - 1;
+		color = applyContrast(color, contrastAmount);
+	#endif
+	#if VIBRANCE != 50
+		const float vibranceAmount = (VIBRANCE / 50.) - 1;
+		color = applyVibrance(color, vibranceAmount);
+	#endif
+	#if SATURATION != 50
+		const float saturationAmount = SATURATION / 50.;
+		color = applySaturation(color, saturationAmount);
 	#endif
 
 	#if DITHERING >= 2

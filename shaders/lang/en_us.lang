@@ -79,24 +79,6 @@ option.FOG_NIGHT_RAIN_G=Fog Night Rain §2G
 option.FOG_NIGHT_RAIN_B=Fog Night Rain §9B
 
 ///////////////////////////////////////////////////////////
-// WAVING
-///////////////////////////////////////////////////////////
-
-screen.WAVING=Waving Blocks
-
-option.WAVING_BLOCKS=Waving Blocks
-option.WAVING_BLOCKS_AMOUNT=Waving Blocks Amount
-option.WAVING_BLOCKS_SPEED=Waving Blocks Speed
-option.WAVING_LEAVES=Waving Leaves
-option.WAVING_LANTERNS=Waving Lanterns
-option.WAVING_LILYPADS=Waving Lilypads
-option.WAVING_LILYPADS.comment=Controlled by "Waving Liquids Amount" and "Waving Liquids Speed".
-
-option.WAVING_LIQUIDS=Waving Liquids
-option.WAVING_LIQUIDS_AMOUNT=Waving Liquids Amount
-option.WAVING_LIQUIDS_SPEED=Waving Liquids Speed
-
-///////////////////////////////////////////////////////////
 // LIGHTING
 ///////////////////////////////////////////////////////////
 
@@ -160,6 +142,41 @@ option.RAIN_PUDDLES_COVERAGE=Rain Puddle Coverage
 option.RAIN_PUDDLES_SIZE=Rain Puddle Size
 option.RAIN_PUDDLES_DEPTH=Rain Puddle Opacity
 
+
+///////////////////////////////////////////////////////////
+// WAVING
+///////////////////////////////////////////////////////////
+
+screen.WAVING=Waving Blocks
+
+option.WAVING_BLOCKS=Waving Blocks
+option.WAVING_BLOCKS_AMOUNT=Waving Blocks Amount
+option.WAVING_BLOCKS_SPEED=Waving Blocks Speed
+option.WAVING_LEAVES=Waving Leaves
+option.WAVING_LANTERNS=Waving Lanterns
+option.WAVING_LILYPADS=Waving Lilypads
+option.WAVING_LILYPADS.comment=Controlled by "Waving Liquids Amount" and "Waving Liquids Speed".
+
+option.WAVING_LIQUIDS=Waving Liquids
+option.WAVING_LIQUIDS_AMOUNT=Waving Liquids Amount
+option.WAVING_LIQUIDS_SPEED=Waving Liquids Speed
+
+
+///////////////////////////////////////////////////////////
+// CAMERA
+///////////////////////////////////////////////////////////
+
+screen.CAMERA=Camera and Color
+
+option.VIGNETTE=Vignette
+option.VIGNETTE.comment=Darkens screen borders.
+option.VIGNETTE_STRENGTH=Vignette Strength
+
+option.CONTRAST=Contrast
+option.VIBRANCE=Vibrance
+option.SATURATION=Saturation
+option.BRIGHTNESS=Brightness
+
 ///////////////////////////////////////////////////////////
 // WATER
 ///////////////////////////////////////////////////////////
@@ -217,8 +234,6 @@ option.LINE_THICKNESS.comment=Makes the block outline no longer transparent.
 option.LINE_THICKNESS=Line Thickness
 option.LINE_THICKNESS.comment=Applies to all non-UI lines, for example hit boxes. §c§n/!\§r Only works from versions 1.17 and onwards
 
-option.VIGNETTE=Vignette
-option.VIGNETTE.comment=Darkens screen borders.
 
 
 option.SHADER_NAME=Stracciatella Shaders
