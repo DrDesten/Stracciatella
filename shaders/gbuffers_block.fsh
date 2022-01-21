@@ -67,10 +67,10 @@ void main() {
 
 		#else
 
-			#ifndef FOG_CUSTOM_COLOR
-				color.rgb = mix(color.rgb, fogColor, fog);
-			#else
+			#if defined FOG_CUSTOM_COLOR && !defined NETHER
 				color.rgb = mix(color.rgb, getCustomFogColor(rainStrength, daynight), fog);
+			#else
+				color.rgb = mix(color.rgb, fogColor, fog);
 			#endif
 
 		#endif
