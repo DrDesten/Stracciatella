@@ -2,6 +2,12 @@
 // SKY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset) {
+    #ifdef NETHER
+
+        return vec4(fogColor, 1);
+
+    #endif
+
     float sunDot  = sq(dot(viewDir, sunDir) * 0.5 + 0.5);
 	#ifdef SUN_SIZE_CHANGE
 		sunDot = sunDot * (SUN_SIZE * 0.25) + sunDot;
@@ -19,6 +25,12 @@ vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3
 vec3 getSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset) { return getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset).rgb; }
 
 vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset, float rainStrength, float daynight) {
+    #ifdef NETHER
+
+        return vec4(fogColor, 1);
+
+    #endif
+    
     float sunDot  = sq(dot(viewDir, sunDir) * 0.5 + 0.5);
 	#ifdef SUN_SIZE_CHANGE
 		sunDot = sunDot * (SUN_SIZE * 0.25) + sunDot;

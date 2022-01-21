@@ -7,16 +7,13 @@
 
 /*
 const int colortex0Format = RGB8;  // Color
-const int colortex1Format = R8;    // FXAA Luma
-const int colortex2Format = R8;    // Empty
-const int colortex3Format = R8;    // Effects
+const int colortex1Format = R8;    // Effects
 */
 
-const vec4 colortex3ClearColor = vec4(0);
+const vec4 colortex1ClearColor = vec4(0);
 
-const bool colortex0Clear = true; 
-const bool colortex1Clear = false; 
-const bool colortex2Clear = false; 
+const bool colortex0Clear = false; 
+const bool colortex1Clear = true;
 
 const float wetnessHalflife = 200;
 const float drynessHalflife = 400;
@@ -26,7 +23,7 @@ vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 
 
 #ifdef RAIN_EFFECTS
-uniform sampler2D colortex3; // Rain Effects
+uniform sampler2D colortex1; // Rain Effects
 #endif
 
 #include "/lib/transform.glsl"
@@ -59,7 +56,7 @@ vec3 applyVibrance(vec3 color, float vibrance) {
 void main() {
 	
 	#ifdef RAIN_EFFECTS
-		float rain = texture2D(colortex3, coord).r;
+		float rain = texture2D(colortex1, coord).r;
 		coord     += sin(vec2(rain * (TWO_PI * 10))) * RAIN_EFFECTS_STRENGTH;
 	#endif
 
