@@ -1,4 +1,4 @@
-#version 120
+
 
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
@@ -10,13 +10,13 @@ const int colortex0Format = RGB8;  // Color
 const int colortex1Format = R8;    // FXAA Luma
 const int colortex2Format = R8;    // Empty
 const int colortex3Format = R8;    // Effects
+*/
 
-const vec4 colortex3ClearColor = vec4(0)
+const vec4 colortex3ClearColor = vec4(0);
 
-const bool colortex0Clear = false; 
+const bool colortex0Clear = true; 
 const bool colortex1Clear = false; 
 const bool colortex2Clear = false; 
-*/
 
 const float wetnessHalflife = 200;
 const float drynessHalflife = 400;
