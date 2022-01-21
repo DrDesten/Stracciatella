@@ -7,6 +7,12 @@ vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3
         return vec4(fogColor, 1);
 
     #endif
+    #ifdef END 
+    
+        float viewHeight = dot(viewDir, up) * 0.5 + 0.5;
+        return vec4(mix(vec3(END_SKY_DOWN_R, END_SKY_DOWN_G, END_SKY_DOWN_B), vec3(END_SKY_UP_R, END_SKY_UP_G, END_SKY_UP_B), viewHeight), 1);
+
+    #endif
 
     float sunDot  = sq(dot(viewDir, sunDir) * 0.5 + 0.5);
 	#ifdef SUN_SIZE_CHANGE
@@ -28,6 +34,12 @@ vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3
     #ifdef NETHER
 
         return vec4(fogColor, 1);
+
+    #endif
+    #ifdef END 
+    
+        float viewHeight = dot(viewDir, up) * 0.5 + 0.5;
+        return vec4(mix(vec3(END_SKY_DOWN_R, END_SKY_DOWN_G, END_SKY_DOWN_B), vec3(END_SKY_UP_R, END_SKY_UP_G, END_SKY_UP_B), viewHeight), 1);
 
     #endif
     

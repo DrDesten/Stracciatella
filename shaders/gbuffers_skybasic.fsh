@@ -12,6 +12,7 @@ uniform vec3 skyColor;
 
 uniform vec3  sunDir;
 uniform vec3  up;
+uniform vec3  upPosition;
 uniform float sunset;
 #ifdef CUSTOM_SKY
 uniform float daynight;
@@ -116,6 +117,7 @@ void main() {
 	vec4 sky = getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset);
 	#endif
 
+	#ifdef OVERWORLD
 	#ifdef CUSTOM_STARS
 
 		vec3 color = sky.rgb;
@@ -179,8 +181,12 @@ void main() {
 		vec3  color = mix(sky.rgb, saturate(starData.rgb * STAR_BRIGHTNESS) * starMask, starData.a);
 
 	#endif
+	#endif
 
-	//color = vec3(pow( cos( normalizedTime * PI * 4 ) * 0.5 + 0.5, 1 ));
+	#ifdef END
+		vec3 color = sky.rgb;
+	#endif
+
 
 	#if DITHERING >= 1
 		color += ditherColor(gl_FragCoord.xy);
