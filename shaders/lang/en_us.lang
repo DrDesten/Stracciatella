@@ -78,6 +78,15 @@ option.FOG_NIGHT_RAIN_R=Fog Night Rain §cR
 option.FOG_NIGHT_RAIN_G=Fog Night Rain §2G
 option.FOG_NIGHT_RAIN_B=Fog Night Rain §9B
 
+
+screen.END_SKY_CONFIG=End Sky
+option.END_SKY_UP_R=End Sky Upper §cR
+option.END_SKY_UP_G=End Sky Upper §2G
+option.END_SKY_UP_B=End Sky Upper §9B
+option.END_SKY_DOWN_R=End Sky Lower §cR
+option.END_SKY_DOWN_G=End Sky Lower §2G
+option.END_SKY_DOWN_B=End Sky Lower §9B
+
 ///////////////////////////////////////////////////////////
 // LIGHTING
 ///////////////////////////////////////////////////////////

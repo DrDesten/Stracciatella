@@ -23,6 +23,7 @@
 		uniform vec3  up;
 		uniform float sunset;
 		uniform vec3  skyColor;
+		uniform ivec2 eyeBrightnessSmooth;
 
 	#endif
 
@@ -89,7 +90,11 @@ void main() {
 
 		#if FOG_QUALITY == 1
 
-			float cave        = 1;//saturate(lmcoord.y * 4 - 0.25);
+			#ifdef OVERWORLD
+				float cave = saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25);
+			#else
+				float cave = 1;
+			#endif
 			
 			#ifndef CUSTOM_SKY
 				color.rgb  = mix(color.rgb, mix(fogColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, isEyeInWater), cave), fog);
