@@ -71,15 +71,6 @@ vec2 map3d2d(vec3 pos, float sides) {
 	return mappedCoords;
 }
 
-/* vec3 applyLUT(sampler2D luttex, vec3 color, float sides) {
-	float cellCount = sides * sides;
-	color           = saturate(color) * 0.999999;
-	vec2  lutCoord1 = map3d2d(vec3(color.rg, floor(color.b * cellCount) / cellCount), sides);
-	vec2  lutCoord2 = map3d2d(vec3(color.rg, (ceil(color.b * cellCount) / cellCount) * 0.99999), sides);
-	float interpol  = fract(color.b * cellCount);
-	color = mix(texture2D(luttex, lutCoord1).rgb, texture2D(luttex, lutCoord2).rgb, interpol);
-	return color;
-} */
 vec3 applyLUT(sampler2D luttex, vec3 color, float sides) {
 	vec2 lutCoord = map3d2d(saturate(color) * 0.999999, sides);
 	color = texture2D(luttex, lutCoord).rgb;
@@ -138,10 +129,11 @@ void main() {
 	#endif
 
 	#ifdef COLOR_LUT
-		color = applyLUT(colortex2, color, LUT_CELL_SIZE);
+		color.rgb += ign(gl_FragCoord.xy) * (1./ (LUT_CELL_SIZE * LUT_CELL_SIZE)) - (.5/ (LUT_CELL_SIZE * LUT_CELL_SIZE));
+		color      = applyLUT(colortex2, color, LUT_CELL_SIZE);
 	#endif
 
-	#if DITHERING >= 2
+	#if DITHERING >= 2 && !defined COLOR_LUT
 		color.rgb -= ditherColor(gl_FragCoord.xy);
 	#endif
 	gl_FragData[0] = vec4(color, 1.0);
