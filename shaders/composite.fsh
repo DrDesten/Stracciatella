@@ -36,20 +36,27 @@ uniform vec3 fogColor;
 uniform float blindness;
 uniform float nightVision;
 
-vec3 applyContrast(vec3 color, float contrast) {
+
+vec3 applyBrightness(vec3 color, float brightness, float colorOffset) { // Range: inf-0
+	float tmp = (1 / (2 * colorOffset + 1));
+	color = color * tmp + (colorOffset * tmp);
+	return pow(color, vec3(brightness));
+}
+vec3 applyContrast(vec3 color, float contrast) { // Range: 0-inf
 	color = color * 0.99 + 0.005;
 	vec3 colorHigh = 1 - 0.5 * pow(-2 * color + 2, vec3(contrast));
 	vec3 colorLow  =     0.5 * pow( 2 * color,     vec3(contrast));
 	return mix(colorLow, colorHigh, color);
 }
-vec3 applySaturation(vec3 color, float saturation) {;
+vec3 applySaturation(vec3 color, float saturation) { // Range: 0-2
     return mix(vec3(luminance(color)), color, saturation);
 }
-vec3 applyVibrance(vec3 color, float vibrance) {
+vec3 applyVibrance(vec3 color, float vibrance) { // -1 to 1
 	float luminance  = luminance(color);
 	float saturation = distance(vec3(luminance), color);
 	return applySaturation(color, (1 - saturation) * vibrance + 1);
 }
+
 
 
 /* DRAWBUFFERS:0 */
@@ -94,6 +101,11 @@ void main() {
 	#if SATURATION != 50
 		const float saturationAmount = SATURATION / 50.;
 		color = applySaturation(color, saturationAmount);
+	#endif
+	#if BRIGHTNESS != 50
+		const float brightnessAmount      = 1 / ((BRIGHTNESS / 101.) + (1./101.)) - 1;
+		const float brightnessColorOffset = abs(BRIGHTNESS - 50.) / 500.;
+		color = applyBrightness(color, brightnessAmount, brightnessColorOffset);
 	#endif
 
 	#if DITHERING >= 2
