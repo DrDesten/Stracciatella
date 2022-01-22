@@ -16,7 +16,7 @@ varying vec4 glcolor;
 uniform float temperature;
 
 #ifdef RAIN_EFFECTS
-/* DRAWBUFFERS:01 */
+/* DRAWBUFFERS:03 */
 #else
 /* DRAWBUFFERS:0 */
 #endif
