@@ -87,3 +87,11 @@ texture.composite.colortex2=lut/lut20.png
 #else
 texture.composite.colortex2=lut/lut1.png
 #endif
+
+
+texture.composite.colortex1=lut/lut0.png
+texture.composite.colortex2=lut/lut1.png
+texture.composite.colortex4=lut/lut2.png
+texture.composite.colortex5=lut/lut3.png
+texture.composite.colortex6=lut/lut4.png
+texture.composite.colortex7=lut/lut5.png

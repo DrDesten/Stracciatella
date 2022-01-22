@@ -26,12 +26,7 @@ vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 
 
 #ifdef COLOR_LUT
-uniform sampler2D colortex1; // LUT 0
-uniform sampler2D colortex2; // LUT 1
-uniform sampler2D colortex4; // LUT 2
-uniform sampler2D colortex5; // LUT 3
-uniform sampler2D colortex6; // LUT 4
-uniform sampler2D colortex7; // LUT 5
+uniform sampler2D colortex2; // LUT
 #endif
 
 #ifdef RAIN_EFFECTS
@@ -141,20 +136,7 @@ void main() {
 
 	#ifdef COLOR_LUT
 		color -= Bayer8(gl_FragCoord.xy) * (3./ (LUT_CELL_SIZE * LUT_CELL_SIZE)) - (1.5/ (LUT_CELL_SIZE * LUT_CELL_SIZE));
-
-		#if LUT_SELECTOR == 0
-		color      = applyLUT(colortex1, color, LUT_CELL_SIZE);
-		#elif LUT_SELECTOR == 1
-		color      = applyLUT(colortex2, color, LUT_CELL_SIZE);
-		#elif LUT_SELECTOR == 2
-		color      = applyLUT(colortex4, color, LUT_CELL_SIZE);
-		#elif LUT_SELECTOR == 3
-		color      = applyLUT(colortex5, color, LUT_CELL_SIZE);
-		#elif LUT_SELECTOR == 4
-		color      = applyLUT(colortex6, color, LUT_CELL_SIZE);
-		#elif LUT_SELECTOR == 5
-		color      = applyLUT(colortex7, color, LUT_CELL_SIZE);
-		#endif
+		color  = applyLUT(colortex2, color, LUT_CELL_SIZE);
 	#endif
 
 	#if DITHERING >= 2 && !defined COLOR_LUT
