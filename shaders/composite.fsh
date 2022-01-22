@@ -131,10 +131,13 @@ void main() {
 	#endif
 
 	#ifdef VIGNETTE
-		color *= saturate(exp(-sq(sqmag(coord * 1.5 - 0.75)))) * VIGNETTE_STRENGTH + (1 - VIGNETTE_STRENGTH);
+		color *= saturate(exp(-sq(sqmag(coord * 1.75 - 0.875)))) * VIGNETTE_STRENGTH + (1 - VIGNETTE_STRENGTH);
 	#endif
 
 	#ifdef COLOR_LUT
+		#ifdef LUT_LOG_COLOR
+		color  = log(color * 1.1 + 1);
+		#endif
 		color -= Bayer8(gl_FragCoord.xy) * (3./ (LUT_CELL_SIZE * LUT_CELL_SIZE)) - (1.5/ (LUT_CELL_SIZE * LUT_CELL_SIZE));
 		color  = applyLUT(colortex2, color, LUT_CELL_SIZE);
 	#endif
