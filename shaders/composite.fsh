@@ -83,8 +83,8 @@ vec2 map3d2d(vec3 pos, float sides) {
 }
 
 vec3 applyLUT(sampler2D luttex, vec3 color, float sides) {
-	vec2 lutCoord = map3d2d(saturate(color) * 0.999999, sides);
-	color = texture2D(luttex, floor(lutCoord * 512) / 512).rgb;
+	vec2 lutCoord = map3d2d(clamp(color, 0.00001, 0.99999), sides);
+	color = texture2D(luttex, lutCoord).rgb;
 	return color;
 }
 
