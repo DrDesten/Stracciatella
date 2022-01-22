@@ -181,6 +181,11 @@ option.VIGNETTE=Vignette
 option.VIGNETTE.comment=Darkens screen borders.
 option.VIGNETTE_STRENGTH=Vignette Strength
 
+option.COLOR_LUT=LUT
+option.COLOR_LUT.comment=Applies a custom color LUT to the image. §nHow to:§r. Extract the .zip. Go to: shaders/lut. Put your LUT in this folder and name it "lut.png".
+option.LUT_CELL_SIZE=LUT Cell Size
+option.LUT_CELL_SIZE.comment=Amount of cells on one side. Count the squares on the lut image along one side to figure this out.
+
 option.CONTRAST=Contrast
 option.VIBRANCE=Vibrance
 option.SATURATION=Saturation
@@ -246,7 +251,7 @@ option.LINE_THICKNESS.comment=Applies to all non-UI lines, for example hit boxes
 
 
 option.SHADER_NAME=Stracciatella Shaders
-value.SHADER_NAME.0=v1.0
+value.SHADER_NAME.0=v1.1
 
 option.CREDITS=by
 value.CREDITS.0=DrDesten

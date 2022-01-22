@@ -20,6 +20,7 @@ const float drynessHalflife = 400;
 
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 
+uniform sampler2D colortex2; // LUT
 
 
 #ifdef RAIN_EFFECTS
@@ -46,15 +47,43 @@ vec3 applyContrast(vec3 color, float contrast) { // Range: 0-inf
 	color = color * 0.99 + 0.005;
 	vec3 colorHigh = 1 - 0.5 * pow(-2 * color + 2, vec3(contrast));
 	vec3 colorLow  =     0.5 * pow( 2 * color,     vec3(contrast));
-	return mix(colorLow, colorHigh, color);
+	return saturate(mix(colorLow, colorHigh, color));
 }
 vec3 applySaturation(vec3 color, float saturation) { // Range: 0-2
-    return mix(vec3(luminance(color)), color, saturation);
+    return saturate(mix(vec3(luminance(color)), color, saturation));
 }
 vec3 applyVibrance(vec3 color, float vibrance) { // -1 to 1
 	float luminance  = luminance(color);
 	float saturation = distance(vec3(luminance), color);
 	return applySaturation(color, (1 - saturation) * vibrance + 1);
+}
+
+
+
+vec2 map3d2d(vec3 pos, float sides) {
+	float cellSize  = 1 / sides;
+	float cellIndex = floor(pos.z * sides * sides) * cellSize;
+	vec2  offset    = vec2(
+		fract(cellIndex),
+		floor(cellIndex) * cellSize
+	);
+	vec2 mappedCoords = pos.xy * cellSize + offset;
+	return mappedCoords;
+}
+
+/* vec3 applyLUT(sampler2D luttex, vec3 color, float sides) {
+	float cellCount = sides * sides;
+	color           = saturate(color) * 0.999999;
+	vec2  lutCoord1 = map3d2d(vec3(color.rg, floor(color.b * cellCount) / cellCount), sides);
+	vec2  lutCoord2 = map3d2d(vec3(color.rg, (ceil(color.b * cellCount) / cellCount) * 0.99999), sides);
+	float interpol  = fract(color.b * cellCount);
+	color = mix(texture2D(luttex, lutCoord1).rgb, texture2D(luttex, lutCoord2).rgb, interpol);
+	return color;
+} */
+vec3 applyLUT(sampler2D luttex, vec3 color, float sides) {
+	vec2 lutCoord = map3d2d(saturate(color) * 0.999999, sides);
+	color = texture2D(luttex, lutCoord).rgb;
+	return color;
 }
 
 
@@ -86,10 +115,6 @@ void main() {
 		color *= saturate(1. / (sqmag(viewPos) * blindness));
 	}
 
-	#ifdef VIGNETTE
-		color *= saturate(exp(-sq(sqmag(coord * 1.5 - 0.75)))) * VIGNETTE_STRENGTH + (1 - VIGNETTE_STRENGTH);
-	#endif
-
 	#if CONTRAST != 50
 		const float contrastAmount = 1 / (1 - (CONTRAST / 101.)) - 1;
 		color = applyContrast(color, contrastAmount);
@@ -106,6 +131,14 @@ void main() {
 		const float brightnessAmount      = 1 / ((BRIGHTNESS / 101.) + (1./101.)) - 1;
 		const float brightnessColorOffset = abs(BRIGHTNESS - 50.) / 500.;
 		color = applyBrightness(color, brightnessAmount, brightnessColorOffset);
+	#endif
+
+	#ifdef VIGNETTE
+		color *= saturate(exp(-sq(sqmag(coord * 1.5 - 0.75)))) * VIGNETTE_STRENGTH + (1 - VIGNETTE_STRENGTH);
+	#endif
+
+	#ifdef COLOR_LUT
+		color = applyLUT(colortex2, color, LUT_CELL_SIZE);
 	#endif
 
 	#if DITHERING >= 2
