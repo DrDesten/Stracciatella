@@ -182,9 +182,18 @@ option.VIGNETTE.comment=Darkens screen borders.
 option.VIGNETTE_STRENGTH=Vignette Strength
 
 option.COLOR_LUT=LUT
-option.COLOR_LUT.comment=Applies a custom color LUT to the image. §nHow to:§r. Extract the .zip. Go to: shaders/lut. Put your LUT in this folder and name it "lut.png".
+option.COLOR_LUT.comment=Applies a custom color LUT to the image. §nHow to add your luts:§r. Extract the .zip. Go to: shaders/lut. Put your LUT in this folder and name it "lut[number].png". You can then select the file using the slider. Up to 6 luts can be loaded this way.
 option.LUT_CELL_SIZE=LUT Cell Size
 option.LUT_CELL_SIZE.comment=Amount of cells on one side. Count the squares on the lut image along one side to figure this out.
+
+option.LUT_SELECTOR=Selected LUT
+option.LUT_SELECTOR.comment=Select a lut file. §nDefault LUTs shipped with the shader are:§r. lut0.png: Neutral. lut1.png: Skyfall
+value.LUT_SELECTOR.0=lut0.png
+value.LUT_SELECTOR.1=lut1.png
+value.LUT_SELECTOR.2=lut2.png
+value.LUT_SELECTOR.3=lut3.png
+value.LUT_SELECTOR.4=lut4.png
+value.LUT_SELECTOR.5=lut5.png
 
 option.CONTRAST=Contrast
 option.VIBRANCE=Vibrance
