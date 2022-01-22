@@ -152,6 +152,7 @@ float smootherstep(float edge0, float edge1, float x) {
 // Randomization and Dither Patterns
 
 float Bayer2(vec2 a) {
+    a = floor(a);
     return fract(a.x * .5 + a.y * a.y * .75);
 }
 #define Bayer4(a)   (Bayer2 (0.5 * (a)) * 0.25 + Bayer2(a))
@@ -166,7 +167,7 @@ float ign(vec2 co) { // Interlieved Gradient Noise, very noice noise ( ͡° ͜ʖ
 }
 
 float ditherColor(vec2 co) {
-    return ign(co) * (4./256) - (2./256);
+    return Bayer8(floor(co)) * (1./256) - (0.5/256);
 }
 
 float checkerboard(vec2 co) {

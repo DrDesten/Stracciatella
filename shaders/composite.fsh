@@ -7,24 +7,35 @@
 
 /*
 const int colortex0Format = RGB8;  // Color
-const int colortex1Format = R8;    // Effects
+const int colortex1Format = R8;    // Empty
+const int colortex2Format = R8;    // Empty
+const int colortex3Format = R8;    // Effects
 */
 
-const vec4 colortex1ClearColor = vec4(0);
+const vec4 colortex3ClearColor = vec4(0,0,0,0);
 
-const bool colortex0Clear = false; 
-const bool colortex1Clear = true;
+const bool colortex0Clear = false;
+const bool colortex1Clear = false;
+const bool colortex2Clear = false;
+const bool colortex3Clear = true;
 
 const float wetnessHalflife = 200;
 const float drynessHalflife = 400;
 
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 
-uniform sampler2D colortex2; // LUT
 
+#ifdef COLOR_LUT
+uniform sampler2D colortex1; // LUT 0
+uniform sampler2D colortex2; // LUT 1
+uniform sampler2D colortex4; // LUT 2
+uniform sampler2D colortex5; // LUT 3
+uniform sampler2D colortex6; // LUT 4
+uniform sampler2D colortex7; // LUT 5
+#endif
 
 #ifdef RAIN_EFFECTS
-uniform sampler2D colortex1; // Rain Effects
+uniform sampler2D colortex3; // Rain Effects
 #endif
 
 #include "/lib/transform.glsl"
@@ -73,7 +84,7 @@ vec2 map3d2d(vec3 pos, float sides) {
 
 vec3 applyLUT(sampler2D luttex, vec3 color, float sides) {
 	vec2 lutCoord = map3d2d(saturate(color) * 0.999999, sides);
-	color = texture2D(luttex, lutCoord).rgb;
+	color = texture2D(luttex, floor(lutCoord * 512) / 512).rgb;
 	return color;
 }
 
@@ -83,7 +94,7 @@ vec3 applyLUT(sampler2D luttex, vec3 color, float sides) {
 void main() {
 	
 	#ifdef RAIN_EFFECTS
-		float rain = texture2D(colortex1, coord).r;
+		float rain = texture2D(colortex3, coord).r;
 		coord     += sin(vec2(rain * (TWO_PI * 10))) * RAIN_EFFECTS_STRENGTH;
 	#endif
 
@@ -129,8 +140,21 @@ void main() {
 	#endif
 
 	#ifdef COLOR_LUT
-		color.rgb += ign(gl_FragCoord.xy) * (1./ (LUT_CELL_SIZE * LUT_CELL_SIZE)) - (.5/ (LUT_CELL_SIZE * LUT_CELL_SIZE));
+		color -= Bayer8(gl_FragCoord.xy) * (3./ (LUT_CELL_SIZE * LUT_CELL_SIZE)) - (1.5/ (LUT_CELL_SIZE * LUT_CELL_SIZE));
+
+		#if LUT_SELECTOR == 0
+		color      = applyLUT(colortex1, color, LUT_CELL_SIZE);
+		#elif LUT_SELECTOR == 1
 		color      = applyLUT(colortex2, color, LUT_CELL_SIZE);
+		#elif LUT_SELECTOR == 2
+		color      = applyLUT(colortex4, color, LUT_CELL_SIZE);
+		#elif LUT_SELECTOR == 3
+		color      = applyLUT(colortex5, color, LUT_CELL_SIZE);
+		#elif LUT_SELECTOR == 4
+		color      = applyLUT(colortex6, color, LUT_CELL_SIZE);
+		#elif LUT_SELECTOR == 5
+		color      = applyLUT(colortex7, color, LUT_CELL_SIZE);
+		#endif
 	#endif
 
 	#if DITHERING >= 2 && !defined COLOR_LUT
