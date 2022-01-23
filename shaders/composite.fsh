@@ -109,7 +109,7 @@ void main() {
 		color = mix(color, fogColor * 0.75, fogFac);
 	} else if (isEyeInWater != 0) {
 		vec3  viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
-		float fogFac  = fogExp(viewPos, FOG_UNDERWATER_DENSITY * exp(playerLMCSmooth.y * -FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE + FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE));
+		float fogFac  = fogExp(length(viewPos) + 25, FOG_UNDERWATER_DENSITY * exp(playerLMCSmooth.y * -FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE + FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE));
 
 		color = mix(color, fogColor * (playerLMCSmooth.y * 0.6 + 0.4), saturate(nightVision * -0.1 + fogFac));
 	}
