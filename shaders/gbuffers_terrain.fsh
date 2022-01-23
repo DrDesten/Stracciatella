@@ -114,6 +114,13 @@ void main() {
 
 	#endif
 
+
+
+	/* float baseHeight = mean(texture2DLod(texture, coord, 100.0).rgb);
+	float absHeight  = mean(texture2D(texture, coord).rgb);
+	float relHeight  = (absHeight - baseHeight) * 0.5 + 0.5;
+	color.rgb = vec3(relHeight); */
+
 	#if DITHERING >= 1
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
