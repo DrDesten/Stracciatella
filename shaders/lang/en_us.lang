@@ -188,7 +188,7 @@ option.LUT_CELL_SIZE.comment=Amount of cells on one side. Count the squares on t
 option.LUT_LOG_COLOR=Use LOG Color
 
 option.LUT_SELECTOR=Selected LUT
-option.LUT_SELECTOR.comment=Select a lut file. §nDefault LUTs shipped with the shader are:§r. lut0.png: Neutral. lut1.png: Skyfall
+option.LUT_SELECTOR.comment=Select a lut file. §nDefault LUTs shipped with the shader are:§r. lut0.png: Neutral. lut1.png: Skyfall. lut2.png: A Summer Night's Adventure. lut3.png: Chrome
 value.LUT_SELECTOR.0=lut0.png
 value.LUT_SELECTOR.1=lut1.png
 value.LUT_SELECTOR.2=lut2.png
