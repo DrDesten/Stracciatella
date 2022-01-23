@@ -280,3 +280,5 @@ value.SHADER_NAME.0=v1.1
 
 option.CREDITS=by
 value.CREDITS.0=DrDesten
+
+screen.DEBUG.comment=Don't mess with the stuff in here unless you know what you're doing (or want to break the shader)
