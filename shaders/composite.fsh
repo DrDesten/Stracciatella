@@ -119,20 +119,20 @@ void main() {
 		color *= saturate(1. / (sqmag(viewPos) * blindness));
 	}
 
-	#if CONTRAST != 50
-		const float contrastAmount = 1 / (1 - (CONTRAST / 101.)) - 1;
+	#if CONTRAST != 0
+		const float contrastAmount = 1 / (1 - (CONTRAST / 300. + 0.5)) - 1;
 		color = applyContrast(color, contrastAmount);
 	#endif
-	#if VIBRANCE != 50
-		const float vibranceAmount = (VIBRANCE / 50.) - 1;
+	#if VIBRANCE != 0
+		const float vibranceAmount = (VIBRANCE / 100.);
 		color = applyVibrance(color, vibranceAmount);
 	#endif
-	#if SATURATION != 50
-		const float saturationAmount = SATURATION / 50.;
+	#if SATURATION != 0
+		const float saturationAmount = SATURATION / 100. + 1.;
 		color = applySaturation(color, saturationAmount);
 	#endif
-	#if BRIGHTNESS != 50
-		const float brightnessAmount      = 1 / ((BRIGHTNESS / 101.) + (1./101.)) - 1;
+	#if BRIGHTNESS != 0
+		const float brightnessAmount      = 1 / (BRIGHTNESS / 250. + 0.5) - 1;
 		const float brightnessColorOffset = abs(BRIGHTNESS - 50.) / 500.;
 		color = applyBrightness(color, brightnessAmount, brightnessColorOffset);
 	#endif
