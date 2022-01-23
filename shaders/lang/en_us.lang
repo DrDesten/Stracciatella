@@ -182,7 +182,7 @@ option.VIGNETTE.comment=Darkens screen borders.
 option.VIGNETTE_STRENGTH=Vignette Strength
 
 option.COLOR_LUT=LUT
-option.COLOR_LUT.comment=Applies a custom color LUT to the image. §nHow to add your luts:§r. Extract the .zip. Go to: shaders/lut. Put your LUT in this folder and name it "lut[number].png". You can then select the file using the slider. Up to 6 luts can be loaded this way.
+option.COLOR_LUT.comment=Applies a custom color LUT to the image. §c§n/!\§r Only works for Optifine G8 and higher!. §nHow to add your luts:§r. Extract the .zip. Go to: shaders/lut. Put your LUT in this folder and name it "lut[number].png". You can then select the file using the slider. Up to 6 luts can be loaded this way.
 option.LUT_CELL_SIZE=LUT Cell Size
 option.LUT_CELL_SIZE.comment=Amount of cells on one side. Count the squares on the lut image along one side to figure this out.
 option.LUT_LOG_COLOR=Use LOG Color
@@ -271,7 +271,7 @@ option.WORLD_TIME_ANIMATION.comment=Uses the ingame time instead of irl time for
 option.BLOCK_OUTLINE_SOLID=Solid Block Outline
 option.LINE_THICKNESS.comment=Makes the block outline no longer transparent.
 option.LINE_THICKNESS=Line Thickness
-option.LINE_THICKNESS.comment=Applies to all non-UI lines, for example hit boxes. §c§n/!\§r Only works from versions 1.17 and onwards
+option.LINE_THICKNESS.comment=Applies to all non-UI lines, for example hit boxes. §c§n/!\§r Only works from versions 1.17 and onwards.
 
 
 

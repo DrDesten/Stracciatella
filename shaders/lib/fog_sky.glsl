@@ -99,6 +99,9 @@ float fogFactor(vec3 viewPos, float far, mat4 gbufferModelViewInverse) {
 float fogExp(vec3 viewPos, float density) {
     return 1 - exp(-length(viewPos) * density);
 }
+float fogExp(float length, float density) {
+    return 1 - exp(-length * density);
+}
 
 
 float expFogDensity(float worldHeight) {
