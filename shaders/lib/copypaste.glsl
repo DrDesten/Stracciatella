@@ -39,59 +39,7 @@
 // 0 - 100, Integer
 // [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100]
 
+// -100 - 100, Interger
+// [-100 -99 -98 -97 -96 -95 -94 -93 -92 -91 -90 -89 -88 -87 -86 -85 -84 -83 -82 -81 -80 -79 -78 -77 -76 -75 -74 -73 -72 -71 -70 -69 -68 -67 -66 -65 -64 -63 -62 -61 -60 -59 -58 -57 -56 -55 -54 -53 -52 -51 -50 -49 -48 -47 -46 -45 -44 -43 -42 -41 -40 -39 -38 -37 -36 -35 -34 -33 -32 -31 -30 -29 -28 -27 -26 -25 -24 -23 -22 -21 -20 -19 -18 -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100]
 
 
-
-#if LUT_SELECTOR == 0
-texture.composite.colortex2=lut/lut0.png
-#elif LUT_SELECTOR == 1
-texture.composite.colortex2=lut/lut1.png
-#elif LUT_SELECTOR == 2
-texture.composite.colortex2=lut/lut2.png
-#elif LUT_SELECTOR == 3
-texture.composite.colortex2=lut/lut3.png
-#elif LUT_SELECTOR == 4
-texture.composite.colortex2=lut/lut4.png
-#elif LUT_SELECTOR == 5
-texture.composite.colortex2=lut/lut5.png
-#elif LUT_SELECTOR == 6
-texture.composite.colortex2=lut/lut6.png
-#elif LUT_SELECTOR == 7
-texture.composite.colortex2=lut/lut7.png
-#elif LUT_SELECTOR == 8
-texture.composite.colortex2=lut/lut8.png
-#elif LUT_SELECTOR == 9
-texture.composite.colortex2=lut/lut9.png
-#elif LUT_SELECTOR == 10
-texture.composite.colortex2=lut/lut10.png
-#elif LUT_SELECTOR == 11
-texture.composite.colortex2=lut/lut11.png
-#elif LUT_SELECTOR == 12
-texture.composite.colortex2=lut/lut12.png
-#elif LUT_SELECTOR == 13
-texture.composite.colortex2=lut/lut13.png
-#elif LUT_SELECTOR == 14
-texture.composite.colortex2=lut/lut14.png
-#elif LUT_SELECTOR == 15
-texture.composite.colortex2=lut/lut15.png
-#elif LUT_SELECTOR == 16
-texture.composite.colortex2=lut/lut16.png
-#elif LUT_SELECTOR == 17
-texture.composite.colortex2=lut/lut17.png
-#elif LUT_SELECTOR == 18
-texture.composite.colortex2=lut/lut18.png
-#elif LUT_SELECTOR == 19
-texture.composite.colortex2=lut/lut19.png
-#elif LUT_SELECTOR == 20
-texture.composite.colortex2=lut/lut20.png
-#else
-texture.composite.colortex2=lut/lut1.png
-#endif
-
-
-texture.composite.colortex1=lut/lut0.png
-texture.composite.colortex2=lut/lut1.png
-texture.composite.colortex4=lut/lut2.png
-texture.composite.colortex5=lut/lut3.png
-texture.composite.colortex6=lut/lut4.png
-texture.composite.colortex7=lut/lut5.png
