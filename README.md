@@ -23,6 +23,7 @@ It is highly configurable and lets you craft your own personal vanilla experienc
   - Customizeable Sunset Colors
   - Customizeable Sky Colors
   - Customizeable Fog Colors
+  - Customizable End Sky
 - Waving Plants, Leaves, Lanterns, Liquids and Lilypads
 - Custom Lightmap
   - Fully customizeable Lightmap
@@ -30,6 +31,13 @@ It is highly configurable and lets you craft your own personal vanilla experienc
   - Customizeable Blocklight Colors
   - Customizeable Skylight and Blocklight Ambient Occlusion levels
   - Customizeable Blend Curves
+- Camera Options
+  - Vignette
+  - Contrast
+  - Vibrance
+  - Saturation
+  - Brightness
+- Support for Custom LUTs (up to 21)
 - Rain Refraction
 - Custom Rain puddles
   - Customizeable Size
@@ -40,5 +48,4 @@ It is highly configurable and lets you craft your own personal vanilla experienc
 - Configurable Blinking Ores
 - Dithering
 - Customizeable Block Outline
-- Vignette
 - World Time Animation
