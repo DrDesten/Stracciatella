@@ -71,6 +71,16 @@ float manhattan(vec4 v) {
     return (abs(v.x) + abs(v.y)) + (abs(v.z) + abs(v.w));
 }
 
+float manhattan(vec2 v1, vec2 v2) {
+    return manhattan(v1-v2);
+}
+float manhattan(vec3 v1, vec3 v2) {
+    return manhattan(v1-v2);
+}
+float manhattan(vec4 v1, vec4 v2) {
+    return manhattan(v1-v2);
+}
+
 float sq(float x) { // Square
     return x * x;
 }

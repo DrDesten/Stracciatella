@@ -54,6 +54,11 @@ varying vec2 coord;
 varying vec4 glcolor;
 varying vec3 viewPos;
 
+attribute vec4 at_tangent;
+varying vec2 spriteSize;
+varying vec2 midTexCoord;
+varying mat2 tbn;
+
 #ifdef RAIN_PUDDLES
 uniform float rainPuddle;
 varying float puddle;
@@ -70,6 +75,10 @@ void main() {
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 	viewPos = getView();
+
+	spriteSize  = abs(coord - mc_midTexCoord.xy);
+	midTexCoord = mc_midTexCoord.xy;
+	tbn         = mat2(getTBN(at_tangent));
 
 	#ifdef BLINKING_ORES
 

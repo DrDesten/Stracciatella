@@ -34,6 +34,12 @@ varying vec2 coord;
 varying vec4 glcolor;
 varying vec3 viewPos;
 
+uniform ivec2 atlasSize;
+varying vec2 spriteSize;
+varying vec2 midTexCoord;
+varying mat2 tbn;
+
+
 #ifdef RAIN_PUDDLES
 	uniform sampler2D colortex4;
 	uniform float     frameTimeCounter;
@@ -49,6 +55,22 @@ varying vec3 viewPos;
 #ifdef BLINKING_ORES
 	varying float oreBlink;
 #endif
+
+float calculateHeight(vec2 coord) {
+	float baseHeight = mean(texture2DLod(texture, coord, 100.0).rgb);
+	float absHeight  = mean(texture2D(texture, coord).rgb);
+	float relHeight  = (absHeight - baseHeight) * 0.5 + 0.5;
+	return relHeight;
+}
+float calculateHeight(vec2 coord, float baseHeight) {
+	float absHeight  = mean(texture2D(texture, coord).rgb);
+	float relHeight  = absHeight - baseHeight;
+	return relHeight;
+}
+vec2 getBlocklightDir(vec2 lco, mat2 tbn) {
+    vec2 blockLightDir = vec2(dFdx(lco.x), dFdy(lco.x));
+    return abs(blockLightDir.x) + abs(blockLightDir.y) < 1e-6 ? vec2(0,1) : normalize(tbn * blockLightDir); // By doing matrix * vector, I am using the transpose of the matrix. Since tbn is purely rotational, this inverts the matrix.
+}
 
 /* DRAWBUFFERS:0 */
 void main() {
@@ -72,10 +94,27 @@ void main() {
 
 	#endif
 
+	vec2  atlasPixel = 0.5 / atlasSize;
+	float baseHeight = mean(texture2DLod(texture, coord, 100.0).rgb);
+	float relHeightN = calculateHeight(  clamp(coord + vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
+	float relHeightS = calculateHeight(  clamp(coord - vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
+	float relHeightE = calculateHeight(  clamp(coord + vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
+	float relHeightW = calculateHeight(  clamp(coord - vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
+	
+	vec3 normal = normalize(vec3(relHeightW - relHeightE, relHeightS - relHeightN, 0.5));
+
+	vec2 blockLightDir = getBlocklightDir(lmcoord, tbn);
+
+	float diff = dot(normal, normalize(vec3(blockLightDir, cb(lmcoord.x) * 2))) * 0.5 + 0.5;
+	vec2 newlm = lmcoord;
+	newlm.x *= diff;
+
+	//color.rgb = newlm.xxx;
+
 	#ifndef CUSTOM_LIGHTMAP
 		color.rgb *= getLightmap(lmcoord) * glcolor.a;
 	#else
-		color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
+		color.rgb *= getCustomLightmap(newlm, customLightmapBlend, glcolor.a);
 	#endif
 
 	#ifdef BLINKING_ORES
@@ -114,12 +153,7 @@ void main() {
 
 	#endif
 
-
-
-	/* float baseHeight = mean(texture2DLod(texture, coord, 100.0).rgb);
-	float absHeight  = mean(texture2D(texture, coord).rgb);
-	float relHeight  = (absHeight - baseHeight) * 0.5 + 0.5;
-	color.rgb = vec3(relHeight); */
+	
 
 	#if DITHERING >= 1
 		color.rgb += ditherColor(gl_FragCoord.xy);
