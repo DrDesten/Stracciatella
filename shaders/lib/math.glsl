@@ -167,7 +167,7 @@ float ign(vec2 co) { // Interlieved Gradient Noise, very noice noise ( ͡° ͜ʖ
 }
 
 float ditherColor(vec2 co) {
-    return Bayer8(floor(co)) * (1./256) - (0.5/256);
+    return ign(floor(co)) * (1./256) - (0.5/256);
 }
 
 float checkerboard(vec2 co) {
