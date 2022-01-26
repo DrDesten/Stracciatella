@@ -180,6 +180,7 @@ const float lightmap_complex_blocklight_blend_curve = ( ((100 - LIGHTMAP_COMPLEX
 
 
 //#define DIRECTIONAL_LIGHTMAPS
+#define NORMAL_TEXTURE_MODE // [0 1]
 #define GENERATED_NORMALS_RESOLUTION_MULTIPLIER 2 // [0.5 1 2 4 8 16]
 
 
