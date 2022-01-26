@@ -41,6 +41,9 @@ varying vec3 viewPos;
 	varying mat2  tbn;
 	varying float directionalLightmapStrength;
 #endif
+#if NORMAL_TEXTURE_MODE == 1 && defined DIRECTIONAL_LIGHTMAPS
+	uniform sampler2D normals;
+#endif
 
 #ifdef RAIN_PUDDLES
 	uniform sampler2D colortex4;
@@ -98,21 +101,30 @@ void main() {
 
 	#ifdef DIRECTIONAL_LIGHTMAPS
 
-		// NORMAL MAP GENERATION ////////////////////////////////
-		vec2  atlasPixel = (1. / GENERATED_NORMALS_RESOLUTION_MULTIPLIER) / atlasSize;
-		float baseHeight = mean(texture2DLod(texture, coord, 100.0).rgb);
-		float relHeightN = calculateHeight(  clamp(coord + vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
-		float relHeightS = calculateHeight(  clamp(coord - vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
-		float relHeightE = calculateHeight(  clamp(coord + vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
-		float relHeightW = calculateHeight(  clamp(coord - vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
-		
-		vec3  normal = normalize(vec3(relHeightW - relHeightE, relHeightS - relHeightN, 0.5));
+		#if NORMAL_TEXTURE_MODE == 0
+
+			// NORMAL MAP GENERATION ////////////////////////////////
+			vec2  atlasPixel = (1. / GENERATED_NORMALS_RESOLUTION_MULTIPLIER) / atlasSize;
+			float baseHeight = mean(texture2DLod(texture, coord, 100.0).rgb);
+			float relHeightN = calculateHeight(  clamp(coord + vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
+			float relHeightS = calculateHeight(  clamp(coord - vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
+			float relHeightE = calculateHeight(  clamp(coord + vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
+			float relHeightW = calculateHeight(  clamp(coord - vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
+			
+			vec3  normal = normalize(vec3(relHeightW - relHeightE, relHeightS - relHeightN, 0.3333));
+
+		#elif NORMAL_TEXTURE_MODE == 1
+
+			vec3 normal = texture2D(normals, coord).xyz * 2 - 1;
+			normal.z    = sqrt(1 - dot(normal.xy, normal.xy));
+
+		#endif
 
 		// DIRECTIONAL LIGHTMAPS ////////////////////////////////
 		vec2 blockLightDir = getBlocklightDir(lmcoord, tbn);
 		vec3 lightingDir   = normalize( vec3(blockLightDir, 1 + sq(sq(lmcoord.x))) ); // The closer to the light source, the "higher" the light is
 
-		float diffuse = dot(normal, lightingDir) * 0.5 + 0.5;
+		float diffuse = dot(normal, lightingDir) * (DIRECTIONAL_LIGHTMAPS_STRENGTH * 0.5) + (0.5 * (1 - DIRECTIONAL_LIGHTMAPS_STRENGTH) + 0.5);
 		diffuse       = diffuse * directionalLightmapStrength + (1 - directionalLightmapStrength);
 
 	#endif
@@ -171,7 +183,7 @@ void main() {
 
 	#endif
 
-	
+	//color.rgb = normal * 0.5 + 0.5;
 
 	#if DITHERING >= 1
 		color.rgb += ditherColor(gl_FragCoord.xy);
