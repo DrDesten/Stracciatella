@@ -143,11 +143,12 @@ void main() {
 
 	#ifdef COLOR_LUT
 		#ifdef LUT_LOG_COLOR
-		color  = log(color * 1.1 + 1);
+		color = log(color * (E-1) + 1);
 		#endif
 		color -= Bayer8(gl_FragCoord.xy) * (3./ (LUT_CELL_SIZE * LUT_CELL_SIZE)) - (1.5/ (LUT_CELL_SIZE * LUT_CELL_SIZE));
 		color  = applyLUT(colortex2, color, LUT_CELL_SIZE);
 	#endif
+
 
 	#if DITHERING >= 2 && !defined COLOR_LUT
 		color.rgb -= ditherColor(gl_FragCoord.xy);
