@@ -97,8 +97,10 @@ option.CUSTOM_LIGHTMAP=Custom Lightmap
 screen.CUSTOM_LIGHTMAP_COLOR_CONFIG=Custom Lightmap Colors
 option.LIGHTMAP_SKYLIGHT_AO=Skylight AO
 option.LIGHTMAP_SKYLIGHT_AO.comment=Specifies the amount of ambient occlusion on skylight.
+suffix.LIGHTMAP_SKYLIGHT_AO=%
 option.LIGHTMAP_BLOCKLIGHT_AO=Blocklight AO
 option.LIGHTMAP_BLOCKLIGHT_AO.comment=Specifies the amount of ambient occlusion on blocklight.
+suffix.LIGHTMAP_BLOCKLIGHT_AO=%
 option.LIGHTMAP_SKYLIGHT_CONTRAST=Skylight Gamma
 option.LIGHTMAP_SKYLIGHT_CONTRAST.comment=Higher = Darker. Lower = Brighter.
 option.LIGHTMAP_BLOCKLIGHT_CONTRAST=Blocklight Gamma
@@ -145,13 +147,7 @@ value.NORMAL_TEXTURE_MODE.1=Texture
 
 option.GENERATED_NORMALS_RESOLUTION_MULTIPLIER=Normals Resolution Multiplier
 option.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.comment=Auto-Generated Normals may have a different resolution than your resource pack. This slider allows you to select a higher resolution for the normals. No performance impact.
-value.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.0.25=0.25x
-value.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.0.5=0.5x
-value.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.1=1x
-value.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.2=2x
-value.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.4=4x
-value.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.8=8x
-value.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.16=16x
+suffix.GENERATED_NORMALS_RESOLUTION_MULTIPLIER=x
 
 ///////////////////////////////////////////////////////////
 // WEATHER
@@ -288,11 +284,21 @@ option.BLOCK_OUTLINE_SOLID=Solid Block Outline
 option.LINE_THICKNESS.comment=Makes the block outline no longer transparent.
 option.LINE_THICKNESS=Line Thickness
 option.LINE_THICKNESS.comment=Applies to all non-UI lines, for example hit boxes. §c§n/!\§r Only works from versions 1.17 and onwards.
+suffix.LINE_THICKNESS=px
 
+option.BLOCK_OUTLINE_STYLE=Block Outline Style
+value.BLOCK_OUTLINE_STYLE.0=Black
+value.BLOCK_OUTLINE_STYLE.1=White
+value.BLOCK_OUTLINE_STYLE.2=Rainbow
+value.BLOCK_OUTLINE_STYLE.3=Custom Color
 
+screen.BLOCK_OUTLINE_COLOR_CONFIG=Custom Color Configuration
+option.BLOCK_OUTLINE_COLOR_R=Block Outline Color §cR
+option.BLOCK_OUTLINE_COLOR_G=Block Outline Color §2G
+option.BLOCK_OUTLINE_COLOR_B=Block Outline Color §9B
 
 option.SHADER_NAME=Stracciatella Shaders
-value.SHADER_NAME.0=v1.1
+value.SHADER_NAME.0=v1.2
 
 option.CREDITS=by
 value.CREDITS.0=DrDesten
