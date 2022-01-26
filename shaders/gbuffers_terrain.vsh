@@ -55,9 +55,10 @@ varying vec4 glcolor;
 varying vec3 viewPos;
 
 attribute vec4 at_tangent;
-varying vec2 spriteSize;
-varying vec2 midTexCoord;
-varying mat2 tbn;
+varying vec2   spriteSize;
+varying vec2   midTexCoord;
+varying mat2   tbn;
+varying float  directionalLightmapStrength;
 
 #ifdef RAIN_PUDDLES
 uniform float rainPuddle;
@@ -79,6 +80,12 @@ void main() {
 	spriteSize  = abs(coord - mc_midTexCoord.xy);
 	midTexCoord = mc_midTexCoord.xy;
 	tbn         = mat2(getTBN(at_tangent));
+
+	directionalLightmapStrength = 1.0;
+	if (mc_Entity.x == 1040) directionalLightmapStrength = 0.1;
+	else if (mc_Entity.x == 1041) directionalLightmapStrength = 0.75;
+	else if ((mc_Entity.x >= 1030 && mc_Entity.x <= 1032) || mc_Entity.x == 1035) directionalLightmapStrength = 0.8;
+
 
 	#ifdef BLINKING_ORES
 

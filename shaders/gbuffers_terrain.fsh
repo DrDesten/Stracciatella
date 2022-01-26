@@ -35,9 +35,10 @@ varying vec4 glcolor;
 varying vec3 viewPos;
 
 uniform ivec2 atlasSize;
-varying vec2 spriteSize;
-varying vec2 midTexCoord;
-varying mat2 tbn;
+varying vec2  spriteSize;
+varying vec2  midTexCoord;
+varying mat2  tbn;
+varying float directionalLightmapStrength;
 
 
 #ifdef RAIN_PUDDLES
@@ -94,6 +95,7 @@ void main() {
 
 	#endif
 
+	// NORMAL MAP GENERATION ////////////////////////////////
 	vec2  atlasPixel = 0.5 / atlasSize;
 	float baseHeight = mean(texture2DLod(texture, coord, 100.0).rgb);
 	float relHeightN = calculateHeight(  clamp(coord + vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
@@ -101,20 +103,19 @@ void main() {
 	float relHeightE = calculateHeight(  clamp(coord + vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
 	float relHeightW = calculateHeight(  clamp(coord - vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
 	
-	vec3 normal = normalize(vec3(relHeightW - relHeightE, relHeightS - relHeightN, 0.5));
+	vec3  normal = normalize(vec3(relHeightW - relHeightE, relHeightS - relHeightN, 0.5));
 
+	// DIRECTIONAL LIGHTMAPS ////////////////////////////////
 	vec2 blockLightDir = getBlocklightDir(lmcoord, tbn);
+	vec3 lightingDir   = normalize( vec3(blockLightDir, 1 + sq(sq(lmcoord.x))) ); // The closer to the light source, the "higher" the light is
 
-	float diff = dot(normal, normalize(vec3(blockLightDir, cb(lmcoord.x) * 2))) * 0.5 + 0.5;
-	vec2 newlm = lmcoord;
-	newlm.x *= diff;
-
-	//color.rgb = newlm.xxx;
+	float diffuse = dot(normal, lightingDir) * 0.5 + 0.5;
+	diffuse       = diffuse * directionalLightmapStrength + (1 - directionalLightmapStrength);
 
 	#ifndef CUSTOM_LIGHTMAP
 		color.rgb *= getLightmap(lmcoord) * glcolor.a;
 	#else
-		color.rgb *= getCustomLightmap(newlm, customLightmapBlend, glcolor.a);
+		color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
 	#endif
 
 	#ifdef BLINKING_ORES
