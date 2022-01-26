@@ -136,6 +136,15 @@ option.LIGHTMAP_COMPLEX_BLOCK_DARK_G=Complex Blocklight Dark §2G
 option.LIGHTMAP_COMPLEX_BLOCK_DARK_B=Complex Blocklight Dark §9B
 
 
+option.DIRECTIONAL_LIGHTMAPS=Directional Lightmaps
+option.GENERATED_NORMALS_RESOLUTION_MULTIPLIER=Normals Resolution Multiplier
+option.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.comment=Auto-Generated Normals may have a different resolution than your resource pack. This slider allows you to select a higher resolution for the normals. No performance impact.
+value.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.0.5=0.5x
+value.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.1=1x
+value.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.2=2x
+value.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.4=4x
+value.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.8=8x
+value.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.16=16x
 
 ///////////////////////////////////////////////////////////
 // WEATHER

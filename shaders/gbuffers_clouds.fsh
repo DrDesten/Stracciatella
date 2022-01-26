@@ -34,7 +34,6 @@ varying vec2 coord;
 varying vec4 glcolor;
 varying vec3 viewPos;
 
-
 /* DRAWBUFFERS:0 */
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
