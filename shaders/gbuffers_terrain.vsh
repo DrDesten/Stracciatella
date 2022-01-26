@@ -54,11 +54,13 @@ varying vec2 coord;
 varying vec4 glcolor;
 varying vec3 viewPos;
 
+#ifdef DIRECTIONAL_LIGHTMAPS
 attribute vec4 at_tangent;
 varying vec2   spriteSize;
 varying vec2   midTexCoord;
 varying mat2   tbn;
 varying float  directionalLightmapStrength;
+#endif
 
 #ifdef RAIN_PUDDLES
 uniform float rainPuddle;
@@ -77,14 +79,18 @@ void main() {
 	glcolor = gl_Color;
 	viewPos = getView();
 
-	spriteSize  = abs(coord - mc_midTexCoord.xy);
-	midTexCoord = mc_midTexCoord.xy;
-	tbn         = mat2(getTBN(at_tangent));
+	#ifdef DIRECTIONAL_LIGHTMAPS
 
-	directionalLightmapStrength = 1.0;
-	if (mc_Entity.x == 1040) directionalLightmapStrength = 0.1;
-	else if (mc_Entity.x == 1041) directionalLightmapStrength = 0.75;
-	else if ((mc_Entity.x >= 1030 && mc_Entity.x <= 1032) || mc_Entity.x == 1035) directionalLightmapStrength = 0.8;
+		spriteSize  = abs(coord - mc_midTexCoord.xy);
+		midTexCoord = mc_midTexCoord.xy;
+		tbn         = mat2(getTBN(at_tangent));
+
+		directionalLightmapStrength = 1.0;
+		if (mc_Entity.x == 1040) directionalLightmapStrength = 0.1;
+		else if (mc_Entity.x == 1041) directionalLightmapStrength = 0.75;
+		else if ((mc_Entity.x >= 1030 && mc_Entity.x <= 1032) || mc_Entity.x == 1035) directionalLightmapStrength = 0.8;
+
+	#endif
 
 
 	#ifdef BLINKING_ORES

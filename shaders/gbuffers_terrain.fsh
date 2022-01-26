@@ -34,12 +34,13 @@ varying vec2 coord;
 varying vec4 glcolor;
 varying vec3 viewPos;
 
-uniform ivec2 atlasSize;
-varying vec2  spriteSize;
-varying vec2  midTexCoord;
-varying mat2  tbn;
-varying float directionalLightmapStrength;
-
+#ifdef DIRECTIONAL_LIGHTMAPS
+	uniform ivec2 atlasSize;
+	varying vec2  spriteSize;
+	varying vec2  midTexCoord;
+	varying mat2  tbn;
+	varying float directionalLightmapStrength;
+#endif
 
 #ifdef RAIN_PUDDLES
 	uniform sampler2D colortex4;
@@ -95,27 +96,43 @@ void main() {
 
 	#endif
 
-	// NORMAL MAP GENERATION ////////////////////////////////
-	vec2  atlasPixel = 0.5 / atlasSize;
-	float baseHeight = mean(texture2DLod(texture, coord, 100.0).rgb);
-	float relHeightN = calculateHeight(  clamp(coord + vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
-	float relHeightS = calculateHeight(  clamp(coord - vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
-	float relHeightE = calculateHeight(  clamp(coord + vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
-	float relHeightW = calculateHeight(  clamp(coord - vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
-	
-	vec3  normal = normalize(vec3(relHeightW - relHeightE, relHeightS - relHeightN, 0.5));
+	#ifdef DIRECTIONAL_LIGHTMAPS
 
-	// DIRECTIONAL LIGHTMAPS ////////////////////////////////
-	vec2 blockLightDir = getBlocklightDir(lmcoord, tbn);
-	vec3 lightingDir   = normalize( vec3(blockLightDir, 1 + sq(sq(lmcoord.x))) ); // The closer to the light source, the "higher" the light is
+		// NORMAL MAP GENERATION ////////////////////////////////
+		vec2  atlasPixel = (1. / GENERATED_NORMALS_RESOLUTION_MULTIPLIER) / atlasSize;
+		float baseHeight = mean(texture2DLod(texture, coord, 100.0).rgb);
+		float relHeightN = calculateHeight(  clamp(coord + vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
+		float relHeightS = calculateHeight(  clamp(coord - vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
+		float relHeightE = calculateHeight(  clamp(coord + vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
+		float relHeightW = calculateHeight(  clamp(coord - vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
+		
+		vec3  normal = normalize(vec3(relHeightW - relHeightE, relHeightS - relHeightN, 0.5));
 
-	float diffuse = dot(normal, lightingDir) * 0.5 + 0.5;
-	diffuse       = diffuse * directionalLightmapStrength + (1 - directionalLightmapStrength);
+		// DIRECTIONAL LIGHTMAPS ////////////////////////////////
+		vec2 blockLightDir = getBlocklightDir(lmcoord, tbn);
+		vec3 lightingDir   = normalize( vec3(blockLightDir, 1 + sq(sq(lmcoord.x))) ); // The closer to the light source, the "higher" the light is
 
-	#ifndef CUSTOM_LIGHTMAP
-		color.rgb *= getLightmap(lmcoord) * glcolor.a;
-	#else
+		float diffuse = dot(normal, lightingDir) * 0.5 + 0.5;
+		diffuse       = diffuse * directionalLightmapStrength + (1 - directionalLightmapStrength);
+
+	#endif
+
+	#ifdef CUSTOM_LIGHTMAP
+
+		#ifdef DIRECTIONAL_LIGHTMAPS
+		color.rgb *= getCustomLightmap(lmcoord * vec2(diffuse, 1), customLightmapBlend, glcolor.a);
+		#else
 		color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
+		#endif
+
+	#else
+
+		#ifdef DIRECTIONAL_LIGHTMAPS
+		color.rgb *= getLightmap(lmcoord * vec2(diffuse, 1)) * glcolor.a;
+		#else
+		color.rgb *= getLightmap(lmcoord) * glcolor.a;
+		#endif
+
 	#endif
 
 	#ifdef BLINKING_ORES
