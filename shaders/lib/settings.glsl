@@ -1,3 +1,11 @@
+/* TODO:
+Proper Cave fog (based on eyeBrightnessSmooth)
+customizable cave fog color
+
+customizable rain puddle water color
+
+swamp colors?
+*/
 
 #define FOG
 #define FOG_QUALITY 1 // [0 1]
