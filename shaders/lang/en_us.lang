@@ -156,6 +156,7 @@ suffix.GENERATED_NORMALS_RESOLUTION_MULTIPLIER=x
 screen.WEATHER=Weather
 
 option.RAIN_DETECTION_MODE=Rain Detection
+option.RAIN_DETECTION_MODE.comment=How the shader detects if rain is present. "Color" is generally the better option. §nSelect "Temperature" if:§r. Rain does not receive rain effects. Things that are not rain receive rain effects.
 value.RAIN_DETECTION_MODE.0=Temperature 
 value.RAIN_DETECTION_MODE.1=Color
 
