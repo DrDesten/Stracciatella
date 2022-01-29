@@ -154,7 +154,12 @@ suffix.GENERATED_NORMALS_RESOLUTION_MULTIPLIER=x
 ///////////////////////////////////////////////////////////
 
 screen.WEATHER=Weather
-option.RAIN_EFFECTS=Rain Effects
+
+option.RAIN_DETECTION_MODE=Rain Detection
+value.RAIN_DETECTION_MODE.0=Temperature 
+value.RAIN_DETECTION_MODE.1=Color
+
+option.RAIN_EFFECTS=Rain Refraction
 option.RAIN_EFFECTS_STRENGTH=Rain Refraction Strength
 option.RAIN_OPACITY=Rain Opacity
 
@@ -162,6 +167,10 @@ option.RAIN_PUDDLES=Rain Puddles
 option.RAIN_PUDDLES_COVERAGE=Rain Puddle Coverage
 option.RAIN_PUDDLES_SIZE=Rain Puddle Size
 option.RAIN_PUDDLES_DEPTH=Rain Puddle Opacity
+
+option.ANGLED_RAIN=Angled Rain
+option.ANGLED_RAIN_AMOUNT=Angled Rain Amount
+option.ANGLED_RAIN_ROTATION_SPEED=Angled Rain Rotation Speed
 
 
 ///////////////////////////////////////////////////////////
