@@ -13,7 +13,9 @@ varying vec2 lmcoord;
 varying vec2 coord;
 varying vec4 glcolor;
 
+#if RAIN_DETECTION_MODE == 0
 uniform float temperature;
+#endif
 
 #ifdef RAIN_EFFECTS
 /* DRAWBUFFERS:03 */
@@ -23,19 +25,29 @@ uniform float temperature;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 
+	#ifdef RAIN_EFFECTS
+
+		float rain = 0;
+
+		#if RAIN_DETECTION_MODE == 0
+		if (temperature >= 0.15) { // Rain (detected based on player temperature)
+		#elif RAIN_DETECTION_MODE == 1
+		vec3 normalizedColor = normalize(color.rgb);
+		if (saturate((color.b) - mean(color.rg)) > 0.25) { // Rain (detected based on blue dominance)
+		#endif
+
+			rain    = fstep(0.01, color.a);
+			color.a = rain * RAIN_OPACITY;
+		}
+
+	#endif
+
 	#ifndef CUSTOM_LIGHTMAP
 	color.rgb *= getLightmap(lmcoord);
 	#else
 	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, 1);
 	#endif
 
-	#ifdef RAIN_EFFECTS
-		float rain = 0;
-		if (temperature >= 0.15) { // Rain
-			rain    = fstep(0.01, color.a);
-			color.a = rain * RAIN_OPACITY;
-		}
-	#endif
 
     #if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);

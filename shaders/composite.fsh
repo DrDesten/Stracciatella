@@ -96,8 +96,8 @@ vec3 applyLUT(sampler2D luttex, vec3 color, float sides) {
 void main() {
 	
 	#ifdef RAIN_EFFECTS
-		float rain = texture2D(colortex3, coord).r;
-		coord     += sin(vec2(rain * (TWO_PI * 10))) * RAIN_EFFECTS_STRENGTH;
+		float rain  = texture2D(colortex3, coord).r;
+		coord      += sin(vec2(rain * (TWO_PI * 10))) * RAIN_EFFECTS_STRENGTH;
 	#endif
 
 	vec3 color = getAlbedo(coord);

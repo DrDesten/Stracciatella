@@ -71,6 +71,9 @@ vec3 playerToView(vec3 playerPos) {
 vec4 playerToView(vec4 playerPos) {
     return gbufferModelView * playerPos;
 }
+vec4 playerToClip(vec3 playerPos) {
+    return projectHomogeneousMAD(transformMAD(playerPos.xyz, gbufferModelView), gl_ProjectionMatrix);
+}
 vec4 playerToClip(vec4 playerPos) {
     return projectHomogeneousMAD(transformMAD(playerPos.xyz, gbufferModelView), gl_ProjectionMatrix);
 }
