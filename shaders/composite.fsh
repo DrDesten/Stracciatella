@@ -90,7 +90,12 @@ vec3 applyLUT(sampler2D luttex, vec3 color, float sides) {
 	return color;
 }
 
-
+float roundVignette(vec2 coord) {
+	return saturate(exp(-sq(sqmag(coord * 1.75 - 0.875))));
+}
+float squareVignette(vec2 coord) {
+	return smoothstep( 0.7, 0.25, pow(sq(sq(coord.x - 0.5)) + sq(sq(coord.y - 0.5)), 0.25) );
+}
 
 /* DRAWBUFFERS:0 */
 void main() {
@@ -137,8 +142,10 @@ void main() {
 		color = applyBrightness(color, brightnessAmount, brightnessColorOffset);
 	#endif
 
-	#ifdef VIGNETTE
-		color *= saturate(exp(-sq(sqmag(coord * 1.75 - 0.875)))) * VIGNETTE_STRENGTH + (1 - VIGNETTE_STRENGTH);
+	#if VIGNETTE == 1
+		color *= roundVignette(coord) * VIGNETTE_STRENGTH + (1 - VIGNETTE_STRENGTH);;
+	#elif VIGNETTE == 2
+		color *= squareVignette(coord) * VIGNETTE_STRENGTH + (1 - VIGNETTE_STRENGTH);
 	#endif
 
 	#ifdef COLOR_LUT

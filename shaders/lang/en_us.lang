@@ -216,6 +216,9 @@ screen.CAMERA=Camera and Color
 
 option.VIGNETTE=Vignette
 option.VIGNETTE.comment=Darkens screen borders.
+value.VIGNETTE.0=OFF
+value.VIGNETTE.1=Round
+value.VIGNETTE.2=Square
 option.VIGNETTE_STRENGTH=Vignette Strength
 
 option.COLOR_LUT=LUT
