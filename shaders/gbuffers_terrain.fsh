@@ -144,7 +144,7 @@ void main() {
 
 		// DIRECTIONAL LIGHTMAPS ////////////////////////////////
 		vec2 blockLightDir = getBlocklightDir(lmcoord, tbn);
-		vec3 lightingDir   = normalize( vec3(blockLightDir, 1 + sq(sq(lmcoord.x))) ); // The closer to the light source, the "higher" the light is
+		vec3 lightingDir   = normalize( vec3(blockLightDir, 0.5 + sq(sq(lmcoord.x))) ); // The closer to the light source, the "higher" the light is
 
 		float diffuse = dot(normal, lightingDir) * (DIRECTIONAL_LIGHTMAPS_STRENGTH * 0.5) + (0.5 * (1 - DIRECTIONAL_LIGHTMAPS_STRENGTH) + 0.5);
 		diffuse       = diffuse * directionalLightmapStrength + (1 - directionalLightmapStrength);
