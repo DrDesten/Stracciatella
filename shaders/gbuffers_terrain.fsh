@@ -113,7 +113,7 @@ void main() {
 			vec2  waterCoords        = vec2(blockCoords.x, blockCoords.y * waterTextureAspect);
 			waterCoords.y           += waterTextureAspect * round(frameTimeCounter * 2);
 			vec4  waterTexture       = texture2D(colortex4, waterCoords);
-			waterTexture.rgb         = waterTexture.rgb * vec3(0.3, 0.4, 0.85);
+			waterTexture.rgb         = waterTexture.rgb * vec3(RAIN_PUDDLE_COLOR_R, RAIN_PUDDLE_COLOR_G, RAIN_PUDDLE_COLOR_B);
 
 			color.rgb = mix(color.rgb, waterTexture.rgb, puddle * waterTexture.a);
 
