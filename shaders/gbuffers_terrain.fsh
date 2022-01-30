@@ -1,3 +1,5 @@
+#extension GL_EXT_gpu_shader4 : require
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -82,11 +84,31 @@ void main() {
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb;
 
+	/* color.rgb  = texture2DLod(texture, coord, 4.0).rgb;
+	color.rgb *= glcolor.rgb; */
+
+
+	/* color.rg = round(color.rg * 7) / 7.;
+	color.b  = round(color.b * 7) / 7.; */
+
+	/* vec3 ycbcrColor = rgb2ycbcr(color.rgb);
+	ycbcrColor.x = round(ycbcrColor.x * 4) / 4.;
+	ycbcrColor.y = round(ycbcrColor.y * 8) / 8.;
+	ycbcrColor.z = round(ycbcrColor.z * 8) / 8.;
+	color.rgb       = ycbcr2rgb(ycbcrColor); */
+
+	/* vec3 hsvColor = rgb2hsv(color.rgb);
+	hsvColor.x = round(hsvColor.x * 15) / 15.;
+	hsvColor.y = round(hsvColor.y * 3) / 3.;
+	hsvColor.z = floor(hsvColor.z * 4 + 0.5) / 4.;
+	color.rgb     = hsv2rgb(hsvColor); */
+
+
 	#ifdef RAIN_PUDDLES
 
 		if (rainPuddle > 1e-10) {
 
-			vec2  waterTextureSize   = vec2(textureSize(colortex4, 0));
+			vec2  waterTextureSize   = vec2(textureSize2D(colortex4, 0));
 			float waterTextureAspect = waterTextureSize.x / waterTextureSize.y;
 			vec2  waterCoords        = vec2(blockCoords.x, blockCoords.y * waterTextureAspect);
 			waterCoords.y           += waterTextureAspect * round(frameTimeCounter * 2);

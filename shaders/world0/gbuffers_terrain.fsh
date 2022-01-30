@@ -1,3 +1,3 @@
-#version 130
+#version 120
 #define OVERWORLD
 #include "/gbuffers_terrain.fsh"
