@@ -1,5 +1,6 @@
 /* TODO:
 customizable rain puddle water color
+second vignette mode with more "square" vignette
 
 swamp colors?
 */
