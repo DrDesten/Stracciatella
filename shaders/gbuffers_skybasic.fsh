@@ -134,7 +134,7 @@ void main() {
 			vec2 skyCoord     = cubemapCoords(skyDir) * 0.35;
 
 			float starNoise = starVoronoi(skyCoord * STAR_DENSITY, 0.85);
-			float stars     = fstep(starNoise, (STAR_SIZE * 1e-4 * STAR_DENSITY));
+			float stars     = fstep(starNoise, (STAR_SIZE * 1e-4 * STAR_DENSITY), 5e3);
 
 			float starGlow = exp(-starNoise * star_glow_size) * STAR_GLOW_AMOUNT * (customStarBlend * 3 - 2);
 			stars          = saturate(stars + starGlow);
