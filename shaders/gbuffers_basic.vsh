@@ -10,6 +10,10 @@ varying vec4 glcolor;
 
 void main() {
 	gl_Position = ftransform();
+	gl_Position.z -= 0.0002 * gl_Position.w;
+	/* if (gl_Color.a < 0.5) {
+		gl_Position.z = 0;
+	} */
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 }
