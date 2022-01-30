@@ -78,6 +78,13 @@ option.FOG_NIGHT_RAIN_R=Fog Night Rain §cR
 option.FOG_NIGHT_RAIN_G=Fog Night Rain §2G
 option.FOG_NIGHT_RAIN_B=Fog Night Rain §9B
 
+option.FOG_CAVE_R=Cave Fog §cR
+option.FOG_CAVE_R.comment=Color of fog inside of caves. §e§n/!\§r Fog must be set to "Fancy".
+option.FOG_CAVE_G=Cave Fog §2G
+option.FOG_CAVE_G.comment=Color of fog inside of caves. §e§n/!\§r Fog must be set to "Fancy".
+option.FOG_CAVE_B=Cave Fog §9B
+option.FOG_CAVE_B.comment=Color of fog inside of caves. §e§n/!\§r Fog must be set to "Fancy".
+
 
 screen.END_SKY_CONFIG=End Sky
 option.END_SKY_UP_R=End Sky Upper §cR
