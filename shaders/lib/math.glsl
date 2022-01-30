@@ -434,6 +434,25 @@ float luminance(vec3 color) {
     return dot(color, vec3(0.2126, 0.7152, 0.0722));
 }
 
+vec3 rgb2ycbcr(vec3 rgb) {
+    const mat3 rgb2ycbcrMatrix = mat3(
+        .299, -.168736,  .5,
+        .587, -.331264, -.418688,
+        .114,  .5,      -.081312
+    );
+    return rgb2ycbcrMatrix * rgb + vec3(0, 0.5, 0.5);
+}
+
+vec3 ycbcr2rgb(vec3 ycbcr) {
+    ycbcr = vec3(ycbcr.x, ycbcr.y - 0.5, ycbcr.z - 0.5);
+    const mat3 ycbcr2rgbMatrix = mat3(
+        1,     1,        1,
+        0,     -.344136, 1.772,
+        1.402, -.714136, 0
+    );
+    return ycbcr2rgbMatrix * ycbcr;
+}
+
 vec3 rgb2hsv(vec3 c) {
     const vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
     vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
