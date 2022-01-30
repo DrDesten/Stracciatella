@@ -10,17 +10,21 @@ value.FOG_QUALITY.0=Fast
 value.FOG_QUALITY.1=Fancy
 option.FOG_QUALITY.comment=Fast: Looks broken like the vanilla fog. Fancy: Does not look broken.
 option.FOG_START=Fog Start
+option.FOG_START.comment=Sets where the fog starts appearing. Relative to render distance.
 option.FOG_END=Fog End
+option.FOG_END.comment=Sets where the fog reaches its maximum. Relative to render distance.
 
 screen.SUN_MOON_CONFIG=Sun and Moon
-option.SUN_SIZE_CHANGE=Manipulate Sun Size
-option.SUN_SIZE=Sun Size
+option.SUN_SIZE_CHANGE=Change Sun and Moon Size
+option.SUN_SIZE=Sun and Moon Size
+option.SUN_SIZE.comment=Changes the size of sun and moon
 option.sunPathRotation=Sun Angle
 option.sunPathRotation.comment=Tilts the rotation axis of sun and moon. Vanilla is 0.
 
 option.HORIZON_CLIP=Hide under Horizon
+option.HORIZON_CLIP.comment=Sun and moon start disappering under the horizon
 option.HORIZON_CLIP_HEIGHT=Transition Height
-option.HORIZON_CLIP_HEIGHT.comment=Lower: sun and moon appear lower. Higher: Sun and Moon appear higher.
+option.HORIZON_CLIP_HEIGHT.comment=Lower: sun and moon appear lower. Higher: sun and moon appear higher.
 option.HORIZON_CLIP_TRANSITION=Transition
 option.HORIZON_CLIP_TRANSITION.comment=Lower: Longer transition. Higher: Shorter transition.
 
