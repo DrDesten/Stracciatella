@@ -134,6 +134,7 @@ const float shooting_stars_thickness = SHOOTING_STARS_THICKNESS * shooting_stars
 
 #define CLOUD_STEPS 10
 
+//#define THICC_CLOUDS // Make sure you set cloud height to 20% or this won't do anything
 
 
 
