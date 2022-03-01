@@ -6,7 +6,7 @@
 #include "/lib/composite_basics.glsl"
 
 /*
-const int colortex0Format = RGB8;  // Color
+const int colortex0Format = RGB16;  // Color
 const int colortex1Format = R8;    // Empty
 const int colortex2Format = R8;    // Empty
 const int colortex3Format = R8;    // Effects
@@ -24,6 +24,7 @@ const float drynessHalflife = 400;
 
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 
+uniform float frameTimeCounter;
 
 #ifdef COLOR_LUT
 uniform sampler2D colortex2; // LUT
@@ -152,10 +153,11 @@ void main() {
 		#ifdef LUT_LOG_COLOR
 		color = log(color * (E-1) + 1);
 		#endif
-		color -= Bayer8(gl_FragCoord.xy) * (3./ (LUT_CELL_SIZE * LUT_CELL_SIZE)) - (1.5/ (LUT_CELL_SIZE * LUT_CELL_SIZE));
-		color  = applyLUT(colortex2, color, LUT_CELL_SIZE);
+		color = vec3(coord, (sin(frameTimeCounter) * 0.5 + 0.5) * 0);
+		//color -= Bayer8(gl_FragCoord.xy) * (3./ (LUT_CELL_SIZE * LUT_CELL_SIZE)) - (1.5/ (LUT_CELL_SIZE * LUT_CELL_SIZE));
+		//color  = applyLUT(colortex2, color, LUT_CELL_SIZE);
+		color = texture2D(colortex0, coord / 32).rgb;
 	#endif
-
 
 	#if DITHERING >= 2 && !defined COLOR_LUT
 		color.rgb -= ditherColor(gl_FragCoord.xy);

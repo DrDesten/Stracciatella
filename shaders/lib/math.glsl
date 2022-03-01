@@ -1,14 +1,14 @@
 #define GAMMA 2.0
 
-const float TWO_PI  = 6.28318530717958647692;
-const float PI      = 3.14159265358979323846;
-const float HALF_PI = 1.57079632679489661923;
-const float INV_PI  = 0.31830988618379067153;
+const float TWO_PI  = 6.2831853071795864769252867665590057683943387987502;
+const float PI      = 3.1415926535897932384626433832795028841971693993751;
+const float HALF_PI = 1.5707963267948966192313216916397514420985846996876;
+const float INV_PI  = 0.3183098861837906715377675267450287240689192914809;
 
-const float PHI     = 1.61803398874989484820;
+const float PHI     = 1.6180339887498948482045868343656381177203091798058;
+const float PHI_INV = 0.6180339887498948482045868343656381177203091798058;
 
-const float E       = 2.7182818284590452353602874713526624977572470936999595749669676277;
-
+const float E       = 2.7182818284590452353602874713526624977572470937000;
 
 ////////////////////////////////////////////////////////////////////////
 // General Functions
@@ -123,6 +123,19 @@ vec4 cb(vec4 x) {
     return x * x * x;
 }
 
+float sqsq(float x) { // Cube
+    return sq(sq(x));
+}
+vec2 sqsq(vec2 x) {
+    return sq(sq(x));
+}
+vec3 sqsq(vec3 x) {
+    return sq(sq(x));
+}
+vec4 sqsq(vec4 x) {
+    return sq(sq(x));
+}
+
 float logn(float base, float res) { // Log base n
     return log2(res) / log2(base);
 }
@@ -180,7 +193,7 @@ float ign(vec2 co) { // Interlieved Gradient Noise, very noice noise ( ͡° ͜ʖ
 }
 
 float ditherColor(vec2 co) {
-    return ign(floor(co)) * (1./256) - (0.5/256);
+    return Bayer4(co) * (4./256) - (2./256);
 }
 
 float checkerboard(vec2 co) {
@@ -192,7 +205,7 @@ float rand(float x) {
     return fract(sin(x * 12.9898) * 4375.5453123);
 }
 float rand(vec2 x) {
-    return fract(sin(dot(x, vec2(12.9898,78.233))) * 4375.5453);
+    return fract(sin(x.x * 12.9898 + x.y * 78.233) * 4375.5453);
 }
 
 vec2 N22(vec2 x) {
@@ -434,23 +447,24 @@ float luminance(vec3 color) {
     return dot(color, vec3(0.2126, 0.7152, 0.0722));
 }
 
-vec3 rgb2ycbcr(vec3 rgb) {
-    const mat3 rgb2ycbcrMatrix = mat3(
-        .299, -.168736,  .5,
-        .587, -.331264, -.418688,
-        .114,  .5,      -.081312
-    );
-    return rgb2ycbcrMatrix * rgb + vec3(0, 0.5, 0.5);
+vec3 applyBrightness(vec3 color, float brightness, float colorOffset) { // Range: inf-0
+	float tmp = (1 / (2 * colorOffset + 1));
+	color = color * tmp + (colorOffset * tmp);
+	return pow(color, vec3(brightness));
 }
-
-vec3 ycbcr2rgb(vec3 ycbcr) {
-    ycbcr = vec3(ycbcr.x, ycbcr.y - 0.5, ycbcr.z - 0.5);
-    const mat3 ycbcr2rgbMatrix = mat3(
-        1,     1,        1,
-        0,     -.344136, 1.772,
-        1.402, -.714136, 0
-    );
-    return ycbcr2rgbMatrix * ycbcr;
+vec3 applyContrast(vec3 color, float contrast) { // Range: 0-inf
+	color = color * 0.99 + 0.005;
+	vec3 colorHigh = 1 - 0.5 * pow(-2 * color + 2, vec3(contrast));
+	vec3 colorLow  =     0.5 * pow( 2 * color,     vec3(contrast));
+	return saturate(mix(colorLow, colorHigh, color));
+}
+vec3 applySaturation(vec3 color, float saturation) { // Range: 0-2
+    return saturate(mix(vec3(luminance(color)), color, saturation));
+}
+vec3 applyVibrance(vec3 color, float vibrance) { // -1 to 1
+	float luminance  = luminance(color);
+	float saturation = distance(vec3(luminance), color);
+	return applySaturation(color, (1 - saturation) * vibrance + 1);
 }
 
 vec3 rgb2hsv(vec3 c) {
@@ -468,13 +482,62 @@ vec3 hsv2rgb(vec3 c) {
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-vec3 gamma(inout vec3 color) {
+vec3 gamma(vec3 color) {
     color = pow(color, vec3(GAMMA));
     return color;
 }
 vec3 gamma_inv(vec3 color) {
     color = pow(color, vec3(1 / GAMMA));
     return color;
+}
+
+vec3 normalizeColor(vec3 col) {
+    col += 1e-5; // prevent NaNs
+    return col / max(col.r, max(col.g, col.b));
+}
+
+vec4 cubic(float v) {
+    vec4 n = vec4(1.0, 2.0, 3.0, 4.0) - v;
+    vec4 s = n * n * n;
+    float x = s.x;
+    float y = s.y - 4.0 * s.x;
+    float z = s.z - 4.0 * s.y + 6.0 * s.x;
+    float w = 6.0 - x - y - z;
+    return vec4(x, y, z, w) * (1.0/6.0);
+}
+
+vec4 textureBicubic(sampler2D sampler, vec2 texCoords) {
+
+   vec2 texSize = textureSize(sampler, 0);
+   vec2 invTexSize = 1.0 / texSize;
+
+   texCoords = texCoords * texSize - 0.5;
+
+
+    vec2 fxy = fract(texCoords);
+    texCoords -= fxy;
+
+    vec4 xcubic = cubic(fxy.x);
+    vec4 ycubic = cubic(fxy.y);
+
+    vec4 c = texCoords.xxyy + vec2 (-0.5, +1.5).xyxy;
+
+    vec4 s = vec4(xcubic.xz + xcubic.yw, ycubic.xz + ycubic.yw);
+    vec4 offset = c + vec4 (xcubic.yw, ycubic.yw) / s;
+
+    offset *= invTexSize.xxyy;
+
+    vec4 sample0 = texture(sampler, offset.xz);
+    vec4 sample1 = texture(sampler, offset.yz);
+    vec4 sample2 = texture(sampler, offset.xw);
+    vec4 sample3 = texture(sampler, offset.yw);
+
+    float sx = s.x / (s.x + s.y);
+    float sy = s.z / (s.z + s.w);
+
+    return mix(
+       mix(sample3, sample2, sx), mix(sample1, sample0, sx)
+    , sy);
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -518,9 +581,12 @@ vec2 convertPolarCartesian(vec2 coord) {
     return vec2(coord.x * cos(coord.y), coord.x * sin(coord.y));
 }
 
-float linearizeDepth(float d,float nearPlane,float farPlane) {
+float linearizeDepth(float d,float nearPlane,float farPlane) { // Linearizes the depth to viewspace z
     d = 2.0 * d - 1.0; // Convert to NDC (normalized device coordinates)
     return 2.0 * nearPlane * farPlane / (farPlane + nearPlane - d * (farPlane - nearPlane));
+}
+float linearizeDepthInverse(float l, float nearPlane, float farPlane) { // Un-Linearizes viewspace z to screenspace depth
+    return (farPlane * (l-nearPlane))/(l * (farPlane-nearPlane));
 }
 float linearizeDepthf(float d, float slope) { // For matching results, slope should be set to 1/nearPlane
     return 1 / ((-d * slope) + slope);
@@ -543,7 +609,7 @@ float schlickFresnel(vec3 viewRay, vec3 normal, float refractiveIndex, float bas
     return reflectiveness;
 }
 float schlickFresnel(vec3 viewDir, vec3 normal, float F0) {
-    float NormalDotView = dot(-viewDir, normal);
+    float NormalDotView = clamp(dot(-viewDir, normal), 0, 1);
     return F0 + (1.0 - F0) * pow(1.0 - NormalDotView, 5.0);
 }
 float customFresnel(vec3 viewRay, vec3 normal, float bias, float scale, float power) {
@@ -598,6 +664,15 @@ vec2 mirrorClamp(vec2 coord) { //Repeats coords while mirroring them (without br
 
     return coord;
 }
+vec2 distortClamp(vec2 coord) {
+    coord = coord * 2 - 1;
+
+    vec2 d = abs(coord * 1.5);
+    d      = max(d-1.5, 0);
+    coord *= exp2(-d);
+ 
+    return coord * .5 + .5;
+}
 
 
 float smoothCutoff(float x, float cutoff, float taper) {
@@ -611,4 +686,29 @@ float angle(vec2 v) {
     float ang = HALF_PI - atan(v.x / v.y);
     if(v.y < 0) {ang = ang + PI;}
     return ang;
+}
+
+
+////////////////////////////////////////////////////////////////////////
+// (Un)Packing Functions
+
+vec2 signNotZero(vec2 v) {
+    return vec2((v.x >= 0.0) ? +1.0 : -1.0, (v.y >= 0.0) ? +1.0 : -1.0);
+}
+
+vec2 octahedralEncode(in vec3 v) {
+    float l1norm = abs(v.x) + abs(v.y) + abs(v.z);
+    vec2  result = v.xy * (1.0 / l1norm);
+    if (v.z < 0.0) {
+        result = (1.0 - abs(result.yx)) * signNotZero(result.xy);
+    }
+    return result;
+}
+
+vec3 octahedralDecode(vec2 o) {
+    vec3 v = vec3(o.x, o.y, 1.0 - abs(o.x) - abs(o.y));
+    if (v.z < 0.0) {
+        v.xy = (1.0 - abs(v.yx)) * signNotZero(v.xy);
+    }
+    return normalize(v);
 }
