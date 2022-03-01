@@ -32,27 +32,6 @@ uniform float customStarBlend;
 uniform float frameTimeCounter;
 #endif
 
-vec2 signNotZero(vec2 v) {
-    return vec2((v.x >= 0.0) ? +1.0 : -1.0, (v.y >= 0.0) ? +1.0 : -1.0);
-}
-vec2 octahedralEncode(vec3 v) {
-    float l1norm = abs(v.x) + abs(v.y) + abs(v.z);
-    vec2  result = v.xy * (1.0 / l1norm);
-    if (v.z < 0.0) {
-        result = (1.0 - abs(result.yx)) * signNotZero(result.xy);
-    }
-    return result;
-}
-vec3 octahedralDecode(vec2 o) {
-    vec3 v = vec3(o.x, o.y, 1.0 - abs(o.x) - abs(o.y));
-    if (v.z < 0.0) {
-        v.xy = (1.0 - abs(v.yx)) * signNotZero(v.xy);
-    }
-    return normalize(v);
-}
-
-
-
 vec2 cubemapCoords(vec3 direction) {
     float l  = max(max(abs(direction.x), abs(direction.y)), abs(direction.z));
     vec3 dir = direction / l;

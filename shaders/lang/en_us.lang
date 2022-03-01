@@ -214,6 +214,11 @@ option.WAVING_LIQUIDS_SPEED=Waving Liquids Speed
 
 screen.CAMERA=Camera and Color
 
+option.CONTRAST=Contrast
+option.VIBRANCE=Vibrance
+option.SATURATION=Saturation
+option.BRIGHTNESS=Brightness
+
 option.VIGNETTE=Vignette
 option.VIGNETTE.comment=Darkens screen borders.
 value.VIGNETTE.0=OFF
@@ -251,10 +256,7 @@ value.LUT_SELECTOR.18=lut18.png
 value.LUT_SELECTOR.19=lut19.png
 value.LUT_SELECTOR.20=lut20.png
 
-option.CONTRAST=Contrast
-option.VIBRANCE=Vibrance
-option.SATURATION=Saturation
-option.BRIGHTNESS=Brightness
+option.BICUBIC_SAMPLING=Use Bicubic Upscaling
 
 ///////////////////////////////////////////////////////////
 // WATER

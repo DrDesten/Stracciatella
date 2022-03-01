@@ -44,29 +44,6 @@ uniform vec3 fogColor;
 uniform float blindness;
 uniform float nightVision;
 
-
-vec3 applyBrightness(vec3 color, float brightness, float colorOffset) { // Range: inf-0
-	float tmp = (1 / (2 * colorOffset + 1));
-	color = color * tmp + (colorOffset * tmp);
-	return pow(color, vec3(brightness));
-}
-vec3 applyContrast(vec3 color, float contrast) { // Range: 0-inf
-	color = color * 0.99 + 0.005;
-	vec3 colorHigh = 1 - 0.5 * pow(-2 * color + 2, vec3(contrast));
-	vec3 colorLow  =     0.5 * pow( 2 * color,     vec3(contrast));
-	return saturate(mix(colorLow, colorHigh, color));
-}
-vec3 applySaturation(vec3 color, float saturation) { // Range: 0-2
-    return saturate(mix(vec3(luminance(color)), color, saturation));
-}
-vec3 applyVibrance(vec3 color, float vibrance) { // -1 to 1
-	float luminance  = luminance(color);
-	float saturation = distance(vec3(luminance), color);
-	return applySaturation(color, (1 - saturation) * vibrance + 1);
-}
-
-
-
 vec2 map3d2d(vec3 pos, float sides) {
 	float cellSize  = 1 / sides;
 	float cellIndex = floor(pos.z * sides * sides) * cellSize;
@@ -153,10 +130,8 @@ void main() {
 		#ifdef LUT_LOG_COLOR
 		color = log(color * (E-1) + 1);
 		#endif
-		color = vec3(coord, (sin(frameTimeCounter) * 0.5 + 0.5) * 0);
-		//color -= Bayer8(gl_FragCoord.xy) * (3./ (LUT_CELL_SIZE * LUT_CELL_SIZE)) - (1.5/ (LUT_CELL_SIZE * LUT_CELL_SIZE));
-		//color  = applyLUT(colortex2, color, LUT_CELL_SIZE);
-		color = texture2D(colortex0, coord / 32).rgb;
+		color -= Bayer8(gl_FragCoord.xy) * (3./ (LUT_CELL_SIZE * LUT_CELL_SIZE)) - (1.5/ (LUT_CELL_SIZE * LUT_CELL_SIZE));
+		color  = applyLUT(colortex2, color, LUT_CELL_SIZE);
 	#endif
 
 	#if DITHERING >= 2 && !defined COLOR_LUT
