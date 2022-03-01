@@ -41,7 +41,7 @@ varying vec3 viewPos;
 	varying mat2  tbn;
 	varying float directionalLightmapStrength;
 #endif
-#if NORMAL_TEXTURE_MODE == 1 && defined DIRECTIONAL_LIGHTMAPS
+#if NORMAL_TEXTURE_MODE == 1 && defined MC_NORMAL_MAP && defined DIRECTIONAL_LIGHTMAPS 
 	uniform sampler2D normals;
 #endif
 
@@ -121,7 +121,12 @@ void main() {
 
 	#ifdef DIRECTIONAL_LIGHTMAPS
 
-		#if NORMAL_TEXTURE_MODE == 0
+		#if NORMAL_TEXTURE_MODE == 1  && defined MC_NORMAL_MAP
+
+			vec3 normal = texture(normals, coord).xyz * 2 - 1;
+			normal.z    = sqrt(1 - dot(normal.xy, normal.xy));
+
+		#else
 
 			// NORMAL MAP GENERATION ////////////////////////////////
 			vec2  atlasPixel = (1. / GENERATED_NORMALS_RESOLUTION_MULTIPLIER) / atlasSize;
@@ -132,12 +137,7 @@ void main() {
 			float relHeightW = calculateHeight(  clamp(coord - vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
 			
 			vec3  normal = normalize(vec3(relHeightW - relHeightE, relHeightS - relHeightN, 0.3333));
-
-		#elif NORMAL_TEXTURE_MODE == 1
-
-			vec3 normal = texture(normals, coord).xyz * 2 - 1;
-			normal.z    = sqrt(1 - dot(normal.xy, normal.xy));
-
+			
 		#endif
 
 		// DIRECTIONAL LIGHTMAPS ////////////////////////////////
