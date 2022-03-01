@@ -1,5 +1,3 @@
-#extension GL_EXT_gpu_shader4 : require
-
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -64,13 +62,13 @@ varying vec3 viewPos;
 #endif
 
 float calculateHeight(vec2 coord) {
-	float baseHeight = mean(texture2DLod(texture, coord, 100.0).rgb);
-	float absHeight  = mean(texture2D(texture, coord).rgb);
+	float baseHeight = mean(textureLod(texture, coord, 100.0).rgb);
+	float absHeight  = mean(texture(texture, coord).rgb);
 	float relHeight  = (absHeight - baseHeight) * 0.5 + 0.5;
 	return relHeight;
 }
 float calculateHeight(vec2 coord, float baseHeight) {
-	float absHeight  = mean(texture2D(texture, coord).rgb);
+	float absHeight  = mean(texture(texture, coord).rgb);
 	float relHeight  = absHeight - baseHeight;
 	return relHeight;
 }
@@ -84,7 +82,7 @@ void main() {
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb;
 
-	/* color.rgb  = texture2DLod(texture, coord, 4.0).rgb;
+	/* color.rgb  = textureLod(texture, coord, 4.0).rgb;
 	color.rgb *= glcolor.rgb; */
 
 
@@ -108,11 +106,11 @@ void main() {
 
 		if (rainPuddle > 1e-10) {
 
-			vec2  waterTextureSize   = vec2(textureSize2D(colortex4, 0));
+			vec2  waterTextureSize   = vec2(textureSize(colortex4, 0));
 			float waterTextureAspect = waterTextureSize.x / waterTextureSize.y;
 			vec2  waterCoords        = vec2(blockCoords.x, blockCoords.y * waterTextureAspect);
 			waterCoords.y           += waterTextureAspect * round(frameTimeCounter * 2);
-			vec4  waterTexture       = texture2D(colortex4, waterCoords);
+			vec4  waterTexture       = texture(colortex4, waterCoords);
 			waterTexture.rgb         = waterTexture.rgb * vec3(RAIN_PUDDLE_COLOR_R, RAIN_PUDDLE_COLOR_G, RAIN_PUDDLE_COLOR_B);
 
 			color.rgb = mix(color.rgb, waterTexture.rgb, puddle * waterTexture.a);
@@ -127,7 +125,7 @@ void main() {
 
 			// NORMAL MAP GENERATION ////////////////////////////////
 			vec2  atlasPixel = (1. / GENERATED_NORMALS_RESOLUTION_MULTIPLIER) / atlasSize;
-			float baseHeight = mean(texture2DLod(texture, coord, 100.0).rgb);
+			float baseHeight = mean(textureLod(texture, coord, 100.0).rgb);
 			float relHeightN = calculateHeight(  clamp(coord + vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
 			float relHeightS = calculateHeight(  clamp(coord - vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
 			float relHeightE = calculateHeight(  clamp(coord + vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
@@ -137,7 +135,7 @@ void main() {
 
 		#elif NORMAL_TEXTURE_MODE == 1
 
-			vec3 normal = texture2D(normals, coord).xyz * 2 - 1;
+			vec3 normal = texture(normals, coord).xyz * 2 - 1;
 			normal.z    = sqrt(1 - dot(normal.xy, normal.xy));
 
 		#endif
