@@ -63,12 +63,12 @@ varying vec3 viewPos;
 
 float calculateHeight(vec2 coord) {
 	float baseHeight = mean(textureLod(texture, coord, 100.0).rgb);
-	float absHeight  = mean(texture(texture, coord).rgb);
+	float absHeight  = mean(texture2D(texture, coord).rgb);
 	float relHeight  = (absHeight - baseHeight) * 0.5 + 0.5;
 	return relHeight;
 }
 float calculateHeight(vec2 coord, float baseHeight) {
-	float absHeight  = mean(texture(texture, coord).rgb);
+	float absHeight  = mean(texture2D(texture, coord).rgb);
 	float relHeight  = absHeight - baseHeight;
 	return relHeight;
 }
@@ -110,7 +110,7 @@ void main() {
 			float waterTextureAspect = waterTextureSize.x / waterTextureSize.y;
 			vec2  waterCoords        = vec2(blockCoords.x, blockCoords.y * waterTextureAspect);
 			waterCoords.y           += waterTextureAspect * round(frameTimeCounter * 2);
-			vec4  waterTexture       = texture(colortex4, waterCoords);
+			vec4  waterTexture       = texture2D(colortex4, waterCoords);
 			waterTexture.rgb         = waterTexture.rgb * vec3(RAIN_PUDDLE_COLOR_R, RAIN_PUDDLE_COLOR_G, RAIN_PUDDLE_COLOR_B);
 
 			color.rgb = mix(color.rgb, waterTexture.rgb, puddle * waterTexture.a);
@@ -123,7 +123,7 @@ void main() {
 
 		#if NORMAL_TEXTURE_MODE == 1  && defined MC_NORMAL_MAP
 
-			vec3 normal = texture(normals, coord).xyz * 2 - 1;
+			vec3 normal = texture2D(normals, coord).xyz * 2 - 1;
 			normal.z    = sqrt(1 - dot(normal.xy, normal.xy));
 
 		#else
