@@ -6,7 +6,7 @@
 #include "/lib/composite_basics.glsl"
 
 /*
-const int colortex0Format = RGB16;  // Color
+const int colortex0Format = RGB8;  // Color
 const int colortex1Format = R8;    // Empty
 const int colortex2Format = R8;    // Empty
 const int colortex3Format = R8;    // Effects
