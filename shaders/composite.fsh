@@ -6,7 +6,7 @@
 #include "/lib/composite_basics.glsl"
 
 /*
-const int colortex0Format = RGB8;  // Color
+const int colortex0Format = RGBA8;  // Color
 const int colortex1Format = R8;    // Empty
 const int colortex2Format = R8;    // Empty
 const int colortex3Format = R8;    // Effects
@@ -137,5 +137,5 @@ void main() {
 	#if DITHERING >= 2 && !defined COLOR_LUT
 		color.rgb -= ditherColor(gl_FragCoord.xy);
 	#endif
-	gl_FragData[0] = vec4(color, 1.0);
+	gl_FragData[0] = vec4(color, luminance(color));
 }
