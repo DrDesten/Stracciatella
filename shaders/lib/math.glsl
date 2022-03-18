@@ -24,6 +24,26 @@ float fstep(float edge, float x, float slope) { // Fast step() function with no 
     return clamp((x - edge) * slope, 0, 1);
 }
 
+float maxc(vec2 v) {
+    return max(v.x, v.y);
+}
+float maxc(vec3 v) {
+    return max(max(v.x, v.y), v.z);
+}
+float maxc(vec4 v) {
+    return max(max(v.x, v.y), max(v.z, v.w));
+}
+
+float minc(vec2 v) {
+    return min(v.x, v.y);
+}
+float minc(vec3 v) {
+    return min(min(v.x, v.y), v.z);
+}
+float minc(vec4 v) {
+    return min(min(v.x, v.y), min(v.z, v.w));
+}
+
 float sum(vec2 v) {
     return v.x + v.y;
 }
