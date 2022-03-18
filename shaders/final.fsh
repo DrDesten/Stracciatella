@@ -39,9 +39,9 @@ void main() {
 	vec3 color = getAlbedo(coord);
 	#endif
 
-
+/* 
 	FXAALumas l = fillCross(coord);
-	if (l.contrast > max(0.03, 0.125 * l.highest)) { // Do FXAA
+	if (l.contrast > max(0.03, 0.125 * 0 * l.highest)) { // Do FXAA
 		// Get the remaining data points
 		l.ne = getLuma(coord + screenSizeInverse);
 		l.nw = getLuma(coord + vec2(-screenSizeInverse.x, screenSizeInverse.y));
@@ -106,6 +106,8 @@ void main() {
 			}
 			if (hit1 && hit2) break;
 		}
+		sco1 -= traceStep * FXAASteps[9] * float(!hit1); // Faking an extra step
+		sco2 += traceStep * FXAASteps[9] * float(!hit2);
 
 		float distance2 = isHorizontal ? (coord.x - sco1.x) : (coord.y - sco1.y);
 		float distance1 = isHorizontal ? (sco2.x - coord.x) : (sco2.y - coord.y);
@@ -113,9 +115,10 @@ void main() {
 		float distToEdge = min(distance1, distance2);
 		float edgeLength = distance1 + distance2;
 
-		bool isLumaCenterSmaller = l.m < edgeLuma;
-		bool isBumpBrighter = ((distance1 <= distance2 ? lumaDiff1 : lumaDiff2) > lumaEscapeDiff * 0.5);
-		bool edgeBumpDirection = isBumpBrighter != isLumaCenterSmaller;
+		bool  isLumaCenterSmaller = l.m < edgeLuma;
+		float bumpLuma = (distance1 - distance2 < maxc(traceStep) * 0.75) ? lumaDiff1 : lumaDiff2;
+		bool  isBumpBrighter = bumpLuma > (1.5/255);
+		bool  edgeBumpDirection = (isBumpBrighter != isLumaCenterSmaller);
 
 		float pixelOffset = 0.5 - distToEdge / edgeLength;
 
@@ -126,15 +129,18 @@ void main() {
 		else              FXAACoord.x += pixelOffset * normalStepSize;
 
 		color = getAlbedo(FXAACoord);
+		//color = vec3(normalize(traceStep), 0);
+		//color = vec3((distance1 <= distance2 ? lumaDiff1 : lumaDiff2)) * 3 + 0.5;
+		//color = vec3(distance1 - distance2 < maxc(traceStep) * 0.75);
 		//color = vec3(isEdge1);
 		//color = vec3(isHorizontal);
-		//color = vec3(edgeBumpDirection);
+		//color = vec3(isLumaCenterSmaller != (distance1 - distance2 < maxc(traceStep) * 0.75));
 		//color = vec3(distToEdge * 20);
 		//color = vec3(pixelOffset * 500);
 		//color = vec3(lumaDiff1 > 1e-10);
 		//color = vec3(distance1 <= distance2);
 		//color = vec3(horizontalComponent, verticalComponent, 0);
-	}
+	} */
 
 	gl_FragColor = vec4(color, 1.0);
 }
