@@ -353,3 +353,7 @@ const vec2 TAAOffsets[9] = vec2[]( // Samples 9 points around each pixel, with u
     vec2( -.25, 0.25),
     vec2( -.25, -.25)
 ); */
+
+const float FXAASteps[10] = float[](
+    1.0, 1.0, 1.0, 1.0, 1.0, 1.5, 2.0, 3.0, 4.0, 6.0
+);

@@ -10,7 +10,7 @@ const vec3 lightmapComplexBlockBright = vec3(LIGHTMAP_COMPLEX_BLOCK_BRIGHT_R, LI
 const vec3 lightmapComplexBlockDark   = vec3(LIGHTMAP_COMPLEX_BLOCK_DARK_R, LIGHTMAP_COMPLEX_BLOCK_DARK_G, LIGHTMAP_COMPLEX_BLOCK_DARK_B);
 
 const vec3 lightmapEnd    = vec3(END_SKY_UP_R, END_SKY_UP_G, END_SKY_UP_B) * 0.5 + vec3(END_SKY_DOWN_R, END_SKY_DOWN_G, END_SKY_DOWN_B) * 0.5;
-const vec3 lightmapNether = vec3(1,0,1);
+const vec3 lightmapNether = vec3(1,0,0);
 
 vec4 getAlbedo(vec2 coord) {
     return texture2D(texture, coord);
