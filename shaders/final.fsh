@@ -32,10 +32,9 @@ FXAALumas fillCross(vec2 coord) {
 
 //FXAA 3.11 from http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html (modified)
 vec3 FXAA311(vec2 coord) {
-	float edgeThresholdMin = 0.03125;
-	float edgeThresholdMax = 0.125;
+	float edgeThresholdMin = 0.0625;
+	float edgeThresholdMax = 0.166;
 	float subpixelQuality  = 0.75;
-	int   iterations = 10;
 
 	FXAALumas lumas = fillCross(coord);
 	
@@ -89,7 +88,7 @@ vec3 FXAA311(vec2 coord) {
 		bool hit2 = false;
 		float lumaDiff1;
 		float lumaDiff2;
-		for(int i = 0; i < iterations; i++) {
+		for(int i = 0; i < 9; i++) {
 			if (!hit1) {
 				sco1     -= traceStep * FXAASteps[i];
 				lumaDiff1 = getLuma(sco1) - pixelEdgeLuma;
@@ -105,7 +104,7 @@ vec3 FXAA311(vec2 coord) {
 		sco1 -= traceStep * FXAASteps[9] * float(!hit1); // Faking an extra step
 		sco2 += traceStep * FXAASteps[9] * float(!hit2);
 		
-		float distance1 = isHorizontal ? (coord.x - sco1.x) : (coord.y - sco1.y); // This?
+		float distance1 = isHorizontal ? (coord.x - sco1.x) : (coord.y - sco1.y);
 		float distance2 = isHorizontal ? (sco2.x - coord.x) : (sco2.y - coord.y);
 
 		float distanceToEdge = min(distance1, distance2);
@@ -114,7 +113,7 @@ vec3 FXAA311(vec2 coord) {
 		float pixelOffset = 0.5 - distanceToEdge / edgeLength;
 		
 		bool isLumaCenterSmaller = lumas.m < pixelEdgeLuma;
-		bool correctVariation    = ((distance1 < distance2 ? lumaDiff1 : lumaDiff2) < 0.0) != isLumaCenterSmaller;
+		bool correctVariation    = ((distance1 < distance2 ? lumaDiff1 : lumaDiff2) < 0.0) != isLumaCenterSmaller; // Only apply to edges bulging in
 
 		pixelOffset = correctVariation ? pixelOffset : 0.0;
 		
@@ -131,7 +130,7 @@ vec3 FXAA311(vec2 coord) {
 
 		return texture2D(colortex0, FXAACoord).rgb;
 	}
-	
+
 	return texture2D(colortex0, coord).rgb;
 }
 
