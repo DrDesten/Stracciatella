@@ -30,6 +30,110 @@ FXAALumas fillCross(vec2 coord) {
 	return vals;
 }
 
+//FXAA 3.11 from http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html (modified)
+vec3 FXAA311(vec2 coord) {
+	float edgeThresholdMin = 0.03125;
+	float edgeThresholdMax = 0.125;
+	float subpixelQuality  = 0.75;
+	int   iterations = 10;
+
+	FXAALumas lumas = fillCross(coord);
+	
+	if (lumas.contrast > max(edgeThresholdMin, lumas.highest * edgeThresholdMax)) {
+		// Get the remaining data points
+		lumas.ne = getLuma(coord + screenSizeInverse);
+		lumas.nw = getLuma(coord + vec2(-screenSizeInverse.x, screenSizeInverse.y));
+		lumas.sw = getLuma(coord - screenSizeInverse);
+		lumas.se = getLuma(coord + vec2(screenSizeInverse.x, -screenSizeInverse.y));
+
+		// Calculate edge direction
+		float horizontalComponent = abs((lumas.nw -2 * lumas.w + lumas.sw)) + 2 * abs((lumas.n -2 * lumas.m + lumas.s)) + abs((lumas.ne -2 * lumas.e + lumas.se));
+		float verticalComponent   = abs((lumas.ne -2 * lumas.n + lumas.nw)) + 2 * abs((lumas.e -2 * lumas.m + lumas.w)) + abs((lumas.se -2 * lumas.s + lumas.sw));
+		
+		// Determine dominant edge direction
+		bool isHorizontal = (horizontalComponent >= verticalComponent);		
+		
+		// Using the edge direction, calculate on which side of the pixel the edge lies. 
+		// By computing the gradient between the pixels, we can assume the higher contrast edge to be the actual edge
+		float luma1 = isHorizontal ? lumas.s : lumas.w;
+		float luma2 = isHorizontal ? lumas.n : lumas.e;
+		float gradient1 = luma1 - lumas.m;
+		float gradient2 = luma2 - lumas.m;
+		
+		bool  isEdge1 = abs(gradient1) > abs(gradient2);
+		float lumaEscapeDiff = 0.25 * max(abs(gradient1), abs(gradient2));
+		
+		// Calculate the pixel width normal to the edge (perpendicular)
+		float normalStepLength = isHorizontal ? screenSizeInverse.y : screenSizeInverse.x;
+
+		float pixelEdgeLuma = 0.0;
+		if (isEdge1) {
+			normalStepLength = - normalStepLength;
+			pixelEdgeLuma = 0.5 * (luma1 + lumas.m);
+		} else {
+			pixelEdgeLuma = 0.5 * (luma2 + lumas.m);
+		}
+		
+		vec2 sampleCoord = coord; // Move the sample coordinate to the edge
+		if (isHorizontal) sampleCoord.y += normalStepLength * 0.5;
+		else              sampleCoord.x += normalStepLength * 0.5;
+
+		// Find Edge Lengths //////////////////////////////////////////////////////////////////////////
+		
+		vec2 traceStep = isHorizontal ? vec2(screenSizeInverse.x, 0.0) : vec2(0.0, screenSizeInverse.y);
+		
+		vec2 sco1 = sampleCoord;
+		vec2 sco2 = sampleCoord;
+
+		bool hit1 = false;
+		bool hit2 = false;
+		float lumaDiff1;
+		float lumaDiff2;
+		for(int i = 0; i < iterations; i++) {
+			if (!hit1) {
+				sco1     -= traceStep * FXAASteps[i];
+				lumaDiff1 = getLuma(sco1) - pixelEdgeLuma;
+				hit1      = abs(lumaDiff1) >= lumaEscapeDiff;
+			}
+			if (!hit2) {
+				sco2     += traceStep * FXAASteps[i];
+				lumaDiff2 = getLuma(sco2) - pixelEdgeLuma;
+				hit2      = abs(lumaDiff2) >= lumaEscapeDiff;
+			}
+			if (hit1 && hit2) break;
+		}
+		sco1 -= traceStep * FXAASteps[9] * float(!hit1); // Faking an extra step
+		sco2 += traceStep * FXAASteps[9] * float(!hit2);
+		
+		float distance1 = isHorizontal ? (coord.x - sco1.x) : (coord.y - sco1.y); // This?
+		float distance2 = isHorizontal ? (sco2.x - coord.x) : (sco2.y - coord.y);
+
+		float distanceToEdge = min(distance1, distance2);
+		float edgeLength     = distance1 + distance2;
+
+		float pixelOffset = 0.5 - distanceToEdge / edgeLength;
+		
+		bool isLumaCenterSmaller = lumas.m < pixelEdgeLuma;
+		bool correctVariation    = ((distance1 < distance2 ? lumaDiff1 : lumaDiff2) < 0.0) != isLumaCenterSmaller;
+
+		pixelOffset = correctVariation ? pixelOffset : 0.0;
+		
+		/* float lumaAverage = (1.0 / 12.0) * (2.0 * (lumaDownUp + lumaLeftRight) + lumaLeftCorners + lumaRightCorners);
+		float subPixelOffset1 = clamp(abs(lumaAverage - lumas.m) / lumas.contrast, 0.0, 1.0);
+		float subPixelOffset2 = (-2.0 * subPixelOffset1 + 3.0) * subPixelOffset1 * subPixelOffset1;
+		float subPixelOffsetFinal = subPixelOffset2 * subPixelOffset2 * subpixelQuality;
+
+		pixelOffset = max(pixelOffset, subPixelOffsetFinal); */
+		
+		vec2 FXAACoord = coord;
+		if (isHorizontal) FXAACoord.y += pixelOffset * normalStepLength;
+		else              FXAACoord.x += pixelOffset * normalStepLength;
+
+		return texture2D(colortex0, FXAACoord).rgb;
+	}
+	
+	return texture2D(colortex0, coord).rgb;
+}
 
 /* DRAWBUFFERS:0 */
 void main() {
@@ -39,108 +143,7 @@ void main() {
 	vec3 color = getAlbedo(coord);
 	#endif
 
-/* 
-	FXAALumas l = fillCross(coord);
-	if (l.contrast > max(0.03, 0.125 * 0 * l.highest)) { // Do FXAA
-		// Get the remaining data points
-		l.ne = getLuma(coord + screenSizeInverse);
-		l.nw = getLuma(coord + vec2(-screenSizeInverse.x, screenSizeInverse.y));
-		l.sw = getLuma(coord - screenSizeInverse);
-		l.se = getLuma(coord + vec2(screenSizeInverse.x, -screenSizeInverse.y));
-
-		// Calculate edge direction
-		float horizontalComponent = abs((l.nw -2 * l.w + l.sw)) + 2 * abs((l.n -2 * l.m + l.s)) + abs((l.ne -2 * l.e + l.se));
-		float verticalComponent   = abs((l.ne -2 * l.n + l.nw)) + 2 * abs((l.e -2 * l.m + l.w)) + abs((l.se -2 * l.s + l.sw));
-		
-		// Determine dominant edge direction (a more precise direction will be calculated later)
-		bool isHorizontal = horizontalComponent > verticalComponent;
-
-		// Using the edge direction, calculate on which side of the pixel the edge lies. 
-		// By computing the gradient between the pixels, we can assume the higher contrast edge to be the actual edge
-		float l1 = isHorizontal ? l.s : l.w;
-		float l2 = isHorizontal ? l.n : l.e;
-		float gradient1 = l1 - l.m; // edge is north (up) or east (right)
-		float gradient2 = l2 - l.m; // edge is south (down) or west (left)
-
-		bool isEdge1 = abs(gradient1) > abs(gradient2);
-
-		// Calculate the pixel width normal to the edge (perpendicular)
-		float normalStepSize = isHorizontal ? screenSizeInverse.y : screenSizeInverse.x;
-		
-		float edgeLuma;
-		if (isEdge1) {
-			normalStepSize = -normalStepSize; // If the edge is "lower" we have to invert the step size
-			edgeLuma = (l1 + l.m) * .5;
-		} else {
-			edgeLuma = (l2 + l.m) * .5;
-		}
-
-		vec2 sampleCoord = coord; // Move the sample coordinate to the edge
-		if (isHorizontal) sampleCoord.y += normalStepSize * 0.5;
-		else              sampleCoord.x += normalStepSize * 0.5;
-
-		// Find Edge Lengths //////////////////////////////////////////////////////////////////////////
-		
-		vec2 sco1 = sampleCoord;
-		vec2 sco2 = sampleCoord;
-		vec2 traceStep = isHorizontal ? vec2(screenSizeInverse.x, 0) : vec2(0, screenSizeInverse.y);
-
-		float lumaEscapeDiff = 0.25 * max(abs(gradient1), abs(gradient2)); // If the luma difference is bigger than this, stop iterating
-
-		bool hit1 = false;
-		bool hit2 = false;
-		float lumaDiff1;
-		float lumaDiff2;
-		for (int i = 0; i < 10; i++) {
-			if (!hit1) {
-				sco1 -= traceStep * FXAASteps[i];
-
-				lumaDiff1 = getLuma(sco1) - edgeLuma;
-				hit1 = abs(lumaDiff1) > lumaEscapeDiff;
-			}
-			if (!hit2) {
-				sco2 += traceStep * FXAASteps[i];
-				
-				lumaDiff2 = getLuma(sco2) - edgeLuma;
-				hit2 = abs(lumaDiff2) > lumaEscapeDiff;
-			}
-			if (hit1 && hit2) break;
-		}
-		sco1 -= traceStep * FXAASteps[9] * float(!hit1); // Faking an extra step
-		sco2 += traceStep * FXAASteps[9] * float(!hit2);
-
-		float distance2 = isHorizontal ? (coord.x - sco1.x) : (coord.y - sco1.y);
-		float distance1 = isHorizontal ? (sco2.x - coord.x) : (sco2.y - coord.y);
-
-		float distToEdge = min(distance1, distance2);
-		float edgeLength = distance1 + distance2;
-
-		bool  isLumaCenterSmaller = l.m < edgeLuma;
-		float bumpLuma = (distance1 - distance2 < maxc(traceStep) * 0.75) ? lumaDiff1 : lumaDiff2;
-		bool  isBumpBrighter = bumpLuma > (1.5/255);
-		bool  edgeBumpDirection = (isBumpBrighter != isLumaCenterSmaller);
-
-		float pixelOffset = 0.5 - distToEdge / edgeLength;
-
-		pixelOffset = edgeBumpDirection ? pixelOffset : 0.0;
-
-		vec2 FXAACoord = coord;
-		if (isHorizontal) FXAACoord.y += pixelOffset * normalStepSize;
-		else              FXAACoord.x += pixelOffset * normalStepSize;
-
-		color = getAlbedo(FXAACoord);
-		//color = vec3(normalize(traceStep), 0);
-		//color = vec3((distance1 <= distance2 ? lumaDiff1 : lumaDiff2)) * 3 + 0.5;
-		//color = vec3(distance1 - distance2 < maxc(traceStep) * 0.75);
-		//color = vec3(isEdge1);
-		//color = vec3(isHorizontal);
-		//color = vec3(isLumaCenterSmaller != (distance1 - distance2 < maxc(traceStep) * 0.75));
-		//color = vec3(distToEdge * 20);
-		//color = vec3(pixelOffset * 500);
-		//color = vec3(lumaDiff1 > 1e-10);
-		//color = vec3(distance1 <= distance2);
-		//color = vec3(horizontalComponent, verticalComponent, 0);
-	} */
+	color = FXAA311(coord);
 
 	gl_FragColor = vec4(color, 1.0);
 }
