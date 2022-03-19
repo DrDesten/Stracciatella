@@ -120,6 +120,10 @@ option.LIGHTMAP_BLOCKLIGHT_CONTRAST.comment=Higher = Darker. Lower = Brighter.
 option.LIGHTMAP_MINIMUM_LIGHT=Minimum Light
 option.LIGHTMAP_MINIMUM_LIGHT.comment=Restricts blocklight to never go below this value. Prevents caves from being pitch black (unless you set it to zero that is)
 
+screen.END_SKYLIGHT=End Skylight
+option.LIGHTMAP_END_SKY_BRIGHTNESS=End Skylight Brightness
+option.LIGHTMAP_END_SKY_SATURATION=End Skylight Saturation
+
 option.LIGHTMAP_BLOCKLIGHT_REDUCTION=Adaptive Blocklight Reduction
 option.LIGHTMAP_BLOCKLIGHT_REDUCTION.comment=Reduces blocklight when the sky is bright to avoid clipping. If the blocklight is too bright during daytime, increase this slider.
 
@@ -213,6 +217,9 @@ option.WAVING_LIQUIDS_SPEED=Waving Liquids Speed
 ///////////////////////////////////////////////////////////
 
 screen.CAMERA=Camera and Color
+
+option.FXAA=FXAA
+option.FXAA.comment=Enables Anti-Alasing. Improves quality of edges.
 
 option.CONTRAST=Contrast
 option.VIBRANCE=Vibrance
