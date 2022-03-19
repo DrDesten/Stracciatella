@@ -136,13 +136,11 @@ vec3 FXAA311(vec2 coord) {
 
 /* DRAWBUFFERS:0 */
 void main() {
-	#ifdef BICUBIC_SAMPLING
-	vec3 color = textureBicubic(colortex0, coord, screenSize, screenSizeInverse).rgb;
+	#ifdef FXAA
+	vec3 color = FXAA311(coord);
 	#else
 	vec3 color = getAlbedo(coord);
 	#endif
-
-	color = FXAA311(coord);
 
 	gl_FragColor = vec4(color, 1.0);
 }
