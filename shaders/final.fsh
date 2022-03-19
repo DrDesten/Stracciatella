@@ -32,8 +32,8 @@ FXAALumas fillCross(vec2 coord) {
 
 //FXAA 3.11 from http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html (modified)
 vec3 FXAA311(vec2 coord) {
-	float edgeThresholdMin = 0.0625;
-	float edgeThresholdMax = 0.166;
+	float edgeThresholdMin = 0.0312;
+	float edgeThresholdMax = 0.063;
 	float subpixelQuality  = 0.75;
 
 	FXAALumas lumas = fillCross(coord);
