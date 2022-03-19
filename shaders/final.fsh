@@ -8,7 +8,7 @@ vec2 coord = gl_FragCoord.xy * screenSizeInverse * MC_RENDER_QUALITY;
 struct FXAALumas {
 	float n, s, w, e, m;
 	float ne, nw, se, sw;
-	float lowest, highest, contrast;
+	float minimum, maximum, range;
 };
 
 float getLuma(vec2 coord) {
@@ -23,9 +23,9 @@ FXAALumas fillCross(vec2 coord) {
 	vals.w = getLuma(coord - vec2(screenSizeInverse.x, 0));
 	vals.m = getLuma(coord);
 
-	vals.highest = max(max(max(max(vals.n, vals.s), vals.w), vals.e), vals.m);
-	vals.lowest  = min(min(min(min(vals.n, vals.s), vals.w), vals.e), vals.m);
-	vals.contrast = vals.highest - vals.lowest;
+	vals.maximum = max(max(max(max(vals.n, vals.s), vals.w), vals.e), vals.m);
+	vals.minimum  = min(min(min(min(vals.n, vals.s), vals.w), vals.e), vals.m);
+	vals.range = vals.maximum - vals.minimum;
 
 	return vals;
 }
@@ -38,7 +38,7 @@ vec3 FXAA311(vec2 coord) {
 
 	FXAALumas lumas = fillCross(coord);
 	
-	if (lumas.contrast > max(edgeThresholdMin, lumas.highest * edgeThresholdMax)) {
+	if (lumas.range > max(edgeThresholdMin, lumas.maximum * edgeThresholdMax)) {
 		// Get the remaining data points
 		lumas.ne = getLuma(coord + screenSizeInverse);
 		lumas.nw = getLuma(coord + vec2(-screenSizeInverse.x, screenSizeInverse.y));
@@ -53,7 +53,7 @@ vec3 FXAA311(vec2 coord) {
 		bool isHorizontal = (horizontalComponent >= verticalComponent);		
 		
 		// Using the edge direction, calculate on which side of the pixel the edge lies. 
-		// By computing the gradient between the pixels, we can assume the higher contrast edge to be the actual edge
+		// By computing the gradient between the pixels, we can assume the higher range edge to be the actual edge
 		float luma1 = isHorizontal ? lumas.s : lumas.w;
 		float luma2 = isHorizontal ? lumas.n : lumas.e;
 		float gradient1 = luma1 - lumas.m;
@@ -118,7 +118,7 @@ vec3 FXAA311(vec2 coord) {
 		pixelOffset = correctVariation ? pixelOffset : 0.0;
 		
 		/* float lumaAverage = (1.0 / 12.0) * (2.0 * (lumaDownUp + lumaLeftRight) + lumaLeftCorners + lumaRightCorners);
-		float subPixelOffset1 = clamp(abs(lumaAverage - lumas.m) / lumas.contrast, 0.0, 1.0);
+		float subPixelOffset1 = clamp(abs(lumaAverage - lumas.m) / lumas.range, 0.0, 1.0);
 		float subPixelOffset2 = (-2.0 * subPixelOffset1 + 3.0) * subPixelOffset1 * subPixelOffset1;
 		float subPixelOffsetFinal = subPixelOffset2 * subPixelOffset2 * subpixelQuality;
 
