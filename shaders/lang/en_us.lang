@@ -220,6 +220,8 @@ screen.CAMERA=Camera and Color
 
 option.FXAA=FXAA
 option.FXAA.comment=Enables Anti-Alasing. Improves quality of edges.
+option.HQ_UPSCALING=High Quality Upscaling
+option.HQ_UPSCALING.comment=Switches to bicubic sampling. Internally enables FXAA. Can be useful with lower render quality settings.
 
 option.CONTRAST=Contrast
 option.VIBRANCE=Vibrance

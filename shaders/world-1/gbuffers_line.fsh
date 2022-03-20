@@ -1,3 +1,3 @@
 #version 120
-#define OVERWORLD
+#define NETHER
 #include "/gbuffers_line.fsh"

@@ -357,15 +357,25 @@ const vec2 TAAOffsets[9] = vec2[]( // Samples 9 points around each pixel, with u
 // For uniform angle coverage use: round((floor(x) / factor)²) + 1
 // Where does this formula come from? Inverse derivative of the arctangent of 1/x (iirc)
 // I should yield constant angle resolution
-/* const float FXAASteps[10] = float[]( // factor = 2 | max. edge length: 80
-    1.0, 1.0, 2.0, 3.0, 5.0, 7.0, 10.0, 13.0, 17.0, 21.0
+/* const float FXAASteps[10] = float[]( // factor = 2 | max. edge length: 80.5
+    1.0, 1.5, 2.0, 3.0, 5.0, 7.0, 10.0, 13.0, 17.0, 21.0
 ); */
 /* const float FXAASteps[10] = float[]( // factor = 2.42 | max. edge length: 59
     1.0, 1.0, 2.0, 3.0, 4.0, 5.0, 7.0, 9.0, 12.0, 15.0
 ); */
-/* const float FXAASteps[10] = float[]( // factor = 2.7 | max. edge length: 49
-    1.0, 1.0, 2.0, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0
+const float FXAASteps[10] = float[]( // factor = 2.7 | max. edge length: 48.5
+    1.0, 1.0, 1.5, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0
+);
+/* const float FXAASteps[10] = float[]( // factor = 3 | max. edge length: 41.5
+    1.0, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0
 ); */
-const float FXAASteps[10] = float[]( // factor = 3 | max. edge length: 41
-    1.0, 1.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0
+
+/* const float FXAAStepsHQ[15] = float[]( // factor = 3.3 | max. edge length: 106.5
+    1, 1, 1.5, 2, 2, 3, 4, 5, 7, 8, 10, 12, 14, 17, 19
+); */
+/* const float FXAAStepsHQ[15] = float[]( // factor = 3.67 | max. edge length: 92.5
+    1, 1, 1, 1.5, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16
+); */
+const float FXAAStepsHQ[15] = float[]( // factor = 5.4 | max. edge length: 49.5
+    1, 1, 1, 1, 1.5, 2, 2, 3, 3, 4, 4, 5, 6, 7, 8
 );
