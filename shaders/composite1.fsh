@@ -235,12 +235,7 @@ vec3 FXAA311HQ(vec2 coord) {
 
 /* DRAWBUFFERS:0 */
 void main() {
-	#if defined FXAA || defined HQ_UPSCALING
 	vec3 color = FXAA311HQ(coord);
-	#else
-	vec3 color = getAlbedo(coord);
-	#endif
-
 	gl_FragColor = vec4(color, 1.0);
 }
 
