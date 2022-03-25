@@ -126,9 +126,9 @@ vec3 FXAA311(vec2 coord) {
 	return texture2D(colortex0, coord).rgb;
 }
 vec3 FXAA311HQ(vec2 coord) {
-	float edgeThresholdMin = 0.0312;
-	float edgeThresholdMax = 0.0363;
-	float subpixelQuality  = 0.75;
+	const float edgeThresholdMin = 0.0312;
+	const float edgeThresholdMax = 0.0363;
+	const float subpixelQuality  = 0.75;
 
 	FXAALumas lumas = fillCross(coord);
 	
