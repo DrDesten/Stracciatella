@@ -555,6 +555,31 @@ vec4 textureBicubic(sampler2D sampler, vec2 coord, vec2 samplerSize, vec2 pixelS
     , sy);
 }
 
+float triangle(float x) {
+    return saturate(1 - abs(x));
+}
+
+vec4 textureBicubicComplex( sampler2D sampler, vec2 coord, vec2 screenSize, vec2 screenSizeInverse) {
+    vec4 nSum   = vec4(0);
+    vec4 nDenom = vec4(0);
+    float a = fract( coord.x * screenSize.x ); // get the decimal part
+    float b = fract( coord.y * screenSize.y ); // get the decimal part
+    for( int m = -1; m <=2; m++ )
+    {
+        for( int n =-1; n<= 2; n++)
+        {
+			vec4 vecData = texture2D(sampler, coord + screenSizeInverse * vec2(m,n));
+			float f  = triangle(float(m) - a);
+			vec4 vecCooef1 = vec4(f);
+			float f1 = triangle(b - float(n));
+			vec4 vecCoeef2 = vec4(f1);
+            nSum   += ( vecData * vecCoeef2 * vecCooef1  );
+            nDenom += ( vecCoeef2 * vecCooef1 );
+        }
+    }
+    return nSum / nDenom;
+}
+
 /////////////////////////////////////////////////////////////////////////////////
 //                              OTHER FUNCTIONS
 
