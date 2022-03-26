@@ -4,7 +4,7 @@
 
 uniform float  frameTimeCounter;
 
-#ifdef WAVING
+#if defined WAVING_BLOCKS || defined WAVING_LIQUIDS
 
 	#include "/lib/vertex_transform.glsl"
 	attribute vec2 mc_midTexCoord;
@@ -146,7 +146,11 @@ void main() {
 	#ifdef WAVING_BLOCKS
 
 		// Waving Blocks Upper Vertices
-		if ((mc_Entity.x == 1030 || mc_Entity.x == 1031) && coord.y < mc_midTexCoord.y) { 
+		if ((mc_Entity.x == 1030 || mc_Entity.x == 1031
+		#ifdef WAVING_FIRE
+		|| mc_Entity.x == 1036
+		#endif
+		) && coord.y < mc_midTexCoord.y) { 
 
 			vec3 worldPos = getWorld();
 			vec3 offset   = wavyChaotic(worldPos, WAVING_BLOCKS_AMOUNT, WAVING_BLOCKS_SPEED);
