@@ -168,15 +168,25 @@ void main() {
 
 	#endif
 
-	if (blockId == 20 || blockId == 34 || blockId == 36 || blockId == 40 || blockId == 41) {
-		float sat = saturation(color.rgb);
-		float lum = luminance(color.rgb);
-		if (blockId == 20 || blockId == 36 || blockId == 41) color.rgb *= sqrt(color.rgb) * 3;                 // Fire, Lava and Full Block Emissives
-		if (blockId == 40 || blockId == 34) color.rgb *= 6 * sq(saturate(max(sat, lum*lum) - 0.2)) + 1; // Partial Block Emissives (isolates emissive areas) (+Hanging Lanterns)
-		//if (blockId == 40) color.rgb = vec3(10 * sq(max(max(sat, lum*lum)-0.2, 0)));
+	#ifdef HDR_EMISSIVES
 
-		color.rgb = reinhard_sqrt_tonemap(color.rgb, 0.5);
-	}
+		// Adds an HDR effect to Emissive blocks. Works by boosting the brightness of emissive parts of blocks and the applying tonemapping to avoid clipping.
+
+		bool fullEmissive    = blockId == 20 || blockId == 36 || blockId == 41;
+		bool partialEmissive = blockId == 40 || blockId == 34;
+		if (blockId == 20 || blockId == 34 || blockId == 36 || blockId == 40 || blockId == 41) {
+
+			float sat = saturation(color.rgb);
+			float lum = luminance(color.rgb);
+			if (fullEmissive)    color.rgb *= sqrt(color.rgb) * (3 * HDR_EMISSIVES_BRIGHTNESS);                           // Fire, Lava and Full Block Emissives
+			if (partialEmissive) color.rgb *= (6 * HDR_EMISSIVES_BRIGHTNESS) * sq(saturate(max(sat, lum*lum) - 0.2)) + 1; // Partial Emissives (isolates emissive areas) (+Hanging Lanterns)
+			//if (partialEmissive) color.rgb = vec3(10 * sq(max(max(sat, lum*lum)-0.2, 0)));
+
+			color.rgb = reinhard_sqrt_tonemap(color.rgb, 0.5);
+
+		}
+
+	#endif
 
 	#ifdef BLINKING_ORES
 	

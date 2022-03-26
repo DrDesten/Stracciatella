@@ -98,6 +98,7 @@ option.END_SKY_DOWN_R=End Sky Lower §cR
 option.END_SKY_DOWN_G=End Sky Lower §2G
 option.END_SKY_DOWN_B=End Sky Lower §9B
 
+
 ///////////////////////////////////////////////////////////
 // LIGHTING
 ///////////////////////////////////////////////////////////
@@ -164,6 +165,10 @@ option.GENERATED_NORMALS_RESOLUTION_MULTIPLIER=Normals Resolution Multiplier
 option.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.comment=Auto-Generated Normals may have a different resolution than your resource pack. This slider allows you to select a higher resolution for the normals. No performance impact.
 suffix.GENERATED_NORMALS_RESOLUTION_MULTIPLIER=x
 
+option.HDR_EMISSIVES=HDR Emissives
+option.HDR_EMISSIVES_BRIGHTNESS=HDR Emissive Brightness
+
+
 ///////////////////////////////////////////////////////////
 // WEATHER
 ///////////////////////////////////////////////////////////
@@ -203,11 +208,13 @@ option.WAVING_BLOCKS=Waving Blocks
 option.WAVING_BLOCKS_AMOUNT=Waving Blocks Amount
 option.WAVING_BLOCKS_SPEED=Waving Blocks Speed
 option.WAVING_LEAVES=Waving Leaves
-option.WAVING_LANTERNS=Waving Lanterns
 option.WAVING_LILYPADS=Waving Lilypads
 option.WAVING_LILYPADS.comment=Controlled by "Waving Liquids Amount" and "Waving Liquids Speed".
+option.WAVING_LANTERNS=Waving Lanterns
+option.WAVING_FIRE=Waving Fire
 
 option.WAVING_LIQUIDS=Waving Liquids
+option.WAVING_LIQUIDS.comment=Water and Lava
 option.WAVING_LIQUIDS_AMOUNT=Waving Liquids Amount
 option.WAVING_LIQUIDS_SPEED=Waving Liquids Speed
 
