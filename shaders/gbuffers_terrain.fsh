@@ -61,6 +61,8 @@ varying vec3 viewPos;
 	varying float oreBlink;
 #endif
 
+varying float blockId;
+
 float calculateHeight(vec2 coord) {
 	float baseHeight = mean(textureLod(texture, coord, 100.0).rgb);
 	float absHeight  = mean(texture2D(texture, coord).rgb);
@@ -100,7 +102,6 @@ void main() {
 	hsvColor.y = round(hsvColor.y * 3) / 3.;
 	hsvColor.z = floor(hsvColor.z * 4 + 0.5) / 4.;
 	color.rgb     = hsv2rgb(hsvColor); */
-
 
 	#ifdef RAIN_PUDDLES
 
@@ -166,6 +167,13 @@ void main() {
 		#endif
 
 	#endif
+
+	if (blockId == 40) {
+		//color.rgb = vec3(luminance(color.rgb));
+		color.rgb = color.rgb + 8 * sq(max(color.rgb-0.3, vec3(0)));
+
+		color.rgb = reinhard_sqrt_tonemap(color.rgb, 0.5);
+	}
 
 	#ifdef BLINKING_ORES
 	

@@ -80,7 +80,7 @@ void main() {
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 	viewPos = getView();
-	blockId = 
+	blockId = getID(mc_Entity);
 
 	#ifdef DIRECTIONAL_LIGHTMAPS
 
