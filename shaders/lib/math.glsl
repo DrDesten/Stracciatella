@@ -574,6 +574,36 @@ vec4 textureSmoothstep(sampler2D sampler, vec2 coord, vec2 samplerSize, vec2 sam
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////
+//                                 TONEMAPPING
+
+vec3 reinhard_tonemap(vec3 color, float a) {
+    return color / (a + color);
+}
+vec3 reinhard_luminance_tonemap(vec3 color, float a) {
+    float l = luminance(color);
+    return color / (a+l);
+}
+vec3 reinhard_jodie_tonemap(vec3 color, float a) {
+    float l   = luminance(color);
+    vec3 tmc  = color / (color + a);
+    return mix(color / (l+a), tmc, tmc);
+}
+vec3 reinhard_sqrt_tonemap(vec3 color, float a) {
+    return color / sqrt(color * color + a);
+}
+
+
+vec3 unreal_tonemap(vec3 color) {
+  return color / (color + 0.155) * 1.019;
+}
+
+
+vec3 exp_tonemap(vec3 color, float a) {
+    return 1 - exp(-color * a);
+}
+
+
 /////////////////////////////////////////////////////////////////////////////////
 //                              OTHER FUNCTIONS
 
