@@ -4,7 +4,7 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 
-#ifdef WAVING
+#if defined WAVING_BLOCKS || defined WAVING_LIQUIDS
 
 	#include "/lib/vertex_transform.glsl"
 	attribute vec4 mc_Entity;
