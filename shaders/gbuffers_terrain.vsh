@@ -80,7 +80,7 @@ void main() {
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 	viewPos = getView();
-
+	blockId = getID(mc_Entity.x);
 	
 	#ifdef DIRECTIONAL_LIGHTMAPS
 
@@ -89,9 +89,9 @@ void main() {
 		tbn         = mat2(getTBN(at_tangent));
 
 		directionalLightmapStrength = 1.0;
-		if (mc_Entity.x == 1040) directionalLightmapStrength = 0.1;
-		else if (mc_Entity.x == 1041) directionalLightmapStrength = 0.75;
-		else if ((mc_Entity.x >= 1030 && mc_Entity.x <= 1032) || mc_Entity.x == 1035) directionalLightmapStrength = 0.8;
+		if      (mc_Entity.x == 1020 || mc_Entity.x == 1036) directionalLightmapStrength = 0;
+		else if (mc_Entity.x == 1040 || mc_Entity.x == 1041 || mc_Entity.x == 1034) directionalLightmapStrength = 0.25;
+		else if (mc_Entity.x >= 1030 && mc_Entity.x <= 1033 || mc_Entity.x == 1035) directionalLightmapStrength = 0.5;
 
 	#endif
 
@@ -247,7 +247,4 @@ void main() {
 		}
 
 	#endif
-
-	blockId = 41;
-	blockId = getID(mc_Entity.x);
 }
