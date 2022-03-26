@@ -51,6 +51,9 @@ vec4 viewToClip(vec4 viewPos) {
 float getID(vec4 entityAttribute) {
     return entityAttribute.x - 1000;
 }
+float getID(float entityId) {
+    return entityId - 1000;
+}
 float getID(int entityId) {
     return float(entityId - 1000);
 }

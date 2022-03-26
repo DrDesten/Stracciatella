@@ -466,6 +466,13 @@ vec3 contrast(vec3 col, float contrast) {
 float luminance(vec3 color) {
     return dot(color, vec3(0.2126, 0.7152, 0.0722));
 }
+float saturation(vec3 color, float luma) {
+    return distance(vec3(luma), color);
+}
+float saturation(vec3 color) {
+    return saturation(color, luminance(color));
+}
+
 
 vec3 applyBrightness(vec3 color, float brightness, float colorOffset) { // Range: inf-0
 	float tmp = (1 / (2 * colorOffset + 1));

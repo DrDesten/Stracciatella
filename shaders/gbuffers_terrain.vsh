@@ -80,8 +80,8 @@ void main() {
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 	viewPos = getView();
-	blockId = getID(mc_Entity);
 
+	
 	#ifdef DIRECTIONAL_LIGHTMAPS
 
 		spriteSize  = abs(coord - mc_midTexCoord.xy);
@@ -244,4 +244,6 @@ void main() {
 
 	#endif
 
+	blockId = 41;
+	blockId = getID(mc_Entity.x);
 }

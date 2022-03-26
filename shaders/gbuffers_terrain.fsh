@@ -168,9 +168,12 @@ void main() {
 
 	#endif
 
-	if (blockId == 40) {
-		//color.rgb = vec3(luminance(color.rgb));
-		color.rgb = color.rgb + 8 * sq(max(color.rgb-0.3, vec3(0)));
+	if (blockId == 20 || blockId == 34 || blockId == 36 || blockId == 40 || blockId == 41) {
+		float sat = saturation(color.rgb);
+		float lum = luminance(color.rgb);
+		if (blockId == 20 || blockId == 36 || blockId == 41) color.rgb *= color.rgb * 4;                 // Fire, Lava and Full Block Emissives
+		if (blockId == 40 || blockId == 34) color.rgb *= 10 * sq(saturate(max(sat, lum*lum) - 0.2)) + 1; // Partial Block Emissives (isolates emissive areas) (+Hanging Lanterns)
+		//if (blockId == 40) color.rgb = vec3(10 * sq(max(max(sat, lum*lum)-0.2, 0)));
 
 		color.rgb = reinhard_sqrt_tonemap(color.rgb, 0.5);
 	}
