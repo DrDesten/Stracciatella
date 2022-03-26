@@ -72,12 +72,15 @@ varying vec2  blockCoords;
 varying float oreBlink;
 #endif
 
+varying float blockId;
+
 void main() {
 	gl_Position = ftransform();
 	coord   = getCoord();
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 	viewPos = getView();
+	blockId = 
 
 	#ifdef DIRECTIONAL_LIGHTMAPS
 

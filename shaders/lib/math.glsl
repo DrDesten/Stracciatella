@@ -558,27 +558,21 @@ vec4 textureBicubic(sampler2D sampler, vec2 coord, vec2 samplerSize, vec2 pixelS
 float triangle(float x) {
     return saturate(1 - abs(x));
 }
-
-vec4 textureBicubicComplex( sampler2D sampler, vec2 coord, vec2 screenSize, vec2 screenSizeInverse) {
-    vec4 nSum   = vec4(0);
-    vec4 nDenom = vec4(0);
-    float a = fract( coord.x * screenSize.x ); // get the decimal part
-    float b = fract( coord.y * screenSize.y ); // get the decimal part
-    for( int m = -1; m <=2; m++ )
-    {
-        for( int n =-1; n<= 2; n++)
-        {
-			vec4 vecData = texture2D(sampler, coord + screenSizeInverse * vec2(m,n));
-			float f  = triangle(float(m) - a);
-			vec4 vecCooef1 = vec4(f);
-			float f1 = triangle(b - float(n));
-			vec4 vecCoeef2 = vec4(f1);
-            nSum   += ( vecData * vecCoeef2 * vecCooef1  );
-            nDenom += ( vecCoeef2 * vecCooef1 );
-        }
-    }
-    return nSum / nDenom;
+float sincNorm(float x) {
+    return x == 0 ? 1 : sin(x*PI) / (x*PI);
 }
+float bell(float x) {
+    return exp(-(x*x*2));
+}
+
+vec4 textureSmoothstep(sampler2D sampler, vec2 coord, vec2 samplerSize, vec2 samplerSizeInverse) {
+    vec2 icoord    = coord * samplerSize;
+    vec2 pixCoord  = fract(icoord);
+    //pixCoord       = pixCoord * (pixCoord * (4 * pixCoord - 6) + 3);
+    pixCoord       = pixCoord * (pixCoord * (2.22222 * pixCoord - 3.33333) + 2.11111);
+    return texture2D(sampler, (floor(icoord) + pixCoord) * samplerSizeInverse);
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////
 //                              OTHER FUNCTIONS
