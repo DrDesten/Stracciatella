@@ -174,14 +174,15 @@ void main() {
 
 		bool fullEmissive    = blockId == 20 || blockId == 36 || blockId == 41;
 		bool partialEmissive = blockId == 40 || blockId == 34;
-		if (blockId == 20 || blockId == 34 || blockId == 36 || blockId == 40 || blockId == 41) {
+		if (fullEmissive || partialEmissive) {
 
 			float sat = saturation(color.rgb);
 			float lum = luminance(color.rgb);
-			if (fullEmissive)    color.rgb *= sqrt(color.rgb) * (1.8 - sat) * (2.1 * HDR_EMISSIVES_BRIGHTNESS);           // Fire, Lava and Full Block Emissives
+
+			if (fullEmissive)    color.rgb *= sqrt(color.rgb) * (1.8 - sat) * (2.1 * HDR_EMISSIVES_BRIGHTNESS);             // Fire, Lava and Full Block Emissives
 			//if (fullEmissive)    color.rgb *= sqrt(color.rgb) * (3 * HDR_EMISSIVES_BRIGHTNESS);                           // Fire, Lava and Full Block Emissives
-			if (partialEmissive) color.rgb *= (6 * HDR_EMISSIVES_BRIGHTNESS) * sq(saturate(max(sat, lum*lum) - 0.2)) + 1; // Partial Emissives (isolates emissive areas) (+Hanging Lanterns)
-			//if (partialEmissive) color.rgb = vec3(10 * sq(max(max(sat, lum*lum)-0.2, 0)));
+			if (partialEmissive) color.rgb *= (6 * HDR_EMISSIVES_BRIGHTNESS) * sq(saturate(max(sat, lum*lum) - 0.2)) + 1;   // Partial Emissives (isolates emissive areas) (+Hanging Lanterns)
+			//if (partialEmissive) color.rgb = vec3((6 * HDR_EMISSIVES_BRIGHTNESS) * sq(saturate(max(sat, lum*lum) - 0.2)) + 1);
 
 			color.rgb = reinhard_sqrt_tonemap(color.rgb, 0.5);
 
