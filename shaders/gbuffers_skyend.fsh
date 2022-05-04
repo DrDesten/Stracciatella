@@ -4,7 +4,7 @@
 #include "/lib/composite_basics.glsl"
 #include "/lib/fog_sky.glsl"
 
-uniform vec3  up;
+uniform vec3 up;
 
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 
