@@ -84,25 +84,6 @@ void main() {
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb;
 
-	/* color.rgb  = textureLod(texture, coord, 4.0).rgb;
-	color.rgb *= glcolor.rgb; */
-
-
-	/* color.rg = round(color.rg * 7) / 7.;
-	color.b  = round(color.b * 7) / 7.; */
-
-	/* vec3 ycbcrColor = rgb2ycbcr(color.rgb);
-	ycbcrColor.x = round(ycbcrColor.x * 4) / 4.;
-	ycbcrColor.y = round(ycbcrColor.y * 8) / 8.;
-	ycbcrColor.z = round(ycbcrColor.z * 8) / 8.;
-	color.rgb       = ycbcr2rgb(ycbcrColor); */
-
-	/* vec3 hsvColor = rgb2hsv(color.rgb);
-	hsvColor.x = round(hsvColor.x * 15) / 15.;
-	hsvColor.y = round(hsvColor.y * 3) / 3.;
-	hsvColor.z = floor(hsvColor.z * 4 + 0.5) / 4.;
-	color.rgb     = hsv2rgb(hsvColor); */
-
 	#ifdef RAIN_PUDDLES
 
 		if (rainPuddle > 1e-10) {
@@ -150,23 +131,6 @@ void main() {
 
 	#endif
 
-	#ifdef CUSTOM_LIGHTMAP
-
-		#ifdef DIRECTIONAL_LIGHTMAPS
-		color.rgb *= getCustomLightmap(lmcoord * vec2(diffuse, 1), customLightmapBlend, glcolor.a);
-		#else
-		color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
-		#endif
-
-	#else
-
-		#ifdef DIRECTIONAL_LIGHTMAPS
-		color.rgb *= getLightmap(lmcoord * vec2(diffuse, 1)) * glcolor.a;
-		#else
-		color.rgb *= getLightmap(lmcoord) * glcolor.a;
-		#endif
-
-	#endif
 
 	#ifdef HDR_EMISSIVES
 
@@ -184,16 +148,31 @@ void main() {
 			if (partialEmissive) color.rgb *= (6 * HDR_EMISSIVES_BRIGHTNESS) * sq(saturate(max(sat, lum*lum) - 0.2)) + 1;   // Partial Emissives (isolates emissive areas) (+Hanging Lanterns)
 			//if (partialEmissive) color.rgb = vec3((6 * HDR_EMISSIVES_BRIGHTNESS) * sq(saturate(max(sat, lum*lum) - 0.2)) + 1);
 
-			color.rgb = reinhard_sqrt_tonemap(color.rgb, 0.5);
+			//color.rgb = reinhard_sqrt_tonemap(color.rgb, 0.5);
 
 		}
 
 	#endif
 
-	#ifdef BLINKING_ORES
-	
-		color.rgb = mix(color.rgb, sqrt(color.rgb) * 0.9 + 0.1, oreBlink * BLINKING_ORES_BRIGHTNESS);
+	#ifdef DIRECTIONAL_LIGHTMAPS
+		vec2 lightmapCoord = vec2(lmcoord.x * diffuse, lmcoord.y);
+	#else
+		// Should just replace the variable name
+		#define lightmapCoord lmcoord
+	#endif
 
+	#ifdef CUSTOM_LIGHTMAP
+		color.rgb *= getCustomLightmap(lightmapCoord, customLightmapBlend, glcolor.a);
+	#else
+		color.rgb *= getLightmap(lightmapCoord) * glcolor.a;
+	#endif
+
+	#ifdef HDR_EMISSIVES
+		if (fullEmissive || partialEmissive) color.rgb = reinhard_sqrt_tonemap(color.rgb, 0.5);
+	#endif
+
+	#ifdef BLINKING_ORES
+		color.rgb = mix(color.rgb, sqrt(color.rgb) * 0.9 + 0.1, oreBlink * BLINKING_ORES_BRIGHTNESS);
 	#endif
 
 	#ifdef FOG
