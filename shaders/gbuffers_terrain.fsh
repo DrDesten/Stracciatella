@@ -209,10 +209,6 @@ void main() {
 
 	#endif
 
-	//color.rgb = normal * 0.5 + 0.5;
-	color.rgb *= 0;
-	color.rg = blockCoords;
-
 	#if DITHERING >= 1
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
