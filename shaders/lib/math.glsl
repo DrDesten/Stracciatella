@@ -599,6 +599,9 @@ vec3 reinhard_jodie_tonemap(vec3 color, float a) {
 vec3 reinhard_sqrt_tonemap(vec3 color, float a) {
     return color / sqrt(color * color + a);
 }
+vec3 reinhard_sqrt_tonemap_inverse(vec3 color, float a) {
+    return sqrt(a) * color * inversesqrt(-color * color + 1);
+}
 
 
 vec3 unreal_tonemap(vec3 color) {
