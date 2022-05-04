@@ -61,7 +61,7 @@ varying vec3 viewPos;
 	varying float oreBlink;
 #endif
 
-varying float blockId;
+flat in int blockId;
 
 float calculateHeight(vec2 coord) {
 	float baseHeight = mean(textureLod(texture, coord, 100.0).rgb);
