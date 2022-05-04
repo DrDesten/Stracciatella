@@ -7,7 +7,6 @@ uniform float  frameTimeCounter;
 #if defined WAVING_BLOCKS || defined WAVING_LIQUIDS
 
 	#include "/lib/vertex_transform.glsl"
-	attribute vec2 mc_midTexCoord;
 
 	#ifdef WORLD_TIME_ANIMATION
 
@@ -47,6 +46,9 @@ uniform float  frameTimeCounter;
 	#include "/lib/vertex_transform_simple.glsl"
 #endif
 
+#if defined WAVING_BLOCKS || defined DIRECTIONAL_LIGHTMAPS
+attribute vec2 mc_midTexCoord;
+#endif
 attribute vec4 mc_Entity;
 
 varying vec2 lmcoord;
@@ -56,10 +58,10 @@ varying vec3 viewPos;
 
 #ifdef DIRECTIONAL_LIGHTMAPS
 attribute vec4 at_tangent;
-varying vec2   spriteSize;
-varying vec2   midTexCoord;
-varying mat2   tbn;
-varying float  directionalLightmapStrength;
+flat out vec2   spriteSize;
+flat out vec2   midTexCoord;
+flat out mat2   tbn;
+flat out float  directionalLightmapStrength;
 #endif
 
 #ifdef RAIN_PUDDLES
@@ -69,7 +71,7 @@ varying vec2  blockCoords;
 #endif
 
 #ifdef BLINKING_ORES
-varying float oreBlink;
+flat out float oreBlink;
 #endif
 
 flat out int blockId;
@@ -136,7 +138,7 @@ void main() {
 				case 2010: break;
 			#endif
 
-			default:
+			default:;
 				oreBlink = 0;
 		}
 

@@ -36,10 +36,10 @@ varying vec3 viewPos;
 
 #ifdef DIRECTIONAL_LIGHTMAPS
 	uniform ivec2 atlasSize;
-	varying vec2  spriteSize;
-	varying vec2  midTexCoord;
-	varying mat2  tbn;
-	varying float directionalLightmapStrength;
+	flat in vec2  spriteSize;
+	flat in vec2  midTexCoord;
+	flat in mat2  tbn;
+	flat in float directionalLightmapStrength;
 #endif
 #if NORMAL_TEXTURE_MODE == 1 && defined MC_NORMAL_MAP && defined DIRECTIONAL_LIGHTMAPS 
 	uniform sampler2D normals;
@@ -47,10 +47,10 @@ varying vec3 viewPos;
 
 #ifdef RAIN_PUDDLES
 	uniform sampler2D colortex4;
-	uniform float     frameTimeCounter;
-	uniform float     rainPuddle;
-	varying float     puddle;
-	varying vec2      blockCoords;
+	uniform float frameTimeCounter;
+	uniform float rainPuddle;
+	varying float puddle;
+	varying vec2  blockCoords;
 #endif
 
 #ifdef CUSTOM_LIGHTMAP
@@ -58,7 +58,7 @@ varying vec3 viewPos;
 #endif
 
 #ifdef BLINKING_ORES
-	varying float oreBlink;
+	flat in float oreBlink;
 #endif
 
 flat in int blockId;
@@ -188,7 +188,7 @@ void main() {
 			#ifdef OVERWORLD
 				float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
 			#else
-				float cave = 1;
+				const float cave = 1;
 			#endif
 			
 			#ifndef CUSTOM_SKY
@@ -210,6 +210,8 @@ void main() {
 	#endif
 
 	//color.rgb = normal * 0.5 + 0.5;
+	color.rgb *= 0;
+	color.rg = blockCoords;
 
 	#if DITHERING >= 1
 		color.rgb += ditherColor(gl_FragCoord.xy);
