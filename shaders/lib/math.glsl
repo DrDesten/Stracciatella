@@ -177,6 +177,13 @@ float angleBetween(vec3 v1, vec3 v2) {
     return acos(dot(normalize(v1), normalize(v2)));
 }
 
+float sqrtf01(float x) {
+    return x * (2.0 - x);
+}
+float sqrtf13(float x) {
+    return x * ( -0.23606797749978969641 * x + 1.23606797749978969641 );
+}
+
 float asinf(float x) { // s(x) = x + x³/8 + x^5/5
     float x2  = x*x;
     float x4  = x2*x2;
