@@ -112,17 +112,16 @@ void main() {
 		#if NORMAL_TEXTURE_MODE == 1  && defined MC_NORMAL_MAP
 
 			vec3 normal = texture2D(normals, coord).xyz * 2 - 1;
-			normal.z    = sqrt(1 - dot(normal.xy, normal.xy));
+			normal.z    = sqrt(saturate(1 - dot(normal.xy, normal.xy)));
 
 		#else
 
 			// NORMAL MAP GENERATION ////////////////////////////////
 			vec2  atlasPixel = (1. / GENERATED_NORMALS_RESOLUTION_MULTIPLIER) / atlasSize;
-			float baseHeight = mean(textureLod(texture, coord, 100.0).rgb);
-			float relHeightN = calculateHeight(  clamp(coord + vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
-			float relHeightS = calculateHeight(  clamp(coord - vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
-			float relHeightE = calculateHeight(  clamp(coord + vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
-			float relHeightW = calculateHeight(  clamp(coord - vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord , baseHeight );
+			float relHeightN = mean( texture2D(texture, clamp(coord + vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
+			float relHeightS = mean( texture2D(texture, clamp(coord - vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
+			float relHeightE = mean( texture2D(texture, clamp(coord + vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
+			float relHeightW = mean( texture2D(texture, clamp(coord - vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
 			
 			vec3  normal = normalize(vec3(relHeightW - relHeightE, relHeightS - relHeightN, 0.3333));
 			
