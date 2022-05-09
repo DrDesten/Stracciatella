@@ -180,7 +180,25 @@ float angleBetween(vec3 v1, vec3 v2) {
 float sqrtf01(float x) {
     return x * (2.0 - x);
 }
+vec2 sqrtf01(vec2 x) {
+    return x * (2.0 - x);
+}
+vec3 sqrtf01(vec3 x) {
+    return x * (2.0 - x);
+}
+vec4 sqrtf01(vec4 x) {
+    return x * (2.0 - x);
+}
 float sqrtf13(float x) {
+    return x * ( -0.23606797749978969641 * x + 1.23606797749978969641 );
+}
+vec2 sqrtf13(vec2 x) {
+    return x * ( -0.23606797749978969641 * x + 1.23606797749978969641 );
+}
+vec3 sqrtf13(vec3 x) {
+    return x * ( -0.23606797749978969641 * x + 1.23606797749978969641 );
+}
+vec4 sqrtf13(vec4 x) {
     return x * ( -0.23606797749978969641 * x + 1.23606797749978969641 );
 }
 
