@@ -40,6 +40,12 @@ varying vec3 viewPos;
 	flat in vec2  midTexCoord;
 	flat in mat2  tbn;
 	flat in float directionalLightmapStrength;
+#elif defined HDR_EMISSIVES
+	flat in vec2 spriteSize;
+	flat in vec2 midTexCoord;
+#endif
+#ifdef HDR_EMISSIVES
+	flat in vec3 rawNormal;
 #endif
 #if NORMAL_TEXTURE_MODE == 1 && defined MC_NORMAL_MAP && defined DIRECTIONAL_LIGHTMAPS 
 	uniform sampler2D normals;
@@ -139,9 +145,10 @@ void main() {
 		bool fullEmissive    = blockId == 20 || blockId == 36 || blockId == 41;
 		bool partialEmissive = blockId == 40 || blockId == 34;
 		bool whiteEmissive   = blockId == 42;
+		bool candle          = blockId == 43;
 
 		float emissiveness = 0;
-		bool  isEmissive   = fullEmissive || partialEmissive || whiteEmissive;
+		bool  isEmissive   = fullEmissive || partialEmissive || whiteEmissive || candle;
 		if (isEmissive) {
 
 			float lum = luminance(color.rgb);
@@ -153,9 +160,10 @@ void main() {
 			if (fullEmissive)    emissiveness = saturate(lum * 1.5 - .2);
 			if (partialEmissive) emissiveness = saturate(max(saturate(sat * 2 - 0.3), saturate(lum * 2 - 1)) * 2 - 0.5);
 			if (whiteEmissive)   emissiveness = sq(saturate((lum * 2 - 0.5) * (1 - sat)));
+			if (candle)          emissiveness = sqsq(saturate((midTexCoord.y - coord.y) * (0.5 / spriteSize.y) + 0.5 + saturate(rawNormal.y)));
 
-			color.rgb  = reinhard_sqrt_tonemap_inverse(color.rgb * 0.99, 0.5);
-			color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 2) * color.rgb;
+			color.rgb  = reinhard_sqrt_tonemap_inverse(color.rgb * 0.95, 0.5);
+			color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 1.5) * color.rgb;
 
 		}
 

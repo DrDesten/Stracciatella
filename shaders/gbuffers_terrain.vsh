@@ -46,7 +46,7 @@ uniform float  frameTimeCounter;
 	#include "/lib/vertex_transform_simple.glsl"
 #endif
 
-#if defined WAVING_BLOCKS || defined DIRECTIONAL_LIGHTMAPS
+#if defined WAVING_BLOCKS || defined DIRECTIONAL_LIGHTMAPS || defined HDR_EMISSIVES
 attribute vec2 mc_midTexCoord;
 #endif
 attribute vec4 mc_Entity;
@@ -62,6 +62,12 @@ flat out vec2   spriteSize;
 flat out vec2   midTexCoord;
 flat out mat2   tbn;
 flat out float  directionalLightmapStrength;
+#elif defined HDR_EMISSIVES
+flat out vec2 spriteSize;
+flat out vec2 midTexCoord;
+#endif
+#ifdef HDR_EMISSIVES
+flat out vec3 rawNormal;
 #endif
 
 #ifdef RAIN_PUDDLES
@@ -95,8 +101,13 @@ void main() {
 		else if (mc_Entity.x == 1040 || mc_Entity.x == 1041 || mc_Entity.x == 1034) directionalLightmapStrength = 0.25;
 		else if (mc_Entity.x >= 1030 && mc_Entity.x <= 1033 || mc_Entity.x == 1035) directionalLightmapStrength = 0.5;
 
+	#elif defined HDR_EMISSIVES
+		spriteSize  = abs(coord - mc_midTexCoord.xy);
+		midTexCoord = mc_midTexCoord.xy;
 	#endif
-
+	#ifdef HDR_EMISSIVES
+		rawNormal = gl_Normal;
+	#endif
 
 	#ifdef BLINKING_ORES
 
