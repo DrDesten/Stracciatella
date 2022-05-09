@@ -379,3 +379,7 @@ const float FXAASteps[10] = float[]( // factor = 2.7 | max. edge length: 48.5
 const float FXAAStepsHQ[15] = float[]( // factor = 5.4 | max. edge length: 49.5
     1, 1, 1, 1, 1.5, 2, 2, 3, 3, 4, 4, 5, 6, 7, 8
 );
+
+const float FXAAStepsUpscale[10] = float[](
+    1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.0
+);

@@ -75,8 +75,11 @@ float squareVignette(vec2 coord) {
 	return smoothstep( 0.7, 0.25, pow(sq(sq(coord.x - 0.5)) + sq(sq(coord.y - 0.5)), 0.25) );
 }
 
+#define SCALE 10
+
 /* DRAWBUFFERS:0 */
 void main() {
+	//coord = floor(gl_FragCoord.xy / SCALE) * SCALE * screenSizeInverse;
 	
 	#ifdef RAIN_EFFECTS
 		float rain  = texture2D(colortex3, coord).r;
@@ -84,6 +87,7 @@ void main() {
 	#endif
 
 	vec3 color = getAlbedo(coord);
+	//vec3 color = texelFetch(colortex0, ivec2(gl_FragCoord.xy / SCALE) * SCALE, 0).rgb;
 
 	if (isEyeInWater == 2) {
 		vec3  viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);

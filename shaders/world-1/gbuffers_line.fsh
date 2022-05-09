@@ -1,3 +1,3 @@
-#version 120
+#version 130
 #define NETHER
 #include "/gbuffers_line.fsh"
