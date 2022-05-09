@@ -138,9 +138,11 @@ void main() {
 
 		bool fullEmissive    = blockId == 20 || blockId == 36 || blockId == 41;
 		bool partialEmissive = blockId == 40 || blockId == 34;
+		bool whiteEmissive   = blockId == 42;
 
 		float emissiveness = 0;
-		if (fullEmissive || partialEmissive) {
+		bool  isEmissive   = fullEmissive || partialEmissive || whiteEmissive;
+		if (isEmissive) {
 
 			float lum = luminance(color.rgb);
 			float sat = saturation(color.rgb, lum);
@@ -150,6 +152,7 @@ void main() {
 
 			if (fullEmissive)    emissiveness = saturate(lum * 1.5 - .2);
 			if (partialEmissive) emissiveness = saturate(max(saturate(sat * 2 - 0.3), saturate(lum * 2 - 1)) * 2 - 0.5);
+			if (whiteEmissive)   emissiveness = sq(saturate((lum * 2 - 0.5) * (1 - sat)));
 
 			color.rgb  = reinhard_sqrt_tonemap_inverse(color.rgb * 0.99, 0.5);
 			color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 2) * color.rgb;
@@ -172,7 +175,7 @@ void main() {
 	#endif
 
 	#ifdef HDR_EMISSIVES
-		if (fullEmissive || partialEmissive) color.rgb = reinhard_sqrt_tonemap(color.rgb, 0.5);
+		if (isEmissive) color.rgb = reinhard_sqrt_tonemap(color.rgb, 0.5);
 	#endif
 
 	#ifdef BLINKING_ORES
