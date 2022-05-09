@@ -187,7 +187,7 @@ void main() {
 	#endif
 
 	#ifdef BLINKING_ORES
-		color.rgb = mix(color.rgb, sqrt(color.rgb) * 0.9 + 0.1, oreBlink * BLINKING_ORES_BRIGHTNESS);
+		color.rgb = mix(color.rgb, sqrtf01(color.rgb) * 0.9 + 0.1, oreBlink * BLINKING_ORES_BRIGHTNESS);
 	#endif
 
 	#ifdef FOG
