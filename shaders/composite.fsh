@@ -93,12 +93,12 @@ void main() {
 
 		const float rows = 30;
 		const float cols = 7;
+		
+		float cellNoiseHorizontal = rand(floor((coord.y + frameTimeCounter * 0.1) * rows));
 
-		float cellNoiseHorizontal = rand(floor(coord.y * rows));
-
-		vec2  noiseSeed = coord;
+		vec2  noiseSeed = coord + vec2(sin(frameTimeCounter * .1), cos(frameTimeCounter * .1));
 		noiseSeed.x    += cellNoiseHorizontal;
-		noiseSeed       = noiseSeed * vec2(cols * (cellNoiseHorizontal + 0.5),rows);
+		noiseSeed       = noiseSeed * vec2(cols * (cellNoiseHorizontal + 0.5), rows);
 
 		float cellNoise  = sin(rand(floor(noiseSeed)) * (10./DAMAGE_EFFECT_DISPLACEMENT_SIZE));
 		float finalNoise = damage * cellNoise * (0.02 * DAMAGE_EFFECT_DISPLACEMENT);
