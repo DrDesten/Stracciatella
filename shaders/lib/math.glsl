@@ -219,6 +219,11 @@ float smootherstep(float edge0, float edge1, float x) {
     return cb(x) * (x * (6. * x - 15.) + 10.);
 }
 
+
+float tri(float x) {
+    return abs(fract(x) * 2 - 1);
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Randomization and Dither Patterns
 
