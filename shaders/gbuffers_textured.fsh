@@ -13,6 +13,17 @@ varying vec2 lmcoord;
 varying vec2 coord;
 varying vec4 glcolor;
 
+#ifdef FOG
+
+	#include "/lib/fog_sky.glsl"
+
+	in vec3 viewPos;
+
+	uniform float far;
+	uniform mat4  gbufferModelViewInverse;
+
+#endif
+
 /* DRAWBUFFERS:0 */
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
@@ -21,6 +32,12 @@ void main() {
 	color.rgb *= getLightmap(lmcoord);
 	#else
 	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, 1);
+	#endif
+
+	#ifdef FOG
+		float fog = fogFactor(viewPos, far, gbufferModelViewInverse);
+		color.a  *= (1-fog);
+		color.a  += Bayer4(gl_FragCoord.xy) * 0.05 - 0.025;
 	#endif
 
     #if DITHERING >= 2
