@@ -289,7 +289,7 @@ option.FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE.comment=Higher: Depth will have a 
 // UTILITIES
 ///////////////////////////////////////////////////////////
 
-screen.UTILITIES=Utilities
+screen.UTILITIES=Utilities and Effects
 
 option.BLINKING_ORES=Blinking Ores
 screen.BLINKING_ORES_CONFIG=Blinking Ores Settings
@@ -305,10 +305,13 @@ option.BLINKING_ORES_REDSTONE=Redstone
 option.BLINKING_ORES_LAPIS=Lapis Lazuli
 option.BLINKING_ORES_EMERALD=Emerald
 option.BLINKING_ORES_COAL=Coal
-option.BLINKING_ORES_NETHER_QUARZ=Nether Quarz
+option.BLINKING_ORES_NETHER_QUARTZ=Nether Quartz
 option.BLINKING_ORES_NETHER_GOLD=Nether Gold
 
-
+option.DAMAGE_EFFECT=Damage Effect 
+option.DAMAGE_EFFECT_REDNESS=Damage Effect Redness
+option.DAMAGE_EFFECT_DISPLACEMENT=Damage Effect Displacement
+option.DAMAGE_EFFECT_DISPLACEMENT_SIZE=Damage Effect Cell Size
 
 
 ///////////////////////////////////////////////////////////

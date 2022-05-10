@@ -142,7 +142,7 @@ void main() {
 			#ifdef BLINKING_ORES_COAL
 				case 2008: break;
 			#endif
-			#ifdef BLINKING_ORES_NETHER_QUARZ
+			#ifdef BLINKING_ORES_NETHER_QUARTZ
 				case 2009: break;
 			#endif
 			#ifdef BLINKING_ORES_NETHER_GOLD
