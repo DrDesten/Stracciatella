@@ -43,6 +43,9 @@ uniform vec3 fogColor;
 
 uniform float blindness;
 uniform float nightVision;
+#ifdef DAMAGE_EFFECT
+uniform float damage;
+#endif
 
 vec2 map3d2d(vec3 pos, float sides) {
 	float cellSize  = 1 / sides;
@@ -75,19 +78,42 @@ float squareVignette(vec2 coord) {
 	return smoothstep( 0.7, 0.25, pow(sq(sq(coord.x - 0.5)) + sq(sq(coord.y - 0.5)), 0.25) );
 }
 
-#define SCALE 10
 
 /* DRAWBUFFERS:0 */
 void main() {
-	//coord = floor(gl_FragCoord.xy / SCALE) * SCALE * screenSizeInverse;
-	
 	#ifdef RAIN_EFFECTS
 		float rain  = texture2D(colortex3, coord).r;
 		coord      += sin(vec2(rain * (TWO_PI * 10))) * RAIN_EFFECTS_STRENGTH;
 	#endif
 
-	vec3 color = getAlbedo(coord);
-	//vec3 color = texelFetch(colortex0, ivec2(gl_FragCoord.xy / SCALE) * SCALE, 0).rgb;
+	#ifdef DAMAGE_EFFECT
+
+	vec3 color;
+	if (damage > 1e-15) {
+
+		const float rows = 30;
+		const float cols = 7;
+
+		float cellNoiseHorizontal = rand(floor(coord.y * rows));
+
+		vec2  noiseSeed = coord;
+		noiseSeed.x    += cellNoiseHorizontal;
+		noiseSeed       = noiseSeed * vec2(cols * (cellNoiseHorizontal + 0.5),rows);
+
+		float cellNoise  = sin(rand(floor(noiseSeed)) * (10./DAMAGE_EFFECT_DISPLACEMENT_SIZE));
+		float finalNoise = damage * cellNoise * (0.05 * DAMAGE_EFFECT_DISPLACEMENT);
+
+		color.r = getAlbedo(coord + vec2(finalNoise,0)).r;
+		color.g = getAlbedo(coord - finalNoise).g * (damage * -DAMAGE_EFFECT_REDNESS + 1);
+		color.b = getAlbedo(coord + vec2(0,finalNoise)).b * (damage * -DAMAGE_EFFECT_REDNESS + 1);
+
+	} else {
+		color = getAlbedo(coord);
+	}
+
+	#else
+		vec3 color = getAlbedo(coord);
+	#endif
 
 	if (isEyeInWater == 2) {
 		vec3  viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
