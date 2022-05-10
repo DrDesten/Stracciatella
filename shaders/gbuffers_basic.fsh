@@ -1,12 +1,10 @@
-
-
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
-varying vec2 lmcoord;
-varying vec4 glcolor;
+in vec2 lmcoord;
+in vec4 glcolor;
 
 #if BLOCK_OUTLINE_STYLE == 2
 uniform float frameTimeCounter;
