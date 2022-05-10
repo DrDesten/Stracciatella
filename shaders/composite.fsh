@@ -101,7 +101,7 @@ void main() {
 		noiseSeed       = noiseSeed * vec2(cols * (cellNoiseHorizontal + 0.5),rows);
 
 		float cellNoise  = sin(rand(floor(noiseSeed)) * (10./DAMAGE_EFFECT_DISPLACEMENT_SIZE));
-		float finalNoise = damage * cellNoise * (0.05 * DAMAGE_EFFECT_DISPLACEMENT);
+		float finalNoise = damage * cellNoise * (0.02 * DAMAGE_EFFECT_DISPLACEMENT);
 
 		color.r = getAlbedo(coord + vec2(finalNoise,0)).r;
 		color.g = getAlbedo(coord - finalNoise).g * (damage * -DAMAGE_EFFECT_REDNESS + 1);
