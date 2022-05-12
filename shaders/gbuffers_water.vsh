@@ -33,10 +33,10 @@
 	#include "/lib/vertex_transform_simple.glsl"
 #endif
 
-varying vec2 lmcoord;
-varying vec2 coord;
-varying vec4 glcolor;
-varying vec3 viewPos;
+out vec2 lmcoord;
+out vec2 coord;
+out vec4 glcolor;
+out vec3 viewPos;
 
 void main() {
 	gl_Position = ftransform();

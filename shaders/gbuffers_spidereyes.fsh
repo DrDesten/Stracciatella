@@ -5,8 +5,8 @@
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
-varying vec2 coord;
-varying vec4 glcolor;
+in vec2 coord;
+in vec4 glcolor;
 
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;

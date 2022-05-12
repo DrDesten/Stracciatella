@@ -51,10 +51,10 @@ attribute vec2 mc_midTexCoord;
 #endif
 attribute vec4 mc_Entity;
 
-varying vec2 lmcoord;
-varying vec2 coord;
-varying vec4 glcolor;
-varying vec3 viewPos;
+out vec2 lmcoord;
+out vec2 coord;
+out vec4 glcolor;
+out vec3 viewPos;
 
 #ifdef DIRECTIONAL_LIGHTMAPS
 attribute vec4 at_tangent;
@@ -72,8 +72,8 @@ flat out vec3 rawNormal;
 
 #ifdef RAIN_PUDDLES
 uniform float rainPuddle;
-varying float puddle;
-varying vec2  blockCoords;
+out float puddle;
+out vec2  blockCoords;
 #endif
 
 #ifdef BLINKING_ORES

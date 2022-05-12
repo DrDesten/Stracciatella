@@ -11,11 +11,11 @@ uniform vec3 sunPosition;
 uniform vec3 moonPosition;
 #endif
 
-varying vec2 coord;
-varying vec4 glcolor;
+out vec2 coord;
+out vec4 glcolor;
 
 #ifdef HORIZON_CLIP
-varying vec3 viewPos;
+out vec3 viewPos;
 #endif
 
 bool sunOrMoon(vec3 sunPosition, vec3 moonPosition) { // True = Sun, False = Moon

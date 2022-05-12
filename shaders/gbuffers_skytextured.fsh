@@ -5,12 +5,12 @@
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
-varying vec2 coord;
-varying vec4 glcolor;
+in vec2 coord;
+in vec4 glcolor;
 
 #ifdef HORIZON_CLIP
 uniform vec3 up;
-varying vec3 viewPos;
+in vec3 viewPos;
 #endif
 
 /* DRAWBUFFERS:0 */

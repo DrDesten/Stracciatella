@@ -17,7 +17,7 @@ const mat4 VIEW_SCALE = mat4(
 
 const float LineWidth = LINE_THICKNESS;
 
-varying vec4 glcolor;
+flat out vec4 glcolor;
 
 void main() {
     vec4 linePosStart = gl_ProjectionMatrix * VIEW_SCALE * gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1.0);

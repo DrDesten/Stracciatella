@@ -29,10 +29,10 @@
 
 #endif
 
-varying vec2 lmcoord;
-varying vec2 coord;
-varying vec4 glcolor;
-varying vec3 viewPos;
+in vec2 lmcoord;
+in vec2 coord;
+in vec4 glcolor;
+in vec3 viewPos;
 
 #ifdef DIRECTIONAL_LIGHTMAPS
 	uniform ivec2 atlasSize;
@@ -55,8 +55,8 @@ varying vec3 viewPos;
 	uniform sampler2D colortex4;
 	uniform float frameTimeCounter;
 	uniform float rainPuddle;
-	varying float puddle;
-	varying vec2  blockCoords;
+	in float puddle;
+	in vec2  blockCoords;
 #endif
 
 #ifdef CUSTOM_LIGHTMAP
