@@ -6,7 +6,7 @@
 #include "/lib/vertex_transform_simple.glsl"
 
 out vec2 lmcoord;
-out vec4 glcolor;
+flat out vec4 glcolor;
 
 void main() {
 	gl_Position = ftransform();

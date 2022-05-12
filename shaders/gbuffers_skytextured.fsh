@@ -6,7 +6,7 @@
 #include "/lib/gbuffers_basics.glsl"
 
 in vec2 coord;
-in vec4 glcolor;
+flat in vec4 glcolor;
 
 #ifdef HORIZON_CLIP
 uniform vec3 up;

@@ -7,7 +7,7 @@
 
 in vec2 lmcoord;
 in vec2 coord;
-in vec4 glcolor;
+flat in vec4 glcolor;
 
 /* DRAWBUFFERS:0 */
 void main() {

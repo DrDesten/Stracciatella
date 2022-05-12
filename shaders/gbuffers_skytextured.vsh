@@ -12,7 +12,7 @@ uniform vec3 moonPosition;
 #endif
 
 out vec2 coord;
-out vec4 glcolor;
+flat out vec4 glcolor;
 
 #ifdef HORIZON_CLIP
 out vec3 viewPos;
