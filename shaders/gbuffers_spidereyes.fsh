@@ -6,7 +6,7 @@
 #include "/lib/gbuffers_basics.glsl"
 
 in vec2 coord;
-in vec4 glcolor;
+flat in vec4 glcolor;
 
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
