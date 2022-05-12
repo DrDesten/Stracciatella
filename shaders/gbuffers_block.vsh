@@ -9,7 +9,7 @@ uniform vec3 up;
 
 out vec2 lmcoord;
 out vec2 coord;
-out vec4 glcolor;
+flat out vec4 glcolor;
 out vec3 viewPos;
 
 void main() {

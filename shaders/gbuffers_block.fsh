@@ -38,7 +38,7 @@
 
 in vec2 lmcoord;
 in vec2 coord;
-in vec4 glcolor;
+flat in vec4 glcolor;
 in vec3 viewPos;
 
 /* DRAWBUFFERS:0 */

@@ -6,7 +6,7 @@
 #include "/lib/vertex_transform_simple.glsl"
 
 flat out vec2 lmcoord;
-out vec2 coord;
+noperspective out vec2 coord;
 flat out vec4 glcolor;
 
 #ifdef FOG

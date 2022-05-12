@@ -37,9 +37,9 @@ uniform vec4  entityColor;
 	uniform float customLightmapBlend;
 #endif
 
-in vec2 lmcoord;
+flat in vec2 lmcoord;
 in vec2 coord;
-in vec4 glcolor;
+flat in vec4 glcolor;
 in vec3 viewPos;
 
 /* DRAWBUFFERS:0 */

@@ -10,7 +10,7 @@
 #endif
 
 flat in vec2 lmcoord;
-in vec2 coord;
+noperspective in vec2 coord;
 flat in vec4 glcolor;
 
 #ifdef FOG

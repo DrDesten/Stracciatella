@@ -9,7 +9,7 @@ uniform mat4 gbufferModelViewInverse;
 out vec3 playerPos;
 #endif
 
-out vec4 starData; //rgb = star color, a = flag for weather or not this pixel is a star.
+flat out vec4 starData; //rgb = star color, a = flag for weather or not this pixel is a star.
 out vec3 viewPos;
 
 void main() {

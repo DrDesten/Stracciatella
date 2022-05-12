@@ -19,7 +19,7 @@ uniform float daynight;
 uniform float rainStrength;
 #endif
 
-in vec4 starData; //rgb = star color, a = flag for weather or not this pixel is a star.
+flat in vec4 starData; //rgb = star color, a = flag for weather or not this pixel is a star.
 in vec3 viewPos;
 
 #ifdef CUSTOM_STARS
