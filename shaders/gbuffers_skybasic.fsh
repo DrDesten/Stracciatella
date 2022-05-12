@@ -19,11 +19,11 @@ uniform float daynight;
 uniform float rainStrength;
 #endif
 
-varying vec4 starData; //rgb = star color, a = flag for weather or not this pixel is a star.
-varying vec3 viewPos;
+in vec4 starData; //rgb = star color, a = flag for weather or not this pixel is a star.
+in vec3 viewPos;
 
 #ifdef CUSTOM_STARS
-varying vec3  playerPos;
+in vec3  playerPos;
 uniform float normalizedTime;
 uniform float customStarBlend;
 #endif

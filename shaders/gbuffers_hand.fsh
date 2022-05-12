@@ -1,5 +1,3 @@
-
-
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -9,9 +7,9 @@
 	uniform float customLightmapBlend;
 #endif
 
-varying vec2 lmcoord;
-varying vec2 coord;
-varying vec4 glcolor;
+flat in vec2 lmcoord;
+in vec2 coord;
+flat in vec4 glcolor;
 
 /* DRAWBUFFERS:0 */
 void main() {

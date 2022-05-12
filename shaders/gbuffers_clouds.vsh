@@ -9,9 +9,9 @@
 #endif
 
 
-varying vec2 coord;
-varying vec4 glcolor;
-varying vec3 viewPos;
+out vec2 coord;
+flat out vec4 glcolor;
+out vec3 viewPos;
 
 /* float getWorldPosY() {
 	return gl_Vertex.y + floor((cameraPosition.y - 2.25) * 0.25) * 4 + 5.75;

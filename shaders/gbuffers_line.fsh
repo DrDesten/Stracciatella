@@ -5,7 +5,7 @@
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
-varying vec4 glcolor;
+flat in vec4 glcolor;
 
 /* DRAWBUFFERS:0 */
 void main() {

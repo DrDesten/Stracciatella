@@ -30,9 +30,9 @@
 
 uniform float rainStrength;
 
-varying vec2 coord;
-varying vec4 glcolor;
-varying vec3 viewPos;
+in vec2 coord;
+flat in vec4 glcolor;
+in vec3 viewPos;
 
 /* DRAWBUFFERS:0 */
 void main() {

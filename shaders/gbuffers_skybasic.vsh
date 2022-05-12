@@ -6,11 +6,11 @@
 
 #ifdef CUSTOM_STARS
 uniform mat4 gbufferModelViewInverse;
-varying vec3 playerPos;
+out vec3 playerPos;
 #endif
 
-varying vec4 starData; //rgb = star color, a = flag for weather or not this pixel is a star.
-varying vec3 viewPos;
+out vec4 starData; //rgb = star color, a = flag for weather or not this pixel is a star.
+out vec3 viewPos;
 
 void main() {
 	gl_Position = ftransform();
