@@ -85,6 +85,16 @@ vec2 getBlocklightDir(vec2 lco, mat2 tbn) {
     return abs(blockLightDir.x) + abs(blockLightDir.y) < 1e-6 ? vec2(0,1) : normalize(tbn * blockLightDir); // By doing matrix * vector, I am using the transpose of the matrix. Since tbn is purely rotational, this inverts the matrix.
 }
 
+
+vec3 crosstalk(vec3 color, float factor) {
+	vec3 distribute = 1 - exp(-factor * color);
+	color.r += dot(color.gb, distribute.gb);
+	color.g += dot(color.rb, distribute.rb);
+	color.b += dot(color.rg, distribute.rg);
+	return color;
+} 
+
+
 /* DRAWBUFFERS:0 */
 void main() {
 	vec4 color = getAlbedo(coord);
@@ -161,8 +171,9 @@ void main() {
 			if (whiteEmissive)   emissiveness = sq(saturate((lum * 2 - 0.5) * (1 - sat)));
 			if (candle)          emissiveness = sqsq(saturate((midTexCoord.y - coord.y) * (0.5 / spriteSize.y) + 0.5 + saturate(rawNormal.y)));
 
-			color.rgb  = reinhard_sqrt_tonemap_inverse(color.rgb * 0.95, 0.5);
+			color.rgb  = reinhard_sqrt_tonemap_inverse(color.rgb * 0.996, 0.5);
 			color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 1.5) * color.rgb;
+			color.rgb  = crosstalk(color.rgb, 0.02);
 
 		}
 
