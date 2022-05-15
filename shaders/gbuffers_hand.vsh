@@ -13,6 +13,8 @@ void main() {
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 
+	//float normalCheck = min(min(min(min(abs(gl_Normal.x - 1.0), abs(gl_Normal.x + 1.0)), abs(gl_Normal.z - .9)), abs(gl_Normal.y + .9)), abs(gl_Normal.y - .9)) * 10;
+
 	/* gl_ModelViewMatrix
 	1,0,0,0
 	0,1,0,0
