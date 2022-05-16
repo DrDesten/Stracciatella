@@ -9,8 +9,8 @@ uniform mat4 gbufferPreviousProjection;
 
 float fovScale = gbufferProjection[1][1] * 0.7299270073;
 
-vec3 toView(vec3 clippos) { // Clippos to viewpos
-    return unprojectPerspectiveMAD(clippos, gbufferProjectionInverse);
+vec3 toView(vec3 clipPos) { // Clippos to viewpos
+    return unprojectPerspectiveMAD(clipPos, gbufferProjectionInverse);
 }
 
 vec3 toPlayer(vec3 viewspace) { // Viewpos to Playerfeetpos
