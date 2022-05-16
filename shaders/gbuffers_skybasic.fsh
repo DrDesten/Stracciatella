@@ -4,6 +4,7 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
+#include "/lib/transform.glsl"
 #include "/lib/fog_sky.glsl"
 
 uniform vec2 screenSizeInverse;
@@ -20,7 +21,6 @@ uniform float rainStrength;
 #endif
 
 flat in vec4 starData; //rgb = star color, a = flag for weather or not this pixel is a star.
-in vec3 viewPos;
 
 #ifdef CUSTOM_STARS
 in vec3  playerPos;
@@ -89,6 +89,7 @@ vec2 rotation(float angle) {
 
 /* DRAWBUFFERS:0 */
 void main() {
+	vec3 viewPos = toView(vec3(gl_FragCoord.xy * screenSizeInverse, 1) * 2 - 1);
 	vec3 viewDir = normalize(viewPos);
 	#ifdef CUSTOM_SKY
 	vec4 sky = getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight);
@@ -165,8 +166,7 @@ void main() {
 	#ifdef END
 		vec3 color = sky.rgb;
 	#endif
-
-
+	
 	#if DITHERING >= 1
 		color += ditherColor(gl_FragCoord.xy);
 	#endif
