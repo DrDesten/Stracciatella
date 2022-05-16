@@ -4,9 +4,14 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 
+#if defined WAVING_BLOCKS || defined WAVING_LIQUIDS || defined SNEAK_EFFECT
+#include "/lib/vertex_transform.glsl"
+#else
+#include "/lib/vertex_transform_simple.glsl"
+#endif
+
 #if defined WAVING_BLOCKS || defined WAVING_LIQUIDS
 
-	#include "/lib/vertex_transform.glsl"
 	attribute vec4 mc_Entity;
 
 	#ifdef WORLD_TIME_ANIMATION
@@ -29,8 +34,10 @@
 
 	#endif
 
-#else
-	#include "/lib/vertex_transform_simple.glsl"
+#endif
+
+#ifdef SNEAK_EFFECT
+uniform float sneaking;
 #endif
 
 out vec2 lmcoord;
@@ -61,5 +68,9 @@ void main() {
 
 		}
 	
+	#endif
+	
+	#ifdef SNEAK_EFFECT
+	#include "lib/outlook.glsl"
 	#endif
 }

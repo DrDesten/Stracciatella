@@ -4,9 +4,13 @@
 
 uniform float  frameTimeCounter;
 
-#if defined WAVING_BLOCKS || defined WAVING_LIQUIDS
-
+#if defined WAVING_BLOCKS || defined WAVING_LIQUIDS || defined RAIN_PUDDLES || defined SNEAK_EFFECT
 	#include "/lib/vertex_transform.glsl"
+#else
+	#include "/lib/vertex_transform_simple.glsl"
+#endif
+
+#if defined WAVING_BLOCKS || defined WAVING_LIQUIDS
 
 	#ifdef WORLD_TIME_ANIMATION
 
@@ -40,10 +44,6 @@ uniform float  frameTimeCounter;
 
 	#endif
 
-#elif defined RAIN_PUDDLES
-	#include "/lib/vertex_transform.glsl"
-#else
-	#include "/lib/vertex_transform_simple.glsl"
 #endif
 
 #if defined WAVING_BLOCKS || defined DIRECTIONAL_LIGHTMAPS || defined HDR_EMISSIVES
@@ -80,6 +80,10 @@ out vec2  blockCoords;
 flat out float oreBlink;
 #endif
 
+#ifdef SNEAK_EFFECT
+uniform float sneaking;
+#endif
+
 flat out int blockId;
 
 void main() {
@@ -89,7 +93,7 @@ void main() {
 	glcolor = gl_Color;
 	viewPos = getView();
 	blockId = int(getID(mc_Entity.x));
-	
+
 	#ifdef DIRECTIONAL_LIGHTMAPS
 
 		spriteSize  = abs(coord - mc_midTexCoord.xy);
@@ -259,5 +263,9 @@ void main() {
 
 		}
 
+	#endif
+
+	#ifdef SNEAK_EFFECT
+	#include "lib/outlook.glsl"
 	#endif
 }

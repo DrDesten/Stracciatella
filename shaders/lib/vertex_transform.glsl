@@ -5,6 +5,10 @@ uniform mat4 gbufferProjectionInverse;
 
 #include "/lib/vertex_transform_simple.glsl"
 
+vec3 toView(vec3 clipPos) {
+    return unprojectPerspectiveMAD(clipPos, gbufferProjectionInverse);
+}
+
 vec3 toPlayer(vec3 viewPos) {
     return mat3(gbufferModelViewInverse) * viewPos + gbufferModelViewInverse[3].xyz;
 }

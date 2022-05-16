@@ -37,7 +37,7 @@ void main() {
 	#ifdef FOG
 		float fog = fogFactor(viewPos, far, gbufferModelViewInverse);
 		color.a  *= (1-fog);
-		color.a  += Bayer4(gl_FragCoord.xy) * 0.05 - 0.025;
+		color.a  -= Bayer4(gl_FragCoord.xy) * 0.05;
 	#endif
 
     #if DITHERING >= 2
