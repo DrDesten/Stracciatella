@@ -230,7 +230,7 @@ void main() {
 
 	#endif
 
-	#if DITHERING >= 1
+	#if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
 	gl_FragData[0] = color; //gcolor
