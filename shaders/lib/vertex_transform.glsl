@@ -25,6 +25,9 @@ vec4 getPlayer4() {
 vec3 playerToView(vec3 playerPos) {
     return transformMAD(playerPos, gbufferModelView);
 }
+vec4 playerToView4(vec3 playerPos) {
+    return gbufferModelView * vec4(playerPos, 1.0);
+}
 vec4 playerToView(vec4 playerPos) {
     return gbufferModelView * playerPos;
 }
@@ -34,7 +37,6 @@ vec4 playerToClip(vec3 playerPos) {
 vec4 playerToClip(vec4 playerPos) {
     return projectHomogeneousMAD(transformMAD(playerPos.xyz, gbufferModelView), gl_ProjectionMatrix);
 }
-
 
 vec3 getWorld() {
     return getPlayer() + cameraPosition;
