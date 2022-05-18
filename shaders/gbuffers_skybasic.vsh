@@ -14,6 +14,7 @@ flat out vec4 starData; //rgb = star color, a = flag for weather or not this pix
 void main() {
 	gl_Position = ftransform();
 	starData    = vec4(gl_Color.rgb, float(gl_Color.r == gl_Color.g && gl_Color.g == gl_Color.b && gl_Color.r > 0.0));
+	vec3 viewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz;
 	
 	#ifdef CUSTOM_STARS
 	playerPos   = mat3(gbufferModelViewInverse) * viewPos - gbufferModelViewInverse[3].xyz;
