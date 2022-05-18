@@ -5,6 +5,19 @@
 #include "/lib/transform.glsl"
 #include "/lib/fog_sky.glsl"
 
+
+#ifdef FOG
+
+ uniform sampler2D colortex1;
+ uniform int   isEyeInWater;
+ uniform float far;
+
+ #if FOG_QUALITY == 1
+  uniform ivec2 eyeBrightnessSmooth;
+ #endif
+
+#endif
+
 uniform vec3 fogColor;
 uniform vec3 skyColor;
 
@@ -152,6 +165,21 @@ void main() {
 
 	vec3 color = getAlbedo(coord);
 	if (depth >= 1) color = skyColor.rgb;
+
+	#ifdef FOG
+
+		float fog     = fogFactor(viewPos, far, gbufferModelViewInverse);
+		vec2  lmcoord = texture(colortex1, coord).rg;
+
+		#ifdef OVERWORLD
+			float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
+		#else
+			const float cave = 1;
+		#endif
+		
+		color.rgb  = mix(color.rgb, mix(fogCaveColor, skyColor.rgb, cave), fog);
+
+	#endif
 
 	#if DITHERING >= 1
 		color += ditherColor(gl_FragCoord.xy);

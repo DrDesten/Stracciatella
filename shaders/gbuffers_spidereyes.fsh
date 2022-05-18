@@ -8,9 +8,10 @@
 in vec2 coord;
 flat in vec4 glcolor;
 
+/* DRAWBUFFERS:01 */
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 
-/* DRAWBUFFERS:0 */
 	gl_FragData[0] = color; //gcolor
+	gl_FragData[1] = vec4(1,1,0,1);
 }
