@@ -4,6 +4,6 @@ if (sneaking > 1e-5) {
     player.y   -= SNEAK_OUTLOOK_HEIGHT * (1 - exp(sq(sqmag(vec3(player.x, player.y - 1, player.z))) * scaleFactor)) * sneaking;
     gl_Position = playerToView4(player);
     //gl_Position.z *= -0.3 * sneaking + 1;
-    gl_Position.xy *= 1 + (gl_Position.z * -0.005) * sneaking;
+    gl_Position.xy *= 1 + (gl_Position.z * (-0.006 * SNEAK_OUTLOOK_ZOOM)) * sneaking;
     gl_Position = viewToClip(gl_Position);
 }
