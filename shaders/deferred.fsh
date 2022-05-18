@@ -102,6 +102,8 @@ void main() {
 	vec3  screenPos = vec3(coord, depth);
 	vec3  viewPos   = toView(screenPos * 2 - 1);
 	vec3  viewDir   = normalize(viewPos);
+	vec3  playerPos = toPlayer(viewPos);
+	vec3  playerDir = normalize(playerPos);
 
 	#ifdef CUSTOM_SKY
 	vec4 skyColor = getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight);
@@ -113,9 +115,6 @@ void main() {
 	#ifdef CUSTOM_STARS
 
 		if (customStarBlend > 1e-6 && playerPos.y > 0) {
-
-			vec3 playerPos = toPlayer(viewPos);
-			vec3 playerDir = normalize(playerPos);
 
 			// STARS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -164,21 +163,25 @@ void main() {
 	#endif
 
 	vec3 color = getAlbedo(coord);
-	if (depth >= 1) color = skyColor.rgb;
+
+	if (depth >= 1) {
+		color += skyColor.rgb;
+	}
 
 	#ifdef FOG
+    else {
 
-		float fog     = fogFactor(viewPos, far, gbufferModelViewInverse);
+		float fog     = fogFactorPlayer(playerPos, far);
 		vec2  lmcoord = texture(colortex1, coord).rg;
 
 		#ifdef OVERWORLD
 			float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
+			color = mix(color, mix(fogCaveColor, skyColor.rgb, cave), fog);
 		#else
-			const float cave = 1;
+			color = mix(color, skyColor.rgb, fog);
 		#endif
 		
-		color.rgb  = mix(color.rgb, mix(fogCaveColor, skyColor.rgb, cave), fog);
-
+	}
 	#endif
 
 	#if DITHERING >= 1
