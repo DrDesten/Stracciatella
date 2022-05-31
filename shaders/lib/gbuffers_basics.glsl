@@ -21,7 +21,8 @@ vec3 getLightmap(vec2 lmcoord) {
 }
 
 vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
-    
+    //lmcoord.x = max(lmcoord.x, LIGHTMAP_MINIMUM_LIGHT * (lmcoord.y * (lmcoord.y - 2) + 1));
+
     #ifndef LIGHTMAP_COMPLEX_BLOCKLIGHT
         const vec3 blocklightColor = lightmapBlock;
     #else
@@ -50,14 +51,14 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
     vec3 skyLight = mix(lightmapNight, lightmapDay, customLightmapBlend);
     #endif
     skyLight *= (
-        lmcoord.y                                                       // Skylight
+        lmcoord.y * lmcoord.y                                           // Skylight
         #if LIGHTMAP_SKYLIGHT_AO != 100
         * (AO * lightmap_skylight_ao + (1. - lightmap_skylight_ao))     // Skylight AO
         #else
         * AO
         #endif
     );
-    skyLight = max(skyLight, vec3((nightVision * 0.5 + LIGHTMAP_MINIMUM_LIGHT) * AO));
+    skyLight = max(skyLight, vec3((nightVision * 0.5) * AO));
 
     vec3 blockLight = blocklightColor * (
         saturate(lmcoord.x * lmcoord.x * 1.1)                            // Blocklight
@@ -69,5 +70,7 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
         * saturate((mean(skyLight) * 1.15 - 0.15 ) * -LIGHTMAP_BLOCKLIGHT_REDUCTION + 1)          // Reduce Blocklight when it's bright
     );
 
-    return blockLight + skyLight;
+    float caveLight = LIGHTMAP_MINIMUM_LIGHT * (lmcoord.y * (lmcoord.y - 2) + 1) * AO;
+
+    return blockLight + skyLight + caveLight;
 }
