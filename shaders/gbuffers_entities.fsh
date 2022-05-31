@@ -7,32 +7,6 @@
 
 uniform vec4  entityColor;
 
-#include "/lib/fog_sky.glsl"
-
-#ifdef FOG
-
-	uniform mat4  gbufferModelViewInverse;
-	uniform vec3  fogColor;
-	uniform int   isEyeInWater;
-	uniform float far;
-
-	#ifdef CUSTOM_SKY
-		uniform float daynight;
-		uniform float rainStrength;
-	#endif
-
-	#if FOG_QUALITY == 1
-
-		uniform vec3  sunDir;
-		uniform vec3  up;
-		uniform float sunset;
-		uniform vec3  skyColor;
-		uniform ivec2 eyeBrightnessSmooth;
-		
-	#endif
-
-#endif
-
 #ifdef CUSTOM_LIGHTMAP
 	uniform float customLightmapBlend;
 #endif
