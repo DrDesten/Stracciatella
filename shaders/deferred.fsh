@@ -12,7 +12,7 @@
  uniform int   isEyeInWater;
  uniform float far;
 
- #if FOG_QUALITY == 1
+ #ifdef OVERWORLD
   uniform ivec2 eyeBrightnessSmooth;
  #endif
 
