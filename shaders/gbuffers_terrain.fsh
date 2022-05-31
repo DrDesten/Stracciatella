@@ -147,7 +147,7 @@ void main() {
 
 			color.rgb  = reinhard_sqrt_tonemap_inverse(color.rgb * 0.996, 0.5);
 			color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 1.5) * color.rgb;
-			color.rgb  = crosstalk(color.rgb, 0.02);
+			//color.rgb  = crosstalk(color.rgb, 0.02);
 
 		}
 
