@@ -172,7 +172,11 @@ void main() {
 	vec3 color = getAlbedo(coord);
 
 	if (depth >= 1) {
+		#ifndef NETHER
 		color += skyColor.rgb;
+		#else
+		color = skyColor.rgb;
+		#endif
 	}
 
 	#ifdef FOG
