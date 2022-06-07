@@ -15,8 +15,6 @@ const mat4 VIEW_SCALE = mat4(
     0.0, 0.0, 0.0, 1.0
 );
 
-const float LineWidth = LINE_THICKNESS;
-
 flat out vec4 glcolor;
 
 void main() {
@@ -27,7 +25,7 @@ void main() {
     vec3 ndc2 = linePosEnd.xyz / linePosEnd.w;
 
     vec2 lineScreenDirection = normalize((ndc2.xy - ndc1.xy) * screenSize);
-    vec2 lineOffset = vec2(-lineScreenDirection.y, lineScreenDirection.x) * LineWidth / screenSize;
+    vec2 lineOffset = vec2(-lineScreenDirection.y, lineScreenDirection.x) * LINE_THICKNESS / screenSize;
 
     if (lineOffset.x < 0.0) {
         lineOffset *= -1.0;
@@ -40,7 +38,4 @@ void main() {
     }
 
     glcolor = gl_Color;
-    #ifdef BLOCK_OUTLINE_SOLID
-    glcolor.a = 1;
-    #endif
 }

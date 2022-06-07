@@ -172,7 +172,7 @@ void main() {
 	vec3 color = getAlbedo(coord);
 
 	if (depth >= 1) {
-		#ifndef NETHER
+		#ifdef OVERWORLD
 		color += skyColor.rgb;
 		#else
 		color = skyColor.rgb;
