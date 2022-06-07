@@ -353,8 +353,13 @@ option.BLOCK_OUTLINE_COLOR_R=Block Outline Color §cR
 option.BLOCK_OUTLINE_COLOR_G=Block Outline Color §2G
 option.BLOCK_OUTLINE_COLOR_B=Block Outline Color §9B
 
+
 option.SHADER_NAME=Stracciatella Shaders
 value.SHADER_NAME.0=v1.4
+
+profile.VANILLA=Vanilla
+profile.DEFAULT=Default
+profile.STRACCIATELLA=Stracciatella
 
 option.CREDITS=by
 value.CREDITS.0=DrDesten
