@@ -5,10 +5,6 @@
 screen.ATMOSPHERICS=Fog and Sky
 
 option.FOG=Fog
-option.FOG_QUALITY=Fog Quality
-value.FOG_QUALITY.0=Fast
-value.FOG_QUALITY.1=Fancy
-option.FOG_QUALITY.comment=Fast: Looks broken like the vanilla fog. Fancy: Does not look broken.
 option.FOG_START=Fog Start
 option.FOG_START.comment=Sets where the fog starts appearing. Relative to render distance.
 option.FOG_END=Fog End
