@@ -18,7 +18,7 @@ option.sunPathRotation=Sun Angle
 option.sunPathRotation.comment=Tilts the rotation axis of sun and moon. Vanilla is 0.
 
 option.HORIZON_CLIP=Hide under Horizon
-option.HORIZON_CLIP.comment=Sun and moon start disappering under the horizon
+option.HORIZON_CLIP.comment=Sun and moon start disappearing under the horizon
 option.HORIZON_CLIP_HEIGHT=Transition Height
 option.HORIZON_CLIP_HEIGHT.comment=Lower: sun and moon appear lower. Higher: sun and moon appear higher.
 option.HORIZON_CLIP_TRANSITION=Transition
@@ -222,7 +222,7 @@ option.WAVING_LIQUIDS_SPEED=Waving Liquids Speed
 screen.CAMERA=Camera and Color
 
 option.FXAA=FXAA
-option.FXAA.comment=Enables Anti-Alasing. Improves quality of edges.
+option.FXAA.comment=Enables Anti-Aliasing. Improves quality of edges.
 option.HQ_UPSCALING=High Quality Upscaling
 option.HQ_UPSCALING.comment=Switches to bicubic sampling. Internally enables FXAA. Can be useful with lower render quality settings.
 
@@ -311,7 +311,7 @@ value.DITHERING.2=Full
 option.DITHERING.comment=Removes Banding. Smart: Enables dithering in select programs. Full: Enables dithering in all programs.
 
 option.WORLD_TIME_ANIMATION=World Time Animation
-option.WORLD_TIME_ANIMATION.comment=Uses the ingame time instead of irl time for animations, such as waving leaves or water. This can be useful for animation tools like replaymod, enable this when waving things seem jittery.
+option.WORLD_TIME_ANIMATION.comment=Uses the ingame time instead of real time for animations, such as waving leaves or water. This can be useful for animation tools like replaymod, enable this when waving things seem jittery.
 
 option.BLOCK_OUTLINE_SOLID=Solid Block Outline
 option.LINE_THICKNESS.comment=Makes the block outline no longer transparent.
