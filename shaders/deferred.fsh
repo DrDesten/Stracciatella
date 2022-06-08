@@ -112,10 +112,12 @@ void main() {
 	vec3  playerPos = toPlayer(viewPos);
 	vec3  playerDir = normalize(playerPos);
 
+	vec3 normal = normalize(cross(dFdx(playerPos), dFdy(playerPos)));
+
 	#ifdef CUSTOM_SKY
-	vec4 skyColor = getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight);
+	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight);
 	#else
-	vec4 skyColor = getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset);
+	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset);
 	#endif
 
 	#ifdef OVERWORLD
@@ -138,7 +140,7 @@ void main() {
 			
 			stars         *= fstep(noise(skyCoord * 10), STAR_COVERAGE, 2);
 
-			float starMask = 1 - skyColor.a;
+			float starMask = 1 - skyGradient.a;
 			stars         *= starMask;
 			
 			#ifdef SHOOTING_STARS
@@ -162,7 +164,7 @@ void main() {
 			#endif
 
 			// mix: <color> with <starcolor>, depending on <is there a star?> and <is it night?> and <is it blocked by sun or moon?>
-			skyColor.rgb = mix(skyColor.rgb, vec3(1), stars * customStarBlend * saturate(abs(dot(viewDir, sunDir)) * -200 + 199.5));
+			skyGradient.rgb = mix(skyGradient.rgb, vec3(1), stars * customStarBlend * saturate(abs(dot(viewDir, sunDir)) * -200 + 199.5));
 
 		}
 
@@ -173,9 +175,9 @@ void main() {
 
 	if (depth >= 1) {
 		#ifdef OVERWORLD
-		color += skyColor.rgb;
+		color += skyGradient.rgb;
 		#else
-		color = skyColor.rgb;
+		color = skyGradient.rgb;
 		#endif
 	}
 
@@ -187,9 +189,9 @@ void main() {
 
 		#ifdef OVERWORLD
 			float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
-			color = mix(color, mix(fogCaveColor, skyColor.rgb, cave), fog);
+			color = mix(color, mix(fogCaveColor, skyGradient.rgb, cave), fog);
 		#else
-			color = mix(color, skyColor.rgb, fog);
+			color = mix(color, skyGradient.rgb, fog);
 		#endif
 		
 	}
