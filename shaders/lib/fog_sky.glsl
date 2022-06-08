@@ -17,6 +17,42 @@ const vec3 endSkyDown = vec3(END_SKY_DOWN_R, END_SKY_DOWN_G, END_SKY_DOWN_B);
 
 // SKY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+vec3 getBlurrySky(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset, float rainStrength, float daynight) {
+    #ifdef NETHER
+
+        return fogColor;
+
+    #endif
+    #ifdef END 
+    
+        float viewHeight = dot(viewDir, up) * 0.5 + 0.5;
+        return mix(vec3(END_SKY_DOWN_R, END_SKY_DOWN_G, END_SKY_DOWN_B), vec3(END_SKY_UP_R, END_SKY_UP_G, END_SKY_UP_B), viewHeight);
+
+    #endif
+    
+    float sunDot  = sq(dot(viewDir, sunDir) * 0.5 + 0.5);
+    float fogArea = saturate(dot(viewDir, -up) * .25 + .5);
+
+    #ifdef SKY_CUSTOM_COLOR
+        // Custom Sky Color
+	    vec3 skyRainColor  = mix(vec3(SKY_NIGHT_RAIN_R, SKY_NIGHT_RAIN_G, SKY_NIGHT_RAIN_B), vec3(SKY_DAY_RAIN_R, SKY_DAY_RAIN_G, SKY_DAY_RAIN_B), daynight);
+	    vec3 skyClearColor = mix(vec3(SKY_NIGHT_R, SKY_NIGHT_G, SKY_NIGHT_B),                vec3(SKY_DAY_R, SKY_DAY_G, SKY_DAY_B), daynight);
+        skyColor = mix(skyClearColor, skyRainColor, rainStrength);
+    #endif
+    #ifdef FOG_CUSTOM_COLOR
+        // Custom Fog Color
+	    vec3 fogRainColor  = mix(vec3(FOG_NIGHT_RAIN_R, FOG_NIGHT_RAIN_G, FOG_NIGHT_RAIN_B), vec3(FOG_DAY_RAIN_R, FOG_DAY_RAIN_G, FOG_DAY_RAIN_B), daynight); 
+	    vec3 fogClearColor = mix(vec3(FOG_NIGHT_R, FOG_NIGHT_G, FOG_NIGHT_B),                vec3(FOG_DAY_R, FOG_DAY_G, FOG_DAY_B), daynight);
+        fogColor = mix(fogClearColor, fogRainColor, rainStrength);
+    #endif
+
+    #ifdef SKY_CUSTOM_SUNSET
+	    fogColor = mix(fogColor, vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B), sqrt(sunDot) * sunset); // Make fog Color change for sunsets
+    #endif
+
+	return mix(skyColor, fogColor, fogArea);
+}
+
 vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir, vec3 up, vec3 skyColor, vec3 fogColor, float sunset) {
     #ifdef NETHER
 
