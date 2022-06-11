@@ -106,6 +106,8 @@ vec2 rotation(float angle) {
 	return vec2(sin(angle), cos(angle));
 }
 
+uniform sampler2D colortex4;
+
 /* DRAWBUFFERS:0 */
 void main() {
 	float depth     = getDepth(coord);
@@ -190,7 +192,13 @@ void main() {
 		vec3 lmcoord = texture(colortex1, coord).rgb;
 		bool emissive = lmcoord.z == 1;
 
-		if (!emissive) color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z);
+		vec3 blockLightColor = sqrtf01(texture(colortex4, coord).rgb);
+		blockLightColor = blockLightColor / (maxc(blockLightColor) + .1);
+		blockLightColor = saturate(applySaturation(blockLightColor, 2));
+
+		if (!emissive) color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z, blockLightColor);
+
+		//if (!emissive) color *= blockLightColor;
 
 		#ifdef FOG
 			float fog     = fogFactorPlayer(playerPos, far);
