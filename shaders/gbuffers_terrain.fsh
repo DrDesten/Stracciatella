@@ -69,7 +69,7 @@ vec3 crosstalk(vec3 color, float factor) {
 } 
 
 
-/* DRAWBUFFERS:01 */
+/* DRAWBUFFERS:012 */
 void main() {
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb;
@@ -179,4 +179,7 @@ void main() {
 	#endif
 	gl_FragData[0] = color;
 	gl_FragData[1] = vec4(lmcoord,0,1);
+
+	float emissiveFlag = float(blockId == 20 || blockId == 36 || blockId == 41 || blockId == 40 || blockId == 34 || blockId == 42 || blockId == 43);
+	gl_FragData[2] = vec4(emissiveFlag,0,0,1);
 }
