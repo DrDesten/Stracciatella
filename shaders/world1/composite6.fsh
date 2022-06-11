@@ -1,4 +1,4 @@
 #version 130
 #define FRAG
 #define END
-#include "/gbuffers_line.fsh"
+#include "/composite6.fsh"
