@@ -4,6 +4,7 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
+#include "/lib/lightmap.glsl"
 
 #ifdef CUSTOM_LIGHTMAP
 	uniform float customLightmapBlend;

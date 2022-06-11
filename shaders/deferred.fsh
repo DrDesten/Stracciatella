@@ -5,7 +5,6 @@
 #include "/lib/transform.glsl"
 #include "/lib/fog_sky.glsl"
 
-
 #ifdef FOG
 
  uniform sampler2D colortex1;
@@ -41,6 +40,13 @@ uniform float frameTimeCounter;
 
 #ifdef SNEAK_EFFECT
 uniform float sneaking;
+#endif
+
+#ifdef CUSTOM_LIGHTMAP
+#include "/lib/lightmap.glsl"
+uniform float customLightmapBlend;
+#else 
+
 #endif
 
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
@@ -112,8 +118,6 @@ void main() {
 	vec3  playerPos = toPlayer(viewPos);
 	vec3  playerDir = normalize(playerPos);
 
-	vec3 normal = normalize(cross(dFdx(playerPos), dFdy(playerPos)));
-
 	#ifdef CUSTOM_SKY
 	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight);
 	#else
@@ -181,21 +185,24 @@ void main() {
 		#endif
 	}
 
-	#ifdef FOG
     else {
 
-		float fog     = fogFactorPlayer(playerPos, far);
-		vec2  lmcoord = texture(colortex1, coord).rg;
+		vec3 lmcoord = texture(colortex1, coord).rgb;
+		bool emissive = lmcoord.z == 1;
 
-		#ifdef OVERWORLD
-			float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
-			color = mix(color, mix(fogCaveColor, skyGradient.rgb, cave), fog);
-		#else
-			color = mix(color, skyGradient.rgb, fog);
+		if (!emissive) color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z);
+
+		#ifdef FOG
+			float fog     = fogFactorPlayer(playerPos, far);
+			#ifdef OVERWORLD
+				float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
+				color = mix(color, mix(fogCaveColor, skyGradient.rgb, cave), fog);
+			#else
+				color = mix(color, skyGradient.rgb, fog);
+			#endif
 		#endif
 		
 	}
-	#endif
 
 	#if DITHERING >= 1
 		color += ditherColor(gl_FragCoord.xy);

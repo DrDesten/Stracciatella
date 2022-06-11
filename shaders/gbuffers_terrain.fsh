@@ -160,12 +160,6 @@ void main() {
 		#define lightmapCoord lmcoord
 	#endif
 
-	#ifdef CUSTOM_LIGHTMAP
-		color.rgb *= getCustomLightmap(lightmapCoord, customLightmapBlend, glcolor.a);
-	#else
-		color.rgb *= getLightmap(lightmapCoord) * glcolor.a;
-	#endif
-
 	#ifdef HDR_EMISSIVES
 		if (isEmissive) color.rgb = reinhard_sqrt_tonemap(color.rgb, 0.5);
 	#endif
@@ -178,8 +172,11 @@ void main() {
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
 	gl_FragData[0] = color;
-	gl_FragData[1] = vec4(lmcoord,0,1);
-
+	#ifdef HDR_EMISSIVES
+	gl_FragData[1] = vec4(lightmapCoord, glcolor.a * (254./255) + float(isEmissive), 1);
+	#else
+	gl_FragData[1] = vec4(lightmapCoord, glcolor.a * (254./255), 1);
+	#endif
 	float emissiveFlag = float(blockId == 20 || blockId == 36 || blockId == 41 || blockId == 40 || blockId == 34 || blockId == 42 || blockId == 43);
 	gl_FragData[2] = vec4(emissiveFlag,0,0,1);
 }

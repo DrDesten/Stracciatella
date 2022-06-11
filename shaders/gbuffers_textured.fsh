@@ -28,12 +28,6 @@ flat in vec4 glcolor;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 
-	#ifndef CUSTOM_LIGHTMAP
-	color.rgb *= getLightmap(lmcoord);
-	#else
-	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, 1);
-	#endif
-
 	#ifdef FOG
 		float fog = fogFactor(viewPos, far, gbufferModelViewInverse);
 		color.a  *= (1-fog);
@@ -44,5 +38,5 @@ void main() {
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
 	gl_FragData[0] = color; //gcolor
-	gl_FragData[1] = vec4(1,1,0,1);
+	gl_FragData[1] = vec4(lmcoord, (254./255), 1);
 }

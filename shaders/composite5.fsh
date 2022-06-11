@@ -6,9 +6,9 @@
 #include "/lib/composite_basics.glsl"
 
 /*
-const int colortex0Format = RGBA8; // Color
-const int colortex1Format = RG8;   // Lightmap
-const int colortex2Format = R8;    // EmissiveFlag
+const int colortex0Format = RGBA8;  // Color
+const int colortex1Format = RG8;    // Lightmap
+const int colortex2Format = R8;     // EmissiveFlag
 const int colortex3Format = RGBA16; // LightmapColor
 */
 
