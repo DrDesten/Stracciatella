@@ -151,6 +151,11 @@ void main() {
 
 		}
 
+		#define HDREmissiveFlag float(emissiveness > 0.1)
+		#define coloredLightEmissiveFlag float(emissiveness > 0.1)
+	#else
+		#define HDREmissiveFlag 0
+		#define coloredLightEmissiveFlag float(blockId == 20 || blockId == 36 || blockId == 41 || blockId == 40 || blockId == 34 || blockId == 42 || blockId == 43)
 	#endif
 
 	#ifdef DIRECTIONAL_LIGHTMAPS
@@ -172,11 +177,6 @@ void main() {
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
 	gl_FragData[0] = color;
-	#ifdef HDR_EMISSIVES
-	gl_FragData[1] = vec4(lightmapCoord, glcolor.a * (254./255) + float(isEmissive), 1);
-	#else
-	gl_FragData[1] = vec4(lightmapCoord, glcolor.a * (254./255), 1);
-	#endif
-	float emissiveFlag = float(blockId == 20 || blockId == 36 || blockId == 41 || blockId == 40 || blockId == 34 || blockId == 42 || blockId == 43);
-	gl_FragData[2] = vec4(emissiveFlag,0,0,1);
+	gl_FragData[1] = vec4(lightmapCoord, glcolor.a * (254./255) + HDREmissiveFlag, 1);
+	gl_FragData[2] = vec4(coloredLightEmissiveFlag,0,0,1);
 }
