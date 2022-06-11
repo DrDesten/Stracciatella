@@ -1,4 +1,4 @@
 #version 130
 #define VERT
 #define OVERWORLD
-#include "/composite1.vsh"
+#include "/composite6.vsh"
