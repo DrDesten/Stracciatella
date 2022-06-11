@@ -8,8 +8,8 @@
 /*
 const int colortex0Format = RGBA8; // Color
 const int colortex1Format = RG8;   // Lightmap
-const int colortex2Format = R8;    // Empty
-const int colortex3Format = R8;    // Effects
+const int colortex2Format = R8;    // EmissiveFlag
+const int colortex3Format = RGBA8; // LightmapColor
 */
 
 const vec4 colortex3ClearColor = vec4(0,0,0,0);
