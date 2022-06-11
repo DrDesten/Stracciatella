@@ -46,5 +46,5 @@ void main() {
 	#endif
 
 	gl_FragData[0] = color; //gcolor
-	gl_FragData[1] = vec4(1,1,0,1);
+	gl_FragData[1] = vec4(1);
 }
