@@ -7,6 +7,7 @@ const float INV_PI  = 0.3183098861837906715377675267450287240689192914809;
 
 const float PHI     = 1.6180339887498948482045868343656381177203091798058;
 const float PHI_INV = 0.6180339887498948482045868343656381177203091798058;
+const float PHI2    = 1.32471795724474602596;
 
 const float E       = 2.7182818284590452353602874713526624977572470937000;
 
@@ -249,6 +250,11 @@ float ditherColor(vec2 co) {
 float checkerboard(vec2 co) {
     co = floor(co);
     return fract(co.x * 0.5 + co.y * 0.5);
+}
+
+vec2 R2(float n) {
+    const vec2 a = vec2(1.0/PHI2, 1.0/(PHI2*PHI2));
+    return fract(a * n + 0.5);
 }
 
 float rand(float x) {
