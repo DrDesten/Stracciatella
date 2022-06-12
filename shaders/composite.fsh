@@ -7,7 +7,7 @@
 
 /*
 const int colortex0Format = RGBA8; // Color
-const int colortex1Format = RGB8;  // Lightmap, AO
+const int colortex1Format = RGBA8;  // Lightmap, AO, Emissiveness
 const int colortex2Format = R8;    // Empty
 const int colortex3Format = R8;    // Effects
 */

@@ -173,8 +173,8 @@ void main() {
 	#endif
 	gl_FragData[0] = color;
 	#ifdef HDR_EMISSIVES
-	gl_FragData[1] = vec4(lightmapCoord, glcolor.a * (254./255) + float(isEmissive), 1);
+	gl_FragData[1] = vec4(lightmapCoord, glcolor.a * (254./255), emissiveness);
 	#else
-	gl_FragData[1] = vec4(lightmapCoord, glcolor.a * (254./255), 1);
+	gl_FragData[1] = vec4(lightmapCoord, glcolor.a * (254./255), 0);
 	#endif
 }

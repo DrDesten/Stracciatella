@@ -187,10 +187,9 @@ void main() {
 
     else {
 
-		vec3 lmcoord = texture(colortex1, coord).rgb;
-		bool emissive = lmcoord.z == 1;
+		vec4 lmcoord = texture(colortex1, coord);
 
-		if (!emissive) color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z);
+		color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z) * (1 - lmcoord.a) + lmcoord.a;
 
 		#ifdef FOG
 			float fog     = fogFactorPlayer(playerPos, far);
