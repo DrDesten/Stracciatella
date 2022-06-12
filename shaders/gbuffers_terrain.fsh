@@ -177,6 +177,6 @@ void main() {
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
 	gl_FragData[0] = color;
-	gl_FragData[1] = vec4(lightmapCoord, glcolor.a * (254./255), emissiveness);
+	gl_FragData[1] = vec4(lightmapCoord, glcolor.a, emissiveness);
 	gl_FragData[2] = vec4(coloredLightEmissive, 1);
 }
