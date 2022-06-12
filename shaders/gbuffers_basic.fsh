@@ -12,7 +12,7 @@ uniform float frameTimeCounter;
 
 /* DRAWBUFFERS:01 */
 layout(location = 0) out vec4 out0;
-layout(location = 1) out vec4 out1;
+layout(location = 1) out uint out1;
 void main() {
 	vec4 color = glcolor;
 	color.rgb *= getLightmap(lmcoord);
@@ -49,5 +49,5 @@ void main() {
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
 	out0 = color; //gcolor
-	out1 = vec4(lmcoord,1,0);
+	out1 = encodeLMCoordBuffer(vec4(lmcoord, 1,0));
 }

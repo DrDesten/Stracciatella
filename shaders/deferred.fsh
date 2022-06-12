@@ -135,8 +135,7 @@ vec4 getLightmap(vec2 coord) {
 }
 
 uniform sampler2D colortex4;
-
-
+//uniform sampler2D colortex5;
 
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 out0;
@@ -229,6 +228,7 @@ void main() {
 		color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
 
 		//color = lmcoord.xxx;
+		//color = texture(colortex4, coord).rgb;
 
 		#ifdef FOG
 			float fog     = fogFactorPlayer(playerPos, far);
