@@ -20,8 +20,11 @@ uniform float temperature;
 
 #ifdef RAIN_EFFECTS
 /* DRAWBUFFERS:03 */
+layout(location = 0) out vec4 out0;
+layout(location = 1) out vec4 out1;
 #else
 /* DRAWBUFFERS:0 */
+layout(location = 0) out vec4 out0;
 #endif
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
@@ -53,8 +56,8 @@ void main() {
     #if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
-	gl_FragData[0] = color; //gcolor
+	out0 = color; //gcolor
 	#ifdef RAIN_EFFECTS
-	gl_FragData[1] = vec4(rain, 0, 0, 0.25);
+	out1 = vec4(rain, 0, 0, 0.25);
 	#endif
 }

@@ -31,6 +31,8 @@ flat in vec4 glcolor;
 in vec3 viewPos;
 
 /* DRAWBUFFERS:01 */
+layout(location = 0) out vec4 out0;
+layout(location = 1) out vec4 out1;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 	color.a    = fstep(0.1, color.a); // Make clouds solid
@@ -52,6 +54,6 @@ void main() {
 	#if DITHERING >= 1
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
-	gl_FragData[0] = color; //gcolor
-	gl_FragData[1] = vec4(1);
+	out0 = color; //gcolor
+	out1 = vec4(1);
 }
