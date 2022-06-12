@@ -827,3 +827,22 @@ vec3 octahedralDecode(vec2 o) {
     }
     return normalize(v);
 }
+
+
+uint vec4toUI(vec4 data) {
+    uvec4 idata = uvec4(saturate(data) * 255 + 0.5);
+    
+    uint encoded = idata.x;
+    encoded     += idata.y << 8;
+    encoded     += idata.z << 16;
+    encoded     += idata.w << 24;
+    return encoded;
+}
+vec4 UItovec4(uint encoded) {
+    return vec4(
+		float(encoded & 255) * (1./255),
+		float((encoded >> 8) & 255) * (1./255),
+		float((encoded >> 16) & 255) * (1./255),
+		float(encoded >> 24) * (1./255)
+	);
+}
