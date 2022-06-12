@@ -5,9 +5,10 @@
 #include "/lib/transform.glsl"
 #include "/lib/fog_sky.glsl"
 
+uniform usampler2D colortex1;
+
 #ifdef FOG
 
- uniform sampler2D colortex1;
  uniform int   isEyeInWater;
  uniform float far;
 
@@ -106,8 +107,36 @@ vec2 rotation(float angle) {
 	return vec2(sin(angle), cos(angle));
 }
 
+uint encodeLMCoordBuffer(vec4 data) {
+    uvec4 idata = uvec4(saturate(data) * 255 + 0.5);
+    
+    uint encoded = idata.x;
+    encoded     += idata.y << 8;
+    encoded     += idata.z << 16;
+    encoded     += idata.w << 24;
+    return encoded;
+}
+vec4 decodeLMCoordBuffer(uint encoded) {
+    return vec4(
+		float(encoded & 255) * (1./255),
+		float((encoded >> 8) & 255) * (1./255),
+		float((encoded >> 16) & 255) * (1./255),
+		float(encoded >> 24) * (1./255)
+	);
+}
+vec4 getLightmap(vec2 coord) {
+    uint encoded = texture(colortex1, coord).x;
+    return vec4(
+		float(encoded & 255) * (1./255),
+		float((encoded >> 8) & 255) * (1./255),
+		float((encoded >> 16) & 255) * (1./255),
+		float(encoded >> 24) * (1./255)
+	);
+}
+
 uniform sampler2D colortex4;
-uniform sampler2D colortex5;
+
+
 
 /* DRAWBUFFERS:0 */
 void main() {
@@ -190,14 +219,15 @@ void main() {
 
     else {
 
-		vec4 lmcoord = texture(colortex1, coord);
+		vec4 lmcoord = getLightmap(coord);
 
 		vec3 blockLightColor = (textureBicubic(colortex4, coord, vec2(16,9), 1./vec2(16,9)).rgb);
 		blockLightColor = blockLightColor / (maxc(blockLightColor) + 0.05);
 		blockLightColor = saturate(applySaturation(blockLightColor, 3));
 
 		color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
-		//if (!emissive) color = blockLightColor;
+
+		//color = lmcoord.xxx;
 
 		#ifdef FOG
 			float fog     = fogFactorPlayer(playerPos, far);

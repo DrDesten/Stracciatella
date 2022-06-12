@@ -141,9 +141,7 @@ void main() {
 
 			vec3  hsv       = rgb2hsv(color.rgb);
 			float brownness = saturate(sqmag((hsvBrown - hsv) * vec3(10,3,2)) * 2 - 1);
-/* 
-			if (fullEmissive)    emissiveness = saturate(lum * 1.5 - .2);
-			if (whiteEmissive)   emissiveness = sq(saturate((lum * 2 - 0.5) * (1 - sat))); */
+			
 			if (white)  emissiveness = saturate(hsv.z * 2 - 1); //saturate(brownness * 1.5 - .5);
 			if (anyCol) emissiveness = saturate(max(saturate(hsv.y * 2 - 0.5), saturate(hsv.z * 2 - 1)) * 2 - 0.5);
 			if (orange) emissiveness = saturate(peak05(fract(hsv.x + 0.45)) * 2 - 1) * saturate(hsv.z * 4 - 2.75);
@@ -154,18 +152,32 @@ void main() {
 
 			color.rgb  = reinhard_sqrt_tonemap_inverse(color.rgb * 0.996, 0.5);
 			color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 1.5) * color.rgb;
-			//color.rgb = vec3(saturate(peak05(fract(hsv.x + 0.48)) * 5  - 4));
-			//color.rgb = vec3(saturate(hsv.z * 1.5 - .5) * saturate(hsv.y * 3 - 2) + saturate(hsv.z * 10 - 9)); 
-			//color.rgb  = crosstalk(color.rgb, 0.02);
 
 		}
 
-		#define HDREmissiveFlag float(emissiveness > 0.1)
-		#define coloredLightEmissive float(emissiveness > 0.1) * color.rgb
+		#define coloredLightEmissive float(isEmissive) * blockLightEmissiveColor
 	#else
-		#define HDREmissiveFlag 0
-		#define coloredLightEmissive float(blockId == 20 || blockId == 36 || blockId == 41 || blockId == 40 || blockId == 34 || blockId == 42 || blockId == 43) * color.rgb
+	 	#define emissiveness 0
+		#define coloredLightEmissive float(blockId == 20 || blockId == 36 || blockId == 34 || (blockId >= 40 && blockId <= 46)) * blockLightEmissiveColor
 	#endif
+
+	vec3 blockLightEmissiveColor;
+	switch (blockId) {
+		case 41:
+			blockLightEmissiveColor = vec3(1,.3,0); // Orange
+			break;
+		case 42:
+			blockLightEmissiveColor = vec3(.8,.1,.1); // Red
+			break;
+		case 43:
+			blockLightEmissiveColor = vec3(0,.3,1); // Blue
+			break;
+		case 44:
+			blockLightEmissiveColor = vec3(.7,.3,1); // Purple
+			break;
+		default:
+			blockLightEmissiveColor = color.rgb; // Keep Color (all other id's)
+	}
 
 	#ifdef DIRECTIONAL_LIGHTMAPS
 		vec2 lightmapCoord = vec2(lmcoord.x * diffuse, lmcoord.y);
@@ -182,10 +194,13 @@ void main() {
 		color.rgb = mix(color.rgb, sqrtf01(color.rgb) * 0.9 + 0.1, oreBlink * BLINKING_ORES_BRIGHTNESS);
 	#endif
 
+	color = decodeLMCoordBuffer(encodeLMCoordBuffer(color));
+
 	#if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
 	gl_FragData[0] = color;
-	gl_FragData[1] = vec4(lightmapCoord, glcolor.a, emissiveness);
+	//gl_FragData[1] = uvec4(encodeLMCoordBuffer(vec4(lightmapCoord, glcolor.a, saturate(emissiveness))), 1,1,1);
+	gl_FragData[1] = uvec4(encodeLMCoordBuffer(vec4(lightmapCoord, 1,0)), 1,1,1);
 	gl_FragData[2] = vec4(coloredLightEmissive, 1);
 }

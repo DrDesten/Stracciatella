@@ -63,7 +63,7 @@ void main() {
 	vec2 prevCoord   = prevProj.xy;
 	const vec2 pixel = 1./vec2(16,9);
 
-	vec3  prevCol   = gauss3x3(colortex4, prevProj.xy, pixel);
+	vec3  prevCol   = gauss3x3(colortex4, prevProj.xy, pixel * 0.5);
 	float prevDepth = texture(colortex4, prevProj.xy).a;
 
 	vec2 jitter = R2(frameCounter%1000) * pixel - (pixel * .5);
@@ -74,7 +74,7 @@ void main() {
 	//float rejection = saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -5 + 1) * (saturate(abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse)) * -1.0 + 1) * .5 + .5);
 	//float rejection = max(saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -5 + 1), saturate( 1 - abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse))));
 	float rejection = max(saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -4 + 1), saturate( abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse)) * -0.5 + 1 ));
-	color = mix(color, prevCol * rejection, 0.995 * (rejection * 0.01 + 0.99));
+	color = mix(color, prevCol * rejection, 0.995 * (rejection * 0.05 + 0.95));
 
 	//color = vec3( rejection);
 	

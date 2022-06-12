@@ -5,7 +5,7 @@
 
 /*
 const int colortex0Format = RGBA8;  // Color
-const int colortex1Format = RGA8;   // Lightmap
+const int colortex1Format = R32UI;   // Lightmap
 const int colortex2Format = R8;     // Unused (LUT)
 const int colortex3Format = R8;     // Effects
 const int colortex4Format = RGBA16; // LightmapColor + Depth
