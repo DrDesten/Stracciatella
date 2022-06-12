@@ -125,30 +125,37 @@ void main() {
 
 		// Adds an HDR effect to Emissive blocks. Works by boosting the brightness of emissive parts of blocks and the applying tonemapping to avoid clipping.
 
-		bool white  = blockId == 40 || blockId == 36;
+		bool white  = blockId == 40 || blockId == 36 || blockId == 20;
 		bool orange = blockId == 41;
 		bool red    = blockId == 42;
 		bool blue   = blockId == 43;
 		bool purple = blockId == 44;
-		bool candle = blockId == 45;
+		bool anyCol = blockId == 45 || blockId == 34;
+		bool candle = blockId == 46;
+
+		const vec3 hsvBrown = vec3(39./360, .5, .5);
 
 		float emissiveness = 0;
-		bool  isEmissive   = white || orange || red || blue || purple || candle;
+		bool  isEmissive   = white || anyCol || orange || red || blue || purple || candle;
 		if (isEmissive) {
 
-			float lum = luminance(color.rgb);
-			float sat = saturation(color.rgb, lum);
-			/* float red   = dot(color.rgb, vec3(1,-.5,-.5));
-			float green = dot(color.rgb, vec3(-.5,1,-.5));
-			float blue  = dot(color.rgb, vec3(-.5,-.5,1)); */
-
+			vec3  hsv       = rgb2hsv(color.rgb);
+			float brownness = saturate(sqmag((hsvBrown - hsv) * vec3(10,3,2)) * 2 - 1);
+/* 
 			if (fullEmissive)    emissiveness = saturate(lum * 1.5 - .2);
-			if (partialEmissive) emissiveness = saturate(max(saturate(sat * 2 - 0.3), saturate(lum * 2 - 1)) * 2 - 0.5);
-			if (whiteEmissive)   emissiveness = sq(saturate((lum * 2 - 0.5) * (1 - sat)));
-			if (candle)          emissiveness = sqsq(saturate((midTexCoord.y - coord.y) * (0.5 / spriteSize.y) + 0.5 + saturate(rawNormal.y)));
+			if (whiteEmissive)   emissiveness = sq(saturate((lum * 2 - 0.5) * (1 - sat))); */
+			if (white)  emissiveness = saturate(hsv.z * 2 - 1); //saturate(brownness * 1.5 - .5);
+			if (anyCol) emissiveness = saturate(max(saturate(hsv.y * 2 - 0.5), saturate(hsv.z * 2 - 1)) * 2 - 0.5);
+			if (orange) emissiveness = saturate(peak05(fract(hsv.x + 0.45)) * 2 - 1) * saturate(hsv.z * 4 - 2.75);
+			if (red)    emissiveness = saturate(brownness * 1.25 - .25) + saturate(hsv.z * 4 - 3);
+			if (blue)   emissiveness = saturate(sqmag((vec3(0.57, .53, .8) - hsv) * vec3(2,2,2)) * -3 + 2) + saturate(hsv.y * -5 + 4) * saturate(hsv.z * 3 - 2) * brownness;
+			if (purple) emissiveness = saturate(hsv.z * 1.5 - .5) * saturate(hsv.y * 3 - 2) + sq(saturate(hsv.z * 5 - 4));
+			if (candle) emissiveness = sqsq(saturate((midTexCoord.y - coord.y) * (0.5 / spriteSize.y) + 0.5 + saturate(rawNormal.y)));
 
 			color.rgb  = reinhard_sqrt_tonemap_inverse(color.rgb * 0.996, 0.5);
 			color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 1.5) * color.rgb;
+			//color.rgb = vec3(saturate(peak05(fract(hsv.x + 0.48)) * 5  - 4));
+			//color.rgb = vec3(saturate(hsv.z * 1.5 - .5) * saturate(hsv.y * 3 - 2) + saturate(hsv.z * 10 - 9)); 
 			//color.rgb  = crosstalk(color.rgb, 0.02);
 
 		}
