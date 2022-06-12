@@ -653,6 +653,11 @@ vec3 exp_tonemap(vec3 color, float a) {
 /////////////////////////////////////////////////////////////////////////////////
 //                              OTHER FUNCTIONS
 
+float peak05(float x) { return x * (-4*x + 4); }
+vec2  peak05(vec2 x)  { return x * (-4*x + 4); }
+vec3  peak05(vec3 x)  { return x * (-4*x + 4); }
+vec4  peak05(vec4 x)  { return x * (-4*x + 4); }
+
 float lineDist2P(vec2 coord, vec2 start, vec2 end) {
     vec2 pa = coord - start;
     vec2 ba = end - start;
