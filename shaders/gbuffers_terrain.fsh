@@ -69,7 +69,7 @@ vec3 crosstalk(vec3 color, float factor) {
 } 
 
 
-/* DRAWBUFFERS:012 */
+/* DRAWBUFFERS:015 */
 void main() {
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb;
@@ -152,10 +152,10 @@ void main() {
 		}
 
 		#define HDREmissiveFlag float(emissiveness > 0.1)
-		#define coloredLightEmissiveFlag float(emissiveness > 0.1)
+		#define coloredLightEmissive float(emissiveness > 0.1) * color.rgb
 	#else
 		#define HDREmissiveFlag 0
-		#define coloredLightEmissiveFlag float(blockId == 20 || blockId == 36 || blockId == 41 || blockId == 40 || blockId == 34 || blockId == 42 || blockId == 43)
+		#define coloredLightEmissive float(blockId == 20 || blockId == 36 || blockId == 41 || blockId == 40 || blockId == 34 || blockId == 42 || blockId == 43) * color.rgb
 	#endif
 
 	#ifdef DIRECTIONAL_LIGHTMAPS
@@ -178,5 +178,5 @@ void main() {
 	#endif
 	gl_FragData[0] = color;
 	gl_FragData[1] = vec4(lightmapCoord, glcolor.a * (254./255) + HDREmissiveFlag, 1);
-	gl_FragData[2] = vec4(coloredLightEmissiveFlag,0,0,1);
+	gl_FragData[2] = vec4(coloredLightEmissive, 1);
 }

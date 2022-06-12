@@ -76,7 +76,10 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO, vec3 b
         #else
             vec3  blocklightColor = mix(lightmapComplexBlockDark, lightmapComplexBlockBright, lmcoord.x);
         #endif
-        blocklightColor = mix(lightmapBlock, blocklightExtraColor, maxc(blocklightExtraColor));
+        float blockLightBlend =  maxc(blocklightExtraColor);
+        blocklightExtraColor  = blocklightExtraColor * (luminance(lightmapBlock)/luminance(blocklightExtraColor));
+        blocklightExtraColor  = saturate(blocklightExtraColor);
+        blocklightColor = mix(lightmapBlock, blocklightExtraColor, blockLightBlend);
     #endif
 
     #if LIGHTMAP_SKYLIGHT_CONTRAST != 50

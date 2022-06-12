@@ -6,19 +6,21 @@
 /*
 const int colortex0Format = RGBA8;  // Color
 const int colortex1Format = RGA8;   // Lightmap
-const int colortex2Format = R8;     // EmissiveFlag
+const int colortex2Format = R8;     // Unused (LUT)
 const int colortex3Format = R8;     // Effects
-const int colortex4Format = RGBA16; // LightmapColor
+const int colortex4Format = RGBA16; // LightmapColor + Depth
+const int colortex5Format = RGB8;   // EmissiveColor
 */
 
 const vec4 colortex3ClearColor = vec4(0,0,0,0);
-const vec4 colortex2ClearColor = vec4(0,0,0,0);
+const vec4 colortex4ClearColor = vec4(0,0,0,0);
 
 const bool colortex0Clear = false;
 const bool colortex1Clear = false;
-const bool colortex2Clear = true;
+const bool colortex2Clear = false;
 const bool colortex3Clear = true;
 const bool colortex4Clear = false;
+const bool colortex5Clear = true;
 
 const float wetnessHalflife = 200;
 const float drynessHalflife = 400;
@@ -79,6 +81,8 @@ float squareVignette(vec2 coord) {
 	return smoothstep( 0.7, 0.25, pow(sq(sq(coord.x - 0.5)) + sq(sq(coord.y - 0.5)), 0.25) );
 }
 
+uniform sampler2D colortex4;
+
 /* DRAWBUFFERS:0 */
 void main() {
 	#ifdef RAIN_EFFECTS
@@ -114,6 +118,8 @@ void main() {
 	#else
 		vec3 color = getAlbedo(coord);
 	#endif
+
+	//color = texture(colortex4, coord).rgb;
 
 	if (isEyeInWater == 2) {
 		vec3  viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
