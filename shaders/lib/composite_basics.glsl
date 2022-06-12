@@ -5,9 +5,9 @@ uniform vec2 screenSize;
 uniform vec2 screenSizeInverse;
 
 vec3 getAlbedo(vec2 coord) {
-    return texture2D(colortex0, coord).rgb;
+    return texture(colortex0, coord).rgb;
 }
 
 float getDepth(vec2 coord) {
-    return texture2D(depthtex0, coord).x;
+    return texture(depthtex0, coord).x;
 }

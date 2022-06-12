@@ -585,10 +585,10 @@ vec4 textureBicubic(sampler2D sampler, vec2 coord, vec2 samplerSize, vec2 pixelS
 
     offset *= pixelSize.xxyy;
 
-    vec4 sample0 = texture2D(sampler, offset.xz);
-    vec4 sample1 = texture2D(sampler, offset.yz);
-    vec4 sample2 = texture2D(sampler, offset.xw);
-    vec4 sample3 = texture2D(sampler, offset.yw);
+    vec4 sample0 = texture(sampler, offset.xz);
+    vec4 sample1 = texture(sampler, offset.yz);
+    vec4 sample2 = texture(sampler, offset.xw);
+    vec4 sample3 = texture(sampler, offset.yw);
 
     float sx = s.x / (s.x + s.y);
     float sy = s.z / (s.z + s.w);
@@ -613,7 +613,7 @@ vec4 textureSmoothstep(sampler2D sampler, vec2 coord, vec2 samplerSize, vec2 sam
     vec2 pixCoord  = fract(icoord);
     //pixCoord       = pixCoord * (pixCoord * (4 * pixCoord - 6) + 3);
     pixCoord       = pixCoord * (pixCoord * (2.22222 * pixCoord - 3.33333) + 2.11111);
-    return texture2D(sampler, (floor(icoord) + pixCoord) * samplerSizeInverse);
+    return texture(sampler, (floor(icoord) + pixCoord) * samplerSizeInverse);
 }
 
 

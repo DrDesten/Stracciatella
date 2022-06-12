@@ -63,14 +63,14 @@ vec2 map3d2d(vec3 pos, float sides) {
 
 /* vec3 applyLUT(sampler2D luttex, vec3 color, float sides) {
 	vec2 lutCoord = map3d2d(clamp(color, 0.00001, 0.99999), sides);
-	color = texture2D(luttex, lutCoord).rgb;
+	color = texture(luttex, lutCoord).rgb;
 	return color;
 } */
 vec3 applyLUT(sampler2D luttex, vec3 color, float sides) {
 	float lutRes   = sides * sides;
 	float lutPixel = 0.5 / lutRes;
 	vec2  lutCoord = map3d2d(clamp(color, lutPixel, 1 - lutPixel), sides);
-	color = texture2D(luttex, lutCoord).rgb;
+	color = texture(luttex, lutCoord).rgb;
 	return color;
 }
 
@@ -86,7 +86,7 @@ uniform sampler2D colortex4;
 /* DRAWBUFFERS:0 */
 void main() {
 	#ifdef RAIN_EFFECTS
-		float rain  = texture2D(colortex3, coord).r;
+		float rain  = texture(colortex3, coord).r;
 		coord      += sin(vec2(rain * (TWO_PI * 10))) * RAIN_EFFECTS_STRENGTH;
 	#endif
 
