@@ -234,6 +234,7 @@ vec3 FXAA311HQ(vec2 coord) {
 }
 
 /* DRAWBUFFERS:0 */
+layout(location = 0) out vec4 out0;
 void main() {
 	vec3 color = FXAA311HQ(coord);
 	gl_FragColor = vec4(color, 1.0);

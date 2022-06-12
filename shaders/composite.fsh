@@ -56,6 +56,7 @@ vec3 gauss3x3Lod(sampler2D tex, vec2 coord, vec2 pix, float lod) {
 }
 
 /* DRAWBUFFERS:4 */
+layout(location = 0) out vec4 out0;
 void main() {
 	vec3 screenPos = vec3(coord, getDepth(coord));
 
@@ -78,5 +79,5 @@ void main() {
 
 	//color = vec3( rejection);
 	
-	gl_FragData[0] = vec4(color, screenPos.z);
+	out0 = vec4(color, screenPos.z);
 }

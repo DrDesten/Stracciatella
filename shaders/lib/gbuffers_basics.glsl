@@ -1,3 +1,7 @@
+#if MC_VERSION < 11700
+    #define gtexture gcolor
+#endif
+
 uniform sampler2D gcolor;  // Color
 uniform sampler2D lightmap; // lightmap
 

@@ -139,6 +139,7 @@ uniform sampler2D colortex4;
 
 
 /* DRAWBUFFERS:0 */
+layout(location = 0) out vec4 out0;
 void main() {
 	float depth     = getDepth(coord);
 	vec3  screenPos = vec3(coord, depth);
@@ -244,5 +245,5 @@ void main() {
 	#if DITHERING >= 1
 		color += ditherColor(gl_FragCoord.xy);
 	#endif
-	gl_FragData[0] = vec4(color, 1.0); //gcolor
+	out0 = vec4(color, 1.0); //gcolor
 }

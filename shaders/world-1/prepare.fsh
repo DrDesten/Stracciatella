@@ -1,4 +1,5 @@
 #version 150
+#extension GL_ARB_explicit_attrib_location : enable
 #define FRAG
 #define NETHER
 
@@ -6,6 +7,7 @@
 uniform vec3 fogColor;
 
 /* DRAWBUFFERS:0 */
+layout(location = 0) out vec4 out0;
 void main() {
-	gl_FragData[0] = vec4(fogColor, 1 );
+	out0 = vec4(fogColor, 1 );
 }

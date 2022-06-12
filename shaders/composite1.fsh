@@ -84,6 +84,7 @@ float squareVignette(vec2 coord) {
 uniform sampler2D colortex4;
 
 /* DRAWBUFFERS:0 */
+layout(location = 0) out vec4 out0;
 void main() {
 	#ifdef RAIN_EFFECTS
 		float rain  = texture(colortex3, coord).r;
@@ -173,5 +174,5 @@ void main() {
 	#if DITHERING >= 2 && !defined COLOR_LUT
 		color.rgb -= ditherColor(gl_FragCoord.xy);
 	#endif
-	gl_FragData[0] = vec4(color, luminance(color));
+	out0 = vec4(color, luminance(color));
 }

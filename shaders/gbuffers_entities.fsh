@@ -17,6 +17,8 @@ flat in vec4 glcolor;
 in vec3 viewPos;
 
 /* DRAWBUFFERS:01 */
+layout(location = 0) out vec4 out0;
+layout(location = 1) out vec4 out1;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 	color.rgb  = mix(color.rgb, entityColor.rgb, entityColor.a);
@@ -24,6 +26,6 @@ void main() {
     #if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
-	gl_FragData[0] = color; //gcolor
-	gl_FragData[1] = vec4(lmcoord,1,0);
+	out0 = color; //gcolor
+	out1 = vec4(lmcoord,1,0);
 }

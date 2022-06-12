@@ -265,6 +265,7 @@ vec3 FXAA311Upscale(vec2 coord, float size) {
 }
 
 /* DRAWBUFFERS:0 */
+layout(location = 0) out vec4 out0;
 void main() {
 	#ifdef HQ_UPSCALING
 	//vec3 color = textureBicubicComplexOpt(colortex0, coord * MC_RENDER_QUALITY, screenSize * (1./MC_RENDER_QUALITY), screenSizeInverse * MC_RENDER_QUALITY).rgb;

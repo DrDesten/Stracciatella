@@ -70,6 +70,9 @@ vec3 crosstalk(vec3 color, float factor) {
 
 
 /* DRAWBUFFERS:015 */
+layout(location = 0) out vec4 out0;
+layout(location = 1) out vec4 out1;
+layout(location = 2) out vec4 out2;
 void main() {
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb;
@@ -199,8 +202,9 @@ void main() {
 	#if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
-	gl_FragData[0] = color;
-	//gl_FragData[1] = uvec4(encodeLMCoordBuffer(vec4(lightmapCoord, glcolor.a, saturate(emissiveness))), 1,1,1);
-	gl_FragData[1] = uvec4(encodeLMCoordBuffer(vec4(lightmapCoord, 1,0)), 1,1,1);
-	gl_FragData[2] = vec4(coloredLightEmissive, 1);
+	
+	out0 = color;
+	//out1 = uvec4(encodeLMCoordBuffer(vec4(lightmapCoord, glcolor.a, saturate(emissiveness))), 1,1,1);
+	out1 = uvec4(encodeLMCoordBuffer(vec4(lightmapCoord, 1,0)), 1,1,1);
+	out2 = vec4(coloredLightEmissive, 1);
 }
