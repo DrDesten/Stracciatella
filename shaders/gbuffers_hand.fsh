@@ -13,7 +13,7 @@ flat in vec4 glcolor;
 
 /* DRAWBUFFERS:015 */
 layout(location = 0) out vec4 out0;
-layout(location = 1) out vec4 out1;
+layout(location = 1) out uint out1;
 layout(location = 2) out vec4 out2;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
@@ -23,6 +23,6 @@ void main() {
 	#endif
 
 	out0 = color; //gcolor
-	out1 = uvec4(encodeLMCoordBuffer(vec4(lmcoord, 1,0)), 1,1,1);
+	out1 = encodeLMCoordBuffer(vec4(lmcoord, 1,0));
 	out2 = vec4(0,0,0,1);
 }

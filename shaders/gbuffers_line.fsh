@@ -15,7 +15,7 @@ uniform int renderStage;
 
 /* DRAWBUFFERS:01 */
 layout(location = 0) out vec4 out0;
-layout(location = 1) out vec4 out1;
+layout(location = 1) out uint out1;
 void main() {
 	vec4 color = glcolor;
 
@@ -48,5 +48,5 @@ void main() {
 	#endif
 
 	out0 = color; //gcolor
-	out1 = vec4(1);
+	out1 = encodeLMCoordBuffer(vec4(1));
 }
