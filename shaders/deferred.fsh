@@ -190,14 +190,13 @@ void main() {
 
     else {
 
-		vec3 lmcoord = texture(colortex1, coord).rgb;
-		bool emissive = lmcoord.z == 1;
+		vec4 lmcoord = texture(colortex1, coord);
 
 		vec3 blockLightColor = (textureBicubic(colortex4, coord, vec2(16,9), 1./vec2(16,9)).rgb);
 		blockLightColor = blockLightColor / (maxc(blockLightColor) + 0.05);
 		blockLightColor = saturate(applySaturation(blockLightColor, 3));
 
-		if (!emissive) color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z, blockLightColor);
+		color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
 		//if (!emissive) color = blockLightColor;
 
 		#ifdef FOG
