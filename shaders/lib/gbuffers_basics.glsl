@@ -1,12 +1,12 @@
-uniform sampler2D texture;  // Color
+uniform sampler2D gcolor;  // Color
 uniform sampler2D lightmap; // lightmap
 
 vec4 getAlbedo(vec2 coord) {
-    return texture2D(texture, coord);
+    return texture(gcolor, coord);
 }
 
 vec3 getLightmap(vec2 lmcoord) {
-    return texture2D(lightmap, lmcoord).rgb;
+    return texture(lightmap, lmcoord).rgb;
 }
 
 uint encodeLMCoordBuffer(vec4 data) {

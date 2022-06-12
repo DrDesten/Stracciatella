@@ -1,4 +1,4 @@
-#version 130
+#version 150
 #define FRAG
 #define NETHER
 #include "/gbuffers_beaconbeam.fsh"

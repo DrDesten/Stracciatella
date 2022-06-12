@@ -12,7 +12,7 @@ struct FXAALumas {
 };
 
 float getLuma(vec2 coord) {
-	return texture2D(colortex0, coord).a;
+	return texture(colortex0, coord).a;
 }
 
 FXAALumas fillCross(vec2 coord) {
@@ -120,10 +120,10 @@ vec3 FXAA311(vec2 coord) {
 		if (isHorizontal) FXAACoord.y += pixelOffset * normalStepLength;
 		else              FXAACoord.x += pixelOffset * normalStepLength;
 
-		return texture2D(colortex0, FXAACoord).rgb;
+		return texture(colortex0, FXAACoord).rgb;
 	}
 
-	return texture2D(colortex0, coord).rgb;
+	return texture(colortex0, coord).rgb;
 }
 vec3 FXAA311HQ(vec2 coord) {
 	const float edgeThresholdMin = 0.0312;
@@ -227,10 +227,10 @@ vec3 FXAA311HQ(vec2 coord) {
 		if (isHorizontal) FXAACoord.y += pixelOffset * normalStepLength;
 		else              FXAACoord.x += pixelOffset * normalStepLength;
 
-		return texture2D(colortex0, FXAACoord).rgb;
+		return texture(colortex0, FXAACoord).rgb;
 	}
 
-	return texture2D(colortex0, coord).rgb;
+	return texture(colortex0, coord).rgb;
 }
 
 /* DRAWBUFFERS:0 */

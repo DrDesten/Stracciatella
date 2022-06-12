@@ -151,10 +151,10 @@ vec3 FXAA311Upscale(vec2 coord, float size) {
 		if (isHorizontal) FXAACoord.y += pixelOffset * normalStepLength;
 		else              FXAACoord.x += pixelOffset * normalStepLength;
 
-		return texture2D(colortex0, FXAACoord).rgb;
+		return texture(colortex0, FXAACoord).rgb;
 	}
 
-	return texture2D(colortex0, coord).rgb;
+	return texture(colortex0, coord).rgb;
 }
  */
 vec3 FXAA311Upscale(vec2 coord, float size) {
@@ -261,7 +261,7 @@ vec3 FXAA311Upscale(vec2 coord, float size) {
 		return texelFetch(colortex0, ivec2(FXAACoord * screenSize), 0).rgb;
 	}
 
-	return texture2D(colortex0, coord).rgb;
+	return texture(colortex0, coord).rgb;
 }
 
 /* DRAWBUFFERS:0 */
