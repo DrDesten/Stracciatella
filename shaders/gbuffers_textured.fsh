@@ -38,5 +38,5 @@ void main() {
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
 	gl_FragData[0] = color; //gcolor
-	gl_FragData[1] = vec4(lmcoord, (254./255), 1);
+	gl_FragData[1] = vec4(lmcoord, 1, 1);
 }
