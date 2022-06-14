@@ -39,7 +39,7 @@ in vec4 glcolor;
 in vec3 viewPos;
 
 /* DRAWBUFFERS:0 */
-layout(location = 0) out vec4 out0;
+layout(location = 0) out vec4 FragOut0;
 void main() {
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb * glcolor.a;
@@ -72,5 +72,6 @@ void main() {
     #if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
-	out0 = color; //gcolor
+	FragOut0 = color; //gcolor
+    if (FragOut0.a < 0.1) discard;
 }
