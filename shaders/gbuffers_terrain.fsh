@@ -167,7 +167,7 @@ void main() {
 	vec3 blockLightEmissiveColor;
 	switch (blockId) {
 		case 41:
-			blockLightEmissiveColor = vec3(1,.3,0); // Orange
+			blockLightEmissiveColor = vec3(1,.3,.05); // Orange
 			break;
 		case 42:
 			blockLightEmissiveColor = vec3(.8,.1,.1); // Red

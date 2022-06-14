@@ -18,6 +18,6 @@ void main() {
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
 	FragOut0 = color; //gcolor
-    if (FragOut0.a < 0.1) discard;
+    if (FragOut0.a < 0.5) discard;
 	FragOut1 = vec4toUI(vec4(1));
 }
