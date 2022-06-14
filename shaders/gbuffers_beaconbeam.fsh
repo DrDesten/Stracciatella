@@ -9,14 +9,15 @@ in vec2 coord;
 flat in vec4 glcolor;
 
 /* DRAWBUFFERS:01 */
-layout(location = 0) out vec4 out0;
-layout(location = 1) out uint out1;
+layout(location = 0) out vec4 FragOut0;
+layout(location = 1) out uint FragOut1;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 
     #if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
-	out0 = color; //gcolor
-	out1 = encodeLMCoordBuffer(vec4(1));
+	FragOut0 = color; //gcolor
+    if (FragOut0.a < 0.1) discard;
+	FragOut1 = vec4toUI(vec4(1));
 }

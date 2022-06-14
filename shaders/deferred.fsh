@@ -107,38 +107,17 @@ vec2 rotation(float angle) {
 	return vec2(sin(angle), cos(angle));
 }
 
-uint encodeLMCoordBuffer(vec4 data) {
-    uvec4 idata = uvec4(saturate(data) * 255 + 0.5);
-    
-    uint encoded = idata.x;
-    encoded     += idata.y << 8;
-    encoded     += idata.z << 16;
-    encoded     += idata.w << 24;
-    return encoded;
-}
-vec4 decodeLMCoordBuffer(uint encoded) {
-    return vec4(
-		float(encoded & 255) * (1./255),
-		float((encoded >> 8) & 255) * (1./255),
-		float((encoded >> 16) & 255) * (1./255),
-		float(encoded >> 24) * (1./255)
-	);
-}
+
 vec4 getLightmap(vec2 coord) {
     uint encoded = texture(colortex1, coord).x;
-    return vec4(
-		float(encoded & 255) * (1./255),
-		float((encoded >> 8) & 255) * (1./255),
-		float((encoded >> 16) & 255) * (1./255),
-		float(encoded >> 24) * (1./255)
-	);
+    return UItovec4(encoded);
 }
 
 uniform sampler2D colortex4;
 //uniform sampler2D colortex5;
 
 /* DRAWBUFFERS:0 */
-layout(location = 0) out vec4 out0;
+layout(location = 0) out vec4 FragOut0;
 void main() {
 	float depth     = getDepth(coord);
 	vec3  screenPos = vec3(coord, depth);
@@ -245,5 +224,5 @@ void main() {
 	#if DITHERING >= 1
 		color += ditherColor(gl_FragCoord.xy);
 	#endif
-	out0 = vec4(color, 1.0); //gcolor
+	FragOut0 = vec4(color, 1.0); //gcolor
 }

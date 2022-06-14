@@ -7,7 +7,7 @@
 uniform vec3 fogColor;
 
 /* DRAWBUFFERS:0 */
-layout(location = 0) out vec4 out0;
+layout(location = 0) out vec4 FragOut0;
 void main() {
-	out0 = vec4(fogColor, 1 );
+	FragOut0 = vec4(fogColor, 1 );
 }

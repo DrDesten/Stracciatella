@@ -833,16 +833,16 @@ uint vec4toUI(vec4 data) {
     uvec4 idata = uvec4(saturate(data) * 255 + 0.5);
     
     uint encoded = idata.x;
-    encoded     += idata.y << 8;
-    encoded     += idata.z << 16;
-    encoded     += idata.w << 24;
+    encoded     += idata.y << 8u;
+    encoded     += idata.z << 16u;
+    encoded     += idata.w << 24u;
     return encoded;
 }
 vec4 UItovec4(uint encoded) {
     return vec4(
-		float(encoded & 255) * (1./255),
-		float((encoded >> 8) & 255) * (1./255),
-		float((encoded >> 16) & 255) * (1./255),
-		float(encoded >> 24) * (1./255)
+		float(encoded & 255u) * (1./255),
+		float((encoded >> 8u) & 255u) * (1./255),
+		float((encoded >> 16u) & 255u) * (1./255),
+		float(encoded >> 24u) * (1./255)
 	);
 }
