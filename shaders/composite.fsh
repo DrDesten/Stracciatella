@@ -101,3 +101,7 @@ void main() {
 	
 	FragOut0 = vec4(color, screenPos.z);
 }
+
+/*
+LIGHTMAP_COLOR_REJECTION
+*/
