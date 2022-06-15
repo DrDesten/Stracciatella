@@ -201,13 +201,14 @@ void main() {
 		vec4 lmcoord = getLightmap(coord);
 
 		vec3 blockLightColor = (textureBicubic(colortex4, coord, vec2(16,9), 1./vec2(16,9)).rgb);
-		blockLightColor = blockLightColor / (maxc(blockLightColor) + 0.05);
-		blockLightColor = saturate(applySaturation(blockLightColor, 3));
+		blockLightColor = blockLightColor / (maxc(blockLightColor) + 0.02);
+		blockLightColor = saturate(applyVibrance(blockLightColor, 1));
 
 		color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
 
 		//color = lmcoord.xxx;
 		//color = texture(colortex4, coord).rgb;
+		//color *= mix(blockLightColor, color, lmcoord.a);
 
 		#ifdef FOG
 			float fog     = fogFactorPlayer(playerPos, far);
