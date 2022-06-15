@@ -75,17 +75,28 @@ void main() {
 	vec3  prevCol   = gauss3x3(colortex4, prevProj.xy, pixel * 0.75);
 	float prevDepth = texture(colortex4, prevProj.xy).a;
 
-	float sampleLod = max(log2(mean(screenSize * pixel)), 0) * LIGHTMAP_COLOR_LOD_BIAS;
+	float sampleLod = max(log2(mean(screenSize * pixel)), 0) * LIGHTMAP_COLOR_LOD_BIAS; // Calculate appropiate sampling LoD
 	vec2 jitter = R2(frameCounter%1000) * pixel - (pixel * .5);
 	vec3 color = gauss3x3Lod(colortex5, coord + jitter, pixel, sampleLod) * 10;
 	color = color / (color + 1.0);
 
-	float age = maxc(prevCol); age = age / (age + 0.025);
-	float sampleImportance = luminance(color.rgb);
-	float mixTweak = age * (sampleImportance) + (1 - sampleImportance);
-	mixTweak = mixTweak * (1 - LIGHTMAP_COLOR_FLICKER_RED) + LIGHTMAP_COLOR_FLICKER_RED;
+	// Improves Accumulation by guessing pixel age and sample importance (there is no buffer space left for pixel age)
+	float age = maxc(prevCol); age = age / (age + 0.025); // Estimates age using pixel brightness
+	float sampleImportance = luminance(color.rgb); // Estimates sample importance using sample brightness
+	float mixTweak = age * (sampleImportance) + (1 - sampleImportance); // If the age is high (value low), let more of the sample in, but only if there is something to sample
+	mixTweak = mixTweak * (1 - LIGHTMAP_COLOR_FLICKER_RED) + LIGHTMAP_COLOR_FLICKER_RED; // Tweak value using user defined setting
 
+	#if LIGHTMAP_COLOR_REJECTION == 0
+	// Weak Rejection (coordinates and depth, high tolerances)
+	float rejection = max(saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -2 + 1), saturate( abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse)) * -0.25 + 1 ));
+	#elif LIGHTMAP_COLOR_REJECTION == 1
+	// Normal Rejection (coordinates and depth, normal tolarance)
 	float rejection = max(saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -4 + 1), saturate( abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse)) * -0.5 + 1 ));
+	#elif LIGHTMAP_COLOR_REJECTION == 2
+	// Strong Rejection (only coordinates, no fallback)
+	float rejection = saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -4 + 1);
+	#endif
+
 	color = mix(color, prevCol * rejection, LIGHTMAP_COLOR_BLEND * (rejection * LIGHTMAP_COLOR_REGEN + (1 - LIGHTMAP_COLOR_REGEN)) * mixTweak);
 	
 	FragOut0 = vec4(color, screenPos.z);
