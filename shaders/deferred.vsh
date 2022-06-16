@@ -1,23 +1,31 @@
-
-
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 
-#ifdef CUSTOM_STARS
-uniform mat4 gbufferModelViewInverse;
-out vec3 playerPos;
-#endif
+uniform int heldItemId;
+uniform int heldBlockLightValue;
+/* uniform int heldItemId2;
+uniform int heldBlockLightValue2; */
 
-out vec4 starData; //rgb = star color, a = flag for weather or not this pixel is a star.
-out vec3 viewPos;
+out vec4 handLight; // rgb: color, a: brightness
 
 void main() {
 	gl_Position = ftransform();
-	starData    = vec4(gl_Color.rgb, float(gl_Color.r == gl_Color.g && gl_Color.g == gl_Color.b && gl_Color.r > 0.0));
-	viewPos     = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz;
+
+	handLight = vec4(0,0,0,heldBlockLightValue * (1./15));
+	switch (heldItemId - 1000) {
+		case 41:
+			handLight.rgb = LIGHTMAP_COLOR_ORANGE; // Orange
+			break;
+		case 42:
+			handLight.rgb = LIGHTMAP_COLOR_RED; // Red
+			break;
+		case 43:
+			handLight.rgb = LIGHTMAP_COLOR_BLUE; // Blue
+			break;
+		case 44:
+			handLight.rgb = LIGHTMAP_COLOR_PURPLE; // Purple
+			break;
+	}
 	
-	#ifdef CUSTOM_STARS
-	playerPos   = mat3(gbufferModelViewInverse) * viewPos - gbufferModelViewInverse[3].xyz;
-	#endif
 }
