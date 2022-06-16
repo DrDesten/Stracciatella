@@ -167,16 +167,16 @@ void main() {
 	vec3 blockLightEmissiveColor;
 	switch (blockId) {
 		case 41:
-			blockLightEmissiveColor = vec3(1,.3,.05); // Orange
+			blockLightEmissiveColor = LIGHTMAP_COLOR_ORANGE; // Orange
 			break;
 		case 42:
-			blockLightEmissiveColor = vec3(.8,.1,.1); // Red
+			blockLightEmissiveColor = LIGHTMAP_COLOR_RED; // Red
 			break;
 		case 43:
-			blockLightEmissiveColor = vec3(0,.3,1); // Blue
+			blockLightEmissiveColor = LIGHTMAP_COLOR_BLUE; // Blue
 			break;
 		case 44:
-			blockLightEmissiveColor = vec3(.7,.3,1); // Purple
+			blockLightEmissiveColor = LIGHTMAP_COLOR_PURPLE; // Purple
 			break;
 		default:
 			blockLightEmissiveColor = color.rgb; // Keep Color (all other id's)

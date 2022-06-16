@@ -3,7 +3,6 @@
 #include "/lib/kernels.glsl"
 #include "/lib/composite_basics.glsl"
 
-
 vec2 coord = gl_FragCoord.xy * screenSizeInverse * MC_RENDER_QUALITY;
 
 vec4 textureBicubicComplexOpt(sampler2D sampler, vec2 coord, vec2 samplerSize, vec2 samplerSizeInverse) {

@@ -50,6 +50,8 @@ uniform float customLightmapBlend;
 
 #endif
 
+in vec4 handLight;
+
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 
 vec2 cubemapCoords(vec3 direction) {
@@ -204,6 +206,11 @@ void main() {
 		blockLightColor = blockLightColor / (maxc(blockLightColor) + 0.02);
 		blockLightColor = saturate(applyVibrance(blockLightColor, 1));
 
+		float dist = sqmag(playerPos);
+		float handLightBrightness = exp(-dist * 0.1 / handLight.a);
+		//blockLightColor = (handLight.rgb * handLightBrightness + blockLightColor) / (handLightBrightness + 1);
+		blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightness);
+
 		color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
 
 		//color = lmcoord.xxx;
@@ -219,6 +226,9 @@ void main() {
 				color = mix(color, skyGradient.rgb, fog);
 			#endif
 		#endif
+
+		//color = vec3(exp(-dist * 0.4 / handLight.a));
+		//color = blockLightColor;
 		
 	}
 
