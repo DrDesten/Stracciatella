@@ -50,6 +50,7 @@ option.SKY_SUNSET_B=Sky Sunset §9B
 
 option.SKY_CUSTOM_COLOR=Custom Sky Color
 screen.SKY_CUSTOM_COLOR_CONFIG=Sky Color Configuration
+option.SKY_NIGHT_BRIGHTNESS=Night Sky Brightness
 option.SKY_DAY_R=Sky Day §cR
 option.SKY_DAY_G=Sky Day §2G
 option.SKY_DAY_B=Sky Day §9B
@@ -65,6 +66,7 @@ option.SKY_NIGHT_RAIN_B=Sky Night Rain §9B
 
 option.FOG_CUSTOM_COLOR=Custom Fog Color
 screen.FOG_CUSTOM_COLOR_CONFIG=Fog Color Configuration
+option.FOG_NIGHT_BRIGHTNESS=Night Fog Brightness
 option.FOG_DAY_R=Fog Day §cR
 option.FOG_DAY_G=Fog Day §2G
 option.FOG_DAY_B=Fog Day §9B

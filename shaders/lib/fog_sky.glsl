@@ -2,15 +2,15 @@ const vec3 sunsetColor = vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B);
 
 const vec3 skyDayColor       = vec3(SKY_DAY_R, SKY_DAY_G, SKY_DAY_B);
 const vec3 skyDayRainColor   = vec3(SKY_DAY_RAIN_R, SKY_DAY_RAIN_G, SKY_DAY_RAIN_B);
-const vec3 skyNightColor     = vec3(SKY_NIGHT_R, SKY_NIGHT_G, SKY_NIGHT_B);
-const vec3 skyNightRainColor = vec3(SKY_NIGHT_RAIN_R, SKY_NIGHT_RAIN_G, SKY_NIGHT_RAIN_B);
+const vec3 skyNightColor     = vec3(SKY_NIGHT_R, SKY_NIGHT_G, SKY_NIGHT_B) * SKY_NIGHT_BRIGHTNESS;
+const vec3 skyNightRainColor = vec3(SKY_NIGHT_RAIN_R, SKY_NIGHT_RAIN_G, SKY_NIGHT_RAIN_B) * SKY_NIGHT_BRIGHTNESS;
 
 const vec3 fogCaveColor = vec3(FOG_CAVE_R, FOG_CAVE_G, FOG_CAVE_B);
 
 const vec3 fogDayColor       = vec3(FOG_DAY_R, FOG_DAY_G, FOG_DAY_B);
 const vec3 fogDayRainColor   = vec3(FOG_DAY_RAIN_R, FOG_DAY_RAIN_G, FOG_DAY_RAIN_B);
-const vec3 fogNightColor     = vec3(SKY_NIGHT_R, SKY_NIGHT_G, SKY_NIGHT_B);
-const vec3 fogNightRainColor = vec3(FOG_NIGHT_RAIN_R, FOG_NIGHT_RAIN_G, FOG_NIGHT_RAIN_B);
+const vec3 fogNightColor     = vec3(SKY_NIGHT_R, SKY_NIGHT_G, SKY_NIGHT_B) * FOG_NIGHT_BRIGHTNESS;
+const vec3 fogNightRainColor = vec3(FOG_NIGHT_RAIN_R, FOG_NIGHT_RAIN_G, FOG_NIGHT_RAIN_B) * FOG_NIGHT_BRIGHTNESS;
 
 const vec3 endSkyUp   = vec3(END_SKY_UP_R, END_SKY_UP_G, END_SKY_UP_B);
 const vec3 endSkyDown = vec3(END_SKY_DOWN_R, END_SKY_DOWN_G, END_SKY_DOWN_B);
