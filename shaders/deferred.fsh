@@ -46,6 +46,10 @@ uniform float sneaking;
 #ifdef CUSTOM_LIGHTMAP
 #include "/lib/lightmap.glsl"
 uniform float customLightmapBlend;
+
+#ifdef COLORED_LIGHTS
+uniform sampler2D colortex4;
+#endif
 #else 
 
 #endif
@@ -115,8 +119,6 @@ vec4 getLightmap(vec2 coord) {
     return UItovec4(encoded);
 }
 
-uniform sampler2D colortex4;
-//uniform sampler2D colortex5;
 
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 FragOut0;
@@ -202,6 +204,8 @@ void main() {
 
 		vec4 lmcoord = getLightmap(coord);
 
+		#ifdef COLORED_LIGHTS
+
 		vec3 blockLightColor = (textureBicubic(colortex4, coord, vec2(16,9), 1./vec2(16,9)).rgb);
 		blockLightColor = blockLightColor / (maxc(blockLightColor) + 0.02);
 		blockLightColor = saturate(applyVibrance(blockLightColor, 1));
@@ -213,6 +217,12 @@ void main() {
 		blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightnessExp);
 
 		color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
+
+		#else
+
+		color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z) * (1 - lmcoord.a) + lmcoord.a;
+
+		#endif
 
 		//color = lmcoord.xxx;
 		//color = texture(colortex4, coord).rgb;

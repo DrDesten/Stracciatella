@@ -81,8 +81,6 @@ float squareVignette(vec2 coord) {
 	return smoothstep( 0.7, 0.25, pow(sq(sq(coord.x - 0.5)) + sq(sq(coord.y - 0.5)), 0.25) );
 }
 
-uniform sampler2D colortex4;
-
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 FragOut0;
 void main() {
@@ -119,8 +117,6 @@ void main() {
 	#else
 		vec3 color = getAlbedo(coord);
 	#endif
-
-	//color = texture(colortex4, coord).rgb;
 
 	if (isEyeInWater == 2) {
 		vec3  viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);

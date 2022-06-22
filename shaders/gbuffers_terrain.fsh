@@ -69,10 +69,16 @@ vec3 crosstalk(vec3 color, float factor) {
 } 
 
 
+#ifdef COLORED_LIGHTS
 /* DRAWBUFFERS:015 */
 layout(location = 0) out vec4 FragOut0;
 layout(location = 1) out uint FragOut1;
 layout(location = 2) out vec4 FragOut2;
+#else
+/* DRAWBUFFERS:01 */
+layout(location = 0) out vec4 FragOut0;
+layout(location = 1) out uint FragOut1;
+#endif
 void main() {
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb;
@@ -164,23 +170,25 @@ void main() {
 		#define coloredLightEmissive float(blockId == 20 || blockId == 36 || blockId == 34 || (blockId >= 40 && blockId <= 46)) * blockLightEmissiveColor
 	#endif
 
-	vec3 blockLightEmissiveColor;
-	switch (blockId) {
-		case 41:
-			blockLightEmissiveColor = LIGHTMAP_COLOR_ORANGE; // Orange
-			break;
-		case 42:
-			blockLightEmissiveColor = LIGHTMAP_COLOR_RED; // Red
-			break;
-		case 43:
-			blockLightEmissiveColor = LIGHTMAP_COLOR_BLUE; // Blue
-			break;
-		case 44:
-			blockLightEmissiveColor = LIGHTMAP_COLOR_PURPLE; // Purple
-			break;
-		default:
-			blockLightEmissiveColor = color.rgb; // Keep Color (all other id's)
-	}
+	#ifdef COLORED_LIGHTS
+		vec3 blockLightEmissiveColor;
+		switch (blockId) {
+			case 41:
+				blockLightEmissiveColor = LIGHTMAP_COLOR_ORANGE; // Orange
+				break;
+			case 42:
+				blockLightEmissiveColor = LIGHTMAP_COLOR_RED; // Red
+				break;
+			case 43:
+				blockLightEmissiveColor = LIGHTMAP_COLOR_BLUE; // Blue
+				break;
+			case 44:
+				blockLightEmissiveColor = LIGHTMAP_COLOR_PURPLE; // Purple
+				break;
+			default:
+				blockLightEmissiveColor = color.rgb; // Keep Color (all other id's)
+		}
+	#endif
 
 	#ifdef DIRECTIONAL_LIGHTMAPS
 		vec2 lightmapCoord = vec2(lmcoord.x * diffuse, lmcoord.y);
@@ -204,5 +212,7 @@ void main() {
 	FragOut0 = color;
     if (FragOut0.a < 0.1) discard;
 	FragOut1 = vec4toUI(vec4(lightmapCoord, glcolor.a, saturate(emissiveness)));
+	#ifdef COLORED_LIGHTS
 	FragOut2 = vec4(coloredLightEmissive, 1);
+	#endif
 }
