@@ -12,7 +12,7 @@ out vec4 handLight; // rgb: color, a: brightness
 void main() {
 	gl_Position = ftransform();
 
-	handLight = vec4(0,0,0,heldBlockLightValue * (1./15));
+	handLight = vec4(0,0,0,heldBlockLightValue);
 	switch (heldItemId - 1000) {
 		case 41:
 			handLight.rgb = LIGHTMAP_COLOR_ORANGE; // Orange

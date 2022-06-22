@@ -207,9 +207,10 @@ void main() {
 		blockLightColor = saturate(applyVibrance(blockLightColor, 1));
 
 		float dist = sqmag(playerPos);
-		float handLightBrightness = exp(-dist * 0.1 / handLight.a);
-		//blockLightColor = (handLight.rgb * handLightBrightness + blockLightColor) / (handLightBrightness + 1);
-		blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightness);
+		float handLightBrightness = smoothstep(handLight.a * 5, 0, dist);
+		float handLightBrightnessExp = exp(-dist / handLight.a);
+		blockLightColor = blockLightColor + handLight.rgb * handLightBrightness;
+		blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightnessExp);
 
 		color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
 
@@ -226,9 +227,6 @@ void main() {
 				color = mix(color, skyGradient.rgb, fog);
 			#endif
 		#endif
-
-		//color = vec3(exp(-dist * 0.4 / handLight.a));
-		//color = blockLightColor;
 		
 	}
 
