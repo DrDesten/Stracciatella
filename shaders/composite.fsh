@@ -8,6 +8,8 @@
 
 vec2 coord = gl_FragCoord.xy * vec2(1./16, 1./9);
 
+#ifdef COLORED_LIGHTS
+
 const bool colortex5MipmapEnabled = true;
 
 uniform sampler2D colortex4;
@@ -63,9 +65,14 @@ vec4 gauss3x3LodHit(sampler2D tex, vec2 coord, vec2 pix, float lod) {
 	return vec4(a * .25 + (b * .25 + (c * .25 + (d * .25))), mean(vec4(sum(a) > 0, sum(b) > 0, sum(c) > 0, sum(d) > 0)));
 }
 
+#endif
+
 /* DRAWBUFFERS:4 */
 layout(location = 0) out vec4 FragOut0;
 void main() {
+	
+	#ifdef COLORED_LIGHTS
+
 	vec3 screenPos = vec3(coord, getDepth(coord));
 
 	vec4 prevProj    = reprojectScreen(screenPos);
@@ -100,6 +107,8 @@ void main() {
 	color = mix(color, prevCol * rejection, LIGHTMAP_COLOR_BLEND * (rejection * LIGHTMAP_COLOR_REGEN + (1 - LIGHTMAP_COLOR_REGEN)) * mixTweak);
 	
 	FragOut0 = vec4(color, screenPos.z);
+
+	#endif
 }
 
 /*
