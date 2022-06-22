@@ -2,6 +2,8 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
+#include "/lib/lightmap.glsl"
+
 
 #ifdef CUSTOM_LIGHTMAP
 	uniform float customLightmapBlend;
@@ -27,6 +29,12 @@ layout(location = 0) out vec4 FragOut0;
 layout(location = 1) out uint FragOut1;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
+	
+	#ifndef CUSTOM_LIGHTMAP
+		color.rgb *= getLightmap(lmcoord) * glcolor.a;
+	#else
+		color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
+	#endif
 
 	#ifdef FOG
 		float fog = fogFactor(viewPos, far, gbufferModelViewInverse);
@@ -40,5 +48,5 @@ void main() {
 	
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
-	FragOut1 = vec4toUI(vec4(lmcoord, 1,0));
+	FragOut1 = vec4toUI(vec4(0,0,1,1));
 }
