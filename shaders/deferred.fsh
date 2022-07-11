@@ -232,7 +232,7 @@ void main() {
 
 		#endif
 
-		//color = lmcoord.xxx;
+		//color = lmcoord.xyz;
 		//color = texture(colortex4, coord).rgb;
 		//color *= mix(blockLightColor, color, lmcoord.a);
 
