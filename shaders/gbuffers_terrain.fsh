@@ -72,12 +72,20 @@ vec3 crosstalk(vec3 color, float factor) {
 #ifdef COLORED_LIGHTS
 /* DRAWBUFFERS:015 */
 layout(location = 0) out vec4 FragOut0;
+#ifdef MC_GL_VENDOR_INTEL
+layout(location = 1) out vec2 FragOut1;
+#else
 layout(location = 1) out uint FragOut1;
+#endif
 layout(location = 2) out vec4 FragOut2;
 #else
 /* DRAWBUFFERS:01 */
 layout(location = 0) out vec4 FragOut0;
+#ifdef MC_GL_VENDOR_INTEL
+layout(location = 1) out vec2 FragOut1;
+#else
 layout(location = 1) out uint FragOut1;
+#endif
 #endif
 void main() {
 	vec4 color = getAlbedo(coord);
@@ -211,7 +219,7 @@ void main() {
 
 	FragOut0 = color;
     if (FragOut0.a < 0.1) discard;
-	FragOut1 = vec4toUI(vec4(lightmapCoord, glcolor.a, saturate(emissiveness)));
+	FragOut1 = encodeLightmapData(vec4(lightmapCoord, glcolor.a, saturate(emissiveness)));
 	#ifdef COLORED_LIGHTS
 	FragOut2 = vec4(coloredLightEmissive, 1);
 	#endif
