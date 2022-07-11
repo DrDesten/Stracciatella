@@ -6,19 +6,9 @@ vec2 getCoord() {
     return mat2(gl_TextureMatrix[0]) * gl_MultiTexCoord0.xy + gl_TextureMatrix[0][3].xy;
 }
 
-#ifdef CUSTOM_LIGHTMAP
-
-    vec2 getLmCoord() {
-        return gl_MultiTexCoord1.xy * (1./240);
-    }
-
-#else
-
-    vec2 getLmCoord() {
-        return clamp(gl_MultiTexCoord1.xy * (1./240), 1./16, 15./16);
-    }
-
-#endif
+vec2 getLmCoord() {
+    return gl_MultiTexCoord1.xy * (1./240);
+}
 
 mat3 getTBN(vec4 tangentAttribute) {
 	vec3 normal  = normalize(gl_NormalMatrix * gl_Normal);
