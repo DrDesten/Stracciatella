@@ -3,16 +3,10 @@
 #endif
 
 uniform sampler2D gcolor;  // Color
-uniform sampler2D lightmap; // lightmap
 
 vec4 getAlbedo(vec2 coord) {
     return texture(gcolor, coord);
 }
-
-vec3 getLightmap(vec2 lmcoord) {
-    return texture(lightmap, lmcoord).rgb;
-}
-
 
 #ifndef MC_GL_VENDOR_INTEL
 uint encodeLightmapData(vec4 data) {

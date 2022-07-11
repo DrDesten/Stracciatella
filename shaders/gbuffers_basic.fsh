@@ -3,6 +3,8 @@
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
+uniform sampler2D lightmap;
+
 in vec2 lmcoord;
 flat in vec4 glcolor;
 
@@ -19,7 +21,7 @@ layout(location = 1) out uint FragOut1;
 #endif
 void main() {
 	vec4 color = glcolor;
-	color.rgb *= getLightmap(lmcoord);
+	color.rgb *= texture(lightmap, lmcoord).rgb;
 
 	#if MC_VERSION < 11700
 

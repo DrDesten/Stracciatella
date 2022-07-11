@@ -3,7 +3,7 @@
 
 const int colortex0Format = RGBA8;  // Color
 #ifdef MC_GL_VENDOR_INTEL
-const int colortex1Format = RG16;  // Lightmap, AO, Emissiveness (encoded)
+const int colortex1Format = RG16;   // Lightmap, AO, Emissiveness (encoded)
 #else
 const int colortex1Format = R32UI;  // Lightmap, AO, Emissiveness (encoded)
 #endif
