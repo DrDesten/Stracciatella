@@ -47,15 +47,11 @@ uniform float frameTimeCounter;
 uniform float sneaking;
 #endif
 
-#ifdef CUSTOM_LIGHTMAP
 #include "/lib/lightmap.glsl"
 uniform float customLightmapBlend;
 
 #ifdef COLORED_LIGHTS
 uniform sampler2D colortex4;
-#endif
-#else 
-
 #endif
 
 in vec4 handLight;

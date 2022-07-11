@@ -29,9 +29,7 @@
 
 #endif
 
-#ifdef CUSTOM_LIGHTMAP
-	uniform float customLightmapBlend;
-#endif
+uniform float customLightmapBlend;
 
 in vec2 lmcoord;
 in vec2 coord;
@@ -44,12 +42,7 @@ void main() {
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb * glcolor.a;
 	
-	#ifndef CUSTOM_LIGHTMAP
-	color.rgb *= getLightmap(lmcoord) * glcolor.a;
-	#else
 	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
-	#endif
-
 
 	#ifdef FOG
 

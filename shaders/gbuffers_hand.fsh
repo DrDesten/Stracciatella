@@ -7,9 +7,7 @@
 	#include "/lib/lightmap.glsl"
 #endif
 
-#ifdef CUSTOM_LIGHTMAP
-	uniform float customLightmapBlend;
-#endif
+uniform float customLightmapBlend;
 
 flat in vec2 lmcoord;
 in vec2 coord;
@@ -27,11 +25,7 @@ void main() {
 
 	#ifdef HAND_WATER
 
-	#ifndef CUSTOM_LIGHTMAP
-	color.rgb *= getLightmap(lmcoord) * glcolor.a;
-	#else
 	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
-	#endif
 
 	#endif
 

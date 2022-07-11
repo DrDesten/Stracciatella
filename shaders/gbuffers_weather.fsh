@@ -6,9 +6,7 @@
 #include "/lib/gbuffers_basics.glsl"
 #include "/lib/lightmap.glsl"
 
-#ifdef CUSTOM_LIGHTMAP
-	uniform float customLightmapBlend;
-#endif
+uniform float customLightmapBlend;
 
 flat in vec2 lmcoord;
 in vec2 coord;
@@ -46,12 +44,7 @@ void main() {
 
 	#endif
 
-	#ifndef CUSTOM_LIGHTMAP
-	color.rgb *= getLightmap(lmcoord);
-	#else
 	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, 1);
-	#endif
-
 
     #if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);

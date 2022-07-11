@@ -5,9 +5,7 @@
 #include "/lib/lightmap.glsl"
 
 
-#ifdef CUSTOM_LIGHTMAP
-	uniform float customLightmapBlend;
-#endif
+uniform float customLightmapBlend;
 
 flat in vec2 lmcoord;
 noperspective in vec2 coord;
@@ -34,11 +32,7 @@ layout(location = 1) out uint FragOut1;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 	
-	#ifndef CUSTOM_LIGHTMAP
-		color.rgb *= getLightmap(lmcoord) * glcolor.a;
-	#else
-		color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
-	#endif
+	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
 
 	#ifdef FOG
 		float fog = fogFactor(viewPos, far, gbufferModelViewInverse);

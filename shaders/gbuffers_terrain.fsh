@@ -33,9 +33,7 @@ in vec3 viewPos;
 	in vec2  blockCoords;
 #endif
 
-#ifdef CUSTOM_LIGHTMAP
-	uniform float customLightmapBlend;
-#endif
+uniform float customLightmapBlend;
 
 #ifdef BLINKING_ORES
 	flat in float oreBlink;

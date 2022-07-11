@@ -7,9 +7,7 @@
 
 uniform vec4  entityColor;
 
-#ifdef CUSTOM_LIGHTMAP
-	uniform float customLightmapBlend;
-#endif
+uniform float customLightmapBlend;
 
 flat in vec2 lmcoord;
 in vec2 coord;
