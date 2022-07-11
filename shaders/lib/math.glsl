@@ -860,5 +860,3 @@ vec4 UItovec4(uint encoded) {
 		float(encoded >> 24u) * (1./255)
 	);
 }
-
-#define MC_GL_VENDOR_INTEL

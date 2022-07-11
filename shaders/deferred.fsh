@@ -228,6 +228,7 @@ void main() {
 
 		#endif
 
+		//color.rg = lmcoord.xy;
 		//color = lmcoord.xyz;
 		//color = texture(colortex4, coord).rgb;
 		//color *= mix(blockLightColor, color, lmcoord.a);

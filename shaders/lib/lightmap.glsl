@@ -9,6 +9,13 @@ const vec3 lightmapComplexBlockDark   = vec3(LIGHTMAP_COMPLEX_BLOCK_DARK_R, LIGH
 const vec3 lightmapEnd    = vec3(END_SKY_UP_R, END_SKY_UP_G, END_SKY_UP_B) * 0.5 + vec3(END_SKY_DOWN_R, END_SKY_DOWN_G, END_SKY_DOWN_B) * 0.5;
 const vec3 lightmapNether = vec3(1,.4,.3);
 
+
+
+#if CUSTOM_LIGHTMAP_MODE == 1
+////////////////////////////////////////////////
+// Normal Custom Lightmap
+////////////////////////////////////////////////
+
 vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
     //lmcoord.x = max(lmcoord.x, LIGHTMAP_MINIMUM_LIGHT * (lmcoord.y * (lmcoord.y - 2) + 1));
 
@@ -122,3 +129,35 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO, vec3 b
 
     return blockLight + skyLight + caveLight;
 }
+
+
+#else 
+
+vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
+
+    #ifdef NETHER
+
+        vec3 skyLight = (lightmapNether / maxc(lightmapNether));
+        lmcoord.y = LIGHTMAP_NETHER_SKY_BRIGHTNESS;
+
+    #elif defined END
+
+        vec3 skyLight = applySaturation(lightmapEnd / maxc(lightmapEnd), LIGHTMAP_END_SKY_SATURATION);
+        lmcoord.y = LIGHTMAP_END_SKY_BRIGHTNESS;
+
+    #else
+
+        vec3 skyLight = mix(lightmapNight, lightmapDay, customLightmapBlend);
+
+    #endif
+
+    float caveLight = LIGHTMAP_MINIMUM_LIGHT * (lmcoord.y * (lmcoord.y - 2) + 1);
+
+    return ( mix(
+        lightmapBlock * lmcoord.x,
+        skyLight * lmcoord.y * lmcoord.y,
+        lmcoord.y
+    )  + caveLight ) * AO;
+}
+
+#endif

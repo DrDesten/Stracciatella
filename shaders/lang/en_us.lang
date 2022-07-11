@@ -103,7 +103,7 @@ option.END_SKY_DOWN_B=End Sky Lower §9B
 
 screen.LIGHTING=Custom Lighting
 
-option.CUSTOM_LIGHTMAP=Custom Lightmap
+option.CUSTOM_LIGHTMAP_MODE=Custom Lightmap
 screen.CUSTOM_LIGHTMAP_COLOR_CONFIG=Custom Lightmap Colors
 option.LIGHTMAP_SKYLIGHT_AO=Skylight AO
 option.LIGHTMAP_SKYLIGHT_AO.comment=Specifies the amount of ambient occlusion on skylight.
