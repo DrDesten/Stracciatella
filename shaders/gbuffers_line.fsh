@@ -15,7 +15,11 @@ uniform int renderStage;
 
 /* DRAWBUFFERS:01 */
 layout(location = 0) out vec4 FragOut0;
+#ifdef MC_GL_VENDOR_INTEL
+layout(location = 1) out vec2 FragOut1;
+#else
 layout(location = 1) out uint FragOut1;
+#endif
 void main() {
 	vec4 color = glcolor;
 
@@ -49,5 +53,5 @@ void main() {
 
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
-	FragOut1 = vec4toUI(vec4(1));
+	FragOut1 = encodeLightmapData(vec4(1));
 }
