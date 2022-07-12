@@ -303,10 +303,3 @@ const float lightmap_complex_blocklight_blend_curve = ( ((100 - LIGHTMAP_COMPLEX
 #define CLOUD_STEPS 10
 
 //#define THICC_CLOUDS // Make sure you set cloud height to 20% or this won't do anything
-
-
-
-//#define INTEL_MODE
-#ifdef INTEL_MODE
-    #define MC_GL_VENDOR_INTEL
-#endif
