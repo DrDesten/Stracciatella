@@ -124,6 +124,8 @@ vec4 getLightmap(vec2 coord) {
 #endif
 
 
+
+
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 FragOut0;
 void main() {

@@ -63,7 +63,7 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
         #else
         * AO
         #endif
-        * saturate((mean(skyLight) * 1.15 - 0.15 ) * -LIGHTMAP_BLOCKLIGHT_REDUCTION + 1)          // Reduce Blocklight when it's bright
+        * saturate((luminance(skyLight) * 1.15 - 0.15 ) * -LIGHTMAP_BLOCKLIGHT_REDUCTION + 1)          // Reduce Blocklight when it's bright
     );
 
     float caveLight = LIGHTMAP_MINIMUM_LIGHT * (lmcoord.y * (lmcoord.y - 2) + 1) * AO;
@@ -153,11 +153,43 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
 
     float caveLight = LIGHTMAP_MINIMUM_LIGHT * (lmcoord.y * (lmcoord.y - 2) + 1);
 
-    return ( mix(
-        lightmapBlock * lmcoord.x,
-        skyLight * lmcoord.y * lmcoord.y,
-        lmcoord.y
-    )  + caveLight ) * AO;
+    return ( 
+        lightmapBlock * lmcoord.x * (luminance(skyLight) * -lmcoord.y * 0.95 + 1) +
+        skyLight * lmcoord.y * lmcoord.y +
+        caveLight 
+    ) * AO;
+}
+
+vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO, vec3 blocklightExtraColor) {
+
+    #ifdef NETHER
+
+        vec3 skyLight = (lightmapNether / maxc(lightmapNether));
+        lmcoord.y = LIGHTMAP_NETHER_SKY_BRIGHTNESS;
+
+    #elif defined END
+
+        vec3 skyLight = applySaturation(lightmapEnd / maxc(lightmapEnd), LIGHTMAP_END_SKY_SATURATION);
+        lmcoord.y = LIGHTMAP_END_SKY_BRIGHTNESS;
+
+    #else
+
+        vec3 skyLight = mix(lightmapNight, lightmapDay, customLightmapBlend);
+
+    #endif
+
+    float blockLightBlend = maxc(blocklightExtraColor);
+    blocklightExtraColor  = blocklightExtraColor * ( luminance(lightmapBlock) / luminance(blocklightExtraColor) );
+    blocklightExtraColor  = saturate(blocklightExtraColor);
+    vec3 blocklightColor  = mix(lightmapBlock, blocklightExtraColor, blockLightBlend);
+
+    float caveLight = LIGHTMAP_MINIMUM_LIGHT * (lmcoord.y * (lmcoord.y - 2) + 1);
+
+    return ( 
+        blocklightColor * lmcoord.x * (luminance(skyLight) * -lmcoord.y * 0.95 + 1) +
+        skyLight * lmcoord.y * lmcoord.y +
+        caveLight 
+    ) * AO;
 }
 
 #endif
