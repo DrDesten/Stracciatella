@@ -59,7 +59,7 @@ vec2 getBlocklightDir(vec2 lco, mat2 tbn) {
 
 
 vec3 crosstalk(vec3 color, float factor) {
-	vec3 distribute = 1 - exp(-factor * color);
+	vec3 distribute = vec3(1) - exp(-factor * color);
 	color.r += dot(color.gb, distribute.gb);
 	color.g += dot(color.rb, distribute.rb);
 	color.b += dot(color.rg, distribute.rg);
@@ -171,9 +171,12 @@ void main() {
 		}
 
 		#define coloredLightEmissive float(isEmissive) * blockLightEmissiveColor
+		
 	#else
+
 	 	#define emissiveness 0
 		#define coloredLightEmissive float(blockId == 20 || blockId == 36 || blockId == 34 || (blockId >= 40 && blockId <= 46)) * blockLightEmissiveColor
+
 	#endif
 
 	#ifdef COLORED_LIGHTS
