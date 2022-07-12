@@ -101,10 +101,14 @@ option.END_SKY_DOWN_B=End Sky Lower §9B
 // LIGHTING
 ///////////////////////////////////////////////////////////
 
-screen.LIGHTING=Custom Lighting
+screen.LIGHTING=Lighting
 
-option.CUSTOM_LIGHTMAP_MODE=Custom Lightmap
-screen.CUSTOM_LIGHTMAP_COLOR_CONFIG=Custom Lightmap Colors
+option.CUSTOM_LIGHTMAP_MODE=Lightmap
+option.CUSTOM_LIGHTMAP_MODE.comment=§nDefault§r. All Features. §nSimple§r. Reduced features (only 'Adaptive Blocklight Reduction' and 'Minimum Light').
+value.CUSTOM_LIGHTMAP_MODE.0=Simple
+value.CUSTOM_LIGHTMAP_MODE.1=Default
+
+screen.CUSTOM_LIGHTMAP_CONFIG=Lightmap Settings
 option.LIGHTMAP_SKYLIGHT_AO=Skylight AO
 option.LIGHTMAP_SKYLIGHT_AO.comment=Specifies the amount of ambient occlusion on skylight.
 suffix.LIGHTMAP_SKYLIGHT_AO=%
@@ -118,6 +122,21 @@ option.LIGHTMAP_BLOCKLIGHT_CONTRAST.comment=Higher = Darker. Lower = Brighter.
 
 option.LIGHTMAP_MINIMUM_LIGHT=Minimum Light
 option.LIGHTMAP_MINIMUM_LIGHT.comment=Restricts blocklight to never go below this value. Prevents caves from being pitch black (unless you set it to zero that is)
+
+option.COLORED_LIGHTS=Colored Lights
+option.COLORED_LIGHTS.comment=Enabled colored lighting on blocks
+
+screen.COLORED_LIGHTS_CONFIG=Colored Light Settings
+option.LIGHTMAP_COLOR_REJECTION=Accumulation Rejection
+value.LIGHTMAP_COLOR_REJECTION.0=Low
+value.LIGHTMAP_COLOR_REJECTION.1=Default
+value.LIGHTMAP_COLOR_REJECTION.2=High
+option.LIGHTMAP_COLOR_BLEND=Acc. Blend Factor
+option.LIGHTMAP_COLOR_REGEN=Acc. Regeneration Speed
+option.LIGHTMAP_COLOR_FLICKER_RED=Flicker Reduction
+option.LIGHTMAP_COLOR_LOD_BIAS=Sample LOD Bias
+
+screen.CUSTOM_LIGHTMAP_COLOR_CONFIG=Lightmap Colors
 
 screen.END_SKYLIGHT=End Skylight
 option.LIGHTMAP_END_SKY_BRIGHTNESS=End Skylight Brightness
