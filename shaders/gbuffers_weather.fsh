@@ -4,9 +4,10 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-#include "/lib/lightmap.glsl"
 
 uniform float customLightmapBlend;
+uniform float frameTimeCounter;
+#include "/lib/lightmap.glsl"
 
 flat in vec2 lmcoord;
 in vec2 coord;
@@ -44,7 +45,7 @@ void main() {
 
 	#endif
 
-	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, 1);
+	color.rgb *= getCustomLightmap(vec3(lmcoord, 1), customLightmapBlend);
 
     #if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);

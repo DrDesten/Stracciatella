@@ -4,8 +4,9 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-#include "/lib/lightmap.glsl"
 
+uniform float frameTimeCounter;
+#include "/lib/lightmap.glsl"
 
 #include "/lib/fog_sky.glsl"
 
@@ -42,7 +43,7 @@ void main() {
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb * glcolor.a;
 	
-	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
+	color.rgb *= getCustomLightmap(vec3(lmcoord, glcolor.a), customLightmapBlend);
 
 	#ifdef FOG
 
