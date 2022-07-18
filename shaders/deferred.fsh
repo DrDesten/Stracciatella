@@ -5,11 +5,7 @@
 #include "/lib/transform.glsl"
 #include "/lib/fog_sky.glsl"
 
-#ifndef MC_GL_VENDOR_INTEL
-uniform usampler2D colortex1;
-#else
 uniform sampler2D colortex1;
-#endif
 
 #ifdef FOG
 
@@ -113,15 +109,10 @@ vec2 rotation(float angle) {
 	return vec2(sin(angle), cos(angle));
 }
 
-#ifndef MC_GL_VENDOR_INTEL
-vec4 getLightmap(vec2 coord) {
-    return UItovec4(texture(colortex1, coord).x);
-}
-#else
+
 vec4 getLightmap(vec2 coord) {
     return vec2x16to4(texture(colortex1, coord).xy);
 }
-#endif
 
 
 

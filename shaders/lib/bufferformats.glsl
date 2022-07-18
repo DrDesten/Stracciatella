@@ -2,11 +2,7 @@
 
 
 const int colortex0Format = RGBA8;  // Color
-#ifdef MC_GL_VENDOR_INTEL
 const int colortex1Format = RG16;   // Lightmap, AO, Emissiveness (encoded)
-#else
-const int colortex1Format = R32UI;  // Lightmap, AO, Emissiveness (encoded)
-#endif
 const int colortex2Format = R8;     // Unused (LUT)
 const int colortex3Format = R8;     // Effects
 const int colortex4Format = RGBA16; // LightmapColor + Depth
