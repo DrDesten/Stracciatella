@@ -3,7 +3,9 @@
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
+
 #ifdef HAND_WATER
+	uniform float frameTimeCounter;
 	#include "/lib/lightmap.glsl"
 #endif
 
@@ -21,7 +23,7 @@ void main() {
 
 	#ifdef HAND_WATER
 
-	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
+	color.rgb *= getCustomLightmap(vec3(lmcoord, glcolor.a), customLightmapBlend);
 
 	#endif
 

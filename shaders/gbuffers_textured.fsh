@@ -2,10 +2,11 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-#include "/lib/lightmap.glsl"
 
 
 uniform float customLightmapBlend;
+uniform float frameTimeCounter;
+#include "/lib/lightmap.glsl"
 
 flat in vec2 lmcoord;
 noperspective in vec2 coord;
@@ -28,7 +29,7 @@ layout(location = 1) out vec2 FragOut1;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 	
-	color.rgb *= getCustomLightmap(lmcoord, customLightmapBlend, glcolor.a);
+	color.rgb *= getCustomLightmap(vec3(lmcoord, glcolor.a), customLightmapBlend);
 
 	#ifdef FOG
 		float fog = fogFactor(viewPos, far, gbufferModelViewInverse);

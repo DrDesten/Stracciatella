@@ -35,9 +35,7 @@ uniform float normalizedTime;
 uniform float customStarBlend;
 #endif
 
-#ifdef SHOOTING_STARS
 uniform float frameTimeCounter;
-#endif
 
 #ifdef SNEAK_EFFECT
 uniform float sneaking;
@@ -213,11 +211,11 @@ void main() {
 		blockLightColor = blockLightColor + handLight.rgb * handLightBrightness;
 		blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightnessExp);
 
-		color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
+		color *= getCustomLightmap(lmcoord.xyz, customLightmapBlend, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
 
 		#else
 
-		color *= getCustomLightmap(lmcoord.xy, customLightmapBlend, lmcoord.z) * (1 - lmcoord.a) + lmcoord.a;
+		color *= getCustomLightmap(lmcoord.xyz, customLightmapBlend) * (1 - lmcoord.a) + lmcoord.a;
 
 		#endif
 

@@ -29,6 +29,7 @@ uniform vec3 fogColor;
 
 uniform float blindness;
 uniform float nightVision;
+uniform float darknessFactor;
 #ifdef DAMAGE_EFFECT
 uniform float damage;
 #endif
@@ -113,9 +114,9 @@ void main() {
 		color = mix(color, fogColor * (playerLMCSmooth.y * 0.6 + 0.4), saturate(nightVision * -0.1 + fogFac));
 	}
 
-	if (blindness > 1e-10) {
+	if (blindness > 0 || darknessFactor > 0) {
 		vec3 viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
-		color *= saturate(1. / (sqmag(viewPos) * blindness));
+		color *= 1. / (sqmag(viewPos) * max(blindness, darknessFactor * 0.1) + 1);
 	}
 
 	#if CONTRAST != 0
