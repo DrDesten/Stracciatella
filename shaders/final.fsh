@@ -27,6 +27,38 @@ vec4 textureBicubicComplexOpt(sampler2D sampler, vec2 coord, vec2 samplerSize, v
 	return totalData / totalWeight;
 }
 
+vec4 textureBicubicSharp(sampler2D sampler, vec2 coord, vec2 samplerSize, vec2 pixelSize) {
+    coord = coord * samplerSize - 0.5;
+
+    vec2 fxy = fract(coord);
+    coord -= fxy;
+
+    vec4 xcubic = cubic(fxy.x);
+    vec4 ycubic = cubic(fxy.y);
+
+    vec4 c = coord.xxyy + vec2 (-0.5, +1.5).xyxy;
+
+    vec4 s = vec4(xcubic.xz + xcubic.yw, ycubic.xz + ycubic.yw);
+    vec4 offset = c + vec4 (xcubic.yw, ycubic.yw) / s;
+
+    offset *= pixelSize.xxyy;
+
+    vec4 sample0 = texture(sampler, offset.xz);
+    vec4 sample1 = texture(sampler, offset.yz);
+    vec4 sample2 = texture(sampler, offset.xw);
+    vec4 sample3 = texture(sampler, offset.yw);
+
+	vec4 average = (sample0 + sample1 + sample3 + sample3) * 0.25;
+
+    float sx = s.x / (s.x + s.y);
+    float sy = s.z / (s.z + s.w);
+
+    return mix(
+        mix(sample3, sample2, sx), 
+        mix(sample1, sample0, sx)
+    , sy);
+}
+
 struct FXAALumas {
 	float n, s, w, e, m;
 	float ne, nw, se, sw;
@@ -268,7 +300,7 @@ layout(location = 0) out vec4 FragOut0;
 void main() {
 	#ifdef HQ_UPSCALING
 	//vec3 color = textureBicubicComplexOpt(colortex0, coord * MC_RENDER_QUALITY, screenSize * (1./MC_RENDER_QUALITY), screenSizeInverse * MC_RENDER_QUALITY).rgb;
-	vec3 color = textureBicubic(colortex0, coord, screenSize * (1./MC_RENDER_QUALITY), screenSizeInverse * MC_RENDER_QUALITY).rgb;
+	vec3 color = textureBicubicSharp(colortex0, coord, screenSize * (1./MC_RENDER_QUALITY), screenSizeInverse * MC_RENDER_QUALITY).rgb;
 	#else
 	vec3 color = getAlbedo(coord);
 	#endif
