@@ -10,7 +10,7 @@ option.FOG_START.comment=Sets where the fog starts appearing. Relative to render
 option.FOG_END=Fog End
 option.FOG_END.comment=Sets where the fog reaches its maximum. Relative to render distance.
 
-screen.SUN_MOON_CONFIG=Sun and Moon
+screen.SUN_MOON_CONFIG=§eSun§r and §7Moon§r
 option.SUN_SIZE_CHANGE=Change Sun and Moon Size
 option.SUN_SIZE=Sun and Moon Size
 option.SUN_SIZE.comment=Changes the size of sun and moon
@@ -123,18 +123,23 @@ option.LIGHTMAP_BLOCKLIGHT_CONTRAST.comment=Higher = Darker. Lower = Brighter.
 option.LIGHTMAP_MINIMUM_LIGHT=Minimum Light
 option.LIGHTMAP_MINIMUM_LIGHT.comment=Restricts blocklight to never go below this value. Prevents caves from being pitch black (unless you set it to zero that is)
 
-option.COLORED_LIGHTS=Colored Lights
+option.COLORED_LIGHTS=§cC§6o§el§ao§br§de§cd§r Lights
 option.COLORED_LIGHTS.comment=Enabled colored lighting on blocks
 
 screen.COLORED_LIGHTS_CONFIG=Colored Light Settings
 option.LIGHTMAP_COLOR_REJECTION=Accumulation Rejection
+option.LIGHTMAP_COLOR_REJECTION.comment=Sets how temporal history information is discarded. Higher corresponds to history being discarded more easily.
 value.LIGHTMAP_COLOR_REJECTION.0=Low
 value.LIGHTMAP_COLOR_REJECTION.1=Default
 value.LIGHTMAP_COLOR_REJECTION.2=High
 option.LIGHTMAP_COLOR_BLEND=Acc. Blend Factor
+option.LIGHTMAP_COLOR_BLEND.comment=Sets how temporal history information is merged with new information. A lower value places less emphasis on history and will cause colors to update faster at the cost of more flicker. 
 option.LIGHTMAP_COLOR_REGEN=Acc. Regeneration Speed
+option.LIGHTMAP_COLOR_REGEN.comment=Sets how fast empty regions (with no color information) are filled up. A high value will cause colors to appear faster initially, but may introduce flicker in disoccluded regions.
 option.LIGHTMAP_COLOR_FLICKER_RED=Flicker Reduction
+option.LIGHTMAP_COLOR_FLICKER_RED.comment=Increase this slider if you experience frequent spots of color blinking into existence. Higher values will decrease the speed at which new color spreads and appears.
 option.LIGHTMAP_COLOR_LOD_BIAS=Sample LOD Bias
+option.LIGHTMAP_COLOR_LOD_BIAS.comment=Controls the detail level at which colors are sampled. A higher value will make colors smoother but may cause small lights to be skipped. A lower value will sample at higher detail but will decrease smoothness and introduce flicker. The shader does its best to calculate the appropiate LOD itself.
 
 screen.CUSTOM_LIGHTMAP_COLOR_CONFIG=Lightmap Colors
 
@@ -171,7 +176,7 @@ option.LIGHTMAP_COMPLEX_BLOCK_DARK_G=Complex Blocklight Dark §2G
 option.LIGHTMAP_COMPLEX_BLOCK_DARK_B=Complex Blocklight Dark §9B
 
 
-option.DIRECTIONAL_LIGHTMAPS=Directional Lightmaps
+option.DIRECTIONAL_LIGHTMAPS=§oDirectional§r Lightmaps
 option.DIRECTIONAL_LIGHTMAPS_STRENGTH=Directional Lightmap Strength
 
 option.NORMAL_TEXTURE_MODE=Normals
@@ -182,7 +187,7 @@ option.GENERATED_NORMALS_RESOLUTION_MULTIPLIER=Normals Resolution Multiplier
 option.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.comment=Auto-Generated Normals may have a different resolution than your resource pack. This slider allows you to select a higher resolution for the normals. No performance impact.
 suffix.GENERATED_NORMALS_RESOLUTION_MULTIPLIER=x
 
-option.HDR_EMISSIVES=HDR Emissives
+option.HDR_EMISSIVES=§eHDR§r Emissives
 option.HDR_EMISSIVES_BRIGHTNESS=HDR Emissive Brightness
 
 
@@ -192,7 +197,7 @@ option.HDR_EMISSIVES_BRIGHTNESS=HDR Emissive Brightness
 
 screen.WEATHER=Weather
 
-option.RAIN_DETECTION_MODE=Rain Detection
+option.RAIN_DETECTION_MODE=§9Rain§r Detection
 option.RAIN_DETECTION_MODE.comment=How the shader detects if rain is present. "Color" is generally the better option. §nSelect "Temperature" if:§r. Rain does not receive rain effects. Things that are not rain receive rain effects.
 value.RAIN_DETECTION_MODE.0=Temperature 
 value.RAIN_DETECTION_MODE.1=Color
@@ -201,7 +206,7 @@ option.RAIN_EFFECTS=Rain Refraction
 option.RAIN_EFFECTS_STRENGTH=Rain Refraction Strength
 option.RAIN_OPACITY=Rain Opacity
 
-option.ANGLED_RAIN=Angled Rain
+option.ANGLED_RAIN=§oAngled§r Rain
 option.ANGLED_RAIN_AMOUNT=Angled Rain Amount
 option.ANGLED_RAIN_ROTATION_SPEED=Angled Rain Rotation Speed
 
@@ -224,13 +229,13 @@ screen.WAVING=Waving Blocks
 option.WAVING_BLOCKS=Waving Blocks
 option.WAVING_BLOCKS_AMOUNT=Waving Blocks Amount
 option.WAVING_BLOCKS_SPEED=Waving Blocks Speed
-option.WAVING_LEAVES=Waving Leaves
+option.WAVING_LEAVES=Waving §aLe§2a§av§2e§as§r
 option.WAVING_LILYPADS=Waving Lilypads
 option.WAVING_LILYPADS.comment=Controlled by "Waving Liquids Amount" and "Waving Liquids Speed".
 option.WAVING_LANTERNS=Waving Lanterns
-option.WAVING_FIRE=Waving Fire
+option.WAVING_FIRE=Waving §6F§ei§6r§ee§r
 
-option.WAVING_LIQUIDS=Waving Liquids
+option.WAVING_LIQUIDS=Waving §bLi§9q§bu§9i§bds§r
 option.WAVING_LIQUIDS.comment=Water and Lava
 option.WAVING_LIQUIDS_AMOUNT=Waving Liquids Amount
 option.WAVING_LIQUIDS_SPEED=Waving Liquids Speed
@@ -314,8 +319,8 @@ option.SNEAK_OUTLOOK_RADIUS=Sneak Outlook Radius
 option.SNEAK_OUTLOOK_ZOOM=Sneak Outlook Zoom
 
 option.DAMAGE_EFFECT=Damage Effect 
-option.DAMAGE_EFFECT_REDNESS=Damage Effect Redness
-option.DAMAGE_EFFECT_DISPLACEMENT=Damage Effect Displacement
+option.DAMAGE_EFFECT_REDNESS=Damage Effect §cRedness§r
+option.DAMAGE_EFFECT_DISPLACEMENT=Damage Effect D§li§rs§lp§rl§la§rc§le§rm§le§rn§lt§r
 option.DAMAGE_EFFECT_DISPLACEMENT_SIZE=Damage Effect Cell Size
 
 
@@ -325,6 +330,7 @@ option.DAMAGE_EFFECT_DISPLACEMENT_SIZE=Damage Effect Cell Size
 
 screen.OTHER=Other
 
+//option.DITHERING=§7D§rit§7h§re§7r§rin§7g§r
 option.DITHERING=Dithering
 value.DITHERING.0=None
 value.DITHERING.1=Smart
@@ -336,7 +342,7 @@ option.WORLD_TIME_ANIMATION.comment=Uses the ingame time instead of real time fo
 
 option.BLOCK_OUTLINE_SOLID=Solid Block Outline
 option.LINE_THICKNESS.comment=Makes the block outline no longer transparent.
-option.LINE_THICKNESS=Line Thickness
+option.LINE_THICKNESS=Line §lThickness§r
 option.LINE_THICKNESS.comment=Applies to all non-UI lines, for example hit boxes. §c§n/!\§r Only works from versions 1.17 and onwards.
 suffix.LINE_THICKNESS=px
 
@@ -359,7 +365,7 @@ profile.VANILLA=Vanilla
 profile.DEFAULT=Default
 profile.STRACCIATELLA=Stracciatella
 
-option.CREDITS=by
-value.CREDITS.0=DrDesten
+option.CREDITS=§oby§r
+value.CREDITS.0=§lDrDesten§r
 
 screen.DEBUG.comment=Don't mess with the stuff in here unless you know what you're doing (or want to break the shader)

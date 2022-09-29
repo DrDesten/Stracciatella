@@ -82,7 +82,7 @@ void main() {
 	vec3  prevCol   = gauss3x3(colortex4, prevProj.xy, pixel * 0.75);
 	float prevDepth = texture(colortex4, prevProj.xy).a;
 
-	float sampleLod = max(log2(mean(screenSize * pixel)), 0) * LIGHTMAP_COLOR_LOD_BIAS; // Calculate appropiate sampling LoD
+	float sampleLod = max(log2(mean(screenSize * pixel)) + LIGHTMAP_COLOR_LOD_BIAS, 0); // Calculate appropiate sampling LoD
 	vec2 jitter = R2(frameCounter%1000) * pixel - (pixel * .5);
 	vec3 color = gauss3x3Lod(colortex5, coord + jitter, pixel, sampleLod) * 10;
 	color = color / (color + 1.0);
@@ -104,6 +104,10 @@ void main() {
 	float rejection = saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -4 + 1);
 	#endif
 
+	// if the mix blend is 0, new color is used
+	// rejection is zero when history is fully rejected, causing the history to be removed (multiplied by zero)
+	// if LIGHTMAP_COLOR_REGEN is 1, rejection == 0 will cause the new color to instantly fill the frame, while
+	//    LIGHTMAP_COLOR_REGEN    0  will cause rejection to have no impact on the blend factor.
 	color = mix(color, prevCol * rejection, LIGHTMAP_COLOR_BLEND * (rejection * LIGHTMAP_COLOR_REGEN + (1 - LIGHTMAP_COLOR_REGEN)) * mixTweak);
 	
 	FragOut0 = vec4(color, screenPos.z);
