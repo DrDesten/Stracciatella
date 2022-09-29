@@ -194,8 +194,8 @@ void main() {
 		color = skyGradient.rgb;
 		#endif
 	}
-
-    else {
+    else 
+	{
 
 		vec4 lmcoord = getLightmap(coord);
 

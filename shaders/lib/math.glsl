@@ -594,7 +594,8 @@ vec4 textureBicubic(sampler2D sampler, vec2 coord, vec2 samplerSize, vec2 pixelS
     float sy = s.z / (s.z + s.w);
 
     return mix(
-        mix(sample3, sample2, sx), mix(sample1, sample0, sx)
+        mix(sample3, sample2, sx), 
+        mix(sample1, sample0, sx)
     , sy);
 }
 
