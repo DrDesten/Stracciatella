@@ -27,5 +27,5 @@ void main() {
 	
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
-	FragOut1 = vec4( encodeLightmapData(vec4(lmcoord, 1,0)), 1,1 );
+	FragOut1 = vec4( encodeLightmapData(vec4(lmcoord, 1,0)), 1, float(glcolor.a > 0.5) );
 }
