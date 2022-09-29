@@ -103,7 +103,7 @@ vec3 getCustomLightmap(vec3 lmcoord /* lmcoord + AO */, float customLightmapBlen
             vec3  blocklightColor = mix(lightmapComplexBlockDark, lightmapComplexBlockBright, lmcoord.x);
         #endif
 
-        blocklightExtraColor  = blocklightExtraColor * (luminance(lightmapBlock)/luminance(blocklightExtraColor));
+        //blocklightExtraColor  = blocklightExtraColor * (luminance(lightmapBlock) / luminance(blocklightExtraColor));
         blocklightExtraColor  = saturate(blocklightExtraColor);
         blocklightColor = mix(lightmapBlock, blocklightExtraColor, maxc(blocklightExtraColor));
 
