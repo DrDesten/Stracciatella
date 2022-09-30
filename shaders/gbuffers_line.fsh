@@ -15,7 +15,7 @@ uniform int renderStage;
 
 /* DRAWBUFFERS:01 */
 layout(location = 0) out vec4 FragOut0;
-layout(location = 1) out vec2 FragOut1;
+layout(location = 1) out vec4 FragOut1;
 void main() {
 	vec4 color = glcolor;
 
@@ -49,5 +49,5 @@ void main() {
 
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
-	FragOut1 = encodeLightmapData(vec4(1));
+	FragOut1 = vec4(encodeLightmapData(vec4(1)), 1,1);
 }
