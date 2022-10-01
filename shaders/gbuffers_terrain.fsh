@@ -189,6 +189,7 @@ void main() {
 			default:
 				blockLightEmissiveColor = color.rgb; // Keep Color (all other id's)
 		}
+		//blockLightEmissiveColor *= lmcoord.x;
 	#endif
 
 	#ifdef DIRECTIONAL_LIGHTMAPS

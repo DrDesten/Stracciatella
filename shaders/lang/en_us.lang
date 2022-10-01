@@ -141,6 +141,12 @@ option.LIGHTMAP_COLOR_FLICKER_RED.comment=Increase this slider if you experience
 option.LIGHTMAP_COLOR_LOD_BIAS=Sample LOD Bias
 option.LIGHTMAP_COLOR_LOD_BIAS.comment=Controls the detail level at which colors are sampled. A higher value will make colors smoother but may cause small lights to be skipped. A lower value will sample at higher detail but will decrease smoothness and introduce flicker. The shader does its best to calculate the appropiate LOD itself.
 
+option.LIGHTMAP_COLOR_DEBUG=Colored Lights Debug
+value.LIGHTMAP_COLOR_DEBUG.0=OFF
+value.LIGHTMAP_COLOR_DEBUG.1=Mix
+value.LIGHTMAP_COLOR_DEBUG.2=Raw
+value.LIGHTMAP_COLOR_DEBUG.3=Source
+
 screen.CUSTOM_LIGHTMAP_COLOR_CONFIG=Lightmap Colors
 
 screen.END_SKYLIGHT=End Skylight
