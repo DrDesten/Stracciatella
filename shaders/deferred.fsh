@@ -46,6 +46,9 @@ uniform float customLightmapBlend;
 
 #ifdef COLORED_LIGHTS
 uniform sampler2D colortex4;
+#if LIGHTMAP_COLOR_DEBUG != 0
+uniform sampler2D colortex5;
+#endif
 #endif
 
 in vec4 handLight;
@@ -211,7 +214,19 @@ void main() {
 		blockLightColor = blockLightColor + handLight.rgb * handLightBrightness;
 		blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightnessExp);
 
+		#if LIGHTMAP_COLOR_DEBUG == 0 // No Debug, Normal Mode
 		color *= getCustomLightmap(lmcoord.xyz, customLightmapBlend, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
+		#elif LIGHTMAP_COLOR_DEBUG == 1 // Debug, Mult Mode
+		color *= blockLightColor * (1 - lmcoord.a) + lmcoord.a;
+		vec3 tmp = texture(colortex5, coord).rgb;
+		if (sum(tmp) != 0) color = tmp;
+		#elif LIGHTMAP_COLOR_DEBUG == 2 // Debug, Pure Mode
+		color = blockLightColor;
+		#elif LIGHTMAP_COLOR_DEBUG == 3 // Debug, Source Mode
+		vec3 tmp = texture(colortex5, coord).rgb;
+		if (sum(tmp) != 0) color = tmp;
+		else color = mix(color, vec3(1,0,0), 0.5);
+		#endif
 
 		#else
 
