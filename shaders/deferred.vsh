@@ -14,6 +14,9 @@ void main() {
 
 	handLight = vec4(0,0,0,heldBlockLightValue);
 	switch (heldItemId - 1000) {
+		case 40:
+			handLight.rgb = vec3(1); // White
+			break;
 		case 41:
 			handLight.rgb = LIGHTMAP_COLOR_ORANGE; // Orange
 			break;
