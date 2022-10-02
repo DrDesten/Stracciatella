@@ -353,9 +353,9 @@ option.LINE_THICKNESS.comment=Applies to all non-UI lines, for example hit boxes
 suffix.LINE_THICKNESS=px
 
 option.BLOCK_OUTLINE_STYLE=Block Outline Style
-value.BLOCK_OUTLINE_STYLE.0=Black
-value.BLOCK_OUTLINE_STYLE.1=White
-value.BLOCK_OUTLINE_STYLE.2=Rainbow
+value.BLOCK_OUTLINE_STYLE.0=§8Black§r
+value.BLOCK_OUTLINE_STYLE.1=§fWhite§f
+value.BLOCK_OUTLINE_STYLE.2=§cR§6a§ei§an§bb§do§cw
 value.BLOCK_OUTLINE_STYLE.3=Custom Color
 
 screen.BLOCK_OUTLINE_COLOR_CONFIG=Custom Color Configuration
