@@ -37,10 +37,6 @@ uniform float customStarBlend;
 
 uniform float frameTimeCounter;
 
-#ifdef SNEAK_EFFECT
-uniform float sneaking;
-#endif
-
 #include "/lib/lightmap.glsl"
 uniform float customLightmapBlend;
 
@@ -124,9 +120,6 @@ void main() {
 	float depth     = getDepth(coord);
 	vec3  screenPos = vec3(coord, depth);
 	vec3  viewPos   = toView(screenPos * 2 - 1);
-	#ifdef SNEAK_EFFECT
-	if (sneaking > 1e-5) viewPos.xy *= sneaking * -.5 + 1;
-	#endif
 	vec3  viewDir   = normalize(viewPos);
 	vec3  playerPos = toPlayer(viewPos);
 	vec3  playerDir = normalize(playerPos);
