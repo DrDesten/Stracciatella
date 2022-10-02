@@ -3,12 +3,7 @@
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
-#ifdef SNEAK_EFFECT
-#include "/lib/vertex_transform.glsl"
-uniform float sneaking;
-#else
 #include "/lib/vertex_transform_simple.glsl"
-#endif
 
 uniform vec3 up;
 
@@ -25,8 +20,4 @@ void main() {
 
 	glcolor = gl_Color;
 	glcolor.rgb *= dot(up, getNormal()) * 0.3 + 0.7;
-
-	#ifdef SNEAK_EFFECT
-	#include "lib/outlook.glsl"
-	#endif
 }

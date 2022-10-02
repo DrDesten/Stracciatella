@@ -4,7 +4,7 @@
 
 uniform float  frameTimeCounter;
 
-#if defined WAVING_BLOCKS || defined WAVING_LIQUIDS || defined RAIN_PUDDLES || defined SNEAK_EFFECT
+#if defined WAVING_BLOCKS || defined WAVING_LIQUIDS || defined RAIN_PUDDLES
 	#include "/lib/vertex_transform.glsl"
 #else
 	#include "/lib/vertex_transform_simple.glsl"
@@ -78,10 +78,6 @@ out vec2  blockCoords;
 
 #ifdef BLINKING_ORES
 flat out float oreBlink;
-#endif
-
-#ifdef SNEAK_EFFECT
-uniform float sneaking;
 #endif
 
 flat out int blockId;
@@ -263,9 +259,5 @@ void main() {
 
 		}
 
-	#endif
-
-	#ifdef SNEAK_EFFECT
-	#include "lib/outlook.glsl"
 	#endif
 }

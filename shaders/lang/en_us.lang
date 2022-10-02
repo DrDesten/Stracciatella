@@ -317,13 +317,6 @@ option.BLINKING_ORES_COAL=Coal
 option.BLINKING_ORES_NETHER_QUARTZ=Nether Quartz
 option.BLINKING_ORES_NETHER_GOLD=Nether Gold
 
-option.SNEAK_EFFECT=Sneak Outlook
-option.SNEAK_EFFECT.comment=Note that because of chunk culling parts of the image will sometimes flicker in and out, especially at the sides. This gets worse with higher "Height" values.
-option.SNEAK_OUTLOOK_ZOOM=Sneak Zoom
-option.SNEAK_OUTLOOK_HEIGHT=Sneak Outlook Height
-option.SNEAK_OUTLOOK_RADIUS=Sneak Outlook Radius
-option.SNEAK_OUTLOOK_ZOOM=Sneak Outlook Zoom
-
 option.DAMAGE_EFFECT=Damage Effect 
 option.DAMAGE_EFFECT_REDNESS=Damage Effect §cRedness§r
 option.DAMAGE_EFFECT_DISPLACEMENT=Damage Effect D§li§rs§lp§rl§la§rc§le§rm§le§rn§lt§r
