@@ -138,24 +138,26 @@ void main() {
 		bool blue   = blockId == 43;
 		bool purple = blockId == 44;
 		bool anyCol = blockId == 45 || blockId == 34;
-		bool candle = blockId == 46;
+		bool anyLow = blockId == 46;
+		bool candle = blockId == 47;
 
 		const vec3 hsvBrown = vec3(39./360, .5, .5);
 
 		float emissiveness = 0;
-		bool  isEmissive   = white || anyCol || orange || red || blue || purple || candle;
+		bool  isEmissive   = white || anyCol || anyLow || orange || red || blue || purple || candle;
 		if (isEmissive) {
 
 			vec3  hsv       = rgb2hsv(color.rgb);
 			float brownness = saturate(sqmag((hsvBrown - hsv) * vec3(10,3,2)) * 2 - 1);
 			
-			if (white)  emissiveness = saturate(hsv.z * 2 - 1); //saturate(brownness * 1.5 - .5);
-			if (anyCol) emissiveness = saturate(max(saturate(hsv.y * 2 - 0.5), saturate(hsv.z * 2 - 1)) * 2 - 0.5);
-			if (orange) emissiveness = saturate(peak05(fract(hsv.x + 0.45)) * 2 - 1) * saturate(hsv.z * 4 - 2.75);
-			if (red)    emissiveness = saturate(brownness * 1.25 - .25) + saturate(hsv.z * 4 - 3);
-			if (blue)   emissiveness = saturate(sqmag((vec3(0.57, .53, .8) - hsv) * vec3(2,2,2)) * -3 + 2) + saturate(hsv.y * -5 + 4) * saturate(hsv.z * 3 - 2) * brownness;
-			if (purple) emissiveness = saturate(hsv.z * 1.5 - .5) * saturate(hsv.y * 3 - 2) + sq(saturate(hsv.z * 5 - 4));
-			if (candle) emissiveness = sqsq(saturate((midTexCoord.y - coord.y) * (0.5 / spriteSize.y) + 0.5 + saturate(rawNormal.y)));
+			if      (white)  emissiveness = saturate(hsv.z * 2 - 1); //saturate(brownness * 1.5 - .5);
+			else if (anyCol) emissiveness = saturate(max(saturate(hsv.y * 2 - 0.5), saturate(hsv.z * 2 - 1)) * 2 - 0.5);
+			else if (anyLow) emissiveness = saturate(0.75 * hsv.z * hsv.z);
+			else if (orange) emissiveness = saturate(peak05(fract(hsv.x + 0.45)) * 2 - 1) * saturate(hsv.z * 4 - 2.75);
+			else if (red)    emissiveness = saturate(brownness * 1.25 - .25) + saturate(hsv.z * 4 - 3);
+			else if (blue)   emissiveness = saturate(sqmag((vec3(0.57, .53, .8) - hsv) * vec3(2,2,2)) * -3 + 2) + saturate(hsv.y * -5 + 4) * saturate(hsv.z * 3 - 2) * brownness;
+			else if (purple) emissiveness = saturate(hsv.z * 1.5 - .5) * saturate(hsv.y * 3 - 2) + sq(saturate(hsv.z * 5 - 4));
+			else if (candle) emissiveness = sqsq(saturate((midTexCoord.y - coord.y) * (0.5 / spriteSize.y) + 0.5 + saturate(rawNormal.y)));
 
 			color.rgb  = reinhard_sqrt_tonemap_inverse(color.rgb * 0.996, 0.5);
 			color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 1.5) * color.rgb;
@@ -167,7 +169,7 @@ void main() {
 	#else
 
 	 	#define emissiveness 0
-		#define coloredLightEmissive float(blockId == 20 || blockId == 36 || blockId == 34 || (blockId >= 40 && blockId <= 46)) * blockLightEmissiveColor
+		#define coloredLightEmissive float(blockId == 20 || blockId == 36 || blockId == 34 || (blockId >= 40 && blockId <= 47)) * blockLightEmissiveColor
 
 	#endif
 
