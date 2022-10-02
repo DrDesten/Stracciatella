@@ -216,8 +216,8 @@ void main() {
 
 		#if LIGHTMAP_COLOR_DEBUG == 0 // No Debug, Normal Mode
 		color *= getCustomLightmap(lmcoord.xyz, customLightmapBlend, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
-		#elif LIGHTMAP_COLOR_DEBUG == 1 // Debug, Mult Mode
-		color *= blockLightColor * (1 - lmcoord.a) + lmcoord.a;
+		#elif LIGHTMAP_COLOR_DEBUG == 1 // Debug, Mix Mode
+		color = mix(color, blockLightColor * (1 - lmcoord.a) + lmcoord.a, 0.666);
 		vec3 tmp = texture(colortex5, coord).rgb;
 		if (sum(tmp) != 0) color = tmp;
 		#elif LIGHTMAP_COLOR_DEBUG == 2 // Debug, Pure Mode
