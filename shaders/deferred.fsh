@@ -199,7 +199,7 @@ void main() {
 
 		vec3 blockLightColor = (textureBicubic(colortex4, coord, vec2(16,9), 1./vec2(16,9)).rgb);
 		blockLightColor = blockLightColor / (maxc(blockLightColor) + 0.02);
-		blockLightColor = saturate(applyVibrance(blockLightColor, 1));
+		blockLightColor = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
 
 		float dist = sqmag(playerPos);
 		float handLightBrightness = smoothstep(handLight.a * 5, 0, dist);
