@@ -127,6 +127,7 @@ option.COLORED_LIGHTS=§cC§6o§el§ao§br§de§cd§r Lights
 option.COLORED_LIGHTS.comment=Enabled colored lighting on blocks
 
 screen.COLORED_LIGHTS_CONFIG=Colored Light Settings
+option.LIGHTMAP_COLOR_VIBRANCE=Vibrance
 option.LIGHTMAP_COLOR_REJECTION=Accumulation Rejection
 option.LIGHTMAP_COLOR_REJECTION.comment=Sets how temporal history information is discarded. Higher corresponds to history being discarded more easily.
 value.LIGHTMAP_COLOR_REJECTION.0=Low
