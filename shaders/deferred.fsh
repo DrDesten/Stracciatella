@@ -3,7 +3,7 @@
 #include "/lib/kernels.glsl"
 #include "/lib/composite_basics.glsl"
 #include "/lib/transform.glsl"
-#include "/lib/fog_sky.glsl"
+#include "/lib/sky.glsl"
 
 uniform sampler2D colortex1;
 

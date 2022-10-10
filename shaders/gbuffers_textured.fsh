@@ -14,7 +14,7 @@ flat in vec4 glcolor;
 
 #ifdef FOG
 
-	#include "/lib/fog_sky.glsl"
+	#include "/lib/sky.glsl"
 
 	in vec3 viewPos;
 

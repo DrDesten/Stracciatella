@@ -1,3 +1,6 @@
+#ifndef INCLUDE_SKY
+#define INCLUDE_SKY
+
 const vec3 sunsetColor = vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B);
 
 const vec3 skyDayColor       = vec3(SKY_DAY_R, SKY_DAY_G, SKY_DAY_B);
@@ -160,3 +163,5 @@ vec3 getFogSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, float sunset, float rain
         return fogColor;
     }
 }
+
+#endif
