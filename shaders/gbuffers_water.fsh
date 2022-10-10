@@ -11,7 +11,7 @@ uniform float frameTimeCounter;
 
 #ifdef FOG
 
-	#include "/lib/fog_sky.glsl"
+	#include "/lib/sky.glsl"
 
 	uniform mat4  gbufferModelViewInverse;
 	uniform int   isEyeInWater;

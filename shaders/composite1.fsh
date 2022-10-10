@@ -3,7 +3,7 @@
 #include "/lib/kernels.glsl"
 #include "/lib/composite_basics.glsl"
 
-#include "/lib/bufferformats.glsl"
+#include "/lib/setup.glsl"
 
 const float wetnessHalflife = 200;
 const float drynessHalflife = 400;
@@ -21,7 +21,7 @@ uniform sampler2D colortex3; // Rain Effects
 #endif
 
 #include "/lib/transform.glsl"
-#include "/lib/fog_sky.glsl"
+#include "/lib/sky.glsl"
 
 uniform int  isEyeInWater;
 uniform vec2 playerLMCSmooth;
