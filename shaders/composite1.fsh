@@ -25,7 +25,6 @@ uniform sampler2D colortex3; // Rain Effects
 
 uniform int  isEyeInWater;
 uniform vec2 playerLMCSmooth;
-uniform vec3 fogColor;
 
 uniform float blindness;
 uniform float nightVision;

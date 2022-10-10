@@ -4,12 +4,12 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-#include "/lib/fog_sky.glsl"
 
 #ifdef FOG
 
+	#include "/lib/fog_sky.glsl"
+
 	uniform mat4  gbufferModelViewInverse;
-	uniform vec3  fogColor;
 	uniform int   isEyeInWater;
 	uniform float far;
 
@@ -20,7 +20,6 @@
 	uniform vec3  sunDir;
 	uniform vec3  up;
 	uniform float sunset;
-	uniform vec3  skyColor;
 
 #endif
 
@@ -44,9 +43,9 @@ void main() {
 		float fog = fogFactor(viewPos, min(far * 2, 350), gbufferModelViewInverse);
 
 		#ifndef CUSTOM_SKY
-			color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset), fog);
+			color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, sunset), fog);
 		#else
-			color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight), fog);
+			color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, sunset, rainStrength, daynight), fog);
 		#endif
 
 	#endif

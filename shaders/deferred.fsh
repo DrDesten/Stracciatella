@@ -18,9 +18,6 @@ uniform sampler2D colortex1;
 
 #endif
 
-uniform vec3 fogColor;
-uniform vec3 skyColor;
-
 uniform vec3  sunDir;
 uniform vec3  up;
 uniform vec3  upPosition;
@@ -125,9 +122,9 @@ void main() {
 	vec3  playerDir = normalize(playerPos);
 
 	#ifdef CUSTOM_SKY
-	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight);
+	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir, up, sunset, rainStrength, daynight);
 	#else
-	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir, up, skyColor, fogColor, sunset);
+	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir, up, sunset);
 	#endif
 
 	#ifdef OVERWORLD

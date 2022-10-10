@@ -8,12 +8,12 @@
 uniform float frameTimeCounter;
 #include "/lib/lightmap.glsl"
 
-#include "/lib/fog_sky.glsl"
 
 #ifdef FOG
 
+	#include "/lib/fog_sky.glsl"
+
 	uniform mat4  gbufferModelViewInverse;
-	uniform vec3  fogColor;
 	uniform int   isEyeInWater;
 	uniform float far;
 
@@ -25,7 +25,6 @@ uniform float frameTimeCounter;
 	uniform vec3  sunDir;
 	uniform vec3  up;
 	uniform float sunset;
-	uniform vec3  skyColor;
 	uniform ivec2 eyeBrightnessSmooth;
 
 #endif
@@ -56,9 +55,9 @@ void main() {
 		#endif
 
 		#ifndef CUSTOM_SKY
-			color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, isEyeInWater), cave), fog);
+			color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(normalize(viewPos), sunDir, up, sunset, isEyeInWater), cave), fog);
 		#else
-			color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(normalize(viewPos), sunDir, up, skyColor, fogColor, sunset, rainStrength, daynight, isEyeInWater), cave), fog);
+			color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(normalize(viewPos), sunDir, up, sunset, rainStrength, daynight, isEyeInWater), cave), fog);
 		#endif
 
 	#endif
