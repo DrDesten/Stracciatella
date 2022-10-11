@@ -80,13 +80,21 @@ option.FOG_NIGHT_RAIN_R=Fog Night Rain §cR
 option.FOG_NIGHT_RAIN_G=Fog Night Rain §2G
 option.FOG_NIGHT_RAIN_B=Fog Night Rain §9B
 
-option.FOG_CAVE_R=Cave Fog §cR
-option.FOG_CAVE_R.comment=Color of fog inside of caves. §e§n/!\§r Fog must be set to "Fancy".
-option.FOG_CAVE_G=Cave Fog §2G
-option.FOG_CAVE_G.comment=Color of fog inside of caves. §e§n/!\§r Fog must be set to "Fancy".
-option.FOG_CAVE_B=Cave Fog §9B
-option.FOG_CAVE_B.comment=Color of fog inside of caves. §e§n/!\§r Fog must be set to "Fancy".
 
+screen.CAVE_SKY_CONFIG=Cave Fog and Sky
+option.CAVE_FOG=Cave Fog
+option.CAVE_FOG.comment=Fog changes to a different color when you are underground
+option.CAVE_SKY=Cave Sky
+option.CAVE_SKY.comment=Sky changes to a different color when you are underground
+option.CAVE_SKY_HEIGHT=Cave Sky Height Threshold
+option.CAVE_SKY_HEIGHT.comment=Controls which world height is necessary for the sky color to change
+
+option.FOG_CAVE_R=Cave Fog §cR
+option.FOG_CAVE_R.comment=Color of fog inside of caves.
+option.FOG_CAVE_G=Cave Fog §2G
+option.FOG_CAVE_G.comment=Color of fog inside of caves.
+option.FOG_CAVE_B=Cave Fog §9B
+option.FOG_CAVE_B.comment=Color of fog inside of caves.
 
 screen.END_SKY_CONFIG=End Sky
 option.END_SKY_UP_R=End Sky Upper §cR
@@ -368,4 +376,4 @@ profile.STRACCIATELLA=Stracciatella
 option.CREDITS=§oby§r
 value.CREDITS.0=§lDrDesten§r
 
-screen.DEBUG.comment=Don't mess with the stuff in here unless you know what you're doing (or want to break the shader)
+screen.DEBUG.comment=Don't mess with the stuff in here unless you know what you're doing. Debug options and Internal toggles get dumped here.

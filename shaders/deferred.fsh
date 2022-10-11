@@ -183,6 +183,10 @@ void main() {
 	if (depth >= 1) {
 		#ifdef OVERWORLD
 		color += skyGradient.rgb;
+		#ifdef CAVE_SKY
+		float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(cameraPosition.y * 0.25 - (CAVE_SKY_HEIGHT * 0.25)) );
+		color = mix(fogCaveColor, color, cave);
+		#endif
 		#else
 		color = skyGradient.rgb;
 		#endif
@@ -231,7 +235,7 @@ void main() {
 
 		#ifdef FOG
 			float fog     = fogFactorPlayer(playerPos, far);
-			#ifdef OVERWORLD
+			#if defined OVERWORLD && defined CAVE_FOG
 				float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
 				color = mix(color, mix(fogCaveColor, skyGradient.rgb, cave), fog);
 			#else
@@ -246,3 +250,9 @@ void main() {
 	#endif
 	FragOut0 = vec4(color, 1.0); //gcolor
 }
+
+/*
+#ifdef CAVE_FOG
+dummy
+#endif
+*/

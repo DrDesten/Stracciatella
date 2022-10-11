@@ -714,7 +714,7 @@ float linearizeDepthfDivisor(float d, float slope) { // Returns 1 / linearizeDep
     return (-d * slope) + slope;
 }
 float linearizeDepthfInverse(float ld, float slope) { // For matching results, slope should be set to 1/nearPlane
-    return -1 / (ld * slope) + 1;
+    return 1 / (-ld * slope) + 1;
 }
 
 float schlickFresnel(vec3 viewRay, vec3 normal, float refractiveIndex, float baseReflectiveness) {
