@@ -7,11 +7,18 @@ It is highly configurable and lets you craft your own personal vanilla experienc
 
 
 
-## Full Feature List
+## Feature List
 
 - Improved Fog
   - Fog Start and Fog End controls
-- Customizeable Fog Color
+  - No blending issues, unlike vanilla
+- Cave Fog
+  - Fog and Sky in caves will change color
+- Fully Custom Sky
+  - Customizeable Sunset Colors
+  - Customizeable Sky Colors
+  - Customizeable Fog Colors
+  - Customizable End Sky
 - Configurable Sun and Moon size
 - Configurable Sun Angle
 - Horizon Cutoff for Sun/Moon
@@ -19,11 +26,6 @@ It is highly configurable and lets you craft your own personal vanilla experienc
   - Customizeable Density, Size, Coverage and Glow
 - Shooting Stars
   - Customizeable Direction, Density, Speed, Trail length and Trail thickness
-- Fully Custom Sky
-  - Customizeable Sunset Colors
-  - Customizeable Sky Colors
-  - Customizeable Fog Colors
-  - Customizable End Sky
 - Waving Plants, Leaves, Lanterns, Liquids and Lilypads
 - Custom Lightmap
   - Fully customizeable Lightmap
@@ -31,6 +33,12 @@ It is highly configurable and lets you craft your own personal vanilla experienc
   - Customizeable Blocklight Colors
   - Customizeable Skylight and Blocklight Ambient Occlusion levels
   - Customizeable Blend Curves
+  - Directional Lightmaps
+    - Generated and Texture normals supported
+- Colored Hand Light
+- Colored Block Light
+- HDR Emissives
+  - Emissive textures without a ressource pack
 - Camera Options
   - Vignette
   - Contrast
@@ -43,6 +51,7 @@ It is highly configurable and lets you craft your own personal vanilla experienc
   - Customizeable Size
   - Customizeable Coverage
   - Customizeable Opacity
+  - Customizeable Color
 - Improved Underwater Fog
   - Fog increases with depth
 - Configurable Blinking Ores
