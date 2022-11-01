@@ -36,7 +36,7 @@ option.STAR_GLOW_AMOUNT=Glow Amount
 
 option.SHOOTING_STARS=Shooting Stars
 option.SHOOTING_STARS.comment=§cOnly§r works with "Custom Stars" enabled.
-option.SHOOTING_STARS_ANGLE=Rotation
+option.SHOOTING_STARS_ANGLE=Direction
 option.SHOOTING_STARS_DENSITY=Density
 option.SHOOTING_STARS_SPEED=Speed
 option.SHOOTING_STARS_LENGTH=Trail Length
@@ -290,7 +290,7 @@ option.LUT_SELECTOR.comment=§nDefault LUTs shipped with the shader are:§r. lut
 prefix.LUT_SELECTOR=lut
 suffix-LUT_SELECTOR=.png
 
-option.BICUBIC_SAMPLING=Use Bicubic Upscaling
+
 
 ///////////////////////////////////////////////////////////
 // WATER

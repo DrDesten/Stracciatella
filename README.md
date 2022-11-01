@@ -1,60 +1,108 @@
 # Stracciatella
 A very lightweight shader that keeps the vanilla style but addresses its shortcomings.
-It is highly configurable and lets you craft your own personal vanilla experience.
+It is highly configurable and lets you craft your own personal vanilla experience.  
 
+<br>
 
-
-
-
-
-## Feature List
-
-- Improved Fog
-  - Fog Start and Fog End controls
-  - No blending issues, unlike vanilla
-- Cave Fog
-  - Fog and Sky in caves will change color
-- Fully Custom Sky
-  - Customizeable Sunset Colors
-  - Customizeable Sky Colors
-  - Customizeable Fog Colors
-  - Customizable End Sky
-- Configurable Sun and Moon size
-- Configurable Sun Angle
-- Horizon Cutoff for Sun/Moon
-- Custom Stars
-  - Customizeable Density, Size, Coverage and Glow
-- Shooting Stars
-  - Customizeable Direction, Density, Speed, Trail length and Trail thickness
-- Waving Plants, Leaves, Lanterns, Liquids and Lilypads
-- Custom Lightmap
-  - Fully customizeable Lightmap
-  - Customizeable Skylight Colors
-  - Customizeable Blocklight Colors
-  - Customizeable Skylight and Blocklight Ambient Occlusion levels
-  - Customizeable Blend Curves
-  - Directional Lightmaps
-    - Generated and Texture normals supported
-- Colored Hand Light
+## Features
 - Colored Block Light
+- Colored Hand Light
 - HDR Emissives
-  - Emissive textures without a ressource pack
-- Camera Options
-  - Vignette
-  - Contrast
+  - Generated Emissive Textures for Light Emitting Blocks
+- Custom Fog and Sky
+  - Shooting Stars
+- Waving Blocks
+- Custom Lightmap
+  - Directional Lightmaps with Generated and Texture Normals
+- Custom Color LUT support 
+- Rain Refraction and Puddles
+- Custom Block Outline
+
+<br>
+
+## Full Feature List
+
+### Fog and Sky
+
+- Sun and Moon Size
+- Sun Angle
+- Horizon Cutoff for Sun and Moon
+- Custom Stars
+  - Size, Density, Coverage, Glow
+- Shooting Stars
+  - Direction, Density, Speed, Trail
+- Fog Start and End
+- Sky and Fog Colors
+  - Sunset Colors
+  - Sky and Fog Colors
+    - Day, Night, Rain
+  - End Sky Colors
+- Cave Fog and Sky
+
+### Lighting
+
+- Custom Lightmap
+  - Sky- and Blocklight AO
+  - Sky- and Blocklight Gamma
+  - Minimum Light
+- Custom Lightmap Colors
+  - Skylight
+  - Complex Blocklight (Dark and Bright Color)
+    - Blend Curve
+- Directional Lightmaps
+  - Generated and Texture Normals
+- Colored Block and Hand Lights
   - Vibrance
-  - Saturation
-  - Brightness
-- Support for Custom LUTs (up to 21)
+- HDR Emissives
+
+### Weather
+
 - Rain Refraction
-- Custom Rain puddles
-  - Customizeable Size
-  - Customizeable Coverage
-  - Customizeable Opacity
-  - Customizeable Color
-- Improved Underwater Fog
-  - Fog increases with depth
-- Configurable Blinking Ores
+- Rain Opacity
+- Angled Rain
+  - Angle, Rotation Speed
+- Rain Puddles
+  - Coverage, Size, Opacity
+  - Color
+
+### Waving Blocks
+
+- Waving Blocks / Liquids
+  - Amount, Speed
+- Waving Leaves
+- Waving Lilypads
+- Waving Lanters
+- Waving Fire
+
+### Camera and Color
+
+- FXAA
+- High Quality Sampling
+- Contrast, Vibrance, Saturation, Brightness
+- Vignette
+  - Round, Square
+- Color LUTs
+  - Log Color, Cell Size
+
+### Water
+
+- Underwater Fog
+  - Density, Depth Influence
+
+### Utilities
+
+- Blinking Ores
+  - Blink Brightness
+  - Diamond, Ancient Debris, Iron, Gold, Copper, Redstone, Lapis Lazuli, Coal, Nether Quarz, Nether Gold
+- Damage Effect
+  - Redness, Displacement, Cell Size
+
+### Other
+
 - Dithering
-- Customizeable Block Outline
 - World Time Animation
+- Block Outline
+  - Solid Outline
+  - Line Thickness
+  - Block Outline Styles
+    - Black, White, Rainbow, Custom Color
