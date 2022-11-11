@@ -1,9 +1,7 @@
 #version 150 compatibility
 #extension GL_ARB_explicit_attrib_location : enable
 #define FRAG
-#define NETHER
-
-#include "/lib/math.glsl"
+#define NETHER#include "/lib/math.glsl"
 uniform vec3 fogColor;
 
 /* DRAWBUFFERS:0 */

@@ -32,9 +32,7 @@ uniform float normalizedTime;
 uniform float customStarBlend;
 #endif
 
-uniform float frameTimeCounter;
-
-#include "/lib/lightmap.glsl"
+uniform float frameTimeCounter;#include "/lib/lightmap.glsl"
 uniform float customLightmapBlend;
 
 #ifdef COLORED_LIGHTS
