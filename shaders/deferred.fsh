@@ -37,7 +37,7 @@ uniform float frameTimeCounter;
 uniform float customLightmapBlend;
 
 #ifdef COLORED_LIGHTS
-uniform sampler2D colortex4;
+uniform sampler2D colortex4; 
 #if LIGHTMAP_COLOR_DEBUG != 0
 uniform sampler2D colortex5;
 #endif
