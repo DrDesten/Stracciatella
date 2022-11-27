@@ -237,7 +237,7 @@ vec3 FXAA311HQ(vec2 coord) {
 layout(location = 0) out vec4 FragOut0;
 void main() {
 	vec3 color = FXAA311HQ(coord);
-	gl_FragColor = vec4(color, 1.0);
+	FragOut0   = vec4(color, 1.0);
 }
 
 /*
