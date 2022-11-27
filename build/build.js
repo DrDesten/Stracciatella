@@ -7,7 +7,7 @@ function preprocess( propertiesFile ) {
         .replace(/\\\s*\n/, " ") // Handle Newline escapes
         .split("\n") // Split into lines
         .map( line =>
-            line.split(/#(?!if|elif|else)/)[0] // Remove all comments, except preprocessor directives
+            line.split(/#(?!if|elif|else|endif)/)[0] // Remove all comments, except preprocessor directives
             .trim().replace(/\s+/g, " ") // Remove duplicate Whitespace
         )
         .filter( x => x.trim() ) // Remove empty lines
