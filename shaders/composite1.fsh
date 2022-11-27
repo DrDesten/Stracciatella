@@ -1,7 +1,8 @@
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
-#include "/lib/composite_basics.glsl"#include "/lib/setup.glsl"
+#include "/lib/composite_basics.glsl"
+#include "/lib/setup.glsl"
 
 const float wetnessHalflife = 200;
 const float drynessHalflife = 400;
@@ -16,7 +17,9 @@ uniform sampler2D colortex2; // LUT
 
 #ifdef RAIN_EFFECTS
 uniform sampler2D colortex3; // Rain Effects
-#endif#include "/lib/transform.glsl"
+#endif
+
+#include "/lib/transform.glsl"
 #include "/lib/sky.glsl"
 
 uniform int  isEyeInWater;
