@@ -15,7 +15,7 @@ flat in vec4 glcolor;
 uniform float temperature;
 #endif
 
-#ifdef RAIN_EFFECTS
+#ifdef RAIN_REFRACTION
 /* DRAWBUFFERS:03 */
 layout(location = 0) out vec4 FragOut0;
 layout(location = 1) out vec4 FragOut1;
@@ -26,7 +26,7 @@ layout(location = 0) out vec4 FragOut0;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 
-	#ifdef RAIN_EFFECTS
+	#ifdef RAIN_REFRACTION
 
 		float rain = 0;
 
@@ -51,7 +51,7 @@ void main() {
 	
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
-	#ifdef RAIN_EFFECTS
+	#ifdef RAIN_REFRACTION
 	FragOut1 = vec4(rain, 0, 0, 0.25);
 	#endif
 }
