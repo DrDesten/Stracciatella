@@ -217,8 +217,11 @@ option.RAIN_DETECTION_MODE.comment=How the shader detects if rain is present. "C
 value.RAIN_DETECTION_MODE.0=Temperature 
 value.RAIN_DETECTION_MODE.1=Color
 
-option.RAIN_EFFECTS=Rain Refraction
-option.RAIN_EFFECTS_STRENGTH=Rain Refraction Strength
+option.RAIN_REFRACTION=Rain Refraction
+value.RAIN_REFRACTION.0=OFF
+value.RAIN_REFRACTION.1=Fast
+value.RAIN_REFRACTION.2=Fancy
+option.RAIN_REFRACTION_STRENGTH=Rain Refraction Strength
 option.RAIN_OPACITY=Rain Opacity
 
 option.ANGLED_RAIN=§oAngled§r Rain

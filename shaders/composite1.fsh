@@ -15,7 +15,7 @@ uniform float frameTimeCounter;
 uniform sampler2D colortex2; // LUT
 #endif
 
-#ifdef RAIN_EFFECTS
+#ifdef RAIN_REFRACTION
 uniform sampler2D colortex3; // Rain Effects
 #endif
 
@@ -66,9 +66,13 @@ float squareVignette(vec2 coord) {
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 FragOut0;
 void main() {
-	#ifdef RAIN_EFFECTS
+	#if RAIN_REFRACTION == 1
 		float rain  = texture(colortex3, coord).r;
-		coord      += sin(vec2(rain * (TWO_PI * 10))) * RAIN_EFFECTS_STRENGTH;
+		coord      += rain * sin(vec2(coord * TWO_PI + frameTimeCounter * 0.3 )) * RAIN_REFRACTION_STRENGTH;
+	#elif RAIN_REFRACTION == 2
+		float rain  = texture(colortex3, coord).r;
+		float noise = fbm( coord * 15, 3, 3, 0.75);
+		coord      += rain * sin(vec2(noise * TWO_PI + frameTimeCounter * 0.3 )) * sqrt(noise) * RAIN_REFRACTION_STRENGTH;
 	#endif
 
 	#ifdef DAMAGE_EFFECT
