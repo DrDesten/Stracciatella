@@ -4,7 +4,7 @@
 #include "/lib/gbuffers_basics.glsl"
 #ifndef INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
-uniform float frameTimeCounter;
+uniform float frameTimeCounter; 
 #endif
 #include "/lib/lightmap.glsl"
 
@@ -14,52 +14,52 @@ uniform float frameTimeCounter;
 	#include "/lib/sky.glsl"
 #ifndef INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 #define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
-uniform mat4 gbufferModelViewInverse;
+uniform mat4 gbufferModelViewInverse; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_int_isEyeInWater
 #define INCLUDE_UNIFORM_int_isEyeInWater
-uniform int isEyeInWater;
+uniform int isEyeInWater; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_float_far
 #define INCLUDE_UNIFORM_float_far
-uniform float far;
+uniform float far; 
 #endif
 #ifdef CUSTOM_SKY
 #ifndef INCLUDE_UNIFORM_float_daynight
 #define INCLUDE_UNIFORM_float_daynight
-uniform float daynight;
+uniform float daynight; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_float_rainStrength
 #define INCLUDE_UNIFORM_float_rainStrength
-uniform float rainStrength;
+uniform float rainStrength; 
 #endif
 #endif
 #ifndef INCLUDE_UNIFORM_vec3_sunDir
 #define INCLUDE_UNIFORM_vec3_sunDir
-uniform vec3 sunDir;
+uniform vec3 sunDir; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_vec3_up
 #define INCLUDE_UNIFORM_vec3_up
-uniform vec3 up;
+uniform vec3 up; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_float_sunset
 #define INCLUDE_UNIFORM_float_sunset
-uniform float sunset;
+uniform float sunset; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
 #define INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
-uniform ivec2 eyeBrightnessSmooth;
+uniform ivec2 eyeBrightnessSmooth; 
 #endif
 #endif
 #ifndef INCLUDE_UNIFORM_float_customLightmapBlend
 #define INCLUDE_UNIFORM_float_customLightmapBlend
-uniform float customLightmapBlend;
+uniform float customLightmapBlend; 
 #endif
 in vec2 lmcoord;
 in vec2 coord;

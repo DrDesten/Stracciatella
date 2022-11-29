@@ -4,7 +4,7 @@
 #include "/lib/vertex_transform_simple.glsl"
 #ifndef INCLUDE_UNIFORM_vec3_up
 #define INCLUDE_UNIFORM_vec3_up
-uniform vec3 up;
+uniform vec3 up; 
 #endif
 flat out vec2 lmcoord;
 out vec2 coord;

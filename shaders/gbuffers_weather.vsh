@@ -9,7 +9,7 @@
 	#ifdef WORLD_TIME_ANIMATION
 #ifndef INCLUDE_UNIFORM_int_worldTime
 #define INCLUDE_UNIFORM_int_worldTime
-uniform int worldTime;
+uniform int worldTime; 
 #endif
 vec3 wavyRain(vec3 playerPos, float amount, float speed) {
 			vec3 offset = vec3(sin((worldTime * (1./24.)) * speed), 0, cos((worldTime * (1./24.)) * speed));
@@ -20,7 +20,7 @@ vec3 wavyRain(vec3 playerPos, float amount, float speed) {
 	#else
 #ifndef INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
-uniform float frameTimeCounter;
+uniform float frameTimeCounter; 
 #endif
 vec3 wavyRain(vec3 playerPos, float amount, float speed) {
 			vec3 offset = vec3(sin(frameTimeCounter * speed), 0, cos(frameTimeCounter * speed));

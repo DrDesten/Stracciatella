@@ -3,22 +3,22 @@
 #include "/lib/kernels.glsl"
 #ifndef INCLUDE_UNIFORM_int_heldItemId
 #define INCLUDE_UNIFORM_int_heldItemId
-uniform int heldItemId;
+uniform int heldItemId; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_int_heldBlockLightValue
 #define INCLUDE_UNIFORM_int_heldBlockLightValue
-uniform int heldBlockLightValue;
+uniform int heldBlockLightValue; 
 #endif
 /*
 #ifndef INCLUDE_UNIFORM_int_heldItemId2
 #define INCLUDE_UNIFORM_int_heldItemId2
-uniform int heldItemId2;
+uniform int heldItemId2; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_int_heldBlockLightValue2
 #define INCLUDE_UNIFORM_int_heldBlockLightValue2
-uniform int heldBlockLightValue2;
+uniform int heldBlockLightValue2; 
 #endif
 */
 

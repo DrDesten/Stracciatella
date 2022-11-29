@@ -19,15 +19,13 @@ const vec3 endSkyUp   = vec3(END_SKY_UP_R, END_SKY_UP_G, END_SKY_UP_B);
 const vec3 endSkyDown = vec3(END_SKY_DOWN_R, END_SKY_DOWN_G, END_SKY_DOWN_B);
 #ifndef INCLUDE_UNIFORM_vec3_fogColor
 #define INCLUDE_UNIFORM_vec3_fogColor
-uniform vec3 fogColor;
+uniform vec3 fogColor; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_vec3_skyColor
 #define INCLUDE_UNIFORM_vec3_skyColor
-uniform vec3 skyColor;
+uniform vec3 skyColor; // SKY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #endif
-// SKY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir, vec3 up, float sunset) {
     #ifdef NETHER
 

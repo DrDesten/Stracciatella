@@ -5,7 +5,7 @@
 #include "/lib/math.glsl"
 #ifndef INCLUDE_UNIFORM_vec3_fogColor
 #define INCLUDE_UNIFORM_vec3_fogColor
-uniform vec3 fogColor;
+uniform vec3 fogColor; 
 #endif
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 FragOut0;

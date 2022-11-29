@@ -11,22 +11,22 @@ vec2 coord = gl_FragCoord.xy * vec2(1./16, 1./9);
 const bool colortex5MipmapEnabled = true;
 #ifndef INCLUDE_UNIFORM_sampler2D_colortex4
 #define INCLUDE_UNIFORM_sampler2D_colortex4
-uniform sampler2D colortex4;
+uniform sampler2D colortex4; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_sampler2D_colortex5
 #define INCLUDE_UNIFORM_sampler2D_colortex5
-uniform sampler2D colortex5;
+uniform sampler2D colortex5; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_int_frameCounter
 #define INCLUDE_UNIFORM_int_frameCounter
-uniform int frameCounter;
+uniform int frameCounter; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_float_nearInverse
 #define INCLUDE_UNIFORM_float_nearInverse
-uniform float nearInverse;
+uniform float nearInverse; 
 #endif
 /* vec3 sampleEmissive(vec2 coord, float lod) {
 	vec3 col = textureLod(colortex0, coord.xy, lod).rgb;

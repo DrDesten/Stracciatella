@@ -15,7 +15,7 @@
 	#ifdef WORLD_TIME_ANIMATION
 #ifndef INCLUDE_UNIFORM_int_worldTime
 #define INCLUDE_UNIFORM_int_worldTime
-uniform int worldTime;
+uniform int worldTime; 
 #endif
 vec3 wavySineY(vec3 worldPos, float amount, float speed) {
 			float seed = dot(worldPos, vec3(0.5, 0.1, 0.5)) + ((worldTime * (1./24.)) * speed);
@@ -25,7 +25,7 @@ vec3 wavySineY(vec3 worldPos, float amount, float speed) {
 	#else
 #ifndef INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
-uniform float frameTimeCounter;
+uniform float frameTimeCounter; 
 #endif
 vec3 wavySineY(vec3 worldPos, float amount, float speed) {
 			float seed = dot(worldPos, vec3(0.5, 0.1, 0.5)) + (frameTimeCounter * speed);

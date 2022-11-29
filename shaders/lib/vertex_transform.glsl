@@ -2,22 +2,22 @@
 #define INCLUDE_VERTEX_TRANSFORM
 #ifndef INCLUDE_UNIFORM_vec3_cameraPosition
 #define INCLUDE_UNIFORM_vec3_cameraPosition
-uniform vec3 cameraPosition;
+uniform vec3 cameraPosition; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_mat4_gbufferModelView
 #define INCLUDE_UNIFORM_mat4_gbufferModelView
-uniform mat4 gbufferModelView;
+uniform mat4 gbufferModelView; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 #define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
-uniform mat4 gbufferModelViewInverse;
+uniform mat4 gbufferModelViewInverse; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_mat4_gbufferProjectionInverse
 #define INCLUDE_UNIFORM_mat4_gbufferProjectionInverse
-uniform mat4 gbufferProjectionInverse;
+uniform mat4 gbufferProjectionInverse; 
 #endif
 #include "/lib/vertex_transform_simple.glsl"
 

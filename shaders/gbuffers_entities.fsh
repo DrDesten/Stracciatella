@@ -4,12 +4,12 @@
 #include "/lib/gbuffers_basics.glsl"
 #ifndef INCLUDE_UNIFORM_vec4_entityColor
 #define INCLUDE_UNIFORM_vec4_entityColor
-uniform vec4 entityColor;
+uniform vec4 entityColor; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_float_customLightmapBlend
 #define INCLUDE_UNIFORM_float_customLightmapBlend
-uniform float customLightmapBlend;
+uniform float customLightmapBlend; 
 #endif
 flat in vec2 lmcoord;
 in vec2 coord;
