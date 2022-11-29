@@ -27,9 +27,6 @@ function gatherFiles( dir, fileList = [] ) {
 // Compile Properties Files
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const blockProperties = loadProperties("block.properties");
-compileProperties( blockProperties )
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Compile Files
@@ -37,4 +34,23 @@ compileProperties( blockProperties )
 
 const files = gatherFiles(dir)
 
+for ( const path of files ) {
 
+    const fext  = path => path.match(/.*\.(\w+)$/)?.[1]
+    const fname = path => path.match(/.*\/([\w\.]*)\.\w+$/)?.[1]
+    const ffull = path => `${fname(path)}.${fext(path)}`
+    
+    switch ( fext(path) ) {
+        case "properties":
+            if ( ["block","item","entity"].includes(fname(path))) {
+                const propertiesFile = loadProperties( path )
+                compileProperties( propertiesFile )
+            }
+            break
+
+
+
+
+
+    }
+}
