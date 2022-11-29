@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_SKYTEXTURED_FSH
+#define INCLUDE_GBUFFERS_SKYTEXTURED_FSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -29,3 +32,5 @@ void main() {
 
 	FragOut0 = color; //gcolor
 }
+
+#endif

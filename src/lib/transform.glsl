@@ -1,6 +1,3 @@
-#ifndef INCLUDE_TRANSFORM
-#define INCLUDE_TRANSFORM
-
 uniform vec3 cameraPosition;
 uniform vec3 previousCameraPosition;
 uniform mat4 gbufferModelView;
@@ -150,5 +147,3 @@ vec3 screenSpaceMovement(vec3 clipPos, vec3 weight) {
     pos      = backToView(pos);
     return     backToScreen(pos);
 }
-
-#endif

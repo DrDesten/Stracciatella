@@ -1,6 +1,3 @@
-#ifndef INCLUDE_VERTEX_TRANSFORM
-#define INCLUDE_VERTEX_TRANSFORM
-
 uniform vec3 cameraPosition;
 uniform mat4 gbufferModelView;
 uniform mat4 gbufferModelViewInverse;
@@ -47,5 +44,3 @@ vec3 getWorld() {
 vec4 worldToClip(vec3 worldPos) {
     return playerToClip(vec4(worldPos - cameraPosition, 1));
 }
-
-#endif

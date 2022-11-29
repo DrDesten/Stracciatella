@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_SKYBASIC_FSH
+#define INCLUDE_GBUFFERS_SKYBASIC_FSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -15,3 +18,5 @@ void main() {
 	FragOut0 = vec4(starData.rgb * starData.a, 1.0);
 	#endif
 }
+
+#endif

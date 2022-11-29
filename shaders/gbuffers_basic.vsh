@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_BASIC_VSH
+#define INCLUDE_GBUFFERS_BASIC_VSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -12,3 +15,5 @@ void main() {
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 }
+
+#endif

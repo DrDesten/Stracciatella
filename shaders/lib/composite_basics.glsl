@@ -1,4 +1,5 @@
-
+#ifndef INCLUDE_COMPOSITE_BASICS_GLSL
+#define INCLUDE_COMPOSITE_BASICS_GLSL
 #ifndef INCLUDE_UNIFORM_sampler2D_colortex0
 #define INCLUDE_UNIFORM_sampler2D_colortex0
 uniform sampler2D colortex0; // Color
@@ -25,3 +26,5 @@ vec3 getAlbedo(vec2 coord) {
 float getDepth(vec2 coord) {
     return texture(depthtex0, coord).x;
 }
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_HAND_VSH
+#define INCLUDE_GBUFFERS_HAND_VSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -39,3 +42,5 @@ void main() {
 	vec4 finaloffset = vec4(0,.1,0,0);
 	gl_Position = gl_ModelViewProjectionMatrix * ((rotation * (gl_Vertex - offset)) + offset + finaloffset); */
 }
+
+#endif

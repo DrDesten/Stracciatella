@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_WATER_VSH
+#define INCLUDE_GBUFFERS_WATER_VSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -66,3 +69,5 @@ void main() {
 	
 	#endif
 }
+
+#endif

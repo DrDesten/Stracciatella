@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_TEXTURED_VSH
+#define INCLUDE_GBUFFERS_TEXTURED_VSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -21,3 +24,5 @@ void main() {
 	viewPos = getView();
 	#endif
 }
+
+#endif

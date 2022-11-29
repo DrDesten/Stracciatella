@@ -1,3 +1,6 @@
+#ifndef INCLUDE_DEFERRED_FSH
+#define INCLUDE_DEFERRED_FSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -302,3 +305,5 @@ void main() {
 dummy
 #endif
 */
+
+#endif

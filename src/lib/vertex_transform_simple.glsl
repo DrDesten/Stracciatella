@@ -1,6 +1,3 @@
-#ifndef INCLUDE_VERTEX_TRANSFORM_SIMPLE
-#define INCLUDE_VERTEX_TRANSFORM_SIMPLE
-
 vec3 getNormal() {
     return normalize(gl_NormalMatrix * gl_Normal);
 }
@@ -41,6 +38,3 @@ float getID(float entityId) {
 float getID(int entityId) {
     return float(entityId - 1000);
 }
-
-
-#endif

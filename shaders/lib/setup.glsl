@@ -1,3 +1,6 @@
+#ifndef INCLUDE_SETUP_GLSL
+#define INCLUDE_SETUP_GLSL
+
 /*
 
 
@@ -26,3 +29,5 @@ const bool colortex2Clear = false;
 const bool colortex3Clear = true;
 const bool colortex4Clear = false;
 const bool colortex5Clear = true;
+
+#endif

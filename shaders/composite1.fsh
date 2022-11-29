@@ -1,3 +1,6 @@
+#ifndef INCLUDE_COMPOSITE1_FSH
+#define INCLUDE_COMPOSITE1_FSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -185,3 +188,5 @@ void main() {
 	#endif
 	FragOut0 = vec4(color, luminance(color));
 }
+
+#endif

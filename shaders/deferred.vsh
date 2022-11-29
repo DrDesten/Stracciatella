@@ -1,3 +1,6 @@
+#ifndef INCLUDE_DEFERRED_VSH
+#define INCLUDE_DEFERRED_VSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -47,3 +50,5 @@ void main() {
 	}
 	
 }
+
+#endif
