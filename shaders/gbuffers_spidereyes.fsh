@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_SPIDEREYES_FSH
+#define INCLUDE_GBUFFERS_SPIDEREYES_FSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -16,3 +19,5 @@ void main() {
     if (FragOut0.a < 0.1) discard;
 	FragOut1 = encodeLightmapData(vec4(1));
 }
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_WEATHER_FSH
+#define INCLUDE_GBUFFERS_WEATHER_FSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -64,3 +67,5 @@ void main() {
 	FragOut1 = vec4(rain, 0, 0, 0.25);
 	#endif
 }
+
+#endif

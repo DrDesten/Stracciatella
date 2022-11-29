@@ -1,3 +1,6 @@
+#ifndef INCLUDE_SETTINGS_GLSL
+#define INCLUDE_SETTINGS_GLSL
+
 /* TODO:
 
 swamp colors?
@@ -304,3 +307,5 @@ const float lightmap_complex_blocklight_blend_curve = ( ((100 - LIGHTMAP_COMPLEX
 #define CLOUD_STEPS 10
 
 //#define THICC_CLOUDS // Make sure you set cloud height to 20% or this won't do anything
+
+#endif

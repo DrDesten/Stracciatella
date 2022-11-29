@@ -1,3 +1,6 @@
+#ifndef INCLUDE_COMPOSITE2_FSH
+#define INCLUDE_COMPOSITE2_FSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -245,3 +248,6 @@ void main() {
 dummy code (not even code lol)
 #endif
 */
+
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef INCLUDE_COMPOSITE_FSH
+#define INCLUDE_COMPOSITE_FSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -127,3 +130,5 @@ void main() {
 /*
 LIGHTMAP_COLOR_REJECTION
 */
+
+#endif

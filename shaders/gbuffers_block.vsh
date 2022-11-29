@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_BLOCK_VSH
+#define INCLUDE_GBUFFERS_BLOCK_VSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -19,3 +22,5 @@ void main() {
 	glcolor      = gl_Color;
 	glcolor.rgb *= dot(up, getNormal()) * 0.4 + 0.6;
 }
+
+#endif

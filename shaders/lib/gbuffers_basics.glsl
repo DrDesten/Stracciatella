@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_BASICS_GLSL
+#define INCLUDE_GBUFFERS_BASICS_GLSL
+
 #if MC_VERSION < 11700
     #define gtexture gcolor
 #endif
@@ -12,3 +15,5 @@ vec4 getAlbedo(vec2 coord) {
 vec2 encodeLightmapData(vec4 data) {
     return vec4to16x2(data);
 }
+
+#endif

@@ -1,6 +1,7 @@
 const fs = require("fs")
-const { PropertiesFile, loadProperties, compileProperties } = require("./parseProperties.js")
+const { guardFiles } = require("./generateIncludeGuards.js")
 const { guardUniforms } = require("./parseUniforms.js")
+const { PropertiesFile, loadProperties, compileProperties } = require("./parseProperties.js")
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Copy Directory Over
@@ -35,6 +36,8 @@ for ( const path of files ) {
     const fext  = path => path.match(/.*\.(\w+)$/)?.[1]
     const fname = path => path.match(/.*\/([\w\.]*)\.\w+$/)?.[1]
     const ffull = path => `${fname(path)}.${fext(path)}`
+
+    const indir = (path, dir) => typeof dir == "string" ? path.includes(dir) : dir.test(path)
     
     switch ( fext(path) ) {
         case "properties":
@@ -46,6 +49,7 @@ for ( const path of files ) {
         case "fsh":
         case "vsh":
         case "glsl":
+            if (!indir(path, /world-?\d/)) guardFiles(path)
             guardUniforms(path)
             break
 

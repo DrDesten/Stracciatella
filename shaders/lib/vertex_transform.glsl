@@ -1,5 +1,5 @@
-#ifndef INCLUDE_VERTEX_TRANSFORM
-#define INCLUDE_VERTEX_TRANSFORM
+#ifndef INCLUDE_VERTEX_TRANSFORM_GLSL
+#define INCLUDE_VERTEX_TRANSFORM_GLSL
 #ifndef INCLUDE_UNIFORM_vec3_cameraPosition
 #define INCLUDE_UNIFORM_vec3_cameraPosition
 uniform vec3 cameraPosition; 

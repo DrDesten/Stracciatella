@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_ARMOR_GLINT_VSH
+#define INCLUDE_GBUFFERS_ARMOR_GLINT_VSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -13,3 +16,6 @@ void main() {
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 }
+
+
+#endif

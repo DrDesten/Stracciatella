@@ -1,5 +1,5 @@
-#ifndef INCLUDE_TRANSFORM
-#define INCLUDE_TRANSFORM
+#ifndef INCLUDE_TRANSFORM_GLSL
+#define INCLUDE_TRANSFORM_GLSL
 #ifndef INCLUDE_UNIFORM_vec3_cameraPosition
 #define INCLUDE_UNIFORM_vec3_cameraPosition
 uniform vec3 cameraPosition; 
@@ -179,5 +179,6 @@ vec3 screenSpaceMovement(vec3 clipPos, vec3 weight) {
     pos      = backToView(pos);
     return     backToScreen(pos);
 }
+
 
 #endif

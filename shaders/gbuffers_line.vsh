@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_LINE_VSH
+#define INCLUDE_GBUFFERS_LINE_VSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -38,3 +41,5 @@ void main() {
 
     glcolor = gl_Color;
 }
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_ARMOR_GLINT_FSH
+#define INCLUDE_GBUFFERS_ARMOR_GLINT_FSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -24,3 +27,6 @@ void main() {
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
 }
+
+
+#endif

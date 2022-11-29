@@ -1,3 +1,6 @@
+#ifndef INCLUDE_MATH_GLSL
+#define INCLUDE_MATH_GLSL
+
 ////////////////////////////////////////////////////////////////////////
 // Constants
 
@@ -864,3 +867,6 @@ vec4 UItovec4(uint encoded) {
 		float(encoded >> 24u) * (1./255)
 	);
 }
+
+
+#endif

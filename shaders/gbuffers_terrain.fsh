@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_TERRAIN_FSH
+#define INCLUDE_GBUFFERS_TERRAIN_FSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -238,3 +241,5 @@ void main() {
 	FragOut2 = vec4(coloredLightEmissive, 1);
 	#endif
 }
+
+#endif

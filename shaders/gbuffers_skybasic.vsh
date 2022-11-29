@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_SKYBASIC_VSH
+#define INCLUDE_GBUFFERS_SKYBASIC_VSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -12,3 +15,5 @@ void main() {
 	starData    = vec4(gl_Color.rgb, float(gl_Color.r == gl_Color.g && gl_Color.g == gl_Color.b && gl_Color.r > 0.0));
 	#endif
 }
+
+#endif

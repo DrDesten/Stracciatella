@@ -1,4 +1,5 @@
-
+#ifndef INCLUDE_LIGHTMAP_GLSL
+#define INCLUDE_LIGHTMAP_GLSL
 #ifndef INCLUDE_UNIFORM_float_nightVision
 #define INCLUDE_UNIFORM_float_nightVision
 uniform float nightVision; 
@@ -215,5 +216,8 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO, vec3 b
         caveLight 
     ) * AO;
 }
+
+#endif
+
 
 #endif

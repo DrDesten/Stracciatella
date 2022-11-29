@@ -1,3 +1,6 @@
+#ifndef INCLUDE_GBUFFERS_ENTITIES_FSH
+#define INCLUDE_GBUFFERS_ENTITIES_FSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -31,3 +34,5 @@ void main() {
     if (FragOut0.a < 0.1) discard;
 	FragOut1 = vec4( encodeLightmapData(vec4(lmcoord, 1,0)), 1, float(glcolor.a > 0.5) );
 }
+
+#endif
