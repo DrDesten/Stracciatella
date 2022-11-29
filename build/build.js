@@ -32,7 +32,7 @@ class PropertiesFile {
             return txt.replace(/#(?!if|ifdef|ifndef|elif|else|endif|define|undef).*$/gm, "")
         }
         function trimSpaces( txt ) { // Removes excess spaces and newlines
-            return txt.replace(/[ \t]+/g, " ").replace(/\n\s*/g, "\n").replace(/^\s+|\s+$/g, "")
+            return txt.replace(/[ \t]+/g, " ").replace(/\s*\n\s*/g, "\n").trim()
         }
         
         function parseScope( txt ) { // Splits the code up into sections
@@ -65,30 +65,31 @@ class PropertiesFile {
             }
             return sections
 
+            /** @param {string} line */
             function parseId( line ) {
-                let id      = line.split("=")[0]
-                let targets = line.split("=")[1].split(" ")
+                let id      = line.match(/[a-z]+\.(\d+)\s*=/)[1]
+                let targets = line.match(/[a-z]+\.\d+\s*=\s*(.*)/)[1].split(" ")
                 return {
                     data: "id",
-                    value: +id.replace("id.", ""), // keep number
+                    value: +id, // keep number
                     targets: targets
                 }
             }
             function parseData( line ) {
-                let data    = line.split("=")[0]
-                let targets = line.split("=")[1].split(" ")
+                let data    = line.match(/[a-z]+\.(\d+)\s*=/)[1]
+                let targets = line.match(/[a-z]+\.\d+\s*=\s*(.*)/)[1].split(" ")
                 return {
                     data: "data",
-                    value: +data.replace("data.", ""), // keep number
+                    value: +data, // keep number
                     targets: targets
                 }
             }
             function parseEmissive( line ) {
-                let emissive = line.split("=")[0]
-                let targets  = line.split("=")[1].split(" ")
+                //let emissive = line.match(/[a-z]+\s*=/)[1]
+                let targets  = line.match(/emissive\s*=\s*(.*)/)[1].split(" ")
                 return {
                     data: "emissive",
-                    value: true,
+                    value: 1,
                     targets: targets
                 }
             }
@@ -101,7 +102,7 @@ class PropertiesFile {
                     targetSections.push(Object.assign([ ...section ], { type: section.type }))
                 }
                 if ( section.type == "data" ) {
-                    const targets = {}
+                    const targets = { type: "data" }
                     for ( const statement of section ) {
                         for ( const target of statement.targets ) {
                             if ( targets[ target ] == undefined ) targets[ target ] = {}
@@ -117,159 +118,54 @@ class PropertiesFile {
 
     }
 
-}
+    /** @param {( number, number, number ) => number} packingFunction @returns {string} */
+    compileFromTargets( packingFunction ) {
+        let compiledSections = []
+        for ( const section of this.fileObject ) {
+            if ( section.type == "preprocessor" ) compiledSections.push( section )
+            if ( section.type == "data" ) {
+                let compiledSection = {}
+                for ( const target in section ) {
+                    if ( target == "type" ) continue;
 
-
-/** @param {string} propertiesFile */
-function preprocess( propertiesFile ) {
-
-    propertiesFile = propertiesFile
-        .replace(/\\\s*\n/, " ") // Handle Newline escapes
-        .split("\n") // Split into lines
-        .map( line =>
-            line.split(/#(?!if|elif|else|endif)/)[0] // Remove all comments, except preprocessor directives
-            .trim().replace(/\s+/g, " ") // Remove duplicate Whitespace
-        )
-        .filter( x => x.trim() ) // Remove empty lines
-        .join("\n") // Join back to string
-
-    return propertiesFile
-
-}
-
-/** @param {string} propertiesFile */
-function parse( propertiesFile ) { // Splits the file into blocks and parses those for id's, emissive flag and data
-
-    return propertiesFile
-        .split(/(?=#)|(?<=#.*\n)/)
-        .map( block => { 
-            if (block[0] == "#") {
-                return { type: "preprocessor", data: block.trim() }
-            } else {
-                let lines = block.split("\n")
-                let elements = []
-
-                for (const line of lines) {
-                    const isId = /^id\.(\d+)\s*=\s*/
-                    const isEmissive = /^emissive\s*=\s*/
-                    const isData = /^data\.(\d+)\s*=\s*/
-
-                    if (isId.test(line)) {
-                        const lineId       = isId.exec(line)[1]
-                        const lineElements = line.replace(isId,"").split(" ")
-
-                        for (const element of lineElements) {
-                            const index = elements.findIndex( ele => ele.name == element )
-                            if (index >= 0) {
-                                elements[index].id = lineId
-                            } else {
-                                elements.push({
-                                    name: element,
-                                    id: lineId
-                                })
-                            }
-                        }
-                    }
-                    if (isEmissive.test(line)) {
-                        const lineElements = line.replace(isEmissive,"").split(" ")
-
-                        for (const element of lineElements) {
-                            const index = elements.findIndex( ele => ele.name == element )
-                            if (index >= 0) {
-                                elements[index].emissive = true
-                            } else {
-                                elements.push({
-                                    name: element,
-                                    emissive: true
-                                })
-                            }
-                        }
-                    }
-                    if (isData.test(line)) {
-                        const lineData     = isData.exec(line)[1]
-                        const lineElements = line.replace(isData,"").split(" ")
-
-                        for (const element of lineElements) {
-                            const index = elements.findIndex( ele => ele.name == element )
-                            if (index >= 0) {
-                                elements[index].data = lineData
-                            } else {
-                                elements.push({
-                                    name: element,
-                                    data: lineData
-                                })
-                            }
-                        }
-                    }
-
+                    let targetObj = section[ target ]
+                    let packed    = packingFunction( targetObj.id, targetObj.emissive, targetObj.data )
+                    if ( compiledSection[ packed ] == undefined ) compiledSection[ packed ] = []
+                    compiledSection[ packed ].push( target )
                 }
-
-                return {
-                    type: "data",
-                    elements: elements,
-                }
-            }
-        } )
-
-}
-
-function computePacked( propertiesObject ) {
-    for (const block of propertiesObject) {
-        if (block.type == "data") {
-            for (const ele of block.elements) {
-                const id = ~~ele.id
-                const emissive = ~~ele.emissive
-                const data = ~~ele.data
-
-                ele.packed = (id << 8) + (emissive << 7) + data
+                compiledSections.push(compiledSection)
             }
         }
-    }
-}
-
-function compile( propertiesObject ) {
-    // Compress object
-    for (const block of propertiesObject) {
-        if (block.type == "data") {
-            block.packedIds = {}
-
-            for (const ele of block.elements) {
-                const packed = ele.packed
-                if (block.packedIds[packed] == undefined) block.packedIds[packed] = [ ele.name ]
-                else block.packedIds[packed].push( ele.name )
-            }
+        
+        let compiledString = ""
+        for ( const section of compiledSections ) {
+            if ( section.type == "preprocessor" ) compiledString += section[0] + "\n"
+            else compiledString += Object.keys( section ).map( key => {
+                return `block.${key}=${section[key].join(" ")}`
+            }).join("\n") + "\n"
         }
-    } 
 
-    // Build new properties file
-    let string = ""
-    for (const block of propertiesObject) {
-        if (block.type == "preprocessor") {
-            string += block.data + "\n"
-        }
-        if (block.type == "data") {
-            for (const id in block.packedIds) {
-                string += `block.${id}=${block.packedIds[id].join(" ")}\n`
-            }
-        }
+        return compiledString
     }
 
-    return string
+    static pack( bits = [ 8, 1, 7 ] ) {
+        console.log(`pack(): Building Packing Function for ${bits.length} data points, to a ${bits.reduce((acc,curr)=>acc+curr,0)} bit integer`)
+
+    }
+
 }
 
-function processPropertiesFile( string ) {
-    string = preprocess(string)
-    string = parse(string)
-    computePacked(string)
-    string = compile(string)
-    return string
+function packData( id, emissive, data ) {
+    let out = 0;
+    out  =  ~~id << 8;
+    out |= (~~emissive & 1) << 7;
+    out |= (~~data & 127)
+    return out
 }
 
 const blockProperties = fs.readFileSync(__dirname + "/block.properties", {encoding: "utf8"})
 
-new PropertiesFile(blockProperties)
-
-let compiled = processPropertiesFile(blockProperties)
+let compiled = new PropertiesFile(blockProperties).compileFromTargets( packData )
 
 //console.log(compiled)
 
