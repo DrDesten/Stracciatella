@@ -2,9 +2,15 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-
+#ifndef INCLUDE_UNIFORM_float_customLightmapBlend
+#define INCLUDE_UNIFORM_float_customLightmapBlend
 uniform float customLightmapBlend;
+#endif
+
+#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter;
+#endif
 #include "/lib/lightmap.glsl"
 
 flat in vec2 lmcoord;
@@ -12,7 +18,10 @@ in vec2 coord;
 flat in vec4 glcolor;
 
 #if RAIN_DETECTION_MODE == 0
+#ifndef INCLUDE_UNIFORM_float_temperature
+#define INCLUDE_UNIFORM_float_temperature
 uniform float temperature;
+#endif
 #endif
 
 #ifdef RAIN_REFRACTION

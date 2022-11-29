@@ -7,7 +7,10 @@ in vec2 coord;
 flat in vec4 glcolor;
 
 #ifdef HORIZON_CLIP
+#ifndef INCLUDE_UNIFORM_vec3_up
+#define INCLUDE_UNIFORM_vec3_up
 uniform vec3 up;
+#endif
 in vec3 viewPos;
 #endif
 

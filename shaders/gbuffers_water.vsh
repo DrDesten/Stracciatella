@@ -13,19 +13,21 @@
 	attribute vec4 mc_Entity;
 
 	#ifdef WORLD_TIME_ANIMATION
-
-		uniform int worldTime;
-
-		vec3 wavySineY(vec3 worldPos, float amount, float speed) {
+#ifndef INCLUDE_UNIFORM_int_worldTime
+#define INCLUDE_UNIFORM_int_worldTime
+uniform int worldTime;
+#endif
+vec3 wavySineY(vec3 worldPos, float amount, float speed) {
 			float seed = dot(worldPos, vec3(0.5, 0.1, 0.5)) + ((worldTime * (1./24.)) * speed);
 			return vec3(0, sin(seed) * amount, 0);
 		}
 
 	#else
-
-		uniform float  frameTimeCounter;
-		
-		vec3 wavySineY(vec3 worldPos, float amount, float speed) {
+#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
+uniform float frameTimeCounter;
+#endif
+vec3 wavySineY(vec3 worldPos, float amount, float speed) {
 			float seed = dot(worldPos, vec3(0.5, 0.1, 0.5)) + (frameTimeCounter * speed);
 			return vec3(0, sin(seed) * amount, 0);
 		}

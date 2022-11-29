@@ -1,9 +1,10 @@
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
-
-uniform float  frameTimeCounter;
-
+#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
+uniform float frameTimeCounter;
+#endif
 #if defined WAVING_BLOCKS || defined WAVING_LIQUIDS || defined RAIN_PUDDLES
 	#include "/lib/vertex_transform.glsl"
 #else
@@ -13,10 +14,11 @@ uniform float  frameTimeCounter;
 #if defined WAVING_BLOCKS || defined WAVING_LIQUIDS
 
 	#ifdef WORLD_TIME_ANIMATION
-
-		uniform int worldTime;
-	
-		vec3 wavyChaotic(vec3 worldPos, float amount, float speed) {
+#ifndef INCLUDE_UNIFORM_int_worldTime
+#define INCLUDE_UNIFORM_int_worldTime
+uniform int worldTime;
+#endif
+vec3 wavyChaotic(vec3 worldPos, float amount, float speed) {
 			vec2 seed = (worldTime * (1./24.)) * vec2(1.5 * speed, -2. * speed);
 			seed     += worldPos.xz + (worldPos.y * 0.25);
 			vec2 XZ   = sin(seed) * amount;
@@ -71,7 +73,10 @@ flat out vec3 rawNormal;
 #endif
 
 #ifdef RAIN_PUDDLES
+#ifndef INCLUDE_UNIFORM_float_rainPuddle
+#define INCLUDE_UNIFORM_float_rainPuddle
 uniform float rainPuddle;
+#endif
 out float puddle;
 out vec2  blockCoords;
 #endif

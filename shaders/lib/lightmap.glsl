@@ -1,6 +1,13 @@
-uniform float nightVision;
-uniform float darknessFactor;
 
+#ifndef INCLUDE_UNIFORM_float_nightVision
+#define INCLUDE_UNIFORM_float_nightVision
+uniform float nightVision;
+#endif
+
+#ifndef INCLUDE_UNIFORM_float_darknessFactor
+#define INCLUDE_UNIFORM_float_darknessFactor
+uniform float darknessFactor;
+#endif
 const vec3 lightmapDay   = vec3(LIGHTMAP_SKY_DAY_R, LIGHTMAP_SKY_DAY_G, LIGHTMAP_SKY_DAY_B);
 const vec3 lightmapNight = vec3(LIGHTMAP_SKY_NIGHT_R, LIGHTMAP_SKY_NIGHT_G, LIGHTMAP_SKY_NIGHT_B);
 const vec3 lightmapBlock = vec3(LIGHTMAP_BLOCK_R, LIGHTMAP_BLOCK_G, LIGHTMAP_BLOCK_B);

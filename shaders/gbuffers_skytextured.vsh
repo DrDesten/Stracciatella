@@ -4,9 +4,20 @@
 #include "/lib/vertex_transform_simple.glsl"
 
 #ifdef SUN_SIZE_CHANGE
+#ifndef INCLUDE_UNIFORM_mat4_gbufferModelView
+#define INCLUDE_UNIFORM_mat4_gbufferModelView
 uniform mat4 gbufferModelView;
+#endif
+
+#ifndef INCLUDE_UNIFORM_vec3_sunPosition
+#define INCLUDE_UNIFORM_vec3_sunPosition
 uniform vec3 sunPosition;
+#endif
+
+#ifndef INCLUDE_UNIFORM_vec3_moonPosition
+#define INCLUDE_UNIFORM_vec3_moonPosition
 uniform vec3 moonPosition;
+#endif
 #endif
 
 out vec2 coord;

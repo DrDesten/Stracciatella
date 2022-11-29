@@ -5,12 +5,16 @@
 
 
 #ifdef HAND_WATER
-	uniform float frameTimeCounter;
-	#include "/lib/lightmap.glsl"
+#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
+uniform float frameTimeCounter;
 #endif
-
+#include "/lib/lightmap.glsl"
+#endif
+#ifndef INCLUDE_UNIFORM_float_customLightmapBlend
+#define INCLUDE_UNIFORM_float_customLightmapBlend
 uniform float customLightmapBlend;
-
+#endif
 flat in vec2 lmcoord;
 in vec2 coord;
 flat in vec4 glcolor;

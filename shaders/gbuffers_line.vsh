@@ -2,9 +2,10 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/vertex_transform_simple.glsl"
-
+#ifndef INCLUDE_UNIFORM_vec2_screenSize
+#define INCLUDE_UNIFORM_vec2_screenSize
 uniform vec2 screenSize;
-
+#endif
 const float VIEW_SHRINK = 1.0 - (1.0 / 256.0);
 const mat4 VIEW_SCALE = mat4(
     VIEW_SHRINK, 0.0, 0.0, 0.0,

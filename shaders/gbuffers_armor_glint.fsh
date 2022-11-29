@@ -2,9 +2,10 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-
+#ifndef INCLUDE_UNIFORM_sampler2D_lightmap
+#define INCLUDE_UNIFORM_sampler2D_lightmap
 uniform sampler2D lightmap;
-
+#endif
 in vec2 lmcoord;
 in vec2 coord;
 flat in vec4 glcolor;
