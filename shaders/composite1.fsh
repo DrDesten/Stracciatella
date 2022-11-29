@@ -10,54 +10,52 @@ const float drynessHalflife = 400;
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 #ifndef INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
-uniform float frameTimeCounter;
+uniform float frameTimeCounter; 
 #endif
 #ifdef COLOR_LUT
 #ifndef INCLUDE_UNIFORM_sampler2D_colortex2
 #define INCLUDE_UNIFORM_sampler2D_colortex2
-uniform sampler2D colortex2;
+uniform sampler2D colortex2; // LUT
 #endif
-// LUT
 #endif
 
 #ifdef RAIN_REFRACTION
 #ifndef INCLUDE_UNIFORM_sampler2D_colortex3
 #define INCLUDE_UNIFORM_sampler2D_colortex3
-uniform sampler2D colortex3;
+uniform sampler2D colortex3; // Rain Effects
 #endif
-// Rain Effects
 #endif
 
 #include "/lib/transform.glsl"
 #include "/lib/sky.glsl"
 #ifndef INCLUDE_UNIFORM_int_isEyeInWater
 #define INCLUDE_UNIFORM_int_isEyeInWater
-uniform int isEyeInWater;
+uniform int isEyeInWater; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_vec2_playerLMCSmooth
 #define INCLUDE_UNIFORM_vec2_playerLMCSmooth
-uniform vec2 playerLMCSmooth;
+uniform vec2 playerLMCSmooth; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_float_blindness
 #define INCLUDE_UNIFORM_float_blindness
-uniform float blindness;
+uniform float blindness; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_float_nightVision
 #define INCLUDE_UNIFORM_float_nightVision
-uniform float nightVision;
+uniform float nightVision; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_float_darknessFactor
 #define INCLUDE_UNIFORM_float_darknessFactor
-uniform float darknessFactor;
+uniform float darknessFactor; 
 #endif
 #ifdef DAMAGE_EFFECT
 #ifndef INCLUDE_UNIFORM_float_damage
 #define INCLUDE_UNIFORM_float_damage
-uniform float damage;
+uniform float damage; 
 #endif
 #endif
 

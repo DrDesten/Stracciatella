@@ -4,7 +4,7 @@
 #include "/lib/gbuffers_basics.glsl"
 #ifndef INCLUDE_UNIFORM_float_customLightmapBlend
 #define INCLUDE_UNIFORM_float_customLightmapBlend
-uniform float customLightmapBlend;
+uniform float customLightmapBlend; 
 #endif
 in vec2 lmcoord;
 in vec2 coord;

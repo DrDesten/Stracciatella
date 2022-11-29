@@ -2,42 +2,42 @@
 #define INCLUDE_TRANSFORM
 #ifndef INCLUDE_UNIFORM_vec3_cameraPosition
 #define INCLUDE_UNIFORM_vec3_cameraPosition
-uniform vec3 cameraPosition;
+uniform vec3 cameraPosition; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_vec3_previousCameraPosition
 #define INCLUDE_UNIFORM_vec3_previousCameraPosition
-uniform vec3 previousCameraPosition;
+uniform vec3 previousCameraPosition; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_mat4_gbufferModelView
 #define INCLUDE_UNIFORM_mat4_gbufferModelView
-uniform mat4 gbufferModelView;
+uniform mat4 gbufferModelView; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 #define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
-uniform mat4 gbufferModelViewInverse;
+uniform mat4 gbufferModelViewInverse; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_mat4_gbufferPreviousModelView
 #define INCLUDE_UNIFORM_mat4_gbufferPreviousModelView
-uniform mat4 gbufferPreviousModelView;
+uniform mat4 gbufferPreviousModelView; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_mat4_gbufferProjection
 #define INCLUDE_UNIFORM_mat4_gbufferProjection
-uniform mat4 gbufferProjection;
+uniform mat4 gbufferProjection; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_mat4_gbufferProjectionInverse
 #define INCLUDE_UNIFORM_mat4_gbufferProjectionInverse
-uniform mat4 gbufferProjectionInverse;
+uniform mat4 gbufferProjectionInverse; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_mat4_gbufferPreviousProjection
 #define INCLUDE_UNIFORM_mat4_gbufferPreviousProjection
-uniform mat4 gbufferPreviousProjection;
+uniform mat4 gbufferPreviousProjection; 
 #endif
 float fovScale = gbufferProjection[1][1] * 0.7299270073;
 

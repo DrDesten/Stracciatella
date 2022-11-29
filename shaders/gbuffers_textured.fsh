@@ -4,12 +4,12 @@
 #include "/lib/gbuffers_basics.glsl"
 #ifndef INCLUDE_UNIFORM_float_customLightmapBlend
 #define INCLUDE_UNIFORM_float_customLightmapBlend
-uniform float customLightmapBlend;
+uniform float customLightmapBlend; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
-uniform float frameTimeCounter;
+uniform float frameTimeCounter; 
 #endif
 #include "/lib/lightmap.glsl"
 
@@ -24,12 +24,12 @@ flat in vec4 glcolor;
 	in vec3 viewPos;
 #ifndef INCLUDE_UNIFORM_float_far
 #define INCLUDE_UNIFORM_float_far
-uniform float far;
+uniform float far; 
 #endif
 
 #ifndef INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 #define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
-uniform mat4 gbufferModelViewInverse;
+uniform mat4 gbufferModelViewInverse; 
 #endif
 #endif
 

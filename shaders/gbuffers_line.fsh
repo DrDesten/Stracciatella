@@ -8,14 +8,14 @@ flat in vec4 glcolor;
 #if BLOCK_OUTLINE_STYLE == 2
 #ifndef INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
-uniform float frameTimeCounter;
+uniform float frameTimeCounter; 
 #endif
 #endif
 
 #if BLOCK_OUTLINE_STYLE != 0
 #ifndef INCLUDE_UNIFORM_int_renderStage
 #define INCLUDE_UNIFORM_int_renderStage
-uniform int renderStage;
+uniform int renderStage; 
 #endif
 #endif
 
