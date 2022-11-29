@@ -1,5 +1,125 @@
 const fs = require("fs")
 
+class PropertiesFile {
+    constructor( source = "" ) {
+        this.source = source
+        this.fileStructure = []
+        this.fileObject = []
+        this.parseFile( source )
+    }
+
+    parseFile( source ) {
+
+        // Preprocess
+        source = parseLinebreaks( source )
+        source = parseComments( source )
+        source = trimSpaces( source )
+        this.source = source
+
+        // Organise and Parse Statements
+        let sections = parseScope( source )
+        sections     = parseData( sections )
+        this.fileStructure = sections
+
+        // Restructure into a target-oriented representaton
+        let targetData = parseTargets( sections )
+        this.fileObject = targetData
+
+        function parseLinebreaks( txt ) { // Replaces Line break escapes
+            return txt.replace(/\s*\\\s*\n/g, "")
+        }
+        function parseComments( txt ) { // Removes Comments
+            return txt.replace(/#(?!if|ifdef|ifndef|elif|else|endif|define|undef).*$/gm, "")
+        }
+        function trimSpaces( txt ) { // Removes excess spaces and newlines
+            return txt.replace(/[ \t]+/g, " ").replace(/\n\s*/g, "\n").replace(/^\s+|\s+$/g, "")
+        }
+        
+        function parseScope( txt ) { // Splits the code up into sections
+
+            let sections = []
+            for (const line of txt.split("\n")) {
+                let lineType = getLineType(line)
+                if ( lineType == sections[ sections.length - 1 ]?.type ) {
+                    sections[ sections.length - 1 ].push( line )
+                } else {
+                    sections.push(Object.assign([ line ], { type: lineType }))
+                }
+            }
+
+            return sections
+
+            function getLineType( line ) {
+                if ( line[0] == "#" ) return "preprocessor"
+                else return "data"
+            }
+        }
+        function parseData( sections ) {
+            for ( const section of sections ) {
+                if ( section.type == "data" ) for ( let i = 0; i < section.length; i++ ) {
+                    const statement = section[i]
+                    if (/^id/.test(statement)) section[i] = parseId(statement)
+                    if (/^data/.test(statement)) section[i] = parseData(statement)
+                    if (/^emissive/.test(statement)) section[i] = parseEmissive(statement)
+                }
+            }
+            return sections
+
+            function parseId( line ) {
+                let id      = line.split("=")[0]
+                let targets = line.split("=")[1].split(" ")
+                return {
+                    data: "id",
+                    value: +id.replace("id.", ""), // keep number
+                    targets: targets
+                }
+            }
+            function parseData( line ) {
+                let data    = line.split("=")[0]
+                let targets = line.split("=")[1].split(" ")
+                return {
+                    data: "data",
+                    value: +data.replace("data.", ""), // keep number
+                    targets: targets
+                }
+            }
+            function parseEmissive( line ) {
+                let emissive = line.split("=")[0]
+                let targets  = line.split("=")[1].split(" ")
+                return {
+                    data: "emissive",
+                    value: true,
+                    targets: targets
+                }
+            }
+        }
+
+        function parseTargets( sections ) {
+            let targetSections = []
+            for ( const section of sections ) {
+                if ( section.type == "preprocessor" ) {
+                    targetSections.push(Object.assign([ ...section ], { type: section.type }))
+                }
+                if ( section.type == "data" ) {
+                    const targets = {}
+                    for ( const statement of section ) {
+                        for ( const target of statement.targets ) {
+                            if ( targets[ target ] == undefined ) targets[ target ] = {}
+                            const t = targets[ target ]
+                            t[ statement.data ] = statement.value
+                        }
+                    }
+                    targetSections.push(targets)
+                }
+            }
+            return targetSections
+        }
+
+    }
+
+}
+
+
 /** @param {string} propertiesFile */
 function preprocess( propertiesFile ) {
 
@@ -147,8 +267,10 @@ function processPropertiesFile( string ) {
 
 const blockProperties = fs.readFileSync(__dirname + "/block.properties", {encoding: "utf8"})
 
+new PropertiesFile(blockProperties)
+
 let compiled = processPropertiesFile(blockProperties)
 
-console.log(compiled)
+//console.log(compiled)
 
 fs.writeFileSync(__dirname + "/block.properties.out", compiled)
