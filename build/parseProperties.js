@@ -1,9 +1,10 @@
 const fs = require("fs")
 
 class PropertiesFile {
-    constructor( filename = "", source = "" ) {
-        this.filename = filename
+    constructor( path, source, statementPrefix ) {
+        this.path = path
         this.source = source
+        this.prefix = statementPrefix
         this.fileStructure = []
         this.fileObject = []
         this.parseFile( source )
@@ -59,9 +60,10 @@ class PropertiesFile {
             for ( const section of sections ) {
                 if ( section.type == "data" ) for ( let i = 0; i < section.length; i++ ) {
                     const statement = section[i]
-                    if (/^id/.test(statement)) section[i] = parseId(statement)
-                    if (/^data/.test(statement)) section[i] = parseData(statement)
-                    if (/^emissive/.test(statement)) section[i] = parseEmissive(statement)
+                    if      (/^id\.\d+\s*=/.test(statement)) section[i] = parseId(statement)
+                    else if (/^data\.\d+\s*=/.test(statement)) section[i] = parseData(statement)
+                    else if (/^emissive\s*=/.test(statement)) section[i] = parseEmissive(statement)
+                    else throw new Error(`Unrecognized Data Field: '${statement}'`)
                 }
             }
             return sections
@@ -142,7 +144,7 @@ class PropertiesFile {
         for ( const section of compiledSections ) {
             if ( section.type == "preprocessor" ) compiledString += section[0] + "\n"
             else compiledString += Object.keys( section ).map( key => {
-                return `block.${key}=${section[key].join(" ")}`
+                return `${this.prefix}.${key}=${section[key].join(" ")}`
             }).join("\n") + "\n"
         }
 
@@ -165,15 +167,20 @@ function packData( id, emissive, data ) {
 }
 
 
-/** @param {string} filename */
-function loadProperties( filename ) {
-    let content = fs.readFileSync(`${__dirname}/${filename}`, {encoding: "utf8"})
-    return new PropertiesFile( filename, content )
+
+const fext  = path => path.match(/.*\.(\w+)$/)?.[1]
+const fname = path => path.match(/.*\/([\w\.]*)\.\w+$/)?.[1]
+const ffull = path => `${fname(path)}.${fext(path)}`
+
+/** @param {string} path */
+function loadProperties( path ) {
+    let content = fs.readFileSync(path, {encoding: "utf8"})
+    return new PropertiesFile( path, content, fname(path) )
 }
 /** @param {PropertiesFile} propertiesFile */
 function compileProperties( propertiesFile ) {
     let compiled = propertiesFile.compileFromTargets(packData)
-    fs.writeFileSync(`${__dirname}/${propertiesFile.filename}.out`, compiled )
+    fs.writeFileSync(`${propertiesFile.path}`, compiled )
 }
 
 
