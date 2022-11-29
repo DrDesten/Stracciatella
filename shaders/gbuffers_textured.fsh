@@ -2,10 +2,15 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-
-
+#ifndef INCLUDE_UNIFORM_float_customLightmapBlend
+#define INCLUDE_UNIFORM_float_customLightmapBlend
 uniform float customLightmapBlend;
+#endif
+
+#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter;
+#endif
 #include "/lib/lightmap.glsl"
 
 flat in vec2 lmcoord;
@@ -17,10 +22,15 @@ flat in vec4 glcolor;
 	#include "/lib/sky.glsl"
 
 	in vec3 viewPos;
+#ifndef INCLUDE_UNIFORM_float_far
+#define INCLUDE_UNIFORM_float_far
+uniform float far;
+#endif
 
-	uniform float far;
-	uniform mat4  gbufferModelViewInverse;
-
+#ifndef INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+uniform mat4 gbufferModelViewInverse;
+#endif
 #endif
 
 /* DRAWBUFFERS:01 */

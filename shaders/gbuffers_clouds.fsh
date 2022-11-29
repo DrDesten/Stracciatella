@@ -6,23 +6,45 @@
 #ifdef FOG
 
 	#include "/lib/sky.glsl"
-
-	uniform mat4  gbufferModelViewInverse;
-	uniform int   isEyeInWater;
-	uniform float far;
-
-	#ifdef CUSTOM_SKY
-		uniform float daynight;
-	#endif
-
-	uniform vec3  sunDir;
-	uniform vec3  up;
-	uniform float sunset;
-
+#ifndef INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+uniform mat4 gbufferModelViewInverse;
 #endif
 
-uniform float rainStrength;
+#ifndef INCLUDE_UNIFORM_int_isEyeInWater
+#define INCLUDE_UNIFORM_int_isEyeInWater
+uniform int isEyeInWater;
+#endif
 
+#ifndef INCLUDE_UNIFORM_float_far
+#define INCLUDE_UNIFORM_float_far
+uniform float far;
+#endif
+#ifdef CUSTOM_SKY
+#ifndef INCLUDE_UNIFORM_float_daynight
+#define INCLUDE_UNIFORM_float_daynight
+uniform float daynight;
+#endif
+#endif
+#ifndef INCLUDE_UNIFORM_vec3_sunDir
+#define INCLUDE_UNIFORM_vec3_sunDir
+uniform vec3 sunDir;
+#endif
+
+#ifndef INCLUDE_UNIFORM_vec3_up
+#define INCLUDE_UNIFORM_vec3_up
+uniform vec3 up;
+#endif
+
+#ifndef INCLUDE_UNIFORM_float_sunset
+#define INCLUDE_UNIFORM_float_sunset
+uniform float sunset;
+#endif
+#endif
+#ifndef INCLUDE_UNIFORM_float_rainStrength
+#define INCLUDE_UNIFORM_float_rainStrength
+uniform float rainStrength;
+#endif
 in vec2 coord;
 flat in vec4 glcolor;
 in vec3 viewPos;

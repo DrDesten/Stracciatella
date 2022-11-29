@@ -1,5 +1,6 @@
 const fs = require("fs")
 const { PropertiesFile, loadProperties, compileProperties } = require("./parseProperties.js")
+const { guardUniforms } = require("./parseUniforms.js")
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Copy Directory Over
@@ -22,11 +23,6 @@ function gatherFiles( dir, fileList = [] ) {
     fileList.push( ...files )
     return fileList
 }
- 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Compile Properties Files
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Compile Files
@@ -47,7 +43,11 @@ for ( const path of files ) {
                 compileProperties( propertiesFile )
             }
             break
-
+        case "fsh":
+        case "vsh":
+        case "glsl":
+            guardUniforms(path)
+            break
 
 
 

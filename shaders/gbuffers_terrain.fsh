@@ -9,8 +9,11 @@ in vec4 glcolor;
 in vec3 viewPos;
 
 #ifdef DIRECTIONAL_LIGHTMAPS
-	uniform ivec2 atlasSize;
-	flat in vec2  spriteSize;
+#ifndef INCLUDE_UNIFORM_ivec2_atlasSize
+#define INCLUDE_UNIFORM_ivec2_atlasSize
+uniform ivec2 atlasSize;
+#endif
+flat in vec2  spriteSize;
 	flat in vec2  midTexCoord;
 	flat in mat2  tbn;
 	flat in float directionalLightmapStrength;
@@ -21,20 +24,35 @@ in vec3 viewPos;
 #ifdef HDR_EMISSIVES
 	flat in vec3 rawNormal;
 #endif
-#if NORMAL_TEXTURE_MODE == 1 && defined MC_NORMAL_MAP && defined DIRECTIONAL_LIGHTMAPS 
-	uniform sampler2D normals;
+#if NORMAL_TEXTURE_MODE == 1 && defined MC_NORMAL_MAP && defined DIRECTIONAL_LIGHTMAPS
+#ifndef INCLUDE_UNIFORM_sampler2D_normals
+#define INCLUDE_UNIFORM_sampler2D_normals
+uniform sampler2D normals;
+#endif
 #endif
 
 #ifdef RAIN_PUDDLES
-	uniform sampler2D colortex4;
-	uniform float frameTimeCounter;
-	uniform float rainPuddle;
-	in float puddle;
-	in vec2  blockCoords;
+#ifndef INCLUDE_UNIFORM_sampler2D_colortex4
+#define INCLUDE_UNIFORM_sampler2D_colortex4
+uniform sampler2D colortex4;
 #endif
 
-uniform float customLightmapBlend;
+#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
+uniform float frameTimeCounter;
+#endif
 
+#ifndef INCLUDE_UNIFORM_float_rainPuddle
+#define INCLUDE_UNIFORM_float_rainPuddle
+uniform float rainPuddle;
+#endif
+in float puddle;
+	in vec2  blockCoords;
+#endif
+#ifndef INCLUDE_UNIFORM_float_customLightmapBlend
+#define INCLUDE_UNIFORM_float_customLightmapBlend
+uniform float customLightmapBlend;
+#endif
 #ifdef BLINKING_ORES
 	flat in float oreBlink;
 #endif

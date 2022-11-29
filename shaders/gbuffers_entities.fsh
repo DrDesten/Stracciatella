@@ -2,11 +2,15 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
+#ifndef INCLUDE_UNIFORM_vec4_entityColor
+#define INCLUDE_UNIFORM_vec4_entityColor
+uniform vec4 entityColor;
+#endif
 
-uniform vec4  entityColor;
-
+#ifndef INCLUDE_UNIFORM_float_customLightmapBlend
+#define INCLUDE_UNIFORM_float_customLightmapBlend
 uniform float customLightmapBlend;
-
+#endif
 flat in vec2 lmcoord;
 in vec2 coord;
 flat in vec4 glcolor;

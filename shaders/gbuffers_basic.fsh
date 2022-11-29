@@ -2,14 +2,18 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-
+#ifndef INCLUDE_UNIFORM_sampler2D_lightmap
+#define INCLUDE_UNIFORM_sampler2D_lightmap
 uniform sampler2D lightmap;
-
+#endif
 in vec2 lmcoord;
 flat in vec4 glcolor;
 
 #if BLOCK_OUTLINE_STYLE == 2
+#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter;
+#endif
 #endif
 
 /* DRAWBUFFERS:01 */
