@@ -29,6 +29,20 @@ vec4 viewToClip(vec4 viewPos) {
     return gl_ProjectionMatrix * viewPos;
 }
 
+
+/*struct blockInfo {
+    int id;
+    bool emissive;
+    int data;
+};
+blockInfo decodeID( int id ) {
+    return blockInfo(
+        int(id & 255),
+        bool(id >> 8 & 1),
+        int(id >> 9)
+    )
+}*/
+
 float getID(vec4 entityAttribute) {
     return entityAttribute.x - 1000;
 }
