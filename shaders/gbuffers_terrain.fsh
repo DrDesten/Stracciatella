@@ -153,14 +153,14 @@ void main() {
 
 		// Adds an HDR effect to Emissive blocks. Works by boosting the brightness of emissive parts of blocks and the applying tonemapping to avoid clipping.
 
-		bool white  = blockId == 40 || blockId == 36 || blockId == 20;
-		bool orange = blockId == 41;
-		bool red    = blockId == 42;
-		bool blue   = blockId == 43;
-		bool purple = blockId == 44;
-		bool anyCol = blockId == 45 || blockId == 34;
-		bool anyLow = blockId == 46;
-		bool candle = blockId == 47;
+		bool white  = blockId == 20 || blockId == 16 || blockId == 2;
+		bool orange = blockId == 21;
+		bool red    = blockId == 22;
+		bool blue   = blockId == 23;
+		bool purple = blockId == 24;
+		bool anyCol = blockId == 25 || blockId == 14;
+		bool anyLow = blockId == 26;
+		bool candle = blockId == 27;
 
 		const vec3 hsvBrown = vec3(39./360, .5, .5);
 
@@ -190,23 +190,23 @@ void main() {
 	#else
 
 	 	#define emissiveness 0
-		#define coloredLightEmissive float(blockId == 20 || blockId == 36 || blockId == 34 || (blockId >= 40 && blockId <= 47)) * blockLightEmissiveColor
+		#define coloredLightEmissive float(blockId == 2 || blockId == 16 || blockId == 14 || (blockId >= 20 && blockId <= 27)) * blockLightEmissiveColor
 
 	#endif
 
 	#ifdef COLORED_LIGHTS
 		vec3 blockLightEmissiveColor;
 		switch (blockId) {
-			case 41:
+			case 21:
 				blockLightEmissiveColor = LIGHTMAP_COLOR_ORANGE; // Orange
 				break;
-			case 42:
+			case 22:
 				blockLightEmissiveColor = LIGHTMAP_COLOR_RED; // Red
 				break;
-			case 43:
+			case 23:
 				blockLightEmissiveColor = LIGHTMAP_COLOR_BLUE; // Blue
 				break;
-			case 44:
+			case 24:
 				blockLightEmissiveColor = LIGHTMAP_COLOR_PURPLE; // Purple
 				break;
 			default:
