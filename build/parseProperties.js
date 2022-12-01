@@ -20,11 +20,10 @@ class PropertiesFile {
 
         // Organise and Parse Statements
         let sections = parseScope( source )
-        sections     = parseData( sections )
         this.fileStructure = sections
 
         // Restructure into a target-oriented representaton
-        let targetData = parseTargets( sections )
+        let targetData = parseData( sections )
         this.fileObject = targetData
 
         function parseLinebreaks( txt ) { // Replaces Line break escapes
@@ -57,63 +56,48 @@ class PropertiesFile {
             }
         }
         function parseData( sections ) {
-            for ( const section of sections ) {
-                if ( section.type == "data" ) for ( let i = 0; i < section.length; i++ ) {
-                    const statement = section[i]
-                    if      (/^id\.\d+\s*=/.test(statement)) section[i] = parseId(statement)
-                    else if (/^data\.\d+\s*=/.test(statement)) section[i] = parseData(statement)
-                    else if (/^emissive\s*=/.test(statement)) section[i] = parseEmissive(statement)
-                    else throw new Error(`Unrecognized Data Field: '${statement}'`)
-                }
-            }
-            return sections
-
-            /** @param {string} line */
-            function parseId( line ) {
-                let id      = line.match(/[a-z]+\.(\d+)\s*=/)[1]
-                let targets = line.match(/[a-z]+\.\d+\s*=\s*(.*)/)[1].split(" ")
-                return {
-                    data: "id",
-                    value: +id, // keep number
-                    targets: targets
-                }
-            }
-            function parseData( line ) {
-                let data    = line.match(/[a-z]+\.(\d+)\s*=/)[1]
-                let targets = line.match(/[a-z]+\.\d+\s*=\s*(.*)/)[1].split(" ")
-                return {
-                    data: "data",
-                    value: +data, // keep number
-                    targets: targets
-                }
-            }
-            function parseEmissive( line ) {
-                //let emissive = line.match(/[a-z]+\s*=/)[1]
-                let targets  = line.match(/emissive\s*=\s*(.*)/)[1].split(" ")
-                return {
-                    data: "emissive",
-                    value: 1,
-                    targets: targets
-                }
-            }
-        }
-
-        function parseTargets( sections ) {
             let targetSections = []
             for ( const section of sections ) {
-                if ( section.type == "preprocessor" ) {
-                    targetSections.push(Object.assign([ ...section ], { type: section.type }))
-                }
                 if ( section.type == "data" ) {
-                    const targets = { type: "data" }
-                    for ( const statement of section ) {
-                        for ( const target of statement.targets ) {
-                            if ( targets[ target ] == undefined ) targets[ target ] = {}
-                            const t = targets[ target ]
-                            t[ statement.data ] = statement.value
+                    let targetSection = { type: "data" }
+                    for ( let i = 0; i < section.length; i++ ) {
+                        const tags = {
+                            id: undefined, data: undefined, emissive: undefined
+                        }
+                        const tagRegex = {
+                            tag: /^\.?(\w+)\s*/,
+                            id: /^\.?id\.(\d+)\s*/,
+                            data: /^\.?data\.(\d+)\s*/,
+                            emissive: /^\.?emissive\s*/,
+                        }
+                        const tagParser = {
+                            id: statement => (tags.id = tagRegex.id.exec(statement)[1], statement.replace(tagRegex.id, "")),
+                            data: statement => (tags.data = tagRegex.data.exec(statement)[1], statement.replace(tagRegex.data, "")),
+                            emissive: statement => (tags.emissive = 1, statement.replace(tagRegex.emissive, "")),
+                        }
+
+                        let statement = section[i]
+                        let tag = tagRegex.tag.exec(statement)?.[1]
+                        if (!tag) throw new Error(`PropertiesFile > parseData() : No tag matched in '${statement}'`)
+
+                        while ( tagRegex.tag.test(statement) ) {
+                            let tag   = tagRegex.tag.exec(statement)[1]
+                            statement = tagParser[ tag ]( statement )
+                        }
+                        if ( statement[0] != "=" ) throw new Error("Expected '=' at end of tag list")
+
+                        statement = statement.replace(/^=\s*/, "")
+                        let targets = statement.split(/\s+/)
+                        for ( const target of targets ) {
+                            targetSection[target] ??= {}
+                            targetSection[target].id       ??= tags.id
+                            targetSection[target].data     ??= tags.data
+                            targetSection[target].emissive ??= tags.emissive
                         }
                     }
-                    targetSections.push(targets)
+                    targetSections.push(targetSection)
+                } else if ( section.type == "preprocessor" ) {
+                    targetSections.push(section)
                 }
             }
             return targetSections
@@ -157,6 +141,7 @@ class PropertiesFile {
     }
 
 }
+
 
 function packData( id, emissive, data ) {
     let out = 0;

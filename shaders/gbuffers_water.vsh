@@ -54,7 +54,7 @@ void main() {
 	#ifdef WAVING_LIQUIDS
 
 		// Waving Liquids
-		if (mc_Entity.x == 1010) {
+		if (getID(mc_Entity) == 1) {
 
 			vec3  worldPos = getWorld();
 			float flowHeight = fract(worldPos.y + 0.01);

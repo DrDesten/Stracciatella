@@ -43,6 +43,7 @@ for ( const path of files ) {
         case "properties":
             if ( ["block","item","entity"].includes(fname(path))) {
                 const propertiesFile = loadProperties( path )
+                console.log(propertiesFile.fileObject)
                 compileProperties( propertiesFile )
             }
             break
