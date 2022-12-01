@@ -167,7 +167,6 @@ function packData( id, emissive, data ) {
 }
 
 
-
 const fext  = path => path.match(/.*\.(\w+)$/)?.[1]
 const fname = path => path.match(/.*\/([\w\.]*)\.\w+$/)?.[1]
 const ffull = path => `${fname(path)}.${fext(path)}`
