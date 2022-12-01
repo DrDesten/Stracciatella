@@ -88,7 +88,7 @@ void main() {
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 	viewPos = getView();
-	blockId = int(getID(mc_Entity.x));
+	blockId = getID(mc_Entity);
 
 	#ifdef DIRECTIONAL_LIGHTMAPS
 
@@ -97,9 +97,9 @@ void main() {
 		tbn         = mat2(getTBN(at_tangent));
 
 		directionalLightmapStrength = 1.0;
-		if      (mc_Entity.x == 1020 || mc_Entity.x == 1036) directionalLightmapStrength = 0;
-		else if (mc_Entity.x == 1040 || mc_Entity.x == 1041 || mc_Entity.x == 1034) directionalLightmapStrength = 0.25;
-		else if (mc_Entity.x >= 1030 && mc_Entity.x <= 1033 || mc_Entity.x == 1035) directionalLightmapStrength = 0.5;
+		if      (blockId == 2  || blockId == 16) directionalLightmapStrength = 0;
+		else if (blockId == 20 || blockId == 21 || blockId == 14) directionalLightmapStrength = 0.25;
+		else if (blockId >= 10 && blockId <= 13 || blockId == 15) directionalLightmapStrength = 0.5;
 
 	#elif defined HDR_EMISSIVES
 		spriteSize  = abs(coord - mc_midTexCoord.xy);
@@ -113,7 +113,7 @@ void main() {
 
 		oreBlink = sin(frameTimeCounter * 3) * 0.5 + 0.5;
 
-		switch (int(mc_Entity.x + 0.5)) {
+		switch (int(blockId + 0.5)) {
 
 			#ifdef BLINKING_ORES_DIAMOND
 				case 2000: break;
@@ -159,9 +159,9 @@ void main() {
 	#ifdef WAVING_BLOCKS
 
 		// Waving Blocks Upper Vertices
-		if ((mc_Entity.x == 1030 || mc_Entity.x == 1031
+		if ((blockId == 10 || blockId == 11
 		#ifdef WAVING_FIRE
-		|| mc_Entity.x == 1036
+		|| blockId == 16
 		#endif
 		) && coord.y < mc_midTexCoord.y) { 
 
@@ -177,7 +177,7 @@ void main() {
 		#ifdef WAVING_LANTERNS
 
 		// Waving Lanterns
-		else if (mc_Entity.x == 1034) {
+		else if (blockId == 14) {
 
 			vec3 worldPos = getWorld();
 			vec3 offset   = wavyChaotic(worldPos, (WAVING_BLOCKS_AMOUNT * 0.3), WAVING_BLOCKS_SPEED);
@@ -191,9 +191,9 @@ void main() {
 		#endif
 
 		// Waving Blocks All Vertices
-		else if (mc_Entity.x == 1032     // Upper section of 2-Tall plants
+		else if (blockId == 12     // Upper section of 2-Tall plants
 		#ifdef WAVING_LEAVES
-			|| mc_Entity.x == 1033  // Leaves
+			|| blockId == 13  // Leaves
 		#endif
 		) {
 
@@ -208,7 +208,7 @@ void main() {
 
 		#ifdef WAVING_LILYPADS
 
-		else if (mc_Entity.x == 1035) {
+		else if (blockId == 15) {
 
 			vec3  worldPos  = getWorld();
 
@@ -226,7 +226,7 @@ void main() {
 	#ifdef WAVING_LIQUIDS
 
 		// Waving Liquids
-		if (mc_Entity.x == 1020) {
+		if (blockId == 2) {
 
 			vec3  worldPos  = getWorld();
 			float flowHeight = fract(worldPos.y + 0.01);
@@ -251,7 +251,7 @@ void main() {
 
 			puddle  = saturate(lmcoord.y * 32 - 30);                     // Only blocks exposed to sky
 			puddle *= saturate(gl_Normal.y);                             // Only blocks facing up
-			puddle *= float(mc_Entity.x != 1033 && mc_Entity.x != 1020); // Not Leaves and not lava
+			puddle *= float(blockId != 13 && blockId != 2); // Not Leaves and not lava
 
 			puddle *= saturate(noise(worldPos.xz * RAIN_PUDDLES_SIZE) * RAIN_PUDDLES_DEPTH - (RAIN_PUDDLES_DEPTH * (1 - RAIN_PUDDLES_COVERAGE) - RAIN_PUDDLES_COVERAGE)); // Puddles
 			puddle *= saturate(gl_Color.a * 3 - 2);                      // No puddle in cavities

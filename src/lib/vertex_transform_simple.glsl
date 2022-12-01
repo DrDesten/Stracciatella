@@ -30,7 +30,7 @@ vec4 viewToClip(vec4 viewPos) {
 }
 
 
-/*struct blockInfo {
+struct blockInfo {
     int id;
     bool emissive;
     int data;
@@ -41,14 +41,23 @@ blockInfo decodeID( int id ) {
         bool(id >> 8 & 1),
         int(id >> 9)
     )
-}*/
+}
 
-float getID(vec4 entityAttribute) {
-    return entityAttribute.x - 1000;
+int getID( vec4 entityAttribute ) {
+    return int(entityAttribute.x) & 255
 }
-float getID(float entityId) {
-    return entityId - 1000;
+int getID( int id ) {
+    return id & 255
 }
-float getID(int entityId) {
-    return float(entityId - 1000);
+bool getEmissive( vec4 entityAttribute ) {
+    return int(entityAttribute.x) >> 8 & 1
+}
+bool getEmissive( int id ) {
+    return id >> 8 & 1
+}
+int getData( vec4 entityAttribute ) {
+    return int(entityAttribute.x) >> 9
+}
+int getData( int id ) {
+    return id >> 9
 }
