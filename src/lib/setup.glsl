@@ -1,15 +1,10 @@
 /*
-
-
 const int colortex0Format = RGBA8;  // Color
 const int colortex1Format = RG16;   // Lightmap, AO, Emissiveness (encoded)
 const int colortex2Format = R8;     // Unused (LUT)
 const int colortex3Format = R8;     // Effects
 const int colortex4Format = RGBA16; // LightmapColor + Depth
 const int colortex5Format = RGB8;   // EmissiveColor
-
-
-
 */
 
 #ifdef OVERWORLD

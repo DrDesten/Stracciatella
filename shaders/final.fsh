@@ -308,7 +308,7 @@ void main() {
 	vec3 color = getAlbedo(coord);
 	#endif
 	//color = FXAA311Upscale(coord, 2);
-	gl_FragColor = vec4(color, 1.0);
+	FragOut0 = vec4(color, 1.0);
 }
 
 /*
