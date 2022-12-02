@@ -40,24 +40,24 @@ blockInfo decodeID( int id ) {
         int(id & 255),
         bool(id >> 8 & 1),
         int(id >> 9)
-    )
+    );
 }
 
 int getID( vec4 entityAttribute ) {
-    return int(entityAttribute.x) & 255
+    return int(entityAttribute.x) & 255;
 }
 int getID( int id ) {
-    return id & 255
+    return id & 255;
 }
 bool getEmissive( vec4 entityAttribute ) {
-    return int(entityAttribute.x) >> 8 & 1
+    return bool(int(entityAttribute.x) >> 8 & 1);
 }
 bool getEmissive( int id ) {
-    return id >> 8 & 1
+    return bool(id >> 8 & 1);
 }
 int getData( vec4 entityAttribute ) {
-    return int(entityAttribute.x) >> 9
+    return int(entityAttribute.x) >> 9;
 }
 int getData( int id ) {
-    return id >> 9
+    return id >> 9;
 }
