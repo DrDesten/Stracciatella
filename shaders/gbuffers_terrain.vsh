@@ -124,37 +124,37 @@ void main() {
 		switch (int(blockId + 0.5)) {
 
 			#ifdef BLINKING_ORES_DIAMOND
-				case 2000: break;
+				case 40: break;
 			#endif
 			#ifdef BLINKING_ORES_ANCIENT_DEBRIS
-				case 2001: break;
+				case 41: break;
 			#endif
 			#ifdef BLINKING_ORES_IRON
-				case 2002: break;
+				case 42: break;
 			#endif
 			#ifdef BLINKING_ORES_GOLD
-				case 2003: break;
+				case 43: break;
 			#endif
 			#ifdef BLINKING_ORES_COPPER
-				case 2004: break;
+				case 44: break;
 			#endif
 			#ifdef BLINKING_ORES_REDSTONE
-				case 2005: break;
+				case 45: break;
 			#endif
 			#ifdef BLINKING_ORES_LAPIS
-				case 2006: break;
+				case 46: break;
 			#endif
 			#ifdef BLINKING_ORES_EMERALD
-				case 2007: break;
+				case 47: break;
 			#endif
 			#ifdef BLINKING_ORES_COAL
-				case 2008: break;
+				case 48: break;
 			#endif
 			#ifdef BLINKING_ORES_NETHER_QUARTZ
-				case 2009: break;
+				case 49: break;
 			#endif
 			#ifdef BLINKING_ORES_NETHER_GOLD
-				case 2010: break;
+				case 50: break;
 			#endif
 
 			default:;
