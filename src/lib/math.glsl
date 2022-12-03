@@ -18,6 +18,12 @@ const float E       = 2.7182818284590452353602874713526624977572470937000;
 ////////////////////////////////////////////////////////////////////////
 // Types
 
+/* int normalizeMcEntity( float mcEntity ) {
+    int normalized = int( mcEntity );
+    normalized    *= normalized == -1;
+    normalized    
+} */
+
 struct blockInfo {
     int id;
     bool emissive;
@@ -28,7 +34,7 @@ blockInfo decodeID( int id ) {
     return blockInfo(
         int(id & 255),
         bool(id & 256),
-        int(id >> 9)
+        int(id >> 9 & 63)
     );
 }
 

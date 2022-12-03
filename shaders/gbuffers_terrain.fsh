@@ -186,12 +186,12 @@ void main() {
 
 		}
 
-		#define coloredLightEmissive float(block.emissive) * blockLightEmissiveColor
+		#define coloredLightEmissive float(block.emissive) * ( block.data / 63. ) * blockLightEmissiveColor
 		
 	#else
 
 	 	#define emissiveness 0
-		#define coloredLightEmissive float(block.emissive) * blockLightEmissiveColor
+		#define coloredLightEmissive float(block.emissive) * ( block.data / 63. ) * blockLightEmissiveColor
 
 	#endif
 
