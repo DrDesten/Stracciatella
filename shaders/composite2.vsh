@@ -1,4 +1,4 @@
-#ifndef INCLUDE_COMPOSITE2_VSH
+#if ! defined INCLUDE_COMPOSITE2_VSH
 #define INCLUDE_COMPOSITE2_VSH
 
 #include "/lib/settings.glsl"

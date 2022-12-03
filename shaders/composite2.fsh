@@ -1,4 +1,4 @@
-#ifndef INCLUDE_COMPOSITE2_FSH
+#if ! defined INCLUDE_COMPOSITE2_FSH
 #define INCLUDE_COMPOSITE2_FSH
 
 #include "/lib/settings.glsl"

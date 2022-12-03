@@ -1,10 +1,10 @@
-#ifndef INCLUDE_GBUFFERS_BASICS_GLSL
+#if ! defined INCLUDE_GBUFFERS_BASICS_GLSL
 #define INCLUDE_GBUFFERS_BASICS_GLSL
 
 #if MC_VERSION < 11700
     #define gtexture gcolor
 #endif
-#ifndef INCLUDE_UNIFORM_sampler2D_gcolor
+#if ! defined INCLUDE_UNIFORM_sampler2D_gcolor
 #define INCLUDE_UNIFORM_sampler2D_gcolor
 uniform sampler2D gcolor; // Color
 #endif

@@ -1,10 +1,10 @@
-#ifndef INCLUDE_GBUFFERS_TERRAIN_VSH
+#if ! defined INCLUDE_GBUFFERS_TERRAIN_VSH
 #define INCLUDE_GBUFFERS_TERRAIN_VSH
 
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
-#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter; 
 #endif
@@ -17,7 +17,7 @@ uniform float frameTimeCounter;
 #if defined WAVING_BLOCKS || defined WAVING_LIQUIDS
 
 	#ifdef WORLD_TIME_ANIMATION
-#ifndef INCLUDE_UNIFORM_int_worldTime
+#if ! defined INCLUDE_UNIFORM_int_worldTime
 #define INCLUDE_UNIFORM_int_worldTime
 uniform int worldTime; 
 #endif
@@ -76,7 +76,7 @@ flat out vec3 rawNormal;
 #endif
 
 #ifdef RAIN_PUDDLES
-#ifndef INCLUDE_UNIFORM_float_rainPuddle
+#if ! defined INCLUDE_UNIFORM_float_rainPuddle
 #define INCLUDE_UNIFORM_float_rainPuddle
 uniform float rainPuddle; 
 #endif

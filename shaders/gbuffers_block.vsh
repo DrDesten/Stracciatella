@@ -1,11 +1,11 @@
-#ifndef INCLUDE_GBUFFERS_BLOCK_VSH
+#if ! defined INCLUDE_GBUFFERS_BLOCK_VSH
 #define INCLUDE_GBUFFERS_BLOCK_VSH
 
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/vertex_transform_simple.glsl"
-#ifndef INCLUDE_UNIFORM_vec3_up
+#if ! defined INCLUDE_UNIFORM_vec3_up
 #define INCLUDE_UNIFORM_vec3_up
 uniform vec3 up; 
 #endif

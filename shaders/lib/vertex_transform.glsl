@@ -1,21 +1,21 @@
-#ifndef INCLUDE_VERTEX_TRANSFORM_GLSL
+#if ! defined INCLUDE_VERTEX_TRANSFORM_GLSL
 #define INCLUDE_VERTEX_TRANSFORM_GLSL
-#ifndef INCLUDE_UNIFORM_vec3_cameraPosition
+#if ! defined INCLUDE_UNIFORM_vec3_cameraPosition
 #define INCLUDE_UNIFORM_vec3_cameraPosition
 uniform vec3 cameraPosition; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_mat4_gbufferModelView
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferModelView
 #define INCLUDE_UNIFORM_mat4_gbufferModelView
 uniform mat4 gbufferModelView; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 #define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 uniform mat4 gbufferModelViewInverse; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_mat4_gbufferProjectionInverse
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferProjectionInverse
 #define INCLUDE_UNIFORM_mat4_gbufferProjectionInverse
 uniform mat4 gbufferProjectionInverse; 
 #endif

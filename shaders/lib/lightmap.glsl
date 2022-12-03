@@ -1,11 +1,11 @@
-#ifndef INCLUDE_LIGHTMAP_GLSL
+#if ! defined INCLUDE_LIGHTMAP_GLSL
 #define INCLUDE_LIGHTMAP_GLSL
-#ifndef INCLUDE_UNIFORM_float_nightVision
+#if ! defined INCLUDE_UNIFORM_float_nightVision
 #define INCLUDE_UNIFORM_float_nightVision
 uniform float nightVision; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_float_darknessFactor
+#if ! defined INCLUDE_UNIFORM_float_darknessFactor
 #define INCLUDE_UNIFORM_float_darknessFactor
 uniform float darknessFactor; 
 #endif

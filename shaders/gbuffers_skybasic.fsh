@@ -1,4 +1,4 @@
-#ifndef INCLUDE_GBUFFERS_SKYBASIC_FSH
+#if ! defined INCLUDE_GBUFFERS_SKYBASIC_FSH
 #define INCLUDE_GBUFFERS_SKYBASIC_FSH
 
 #include "/lib/settings.glsl"

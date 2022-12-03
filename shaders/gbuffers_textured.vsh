@@ -1,4 +1,4 @@
-#ifndef INCLUDE_GBUFFERS_TEXTURED_VSH
+#if ! defined INCLUDE_GBUFFERS_TEXTURED_VSH
 #define INCLUDE_GBUFFERS_TEXTURED_VSH
 
 #include "/lib/settings.glsl"

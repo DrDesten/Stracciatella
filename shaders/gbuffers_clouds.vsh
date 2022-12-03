@@ -1,4 +1,4 @@
-#ifndef INCLUDE_GBUFFERS_CLOUDS_VSH
+#if ! defined INCLUDE_GBUFFERS_CLOUDS_VSH
 #define INCLUDE_GBUFFERS_CLOUDS_VSH
 
 #include "/lib/settings.glsl"

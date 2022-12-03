@@ -3,7 +3,7 @@
 #define FRAG
 #define NETHER
 #include "/lib/math.glsl"
-#ifndef INCLUDE_UNIFORM_vec3_fogColor
+#if ! defined INCLUDE_UNIFORM_vec3_fogColor
 #define INCLUDE_UNIFORM_vec3_fogColor
 uniform vec3 fogColor; 
 #endif

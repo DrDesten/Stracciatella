@@ -1,4 +1,4 @@
-#ifndef INCLUDE_GBUFFERS_SPIDEREYES_VSH
+#if ! defined INCLUDE_GBUFFERS_SPIDEREYES_VSH
 #define INCLUDE_GBUFFERS_SPIDEREYES_VSH
 
 #include "/lib/settings.glsl"

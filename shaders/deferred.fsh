@@ -1,4 +1,4 @@
-#ifndef INCLUDE_DEFERRED_FSH
+#if ! defined INCLUDE_DEFERRED_FSH
 #define INCLUDE_DEFERRED_FSH
 
 #include "/lib/settings.glsl"
@@ -7,86 +7,86 @@
 #include "/lib/composite_basics.glsl"
 #include "/lib/transform.glsl"
 #include "/lib/sky.glsl"
-#ifndef INCLUDE_UNIFORM_sampler2D_colortex1
+#if ! defined INCLUDE_UNIFORM_sampler2D_colortex1
 #define INCLUDE_UNIFORM_sampler2D_colortex1
 uniform sampler2D colortex1; 
 #endif
 #ifdef FOG
-#ifndef INCLUDE_UNIFORM_int_isEyeInWater
+#if ! defined INCLUDE_UNIFORM_int_isEyeInWater
 #define INCLUDE_UNIFORM_int_isEyeInWater
 uniform int isEyeInWater; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_float_far
+#if ! defined INCLUDE_UNIFORM_float_far
 #define INCLUDE_UNIFORM_float_far
 uniform float far; 
 #endif
 #ifdef OVERWORLD
-#ifndef INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#if ! defined INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
 #define INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
 uniform ivec2 eyeBrightnessSmooth; 
 #endif
 #endif
 
 #endif
-#ifndef INCLUDE_UNIFORM_vec3_sunDir
+#if ! defined INCLUDE_UNIFORM_vec3_sunDir
 #define INCLUDE_UNIFORM_vec3_sunDir
 uniform vec3 sunDir; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_vec3_up
+#if ! defined INCLUDE_UNIFORM_vec3_up
 #define INCLUDE_UNIFORM_vec3_up
 uniform vec3 up; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_vec3_upPosition
+#if ! defined INCLUDE_UNIFORM_vec3_upPosition
 #define INCLUDE_UNIFORM_vec3_upPosition
 uniform vec3 upPosition; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_float_sunset
+#if ! defined INCLUDE_UNIFORM_float_sunset
 #define INCLUDE_UNIFORM_float_sunset
 uniform float sunset; 
 #endif
 #ifdef CUSTOM_SKY
-#ifndef INCLUDE_UNIFORM_float_daynight
+#if ! defined INCLUDE_UNIFORM_float_daynight
 #define INCLUDE_UNIFORM_float_daynight
 uniform float daynight; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_float_rainStrength
+#if ! defined INCLUDE_UNIFORM_float_rainStrength
 #define INCLUDE_UNIFORM_float_rainStrength
 uniform float rainStrength; 
 #endif
 #endif
 
 #ifdef CUSTOM_STARS
-#ifndef INCLUDE_UNIFORM_float_normalizedTime
+#if ! defined INCLUDE_UNIFORM_float_normalizedTime
 #define INCLUDE_UNIFORM_float_normalizedTime
 uniform float normalizedTime; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_float_customStarBlend
+#if ! defined INCLUDE_UNIFORM_float_customStarBlend
 #define INCLUDE_UNIFORM_float_customStarBlend
 uniform float customStarBlend; 
 #endif
 #endif
-#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter; 
 #endif
 #include "/lib/lightmap.glsl"
-#ifndef INCLUDE_UNIFORM_float_customLightmapBlend
+#if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
 #define INCLUDE_UNIFORM_float_customLightmapBlend
 uniform float customLightmapBlend; 
 #endif
 #ifdef COLORED_LIGHTS
-#ifndef INCLUDE_UNIFORM_sampler2D_colortex4
+#if ! defined INCLUDE_UNIFORM_sampler2D_colortex4
 #define INCLUDE_UNIFORM_sampler2D_colortex4
 uniform sampler2D colortex4; 
 #endif
 #if LIGHTMAP_COLOR_DEBUG != 0
-#ifndef INCLUDE_UNIFORM_sampler2D_colortex5
+#if ! defined INCLUDE_UNIFORM_sampler2D_colortex5
 #define INCLUDE_UNIFORM_sampler2D_colortex5
 uniform sampler2D colortex5; 
 #endif
