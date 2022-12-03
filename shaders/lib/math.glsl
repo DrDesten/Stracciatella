@@ -30,7 +30,7 @@ struct blockInfo {
 blockInfo decodeID( int id ) {
     return blockInfo(
         int(id & 255),
-        bool(id >> 8 & 1),
+        bool(id & 256),
         int(id >> 9)
     );
 }
@@ -42,10 +42,10 @@ int getID( int id ) {
     return id & 255;
 }
 bool getEmissive( vec4 entityAttribute ) {
-    return bool(int(entityAttribute.x) >> 8 & 1);
+    return bool(int(entityAttribute.x) & 256);
 }
 bool getEmissive( int id ) {
-    return bool(id >> 8 & 1);
+    return bool(id & 256);
 }
 int getData( vec4 entityAttribute ) {
     return int(entityAttribute.x) >> 9;
