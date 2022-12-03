@@ -1,4 +1,4 @@
-#ifndef INCLUDE_GBUFFERS_WATER_VSH
+#if ! defined INCLUDE_GBUFFERS_WATER_VSH
 #define INCLUDE_GBUFFERS_WATER_VSH
 
 #include "/lib/settings.glsl"
@@ -16,7 +16,7 @@
 	attribute vec4 mc_Entity;
 
 	#ifdef WORLD_TIME_ANIMATION
-#ifndef INCLUDE_UNIFORM_int_worldTime
+#if ! defined INCLUDE_UNIFORM_int_worldTime
 #define INCLUDE_UNIFORM_int_worldTime
 uniform int worldTime; 
 #endif
@@ -26,7 +26,7 @@ vec3 wavySineY(vec3 worldPos, float amount, float speed) {
 		}
 
 	#else
-#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter; 
 #endif

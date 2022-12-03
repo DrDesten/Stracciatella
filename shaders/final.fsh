@@ -1,4 +1,4 @@
-#ifndef INCLUDE_FINAL_FSH
+#if ! defined INCLUDE_FINAL_FSH
 #define INCLUDE_FINAL_FSH
 
 #include "/lib/settings.glsl"

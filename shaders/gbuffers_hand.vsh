@@ -1,4 +1,4 @@
-#ifndef INCLUDE_GBUFFERS_HAND_VSH
+#if ! defined INCLUDE_GBUFFERS_HAND_VSH
 #define INCLUDE_GBUFFERS_HAND_VSH
 
 #include "/lib/settings.glsl"

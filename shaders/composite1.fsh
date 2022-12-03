@@ -1,4 +1,4 @@
-#ifndef INCLUDE_COMPOSITE1_FSH
+#if ! defined INCLUDE_COMPOSITE1_FSH
 #define INCLUDE_COMPOSITE1_FSH
 
 #include "/lib/settings.glsl"
@@ -11,19 +11,19 @@ const float wetnessHalflife = 200;
 const float drynessHalflife = 400;
 
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
-#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter; 
 #endif
 #ifdef COLOR_LUT
-#ifndef INCLUDE_UNIFORM_sampler2D_colortex2
+#if ! defined INCLUDE_UNIFORM_sampler2D_colortex2
 #define INCLUDE_UNIFORM_sampler2D_colortex2
 uniform sampler2D colortex2; // LUT
 #endif
 #endif
 
 #ifdef RAIN_REFRACTION
-#ifndef INCLUDE_UNIFORM_sampler2D_colortex3
+#if ! defined INCLUDE_UNIFORM_sampler2D_colortex3
 #define INCLUDE_UNIFORM_sampler2D_colortex3
 uniform sampler2D colortex3; // Rain Effects
 #endif
@@ -31,32 +31,32 @@ uniform sampler2D colortex3; // Rain Effects
 
 #include "/lib/transform.glsl"
 #include "/lib/sky.glsl"
-#ifndef INCLUDE_UNIFORM_int_isEyeInWater
+#if ! defined INCLUDE_UNIFORM_int_isEyeInWater
 #define INCLUDE_UNIFORM_int_isEyeInWater
 uniform int isEyeInWater; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_vec2_playerLMCSmooth
+#if ! defined INCLUDE_UNIFORM_vec2_playerLMCSmooth
 #define INCLUDE_UNIFORM_vec2_playerLMCSmooth
 uniform vec2 playerLMCSmooth; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_float_blindness
+#if ! defined INCLUDE_UNIFORM_float_blindness
 #define INCLUDE_UNIFORM_float_blindness
 uniform float blindness; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_float_nightVision
+#if ! defined INCLUDE_UNIFORM_float_nightVision
 #define INCLUDE_UNIFORM_float_nightVision
 uniform float nightVision; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_float_darknessFactor
+#if ! defined INCLUDE_UNIFORM_float_darknessFactor
 #define INCLUDE_UNIFORM_float_darknessFactor
 uniform float darknessFactor; 
 #endif
 #ifdef DAMAGE_EFFECT
-#ifndef INCLUDE_UNIFORM_float_damage
+#if ! defined INCLUDE_UNIFORM_float_damage
 #define INCLUDE_UNIFORM_float_damage
 uniform float damage; 
 #endif

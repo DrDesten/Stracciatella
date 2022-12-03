@@ -1,4 +1,4 @@
-#ifndef INCLUDE_GBUFFERS_TERRAIN_FSH
+#if ! defined INCLUDE_GBUFFERS_TERRAIN_FSH
 #define INCLUDE_GBUFFERS_TERRAIN_FSH
 
 #include "/lib/settings.glsl"
@@ -12,7 +12,7 @@ in vec4 glcolor;
 in vec3 viewPos;
 
 #ifdef DIRECTIONAL_LIGHTMAPS
-#ifndef INCLUDE_UNIFORM_ivec2_atlasSize
+#if ! defined INCLUDE_UNIFORM_ivec2_atlasSize
 #define INCLUDE_UNIFORM_ivec2_atlasSize
 uniform ivec2 atlasSize; 
 #endif
@@ -28,31 +28,31 @@ flat in vec2  spriteSize;
 	flat in vec3 rawNormal;
 #endif
 #if NORMAL_TEXTURE_MODE == 1 && defined MC_NORMAL_MAP && defined DIRECTIONAL_LIGHTMAPS
-#ifndef INCLUDE_UNIFORM_sampler2D_normals
+#if ! defined INCLUDE_UNIFORM_sampler2D_normals
 #define INCLUDE_UNIFORM_sampler2D_normals
 uniform sampler2D normals; 
 #endif
 #endif
 
 #ifdef RAIN_PUDDLES
-#ifndef INCLUDE_UNIFORM_sampler2D_colortex4
+#if ! defined INCLUDE_UNIFORM_sampler2D_colortex4
 #define INCLUDE_UNIFORM_sampler2D_colortex4
 uniform sampler2D colortex4; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_float_rainPuddle
+#if ! defined INCLUDE_UNIFORM_float_rainPuddle
 #define INCLUDE_UNIFORM_float_rainPuddle
 uniform float rainPuddle; 
 #endif
 in float puddle;
 	in vec2  blockCoords;
 #endif
-#ifndef INCLUDE_UNIFORM_float_customLightmapBlend
+#if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
 #define INCLUDE_UNIFORM_float_customLightmapBlend
 uniform float customLightmapBlend; 
 #endif

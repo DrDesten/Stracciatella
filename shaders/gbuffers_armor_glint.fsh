@@ -1,11 +1,11 @@
-#ifndef INCLUDE_GBUFFERS_ARMOR_GLINT_FSH
+#if ! defined INCLUDE_GBUFFERS_ARMOR_GLINT_FSH
 #define INCLUDE_GBUFFERS_ARMOR_GLINT_FSH
 
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-#ifndef INCLUDE_UNIFORM_sampler2D_lightmap
+#if ! defined INCLUDE_UNIFORM_sampler2D_lightmap
 #define INCLUDE_UNIFORM_sampler2D_lightmap
 uniform sampler2D lightmap; 
 #endif

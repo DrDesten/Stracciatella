@@ -1,4 +1,4 @@
-#ifndef INCLUDE_SETUP_GLSL
+#if ! defined INCLUDE_SETUP_GLSL
 #define INCLUDE_SETUP_GLSL
 
 /*

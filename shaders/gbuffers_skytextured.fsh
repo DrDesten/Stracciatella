@@ -1,4 +1,4 @@
-#ifndef INCLUDE_GBUFFERS_SKYTEXTURED_FSH
+#if ! defined INCLUDE_GBUFFERS_SKYTEXTURED_FSH
 #define INCLUDE_GBUFFERS_SKYTEXTURED_FSH
 
 #include "/lib/settings.glsl"
@@ -10,7 +10,7 @@ in vec2 coord;
 flat in vec4 glcolor;
 
 #ifdef HORIZON_CLIP
-#ifndef INCLUDE_UNIFORM_vec3_up
+#if ! defined INCLUDE_UNIFORM_vec3_up
 #define INCLUDE_UNIFORM_vec3_up
 uniform vec3 up; 
 #endif

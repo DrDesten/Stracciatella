@@ -1,4 +1,4 @@
-#ifndef INCLUDE_GBUFFERS_WEATHER_VSH
+#if ! defined INCLUDE_GBUFFERS_WEATHER_VSH
 #define INCLUDE_GBUFFERS_WEATHER_VSH
 
 #include "/lib/settings.glsl"
@@ -10,7 +10,7 @@
 	#include "/lib/vertex_transform.glsl"
 	
 	#ifdef WORLD_TIME_ANIMATION
-#ifndef INCLUDE_UNIFORM_int_worldTime
+#if ! defined INCLUDE_UNIFORM_int_worldTime
 #define INCLUDE_UNIFORM_int_worldTime
 uniform int worldTime; 
 #endif
@@ -21,7 +21,7 @@ vec3 wavyRain(vec3 playerPos, float amount, float speed) {
 		}
 
 	#else
-#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter; 
 #endif

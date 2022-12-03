@@ -1,41 +1,41 @@
-#ifndef INCLUDE_TRANSFORM_GLSL
+#if ! defined INCLUDE_TRANSFORM_GLSL
 #define INCLUDE_TRANSFORM_GLSL
-#ifndef INCLUDE_UNIFORM_vec3_cameraPosition
+#if ! defined INCLUDE_UNIFORM_vec3_cameraPosition
 #define INCLUDE_UNIFORM_vec3_cameraPosition
 uniform vec3 cameraPosition; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_vec3_previousCameraPosition
+#if ! defined INCLUDE_UNIFORM_vec3_previousCameraPosition
 #define INCLUDE_UNIFORM_vec3_previousCameraPosition
 uniform vec3 previousCameraPosition; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_mat4_gbufferModelView
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferModelView
 #define INCLUDE_UNIFORM_mat4_gbufferModelView
 uniform mat4 gbufferModelView; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 #define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 uniform mat4 gbufferModelViewInverse; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_mat4_gbufferPreviousModelView
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferPreviousModelView
 #define INCLUDE_UNIFORM_mat4_gbufferPreviousModelView
 uniform mat4 gbufferPreviousModelView; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_mat4_gbufferProjection
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferProjection
 #define INCLUDE_UNIFORM_mat4_gbufferProjection
 uniform mat4 gbufferProjection; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_mat4_gbufferProjectionInverse
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferProjectionInverse
 #define INCLUDE_UNIFORM_mat4_gbufferProjectionInverse
 uniform mat4 gbufferProjectionInverse; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_mat4_gbufferPreviousProjection
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferPreviousProjection
 #define INCLUDE_UNIFORM_mat4_gbufferPreviousProjection
 uniform mat4 gbufferPreviousProjection; 
 #endif

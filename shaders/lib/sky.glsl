@@ -1,4 +1,4 @@
-#ifndef INCLUDE_SKY_GLSL
+#if ! defined INCLUDE_SKY_GLSL
 #define INCLUDE_SKY_GLSL
 
 const vec3 sunsetColor = vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B);
@@ -17,12 +17,12 @@ const vec3 fogNightRainColor = vec3(FOG_NIGHT_RAIN_R, FOG_NIGHT_RAIN_G, FOG_NIGH
 
 const vec3 endSkyUp   = vec3(END_SKY_UP_R, END_SKY_UP_G, END_SKY_UP_B);
 const vec3 endSkyDown = vec3(END_SKY_DOWN_R, END_SKY_DOWN_G, END_SKY_DOWN_B);
-#ifndef INCLUDE_UNIFORM_vec3_fogColor
+#if ! defined INCLUDE_UNIFORM_vec3_fogColor
 #define INCLUDE_UNIFORM_vec3_fogColor
 uniform vec3 fogColor; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_vec3_skyColor
+#if ! defined INCLUDE_UNIFORM_vec3_skyColor
 #define INCLUDE_UNIFORM_vec3_skyColor
 uniform vec3 skyColor; // SKY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #endif

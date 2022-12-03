@@ -1,4 +1,4 @@
-#ifndef INCLUDE_GBUFFERS_HAND_FSH
+#if ! defined INCLUDE_GBUFFERS_HAND_FSH
 #define INCLUDE_GBUFFERS_HAND_FSH
 
 #include "/lib/settings.glsl"
@@ -8,13 +8,13 @@
 
 
 #ifdef HAND_WATER
-#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter; 
 #endif
 #include "/lib/lightmap.glsl"
 #endif
-#ifndef INCLUDE_UNIFORM_float_customLightmapBlend
+#if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
 #define INCLUDE_UNIFORM_float_customLightmapBlend
 uniform float customLightmapBlend; 
 #endif

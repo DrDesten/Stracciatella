@@ -1,11 +1,11 @@
-#ifndef INCLUDE_GBUFFERS_BLOCK_FSH
+#if ! defined INCLUDE_GBUFFERS_BLOCK_FSH
 #define INCLUDE_GBUFFERS_BLOCK_FSH
 
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-#ifndef INCLUDE_UNIFORM_float_customLightmapBlend
+#if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
 #define INCLUDE_UNIFORM_float_customLightmapBlend
 uniform float customLightmapBlend; 
 #endif

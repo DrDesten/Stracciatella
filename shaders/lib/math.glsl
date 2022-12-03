@@ -1,4 +1,4 @@
-#ifndef INCLUDE_MATH_GLSL
+#if ! defined INCLUDE_MATH_GLSL
 #define INCLUDE_MATH_GLSL
 
 ////////////////////////////////////////////////////////////////////////
@@ -30,7 +30,7 @@ struct blockInfo {
 blockInfo decodeID( int id ) {
     return blockInfo(
         int(id & 255),
-        bool((id >> 8) & 1),
+        bool(id >> 8 & 1),
         int(id >> 9)
     );
 }

@@ -1,16 +1,16 @@
-#ifndef INCLUDE_GBUFFERS_TEXTURED_FSH
+#if ! defined INCLUDE_GBUFFERS_TEXTURED_FSH
 #define INCLUDE_GBUFFERS_TEXTURED_FSH
 
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-#ifndef INCLUDE_UNIFORM_float_customLightmapBlend
+#if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
 #define INCLUDE_UNIFORM_float_customLightmapBlend
 uniform float customLightmapBlend; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter; 
 #endif
@@ -25,12 +25,12 @@ flat in vec4 glcolor;
 	#include "/lib/sky.glsl"
 
 	in vec3 viewPos;
-#ifndef INCLUDE_UNIFORM_float_far
+#if ! defined INCLUDE_UNIFORM_float_far
 #define INCLUDE_UNIFORM_float_far
 uniform float far; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 #define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 uniform mat4 gbufferModelViewInverse; 
 #endif

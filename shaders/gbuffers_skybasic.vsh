@@ -1,4 +1,4 @@
-#ifndef INCLUDE_GBUFFERS_SKYBASIC_VSH
+#if ! defined INCLUDE_GBUFFERS_SKYBASIC_VSH
 #define INCLUDE_GBUFFERS_SKYBASIC_VSH
 
 #include "/lib/settings.glsl"

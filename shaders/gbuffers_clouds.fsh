@@ -1,4 +1,4 @@
-#ifndef INCLUDE_GBUFFERS_CLOUDS_FSH
+#if ! defined INCLUDE_GBUFFERS_CLOUDS_FSH
 #define INCLUDE_GBUFFERS_CLOUDS_FSH
 
 #include "/lib/settings.glsl"
@@ -9,42 +9,42 @@
 #ifdef FOG
 
 	#include "/lib/sky.glsl"
-#ifndef INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 #define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 uniform mat4 gbufferModelViewInverse; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_int_isEyeInWater
+#if ! defined INCLUDE_UNIFORM_int_isEyeInWater
 #define INCLUDE_UNIFORM_int_isEyeInWater
 uniform int isEyeInWater; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_float_far
+#if ! defined INCLUDE_UNIFORM_float_far
 #define INCLUDE_UNIFORM_float_far
 uniform float far; 
 #endif
 #ifdef CUSTOM_SKY
-#ifndef INCLUDE_UNIFORM_float_daynight
+#if ! defined INCLUDE_UNIFORM_float_daynight
 #define INCLUDE_UNIFORM_float_daynight
 uniform float daynight; 
 #endif
 #endif
-#ifndef INCLUDE_UNIFORM_vec3_sunDir
+#if ! defined INCLUDE_UNIFORM_vec3_sunDir
 #define INCLUDE_UNIFORM_vec3_sunDir
 uniform vec3 sunDir; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_vec3_up
+#if ! defined INCLUDE_UNIFORM_vec3_up
 #define INCLUDE_UNIFORM_vec3_up
 uniform vec3 up; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_float_sunset
+#if ! defined INCLUDE_UNIFORM_float_sunset
 #define INCLUDE_UNIFORM_float_sunset
 uniform float sunset; 
 #endif
 #endif
-#ifndef INCLUDE_UNIFORM_float_rainStrength
+#if ! defined INCLUDE_UNIFORM_float_rainStrength
 #define INCLUDE_UNIFORM_float_rainStrength
 uniform float rainStrength; 
 #endif

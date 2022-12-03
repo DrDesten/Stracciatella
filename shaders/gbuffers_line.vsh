@@ -1,11 +1,11 @@
-#ifndef INCLUDE_GBUFFERS_LINE_VSH
+#if ! defined INCLUDE_GBUFFERS_LINE_VSH
 #define INCLUDE_GBUFFERS_LINE_VSH
 
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/vertex_transform_simple.glsl"
-#ifndef INCLUDE_UNIFORM_vec2_screenSize
+#if ! defined INCLUDE_UNIFORM_vec2_screenSize
 #define INCLUDE_UNIFORM_vec2_screenSize
 uniform vec2 screenSize; 
 #endif

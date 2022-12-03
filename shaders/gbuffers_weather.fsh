@@ -1,16 +1,16 @@
-#ifndef INCLUDE_GBUFFERS_WEATHER_FSH
+#if ! defined INCLUDE_GBUFFERS_WEATHER_FSH
 #define INCLUDE_GBUFFERS_WEATHER_FSH
 
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-#ifndef INCLUDE_UNIFORM_float_customLightmapBlend
+#if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
 #define INCLUDE_UNIFORM_float_customLightmapBlend
 uniform float customLightmapBlend; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter; 
 #endif
@@ -21,7 +21,7 @@ in vec2 coord;
 flat in vec4 glcolor;
 
 #if RAIN_DETECTION_MODE == 0
-#ifndef INCLUDE_UNIFORM_float_temperature
+#if ! defined INCLUDE_UNIFORM_float_temperature
 #define INCLUDE_UNIFORM_float_temperature
 uniform float temperature; 
 #endif

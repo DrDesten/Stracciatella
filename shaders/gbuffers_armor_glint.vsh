@@ -1,4 +1,4 @@
-#ifndef INCLUDE_GBUFFERS_ARMOR_GLINT_VSH
+#if ! defined INCLUDE_GBUFFERS_ARMOR_GLINT_VSH
 #define INCLUDE_GBUFFERS_ARMOR_GLINT_VSH
 
 #include "/lib/settings.glsl"

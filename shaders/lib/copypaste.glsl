@@ -1,4 +1,4 @@
-#ifndef INCLUDE_COPYPASTE_GLSL
+#if ! defined INCLUDE_COPYPASTE_GLSL
 #define INCLUDE_COPYPASTE_GLSL
 
 // Slider Values

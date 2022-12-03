@@ -1,4 +1,4 @@
-#ifndef INCLUDE_GBUFFERS_BEACONBEAM_VSH
+#if ! defined INCLUDE_GBUFFERS_BEACONBEAM_VSH
 #define INCLUDE_GBUFFERS_BEACONBEAM_VSH
 
 #include "/lib/settings.glsl"

@@ -1,21 +1,21 @@
-#ifndef INCLUDE_COMPOSITE_BASICS_GLSL
+#if ! defined INCLUDE_COMPOSITE_BASICS_GLSL
 #define INCLUDE_COMPOSITE_BASICS_GLSL
-#ifndef INCLUDE_UNIFORM_sampler2D_colortex0
+#if ! defined INCLUDE_UNIFORM_sampler2D_colortex0
 #define INCLUDE_UNIFORM_sampler2D_colortex0
 uniform sampler2D colortex0; // Color
 #endif
 
-#ifndef INCLUDE_UNIFORM_sampler2D_depthtex0
+#if ! defined INCLUDE_UNIFORM_sampler2D_depthtex0
 #define INCLUDE_UNIFORM_sampler2D_depthtex0
 uniform sampler2D depthtex0; // Depth
 #endif
 
-#ifndef INCLUDE_UNIFORM_vec2_screenSize
+#if ! defined INCLUDE_UNIFORM_vec2_screenSize
 #define INCLUDE_UNIFORM_vec2_screenSize
 uniform vec2 screenSize; 
 #endif
 
-#ifndef INCLUDE_UNIFORM_vec2_screenSizeInverse
+#if ! defined INCLUDE_UNIFORM_vec2_screenSizeInverse
 #define INCLUDE_UNIFORM_vec2_screenSizeInverse
 uniform vec2 screenSizeInverse; 
 #endif
