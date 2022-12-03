@@ -60,7 +60,7 @@ uniform float customLightmapBlend;
 	flat in float oreBlink;
 #endif
 
-flat in int blockId;
+flat in int mcEntity;
 
 float calculateHeight(vec2 coord) {
 	float baseHeight = mean(textureLod(gcolor, coord, 100.0).rgb);
@@ -101,6 +101,8 @@ layout(location = 1) out vec2 FragOut1;
 void main() {
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb;
+
+	blockInfo block = decodeID(mcEntity);
 
 	#ifdef RAIN_PUDDLES
 
@@ -151,22 +153,21 @@ void main() {
 
 	#ifdef HDR_EMISSIVES
 
-		// Adds an HDR effect to Emissive blocks. Works by boosting the brightness of emissive parts of blocks and the applying tonemapping to avoid clipping.
-
-		bool white  = blockId == 20 || blockId == 16 || blockId == 2;
-		bool orange = blockId == 21;
-		bool red    = blockId == 22;
-		bool blue   = blockId == 23;
-		bool purple = blockId == 24;
-		bool anyCol = blockId == 25 || blockId == 14;
-		bool anyLow = blockId == 26;
-		bool candle = blockId == 27;
-
-		const vec3 hsvBrown = vec3(39./360, .5, .5);
-
 		float emissiveness = 0;
-		bool  isEmissive   = white || anyCol || anyLow || orange || red || blue || purple || candle;
-		if (isEmissive) {
+		if (block.emissive) {
+
+			// Adds an HDR effect to Emissive blocks. Works by boosting the brightness of emissive parts of blocks and the applying tonemapping to avoid clipping.
+
+			bool white  = block.id == 20 || block.id == 16 || block.id == 2;
+			bool orange = block.id == 21;
+			bool red    = block.id == 22;
+			bool blue   = block.id == 23;
+			bool purple = block.id == 24;
+			bool anyCol = block.id == 25 || block.id == 14;
+			bool anyLow = block.id == 26;
+			bool candle = block.id == 27;
+
+			const vec3 hsvBrown = vec3(39./360, .5, .5);
 
 			vec3  hsv       = rgb2hsv(color.rgb);
 			float brownness = saturate(sqmag((hsvBrown - hsv) * vec3(10,3,2)) * 2 - 1);
@@ -185,18 +186,18 @@ void main() {
 
 		}
 
-		#define coloredLightEmissive float(isEmissive) * blockLightEmissiveColor
+		#define coloredLightEmissive float(block.emissive) * blockLightEmissiveColor
 		
 	#else
 
 	 	#define emissiveness 0
-		#define coloredLightEmissive float(blockId == 2 || blockId == 16 || blockId == 14 || (blockId >= 20 && blockId <= 27)) * blockLightEmissiveColor
+		#define coloredLightEmissive float(block.emissive) * blockLightEmissiveColor
 
 	#endif
 
 	#ifdef COLORED_LIGHTS
 		vec3 blockLightEmissiveColor;
-		switch (blockId) {
+		switch (block.id) {
 			case 21:
 				blockLightEmissiveColor = LIGHTMAP_COLOR_ORANGE; // Orange
 				break;
@@ -223,7 +224,7 @@ void main() {
 	#endif
 
 	#ifdef HDR_EMISSIVES
-		if (isEmissive) color.rgb = reinhard_sqrt_tonemap(color.rgb, 0.5);
+		if (block.emissive) color.rgb = reinhard_sqrt_tonemap(color.rgb, 0.5);
 	#endif
 
 	#ifdef BLINKING_ORES
