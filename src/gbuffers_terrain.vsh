@@ -89,8 +89,8 @@ void main() {
 	glcolor = gl_Color;
 	viewPos = getView();
 
-	int blockId = getID(mc_Entity);
-	mcEntity    = int(mc_Entity.x);
+	mcEntity    = int(max(0,mc_Entity.x));
+	int blockId = getID(mcEntity);
 
 	#ifdef DIRECTIONAL_LIGHTMAPS
 
