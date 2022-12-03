@@ -114,8 +114,13 @@ class PropertiesFile {
                 let compiledSection = {}
                 for ( const target in section ) {
                     if ( target == "type" ) continue;
-
                     let targetObj = section[ target ]
+                    // Handle out-of-rangee values
+                    if ( targetObj.id > 255 )     console.warn(`WARNING: '${target}': tag 'id' out of range (${targetObj.id}, range: [0-255])`)
+                    if ( targetObj.emissive > 1 ) console.warn(`WARNING: '${target}': tag 'emissive' out of range (${targetObj.emissive}, range: [boolean])`)
+                    if ( targetObj.data > 63 )    console.warn(`WARNING: '${target}': tag 'data' out of range (${targetObj.data}, range: [0-63])`)
+
+                    // Pack values
                     let packed    = packingFunction( targetObj.id, targetObj.emissive, targetObj.data )
                     if ( compiledSection[ packed ] == undefined ) compiledSection[ packed ] = []
                     compiledSection[ packed ].push( target )
