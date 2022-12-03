@@ -17,6 +17,43 @@ const float PHI2    = 1.32471795724474602596;
 
 const float E       = 2.7182818284590452353602874713526624977572470937000;
 
+
+////////////////////////////////////////////////////////////////////////
+// Types
+
+struct blockInfo {
+    int id;
+    bool emissive;
+    int data;
+};
+
+blockInfo decodeID( int id ) {
+    return blockInfo(
+        int(id & 255),
+        bool((id >> 8) & 1),
+        int(id >> 9)
+    );
+}
+
+int getID( vec4 entityAttribute ) {
+    return int(entityAttribute.x) & 255;
+}
+int getID( int id ) {
+    return id & 255;
+}
+bool getEmissive( vec4 entityAttribute ) {
+    return bool(int(entityAttribute.x) >> 8 & 1);
+}
+bool getEmissive( int id ) {
+    return bool(id >> 8 & 1);
+}
+int getData( vec4 entityAttribute ) {
+    return int(entityAttribute.x) >> 9;
+}
+int getData( int id ) {
+    return id >> 9;
+}
+
 ////////////////////////////////////////////////////////////////////////
 // General Functions
 

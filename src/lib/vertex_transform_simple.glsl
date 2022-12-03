@@ -28,36 +28,3 @@ vec3 viewToClip(vec3 viewPos) {
 vec4 viewToClip(vec4 viewPos) {
     return gl_ProjectionMatrix * viewPos;
 }
-
-
-struct blockInfo {
-    int id;
-    bool emissive;
-    int data;
-};
-blockInfo decodeID( int id ) {
-    return blockInfo(
-        int(id & 255),
-        bool(id >> 8 & 1),
-        int(id >> 9)
-    );
-}
-
-int getID( vec4 entityAttribute ) {
-    return int(entityAttribute.x) & 255;
-}
-int getID( int id ) {
-    return id & 255;
-}
-bool getEmissive( vec4 entityAttribute ) {
-    return bool(int(entityAttribute.x) >> 8 & 1);
-}
-bool getEmissive( int id ) {
-    return bool(id >> 8 & 1);
-}
-int getData( vec4 entityAttribute ) {
-    return int(entityAttribute.x) >> 9;
-}
-int getData( int id ) {
-    return id >> 9;
-}

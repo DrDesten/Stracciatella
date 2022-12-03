@@ -88,7 +88,7 @@ out vec2  blockCoords;
 flat out float oreBlink;
 #endif
 
-flat out int blockId;
+flat out int mcEntity;
 
 void main() {
 	gl_Position = ftransform();
@@ -96,7 +96,9 @@ void main() {
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 	viewPos = getView();
-	blockId = getID(mc_Entity);
+
+	int blockId = getID(mc_Entity);
+	mcEntity    = int(mc_Entity.x);
 
 	#ifdef DIRECTIONAL_LIGHTMAPS
 
