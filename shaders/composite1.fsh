@@ -36,6 +36,16 @@ uniform sampler2D colortex3; // Rain Effects
 uniform int isEyeInWater; 
 #endif
 
+#if ! defined INCLUDE_UNIFORM_float_far
+#define INCLUDE_UNIFORM_float_far
+uniform float far; 
+#endif
+
+#if ! defined INCLUDE_UNIFORM_float_daynight
+#define INCLUDE_UNIFORM_float_daynight
+uniform float daynight; 
+#endif
+
 #if ! defined INCLUDE_UNIFORM_vec2_playerLMCSmooth
 #define INCLUDE_UNIFORM_vec2_playerLMCSmooth
 uniform vec2 playerLMCSmooth; 
@@ -134,16 +144,16 @@ void main() {
 		vec3 color = getAlbedo(coord);
 	#endif
 
-	if (isEyeInWater == 2) {
+	if (isEyeInWater == 1) {
+		vec3  viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
+		float fogFac  = fogBorderExp(length(viewPos) + 15, far, FOG_UNDERWATER_DENSITY * exp(playerLMCSmooth.y * -FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE + FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE));
+
+		color = mix(color, fogColor * (playerLMCSmooth.y * 0.6 + 0.4) * (daynight * 0.75 + 0.25), saturate(nightVision * -0.1 + fogFac));
+	} else if (isEyeInWater == 2) {
 		vec3  viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
 		float fogFac  = fogExp(viewPos, 2);
 
 		color = mix(color, fogColor * 0.75, fogFac);
-	} else if (isEyeInWater != 0) {
-		vec3  viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
-		float fogFac  = fogExp(length(viewPos) + 25, FOG_UNDERWATER_DENSITY * exp(playerLMCSmooth.y * -FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE + FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE));
-
-		color = mix(color, fogColor * (playerLMCSmooth.y * 0.6 + 0.4), saturate(nightVision * -0.1 + fogFac));
 	}
 
 	if (blindness > 0 || darknessFactor > 0) {
