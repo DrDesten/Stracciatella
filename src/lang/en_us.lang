@@ -291,7 +291,7 @@ option.LUT_LOG_COLOR=Use LOG Color
 option.LUT_SELECTOR=Selected LUT
 option.LUT_SELECTOR.comment=§nDefault LUTs shipped with the shader are:§r. lut0.png: Neutral. lut1.png: Skyfall. lut2.png: A Summer Night's Adventure. lut3.png: Chrome. lut4.png: Admiral's Anime LUT. lut5.png: Green->Red Color swap (Infrared)
 prefix.LUT_SELECTOR=lut
-suffix-LUT_SELECTOR=.png
+suffix.LUT_SELECTOR=.png
 
 
 
@@ -304,6 +304,10 @@ option.FOG_UNDERWATER_DENSITY=Underwater Fog Density
 option.FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE=Depth Influence
 option.FOG_UNDERWATER_DENSITY_DEPTH_INFLUENCE.comment=Higher: Depth will have a strong influence on fog density. Lower: Depth will have a weak influence on fog density. Zero:  Depth will have no influence on fog density.
 
+option.FOG_UNDERWATER_BRIGHTNESS_TIME_INFLUENCE=Fog Brightness Influence
+option.FOG_UNDERWATER_BRIGHTNESS_TIME_INFLUENCE.comment=Higher: Underwater fog will be darker at night.  
+option.FOG_UNDERWATER_BRIGHTNESS_DEPTH_INFLUENCE=Fog Brightness Influence
+option.FOG_UNDERWATER_BRIGHTNESS_DEPTH_INFLUENCE.comment=Higher: Underwater fog will get darker faster when you dive deeper. 
 
 
 ///////////////////////////////////////////////////////////
