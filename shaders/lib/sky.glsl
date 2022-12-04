@@ -116,13 +116,13 @@ vec3 getCustomFogColor(float rainStrength, float daynight) {
 
 float fogFactor(vec3 viewPos, float far) {
     float farSQ     = sq(far);
-    return smoothstep( farSQ * (1.414 * FOG_START / FOG_END), farSQ, sqmag(viewPos) * (1.414 / FOG_END));
+    return smoothstep( farSQ * (SQRT2 * FOG_START / FOG_END), farSQ, sqmag(viewPos) * (SQRT2 / FOG_END));
 }
 
 float fogFactorPlayer(vec3 playerPos, float far) {
     float farSQ     = sq(far);
     playerPos.y    *= 0.25;
-    return smoothstep( farSQ * (1.414 * FOG_START / FOG_END), farSQ, sqmag(playerPos) * (1.414 / FOG_END));
+    return smoothstep( farSQ * (SQRT2 * FOG_START / FOG_END), farSQ, sqmag(playerPos) * (SQRT2 / FOG_END));
 }
 float fogFactor(vec3 viewPos, float far, mat4 gbufferModelViewInverse) {
     return fogFactorPlayer(mat3(gbufferModelViewInverse) * viewPos, far);
@@ -135,6 +135,11 @@ float fogExp(float length, float density) {
     return 1 - exp(-length * density);
 }
 
+float fogBorderExp( float dist, float far, float density ) {
+    float farFog = exp( -far * SQRT2 * density );
+    float expFog = exp( -dist * density );
+    return 1 - saturate( expFog - farFog ) * (1 + farFog); // Dividing by (1 - farFog) is technically correct here, but for small farFog they are close. Multiplication is faster.
+}
 
 float expFogDensity(float worldHeight) {
     worldHeight = exp(-(worldHeight - FOG_EXP_START) * ( 1. / (FOG_EXP_END - FOG_EXP_START)) );

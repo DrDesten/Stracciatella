@@ -233,7 +233,7 @@ void main() {
 		//color *= mix(blockLightColor, color, lmcoord.a);
 
 		#ifdef FOG
-			float fog     = fogFactorPlayer(playerPos, far);
+			float fog = fogFactorPlayer(playerPos, far);
 			#if defined OVERWORLD && defined CAVE_FOG
 				float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
 				color = mix(color, mix(fogCaveColor, skyGradient.rgb, cave), fog);
