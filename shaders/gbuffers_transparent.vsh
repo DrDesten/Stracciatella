@@ -1,14 +1,5 @@
-#if ! defined INCLUDE_GBUFFERS_WATER_VSH
-#define INCLUDE_GBUFFERS_WATER_VSH
-
-#if ! defined INCLUDE_GBUFFERS_WATER_VSH
-#define INCLUDE_GBUFFERS_WATER_VSH
-
-#if ! defined INCLUDE_GBUFFERS_WATER_VSH
-#define INCLUDE_GBUFFERS_WATER_VSH
-
-#if ! defined INCLUDE_GBUFFERS_WATER_VSH
-#define INCLUDE_GBUFFERS_WATER_VSH
+#if ! defined INCLUDE_GBUFFERS_TRANSPARENT_VSH
+#define INCLUDE_GBUFFERS_TRANSPARENT_VSH
 
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
@@ -27,16 +18,7 @@
 	#ifdef WORLD_TIME_ANIMATION
 #if ! defined INCLUDE_UNIFORM_int_worldTime
 #define INCLUDE_UNIFORM_int_worldTime
-#if ! defined INCLUDE_UNIFORM_int_worldTime
-#define INCLUDE_UNIFORM_int_worldTime
-#if ! defined INCLUDE_UNIFORM_int_worldTime
-#define INCLUDE_UNIFORM_int_worldTime
-#if ! defined INCLUDE_UNIFORM_int_worldTime
-#define INCLUDE_UNIFORM_int_worldTime
 uniform int worldTime; 
-#endif
-#endif
-#endif
 #endif
 vec3 wavySineY(vec3 worldPos, float amount, float speed) {
 			float seed = dot(worldPos, vec3(0.5, 0.1, 0.5)) + ((worldTime * (1./24.)) * speed);
@@ -46,16 +28,7 @@ vec3 wavySineY(vec3 worldPos, float amount, float speed) {
 	#else
 #if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
-#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
-#define INCLUDE_UNIFORM_float_frameTimeCounter
-#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
-#define INCLUDE_UNIFORM_float_frameTimeCounter
-#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
-#define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter; 
-#endif
-#endif
-#endif
 #endif
 vec3 wavySineY(vec3 worldPos, float amount, float speed) {
 			float seed = dot(worldPos, vec3(0.5, 0.1, 0.5)) + (frameTimeCounter * speed);
@@ -96,11 +69,5 @@ void main() {
 	
 	#endif
 }
-
-#endif
-
-#endif
-
-#endif
 
 #endif

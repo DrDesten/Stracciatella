@@ -358,7 +358,7 @@ option.WORLD_TIME_ANIMATION.comment=Uses the ingame time instead of real time fo
 option.BLOCK_OUTLINE_SOLID=Solid Block Outline
 option.LINE_THICKNESS.comment=Makes the block outline no longer transparent.
 option.LINE_THICKNESS=Line §lThickness§r
-option.LINE_THICKNESS.comment=Applies to all non-UI lines, for example hit boxes. §c§n/!\§r Only works from versions 1.17 and onwards.
+option.LINE_THICKNESS.comment=Applies to all lines, for example block outline and hit boxes. §c§n/!\§r Only works from versions 1.17 and onwards. §c§n/!\§r Doesn't work on Iris.
 suffix.LINE_THICKNESS=px
 
 option.BLOCK_OUTLINE_STYLE=Block Outline Style
@@ -381,7 +381,7 @@ profile.DEFAULT=Default
 profile.STRACCIATELLA=Stracciatella
 
 option.IRIS=Iris Mode
-option.IRIS=Enable this when you are playing using Iris.
+option.IRIS.comment=Enable this when you are playing using Iris.
 
 option.CREDITS=§oby§r
 value.CREDITS.0=§lDrDesten§r
