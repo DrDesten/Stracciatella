@@ -380,6 +380,9 @@ profile.VANILLA=Vanilla
 profile.DEFAULT=Default
 profile.STRACCIATELLA=Stracciatella
 
+option.IRIS=Iris Mode
+option.IRIS=Enable this when you are playing using Iris.
+
 option.CREDITS=§oby§r
 value.CREDITS.0=§lDrDesten§r
 
