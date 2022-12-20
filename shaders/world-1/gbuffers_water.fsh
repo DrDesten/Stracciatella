@@ -2,4 +2,4 @@
 #extension GL_ARB_explicit_attrib_location : enable
 #define FRAG
 #define NETHER
-#include "/gbuffers_water.fsh"
+#include "/gbuffers_transparent.fsh"
