@@ -10,6 +10,30 @@
 #if ! defined INCLUDE_GBUFFERS_WATER_FSH
 #define INCLUDE_GBUFFERS_WATER_FSH
 
+#if ! defined INCLUDE_GBUFFERS_WATER_FSH
+#define INCLUDE_GBUFFERS_WATER_FSH
+
+#if ! defined INCLUDE_GBUFFERS_WATER_FSH
+#define INCLUDE_GBUFFERS_WATER_FSH
+
+#if ! defined INCLUDE_GBUFFERS_WATER_FSH
+#define INCLUDE_GBUFFERS_WATER_FSH
+
+#if ! defined INCLUDE_GBUFFERS_WATER_FSH
+#define INCLUDE_GBUFFERS_WATER_FSH
+
+#if ! defined INCLUDE_GBUFFERS_WATER_FSH
+#define INCLUDE_GBUFFERS_WATER_FSH
+
+#if ! defined INCLUDE_GBUFFERS_WATER_FSH
+#define INCLUDE_GBUFFERS_WATER_FSH
+
+#if ! defined INCLUDE_GBUFFERS_WATER_FSH
+#define INCLUDE_GBUFFERS_WATER_FSH
+
+#if ! defined INCLUDE_GBUFFERS_WATER_FSH
+#define INCLUDE_GBUFFERS_WATER_FSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -22,7 +46,31 @@
 #define INCLUDE_UNIFORM_float_frameTimeCounter
 #if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter; 
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
 #endif
 #endif
 #endif
@@ -41,12 +89,52 @@ uniform float frameTimeCounter;
 #define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 #if ! defined INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 #define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#if ! defined INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
+#define INCLUDE_UNIFORM_mat4_gbufferModelViewInverse
 uniform mat4 gbufferModelViewInverse; 
 #endif
 #endif
 #endif
 #endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
 
+#if ! defined INCLUDE_UNIFORM_int_isEyeInWater
+#define INCLUDE_UNIFORM_int_isEyeInWater
+#if ! defined INCLUDE_UNIFORM_int_isEyeInWater
+#define INCLUDE_UNIFORM_int_isEyeInWater
+#if ! defined INCLUDE_UNIFORM_int_isEyeInWater
+#define INCLUDE_UNIFORM_int_isEyeInWater
+#if ! defined INCLUDE_UNIFORM_int_isEyeInWater
+#define INCLUDE_UNIFORM_int_isEyeInWater
+#if ! defined INCLUDE_UNIFORM_int_isEyeInWater
+#define INCLUDE_UNIFORM_int_isEyeInWater
+#if ! defined INCLUDE_UNIFORM_int_isEyeInWater
+#define INCLUDE_UNIFORM_int_isEyeInWater
+#if ! defined INCLUDE_UNIFORM_int_isEyeInWater
+#define INCLUDE_UNIFORM_int_isEyeInWater
+#if ! defined INCLUDE_UNIFORM_int_isEyeInWater
+#define INCLUDE_UNIFORM_int_isEyeInWater
 #if ! defined INCLUDE_UNIFORM_int_isEyeInWater
 #define INCLUDE_UNIFORM_int_isEyeInWater
 #if ! defined INCLUDE_UNIFORM_int_isEyeInWater
@@ -60,7 +148,31 @@ uniform int isEyeInWater;
 #endif
 #endif
 #endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
 
+#if ! defined INCLUDE_UNIFORM_float_far
+#define INCLUDE_UNIFORM_float_far
+#if ! defined INCLUDE_UNIFORM_float_far
+#define INCLUDE_UNIFORM_float_far
+#if ! defined INCLUDE_UNIFORM_float_far
+#define INCLUDE_UNIFORM_float_far
+#if ! defined INCLUDE_UNIFORM_float_far
+#define INCLUDE_UNIFORM_float_far
+#if ! defined INCLUDE_UNIFORM_float_far
+#define INCLUDE_UNIFORM_float_far
+#if ! defined INCLUDE_UNIFORM_float_far
+#define INCLUDE_UNIFORM_float_far
+#if ! defined INCLUDE_UNIFORM_float_far
+#define INCLUDE_UNIFORM_float_far
+#if ! defined INCLUDE_UNIFORM_float_far
+#define INCLUDE_UNIFORM_float_far
 #if ! defined INCLUDE_UNIFORM_float_far
 #define INCLUDE_UNIFORM_float_far
 #if ! defined INCLUDE_UNIFORM_float_far
@@ -74,7 +186,31 @@ uniform float far;
 #endif
 #endif
 #endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
 #ifdef CUSTOM_SKY
+#if ! defined INCLUDE_UNIFORM_float_daynight
+#define INCLUDE_UNIFORM_float_daynight
+#if ! defined INCLUDE_UNIFORM_float_daynight
+#define INCLUDE_UNIFORM_float_daynight
+#if ! defined INCLUDE_UNIFORM_float_daynight
+#define INCLUDE_UNIFORM_float_daynight
+#if ! defined INCLUDE_UNIFORM_float_daynight
+#define INCLUDE_UNIFORM_float_daynight
+#if ! defined INCLUDE_UNIFORM_float_daynight
+#define INCLUDE_UNIFORM_float_daynight
+#if ! defined INCLUDE_UNIFORM_float_daynight
+#define INCLUDE_UNIFORM_float_daynight
+#if ! defined INCLUDE_UNIFORM_float_daynight
+#define INCLUDE_UNIFORM_float_daynight
+#if ! defined INCLUDE_UNIFORM_float_daynight
+#define INCLUDE_UNIFORM_float_daynight
 #if ! defined INCLUDE_UNIFORM_float_daynight
 #define INCLUDE_UNIFORM_float_daynight
 #if ! defined INCLUDE_UNIFORM_float_daynight
@@ -88,7 +224,31 @@ uniform float daynight;
 #endif
 #endif
 #endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
 
+#if ! defined INCLUDE_UNIFORM_float_rainStrength
+#define INCLUDE_UNIFORM_float_rainStrength
+#if ! defined INCLUDE_UNIFORM_float_rainStrength
+#define INCLUDE_UNIFORM_float_rainStrength
+#if ! defined INCLUDE_UNIFORM_float_rainStrength
+#define INCLUDE_UNIFORM_float_rainStrength
+#if ! defined INCLUDE_UNIFORM_float_rainStrength
+#define INCLUDE_UNIFORM_float_rainStrength
+#if ! defined INCLUDE_UNIFORM_float_rainStrength
+#define INCLUDE_UNIFORM_float_rainStrength
+#if ! defined INCLUDE_UNIFORM_float_rainStrength
+#define INCLUDE_UNIFORM_float_rainStrength
+#if ! defined INCLUDE_UNIFORM_float_rainStrength
+#define INCLUDE_UNIFORM_float_rainStrength
+#if ! defined INCLUDE_UNIFORM_float_rainStrength
+#define INCLUDE_UNIFORM_float_rainStrength
 #if ! defined INCLUDE_UNIFORM_float_rainStrength
 #define INCLUDE_UNIFORM_float_rainStrength
 #if ! defined INCLUDE_UNIFORM_float_rainStrength
@@ -103,6 +263,30 @@ uniform float rainStrength;
 #endif
 #endif
 #endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#if ! defined INCLUDE_UNIFORM_vec3_sunDir
+#define INCLUDE_UNIFORM_vec3_sunDir
+#if ! defined INCLUDE_UNIFORM_vec3_sunDir
+#define INCLUDE_UNIFORM_vec3_sunDir
+#if ! defined INCLUDE_UNIFORM_vec3_sunDir
+#define INCLUDE_UNIFORM_vec3_sunDir
+#if ! defined INCLUDE_UNIFORM_vec3_sunDir
+#define INCLUDE_UNIFORM_vec3_sunDir
+#if ! defined INCLUDE_UNIFORM_vec3_sunDir
+#define INCLUDE_UNIFORM_vec3_sunDir
+#if ! defined INCLUDE_UNIFORM_vec3_sunDir
+#define INCLUDE_UNIFORM_vec3_sunDir
+#if ! defined INCLUDE_UNIFORM_vec3_sunDir
+#define INCLUDE_UNIFORM_vec3_sunDir
+#if ! defined INCLUDE_UNIFORM_vec3_sunDir
+#define INCLUDE_UNIFORM_vec3_sunDir
 #if ! defined INCLUDE_UNIFORM_vec3_sunDir
 #define INCLUDE_UNIFORM_vec3_sunDir
 #if ! defined INCLUDE_UNIFORM_vec3_sunDir
@@ -116,7 +300,31 @@ uniform vec3 sunDir;
 #endif
 #endif
 #endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
 
+#if ! defined INCLUDE_UNIFORM_vec3_up
+#define INCLUDE_UNIFORM_vec3_up
+#if ! defined INCLUDE_UNIFORM_vec3_up
+#define INCLUDE_UNIFORM_vec3_up
+#if ! defined INCLUDE_UNIFORM_vec3_up
+#define INCLUDE_UNIFORM_vec3_up
+#if ! defined INCLUDE_UNIFORM_vec3_up
+#define INCLUDE_UNIFORM_vec3_up
+#if ! defined INCLUDE_UNIFORM_vec3_up
+#define INCLUDE_UNIFORM_vec3_up
+#if ! defined INCLUDE_UNIFORM_vec3_up
+#define INCLUDE_UNIFORM_vec3_up
+#if ! defined INCLUDE_UNIFORM_vec3_up
+#define INCLUDE_UNIFORM_vec3_up
+#if ! defined INCLUDE_UNIFORM_vec3_up
+#define INCLUDE_UNIFORM_vec3_up
 #if ! defined INCLUDE_UNIFORM_vec3_up
 #define INCLUDE_UNIFORM_vec3_up
 #if ! defined INCLUDE_UNIFORM_vec3_up
@@ -130,7 +338,31 @@ uniform vec3 up;
 #endif
 #endif
 #endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
 
+#if ! defined INCLUDE_UNIFORM_float_sunset
+#define INCLUDE_UNIFORM_float_sunset
+#if ! defined INCLUDE_UNIFORM_float_sunset
+#define INCLUDE_UNIFORM_float_sunset
+#if ! defined INCLUDE_UNIFORM_float_sunset
+#define INCLUDE_UNIFORM_float_sunset
+#if ! defined INCLUDE_UNIFORM_float_sunset
+#define INCLUDE_UNIFORM_float_sunset
+#if ! defined INCLUDE_UNIFORM_float_sunset
+#define INCLUDE_UNIFORM_float_sunset
+#if ! defined INCLUDE_UNIFORM_float_sunset
+#define INCLUDE_UNIFORM_float_sunset
+#if ! defined INCLUDE_UNIFORM_float_sunset
+#define INCLUDE_UNIFORM_float_sunset
+#if ! defined INCLUDE_UNIFORM_float_sunset
+#define INCLUDE_UNIFORM_float_sunset
 #if ! defined INCLUDE_UNIFORM_float_sunset
 #define INCLUDE_UNIFORM_float_sunset
 #if ! defined INCLUDE_UNIFORM_float_sunset
@@ -144,7 +376,31 @@ uniform float sunset;
 #endif
 #endif
 #endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
 
+#if ! defined INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#define INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#if ! defined INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#define INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#if ! defined INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#define INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#if ! defined INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#define INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#if ! defined INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#define INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#if ! defined INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#define INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#if ! defined INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#define INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#if ! defined INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
+#define INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
 #if ! defined INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
 #define INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
 #if ! defined INCLUDE_UNIFORM_ivec2_eyeBrightnessSmooth
@@ -159,6 +415,30 @@ uniform ivec2 eyeBrightnessSmooth;
 #endif
 #endif
 #endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
+#define INCLUDE_UNIFORM_float_customLightmapBlend
+#if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
+#define INCLUDE_UNIFORM_float_customLightmapBlend
+#if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
+#define INCLUDE_UNIFORM_float_customLightmapBlend
+#if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
+#define INCLUDE_UNIFORM_float_customLightmapBlend
+#if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
+#define INCLUDE_UNIFORM_float_customLightmapBlend
+#if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
+#define INCLUDE_UNIFORM_float_customLightmapBlend
+#if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
+#define INCLUDE_UNIFORM_float_customLightmapBlend
+#if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
+#define INCLUDE_UNIFORM_float_customLightmapBlend
 #if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
 #define INCLUDE_UNIFORM_float_customLightmapBlend
 #if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
@@ -168,6 +448,14 @@ uniform ivec2 eyeBrightnessSmooth;
 #if ! defined INCLUDE_UNIFORM_float_customLightmapBlend
 #define INCLUDE_UNIFORM_float_customLightmapBlend
 uniform float customLightmapBlend; 
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
 #endif
 #endif
 #endif
@@ -210,6 +498,22 @@ void main() {
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
 }
+
+#endif
+
+#endif
+
+#endif
+
+#endif
+
+#endif
+
+#endif
+
+#endif
+
+#endif
 
 #endif
 
