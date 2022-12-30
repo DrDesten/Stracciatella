@@ -1,7 +1,7 @@
 const fs = require("fs")
 const { guardFiles } = require("./generateIncludeGuards.js")
 const { guardUniforms } = require("./parseUniforms.js")
-const { PropertiesFile, loadProperties, compileProperties } = require("./parseProperties.js")
+const { PropertiesFile, PropertiesParser, PropertiesCompiler, loadProperties, compileProperties } = require("./parseProperties.js")
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Copy Directory Over
@@ -42,6 +42,7 @@ for ( const path of files ) {
     switch ( fext(path) ) {
         case "properties":
             if ( ["block","item","entity"].includes(fname(path))) {
+                new PropertiesCompiler(fs.readFileSync(path, {encoding: "utf8"})).parseProperties().orientTarget()
                 const propertiesFile = loadProperties( path )
                 //console.log(propertiesFile.fileObject)
                 compileProperties( propertiesFile )

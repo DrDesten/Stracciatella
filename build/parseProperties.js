@@ -147,6 +147,117 @@ class PropertiesFile {
 
 }
 
+class PropertiesParser {
+    /** @param {string} text */
+    constructor( text ) {
+        /** @type {string} */
+        this.text = text
+    }
+
+    /** @returns {{properties: string[], targets: string[]}[]} */
+    parse() {
+
+        this.text = this.text.replace(/[\t ]*\\[\t ]*\n/g, "")
+        this.text = this.text.replace(/#.*/g, "")
+        this.text = this.text.replace(/\s*\n\s*/g, "\n").replace(/[\t ]+/, " ").trim()
+
+        const lines       = this.text.split("\n")
+        const parsedLines = []
+        for ( const line of lines ) {
+            let properties = /^([^=]*)=/.exec(line)[1]
+            let targets = /^[^=]*=(.*)/.exec(line)[1]
+
+            properties = properties.split(".")
+            targets = targets.split(" ")
+
+            parsedLines.push({
+                properties: properties,
+                targets: targets
+            })
+        }
+
+        return parsedLines
+
+    }
+}
+class PropertiesCompiler {
+    constructor( text ) {
+        this.lines = new PropertiesParser(text).parse()
+    }
+
+    parseProperties() {
+        for (let i = 0; i < this.lines.length; i++) {
+
+            const line = this.lines[i]
+            const properties = line.properties
+
+            const parsed = []
+            let token
+            while( properties.length > 0 ) {
+                const nextToken = properties.splice(0,1)
+                if (nextToken == "emissive") {
+                    parsed.push({ property: "emissive", value: 1 })
+                    token = undefined
+                    continue
+                }
+                if (nextToken == "id") {
+                    token = { property: "id", value: null }
+                    continue
+                }
+                if (nextToken == "data") {
+                    token = { property: "data", value: null }
+                    continue
+                }
+
+                if (isFinite(+nextToken)) {
+                    if (!token) throw new Error(`Cannot assign value to undefined property`)
+                    token.value = +nextToken
+                    parsed.push(token)
+                    token = undefined
+                }
+            }
+
+            this.lines[i].properties = parsed
+        }
+
+        return this
+    }
+
+    orientTarget() {
+        
+        const targets = []
+        for (let i = 0; i < this.lines.length; i++) {
+            const line = this.lines[i]
+            for (const target of line.targets) {
+                const index = targets.findIndex( ele => ele.target == target )
+
+                if (index == -1) {
+                    targets.push({
+                        target: target,
+                        properties: line.properties
+                    })
+                    continue
+                }
+
+                for (const property of line.properties) {
+                    const propertyIndex = targets[index].properties.findIndex( prop => prop.property == property.property )
+
+                    if (propertyIndex == -1) {
+                        targets[index].properties.push( property )
+                        continue
+                    }
+
+                    targets[index].properties[propertyIndex].value = property.value
+                }
+
+            }
+        }
+        
+        this.targets = targets
+        return this
+    }
+
+}
 
 function packData( id, emissive, data ) {
     let out = 0;
@@ -175,6 +286,8 @@ function compileProperties( propertiesFile ) {
 
 module.exports = {
     PropertiesFile,
+    PropertiesParser,
+    PropertiesCompiler,
     loadProperties,
     compileProperties,
 }
