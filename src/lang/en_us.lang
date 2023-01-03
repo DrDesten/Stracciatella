@@ -383,6 +383,9 @@ profile.STRACCIATELLA=Stracciatella
 option.IRIS=Iris Mode
 option.IRIS.comment=Enable this when you are playing using Iris.
 
+option.AGRESSIVE_OPTIMISATION=Agressive Optimisation
+option.AGRESSIVE_OPTIMISATION.comment=Activates Optimisations that can break the visuals or might break in future versions of Minecraft.
+
 option.CREDITS=§oby§r
 value.CREDITS.0=§lDrDesten§r
 
