@@ -34,6 +34,9 @@
 #if ! defined INCLUDE_GBUFFERS_WATER_VSH
 #define INCLUDE_GBUFFERS_WATER_VSH
 
+#if ! defined INCLUDE_GBUFFERS_WATER_VSH
+#define INCLUDE_GBUFFERS_WATER_VSH
+
 #include "/lib/settings.glsl"
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
@@ -73,7 +76,10 @@
 #define INCLUDE_UNIFORM_int_worldTime
 #if ! defined INCLUDE_UNIFORM_int_worldTime
 #define INCLUDE_UNIFORM_int_worldTime
+#if ! defined INCLUDE_UNIFORM_int_worldTime
+#define INCLUDE_UNIFORM_int_worldTime
 uniform int worldTime; 
+#endif
 #endif
 #endif
 #endif
@@ -116,7 +122,10 @@ vec3 wavySineY(vec3 worldPos, float amount, float speed) {
 #define INCLUDE_UNIFORM_float_frameTimeCounter
 #if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
 #define INCLUDE_UNIFORM_float_frameTimeCounter
+#if ! defined INCLUDE_UNIFORM_float_frameTimeCounter
+#define INCLUDE_UNIFORM_float_frameTimeCounter
 uniform float frameTimeCounter; 
+#endif
 #endif
 #endif
 #endif
@@ -168,6 +177,8 @@ void main() {
 	
 	#endif
 }
+
+#endif
 
 #endif
 

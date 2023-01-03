@@ -16,17 +16,27 @@ const int colortex4Format = RGBA16;
 const int colortex5Format = RGB8;
 */
 
-#ifdef OVERWORLD
-const vec4 colortex1ClearColor = vec4(0,0,0,0);
+
+#ifdef AGRESSIVE_OPTIMISATION
+
+    #if MC_VERSION < 11900
+    const bool colortex0Clear = false;
+    #endif
+
+    const bool colortex1Clear = false;
+    const bool colortex2Clear = false;
+
+#else
+
+    const bool colortex1Clear = false;
+    const vec4 colortex1ClearColor = vec4(0,0,0,0);
+    const bool colortex2Clear = false;
+
 #endif
 
-#if MC_VERSION < 11900
-const bool colortex0Clear = false;
-#endif
-const bool colortex1Clear = false;
-const bool colortex2Clear = false;
 const bool colortex3Clear = true;
 const vec4 colortex3ClearColor = vec4(0,0,0,0);
+
 #ifdef COLORED_LIGHTS
 const bool colortex4Clear = false;
 const bool colortex5Clear = true;

@@ -42,7 +42,7 @@ for ( const path of files ) {
     switch ( fext(path) ) {
         case "properties":
             if ( ["block","item","entity"].includes(fname(path))) {
-                new PropertiesCompiler(fs.readFileSync(path, {encoding: "utf8"})).parseProperties().orientTarget()
+                //new PropertiesCompiler(fs.readFileSync(path, {encoding: "utf8"})).parseProperties().orientTarget()
                 const propertiesFile = loadProperties( path )
                 //console.log(propertiesFile.fileObject)
                 compileProperties( propertiesFile )
