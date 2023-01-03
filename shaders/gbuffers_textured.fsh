@@ -17,14 +17,22 @@ uniform float frameTimeCounter;
 #include "/lib/lightmap.glsl"
 
 flat in vec2 lmcoord;
-noperspective in vec2 coord;
 flat in vec4 glcolor;
 
+#ifdef AGRESSIVE_OPTIMISATION
+    noperspective in vec2 coord;
+    #ifdef FOG
+    flat in vec3 viewPos;
+    #endif
+#else
+    in vec2 coord;
+    #ifdef FOG
+    in vec3 viewPos;
+    #endif
+#endif
+
 #ifdef FOG
-
 	#include "/lib/sky.glsl"
-
-	in vec3 viewPos;
 #if ! defined INCLUDE_UNIFORM_float_far
 #define INCLUDE_UNIFORM_float_far
 uniform float far; 

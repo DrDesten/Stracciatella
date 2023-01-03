@@ -4,12 +4,20 @@
 #include "/lib/vertex_transform_simple.glsl"
 
 flat out vec2 lmcoord;
-noperspective out vec2 coord;
 flat out vec4 glcolor;
 
-#ifdef FOG
-out vec3 viewPos;
+#ifdef AGRESSIVE_OPTIMISATION
+    noperspective out vec2 coord;
+    #ifdef FOG
+    flat out vec3 viewPos;
+    #endif
+#else
+    out vec2 coord;
+    #ifdef FOG
+    out vec3 viewPos;
+    #endif
 #endif
+
 
 void main() {
 	gl_Position = ftransform();

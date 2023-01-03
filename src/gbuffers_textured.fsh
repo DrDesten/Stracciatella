@@ -9,18 +9,24 @@ uniform float frameTimeCounter;
 #include "/lib/lightmap.glsl"
 
 flat in vec2 lmcoord;
-noperspective in vec2 coord;
 flat in vec4 glcolor;
 
+#ifdef AGRESSIVE_OPTIMISATION
+    noperspective in vec2 coord;
+    #ifdef FOG
+    flat in vec3 viewPos;
+    #endif
+#else
+    in vec2 coord;
+    #ifdef FOG
+    in vec3 viewPos;
+    #endif
+#endif
+
 #ifdef FOG
-
 	#include "/lib/sky.glsl"
-
-	in vec3 viewPos;
-
 	uniform float far;
 	uniform mat4  gbufferModelViewInverse;
-
 #endif
 
 /* DRAWBUFFERS:01 */
