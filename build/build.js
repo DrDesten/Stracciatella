@@ -7,6 +7,7 @@ const { PropertiesFile, PropertiesParser, PropertiesCompiler, loadProperties, co
 // Copy Directory Over
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+fs.rmSync(`${__dirname}/../shaders`, { recursive: true })
 fs.cpSync(`${__dirname}/../src`, `${__dirname}/../shaders`, { force: true, recursive: true })
 const dir = `${__dirname}/../shaders`
 
