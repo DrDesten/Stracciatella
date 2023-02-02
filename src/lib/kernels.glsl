@@ -1,6 +1,3 @@
-#ifndef INCLUDE_KERNELS
-#define INCLUDE_KERNELS
-
 //////////////////////////////////////////////////////
 //              BLUR KERNELS
 //////////////////////////////////////////////////////
@@ -384,5 +381,3 @@ const float FXAAStepsHQ[15] = float[]( // factor = 5.4 | max. edge length: 49.5
 const float FXAAStepsUpscale[10] = float[](
     1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.0
 );
-
-#endif

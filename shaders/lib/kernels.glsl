@@ -1,9 +1,6 @@
 #if ! defined INCLUDE_KERNELS_GLSL
 #define INCLUDE_KERNELS_GLSL
 
-#ifndef INCLUDE_KERNELS
-#define INCLUDE_KERNELS
-
 //////////////////////////////////////////////////////
 //              BLUR KERNELS
 //////////////////////////////////////////////////////
@@ -388,6 +385,5 @@ const float FXAAStepsUpscale[10] = float[](
     1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.0
 );
 
-#endif
 
 #endif
