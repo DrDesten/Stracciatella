@@ -62,17 +62,19 @@ out vec4 glcolor;
 out vec3 viewPos;
 
 #ifdef DIRECTIONAL_LIGHTMAPS
-attribute vec4 at_tangent;
-flat out vec2   spriteSize;
-flat out vec2   midTexCoord;
-flat out mat2   tbn;
-flat out float  directionalLightmapStrength;
+    attribute vec4 at_tangent;
+    flat out vec2  spriteSize;
+    flat out vec2  midTexCoord;
+    flat out mat2  tbn;
+    flat out float directionalLightmapStrength;
 #elif defined HDR_EMISSIVES
-flat out vec2 spriteSize;
-flat out vec2 midTexCoord;
+    flat out vec2 spriteSize;
+    flat out vec2 midTexCoord;
 #endif
+
 #ifdef HDR_EMISSIVES
-flat out vec3 rawNormal;
+    flat out vec3 rawNormal;
+    out float worldPosY;
 #endif
 
 #ifdef RAIN_PUDDLES
@@ -81,11 +83,11 @@ flat out vec3 rawNormal;
 uniform float rainPuddle; 
 #endif
 out float puddle;
-out vec2  blockCoords;
+    out vec2  blockCoords;
 #endif
 
 #ifdef BLINKING_ORES
-flat out float oreBlink;
+    flat out float oreBlink;
 #endif
 
 flat out int mcEntity;
@@ -99,6 +101,10 @@ void main() {
 
 	mcEntity    = int(max(0,mc_Entity.x));
 	int blockId = getID(mcEntity);
+
+    #ifdef HDR_EMISSIVES
+        worldPosY = getWorld().y;
+    #endif
 
 	#ifdef DIRECTIONAL_LIGHTMAPS
 
