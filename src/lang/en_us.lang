@@ -374,7 +374,7 @@ option.BLOCK_OUTLINE_COLOR_B=Block Outline Color §9B
 
 
 option.SHADER_NAME=Stracciatella Shaders
-value.SHADER_NAME.0=v1.4
+value.SHADER_NAME.0=v1.5
 
 profile.VANILLA=Vanilla
 profile.DEFAULT=Default
