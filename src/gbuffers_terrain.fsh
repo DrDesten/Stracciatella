@@ -20,6 +20,7 @@ in vec3 viewPos;
 #endif
 #ifdef HDR_EMISSIVES
 	flat in vec3 rawNormal;
+    in float worldPosY;
 #endif
 #if NORMAL_TEXTURE_MODE == 1 && defined MC_NORMAL_MAP && defined DIRECTIONAL_LIGHTMAPS 
 	uniform sampler2D normals;
@@ -137,30 +138,33 @@ void main() {
 
 			// Adds an HDR effect to Emissive blocks. Works by boosting the brightness of emissive parts of blocks and the applying tonemapping to avoid clipping.
 
-			bool white  = block.id == 20 || block.id == 16 || block.id == 2;
-			bool orange = block.id == 21;
-			bool red    = block.id == 22;
-			bool blue   = block.id == 23;
-			bool purple = block.id == 24;
-			bool anyCol = block.id == 25 || block.id == 14;
-			bool anyLow = block.id == 26;
-			bool candle = block.id == 27;
+			bool white   = block.id == 20 || block.id == 16 || block.id == 2;
+			bool orange  = block.id == 21;
+			bool red     = block.id == 22;
+            bool pureRed = block.id == 23;
+			bool blue    = block.id == 24;
+			bool purple  = block.id == 25;
+			bool anyCol  = block.id == 26 || block.id == 14;
+			bool anyLow  = block.id == 27;
+			bool candle  = block.id == 28;
 
 			const vec3 hsvBrown = vec3(39./360, .5, .5);
 
 			vec3  hsv       = rgb2hsv(color.rgb);
 			float brownness = saturate(sqmag((hsvBrown - hsv) * vec3(10,3,2)) * 2 - 1);
 			
-			if      (white)  emissiveness = saturate(hsv.z * 2 - 1);
-			else if (anyCol) emissiveness = saturate(max(saturate(hsv.y * 2 - 0.5), saturate(hsv.z * 2 - 1)) * 2 - 0.5);
-			else if (anyLow) emissiveness = saturate(0.75 * hsv.z * hsv.z);
-			else if (orange) emissiveness = saturate(peak05(fract(hsv.x + 0.45)) * 2 - 1) * saturate(hsv.z * 3 - 2);
-			else if (red)    emissiveness = saturate(brownness * 1.25 - .25) + saturate(hsv.z * 4 - 3);
-			else if (blue)   emissiveness = saturate(sqmag((vec3(0.57, .8, .8) - hsv) * vec3(2,2,2)) * -1 + 1) + saturate(hsv.y * -5 + 4) * saturate(hsv.z * 5 - 4) * brownness;
-			else if (purple) emissiveness = saturate(hsv.z * 1.5 - .5) * saturate(hsv.y * 3 - 2) + sq(saturate(hsv.z * 5 - 4));
-			else if (candle) emissiveness = sqsq(saturate((midTexCoord.y - coord.y) * (0.5 / spriteSize.y) + 0.5 + saturate(rawNormal.y)));
-
 			color.rgb  = reinhard_sqrt_tonemap_inverse(color.rgb * 0.996, 0.5);
+
+			if      (white)   emissiveness = saturate(hsv.z * 2 - 1);
+			else if (anyCol)  emissiveness = saturate(max(saturate(hsv.y * 2 - 0.5), saturate(hsv.z * 2 - 1)) * 2 - 0.5);
+			else if (anyLow)  emissiveness = saturate(0.75 * hsv.z * hsv.z);
+			else if (orange)  emissiveness = saturate(peak05(fract(hsv.x + 0.45)) * 2 - 1) * saturate(hsv.z * 3 - 2);
+			else if (red)     emissiveness = saturate(brownness * 1.25 - .25) + saturate(hsv.z * 4 - 3);
+            else if (pureRed) emissiveness = saturate( saturate( 5 * fract(worldPosY) - 1 ) + saturate( saturate(peak05(fract(hsv.x + .5)) * 2 - 1) * saturate( hsv.y * 2 - 1) ) * 0.5 );
+            else if (blue)    emissiveness = saturate(sqmag((vec3(0.57, .8, .8) - hsv) * vec3(2,2,2)) * -1 + 1) + saturate(hsv.y * -5 + 4) * saturate(hsv.z * 5 - 4) * brownness;
+			else if (purple)  emissiveness = saturate(hsv.z * 1.5 - .5) * saturate(hsv.y * 3 - 2) + sq(saturate(hsv.z * 5 - 4));
+			else if (candle)  emissiveness = sqsq(saturate((midTexCoord.y - coord.y) * (0.5 / spriteSize.y) + 0.5 + saturate(rawNormal.y)));
+
 			color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 1.5) * color.rgb;
 
 		}
@@ -183,10 +187,10 @@ void main() {
 			case 22:
 				blockLightEmissiveColor = LIGHTMAP_COLOR_RED; // Red
 				break;
-			case 23:
+			case 24:
 				blockLightEmissiveColor = LIGHTMAP_COLOR_BLUE; // Blue
 				break;
-			case 24:
+			case 25:
 				blockLightEmissiveColor = LIGHTMAP_COLOR_PURPLE; // Purple
 				break;
 			default:
@@ -214,7 +218,7 @@ void main() {
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
 
-	FragOut0 = color;
+	FragOut0 = color /* * vec2(saturate( 10 * fract(worldPosY) - 1 ), 1).xxxy */;
     if (FragOut0.a < 0.1) discard;
 	FragOut1 = encodeLightmapData(vec4(lightmapCoord, glcolor.a, saturate(emissiveness)));
 	#ifdef COLORED_LIGHTS

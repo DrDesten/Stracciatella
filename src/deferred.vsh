@@ -24,10 +24,10 @@ void main() {
 		case 22:
 			handLight.rgb = LIGHTMAP_COLOR_RED; // Red
 			break;
-		case 23:
+		case 24:
 			handLight.rgb = LIGHTMAP_COLOR_BLUE; // Blue
 			break;
-		case 24:
+		case 25:
 			handLight.rgb = LIGHTMAP_COLOR_PURPLE; // Purple
 			break;
 	}
