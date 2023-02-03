@@ -162,7 +162,8 @@ void main() {
 			bool white   = block.id == 20 || block.id == 16 || block.id == 2;
 			bool orange  = block.id == 21;
 			bool red     = block.id == 22;
-            bool pureRed = block.id == 23;
+            bool redPure = block.id == 23;
+            bool redOre  = block.id == 45;
 			bool blue    = block.id == 24;
 			bool purple  = block.id == 25;
 			bool anyCol  = block.id == 26 || block.id == 14;
@@ -181,7 +182,8 @@ void main() {
 			else if (anyLow)  emissiveness = saturate(0.75 * hsv.z * hsv.z);
 			else if (orange)  emissiveness = saturate(peak05(fract(hsv.x + 0.45)) * 2 - 1) * saturate(hsv.z * 3 - 2);
 			else if (red)     emissiveness = saturate(brownness * 1.25 - .25) + saturate(hsv.z * 4 - 3);
-            else if (pureRed) emissiveness = saturate( saturate( 5 * fract(worldPosY) - 1 ) + saturate( saturate(peak05(fract(hsv.x + .5)) * 2 - 1) * saturate( hsv.y * 2 - 1) ) * 0.5 );
+            else if (redPure) emissiveness = saturate( saturate( 5 * fract(worldPosY) - 1 ) + saturate( saturate(peak05(fract(hsv.x + .5)) * 2 - 1) * saturate( hsv.y * 2 - 1) ) * 0.5 );
+            else if (redOre)  emissiveness = saturate( saturate(sq(peak05(fract(hsv.x + .5)))) * saturate( hsv.y * 2 - 1) * 0.5 );
             else if (blue)    emissiveness = saturate(sqmag((vec3(0.57, .8, .8) - hsv) * vec3(2,2,2)) * -1 + 1) + saturate(hsv.y * -5 + 4) * saturate(hsv.z * 5 - 4) * brownness;
 			else if (purple)  emissiveness = saturate(hsv.z * 1.5 - .5) * saturate(hsv.y * 3 - 2) + sq(saturate(hsv.z * 5 - 4));
 			else if (candle)  emissiveness = sqsq(saturate((midTexCoord.y - coord.y) * (0.5 / spriteSize.y) + 0.5 + saturate(rawNormal.y)));
@@ -206,6 +208,8 @@ void main() {
 				blockLightEmissiveColor = LIGHTMAP_COLOR_ORANGE; // Orange
 				break;
 			case 22:
+            case 23:
+            case 45: // Redstone Ore
 				blockLightEmissiveColor = LIGHTMAP_COLOR_RED; // Red
 				break;
 			case 24:
