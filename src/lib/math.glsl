@@ -877,7 +877,14 @@ vec3 octahedralDecode(vec2 o) {
     return normalize(v);
 }
 
-
+/* function enc(data) {
+    function sat(x) { return Math.max(0,Math.min(1,x)) }
+    data = data.map(x => ~~(sat(x) * 255 + .5))
+    encoded = [data[0], data[2]]
+    encoded[0] += data[1] << 8
+    encoded[1] += data[3] << 8
+    return encoded.map(x => x / 65535)
+} */
 vec2 vec4to16x2(vec4 data) {
     ivec4 idata = ivec4(saturate(data) * 255 + 0.5);
     ivec2 encoded = ivec2(idata.x, idata.z);
