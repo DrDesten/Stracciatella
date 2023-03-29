@@ -568,8 +568,8 @@ vec3 applyBrightness(vec3 color, float brightness, float colorOffset) { // Range
 }
 vec3 applyContrast(vec3 color, float contrast) { // Range: 0-inf
 	color = color * 0.99 + 0.005;
-	vec3 colorHigh = 1 - 0.5 * pow(-2 * color + 2, vec3(contrast));
-	vec3 colorLow  =     0.5 * pow( 2 * color,     vec3(contrast));
+	vec3 colorHigh = vec3(1) - 0.5 * pow(-2 * color + 2, vec3(contrast));
+	vec3 colorLow  =     vec3(0.5) * pow( 2 * color,     vec3(contrast));
 	return saturate(mix(colorLow, colorHigh, color));
 }
 vec3 applySaturation(vec3 color, float saturation) { // Range: 0-2
@@ -579,6 +579,24 @@ vec3 applyVibrance(vec3 color, float vibrance) { // -1 to 1
 	float luminance  = luminance(color);
 	float saturation = distance(vec3(luminance), color);
 	return applySaturation(color, (1 - saturation) * vibrance + 1);
+}
+
+// Algorithm from "https://tannerhelland.com/2012/09/18/convert-temperature-rgb-algorithm-code.html"
+vec3 blackbody(float temperature) {
+    temperature /= 100;
+    if (temperature < 66) {
+        return vec3(
+            1,
+            saturate(0.3900815787690196 * log(temperature) - 0.6318414437886275),
+            saturate(0.543206789110196 * log(temperature - 10) - 1.19625408914) // Ternary not necessary since clamp() sets NaNs to zero already
+        );
+    } else {
+        return vec3(
+            saturate(1.292936186062745 * pow(temperature - 60, -0.1332047592)),
+            saturate(1.129890860895294 * pow(temperature - 60, -0.0755148492)),
+            1
+        );
+    }
 }
 
 vec3 rgb2hsv(vec3 c) {
