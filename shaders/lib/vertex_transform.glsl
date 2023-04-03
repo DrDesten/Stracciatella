@@ -32,12 +32,15 @@ vec4 toPlayer(vec4 viewPos) {
     return gbufferModelViewInverse * viewPos;
 }
 
+#ifndef GEO
 vec3 getPlayer() {
     return mat3(gbufferModelViewInverse) * getView() + gbufferModelViewInverse[3].xyz;
 }
 vec4 getPlayer4() {
     return gbufferModelViewInverse * getView4();
 }
+#endif
+
 vec3 playerToView(vec3 playerPos) {
     return transformMAD(playerPos, gbufferModelView);
 }
@@ -54,9 +57,11 @@ vec4 playerToClip(vec4 playerPos) {
     return projectHomogeneousMAD(transformMAD(playerPos.xyz, gbufferModelView), gl_ProjectionMatrix);
 }
 
+#ifndef GEO
 vec3 getWorld() {
     return getPlayer() + cameraPosition;
 }
+#endif
 vec4 worldToClip(vec3 worldPos) {
     return playerToClip(vec4(worldPos - cameraPosition, 1));
 }

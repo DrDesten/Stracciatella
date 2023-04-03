@@ -5,16 +5,15 @@
 
 #ifdef SUN_SIZE_CHANGE
 uniform mat4 gbufferModelView;
+#endif
 uniform vec3 sunPosition;
 uniform vec3 moonPosition;
-#endif
-
-out vec2 coord;
-flat out vec4 glcolor;
 
 #ifdef HORIZON_CLIP
 out vec3 viewPos;
 #endif
+out vec2 textureCoordinate;
+out int vertexId;
 
 bool sunOrMoon(vec3 sunPosition, vec3 moonPosition) { // True = Sun, False = Moon
 	return sunPosition.z < moonPosition.z;
@@ -49,8 +48,11 @@ void main() {
 		gl_Position     = viewToClip(vec4(viewPos, 1));
 
 	#endif
-
-	coord   = getCoord();
-	glcolor = gl_Color;
-
+    
+	textureCoordinate = getCoord();
+    
+    vec3 viewPos = getView();
+    bool orderBody = sunOrMoonAccurate(viewPos, sunPosition, moonPosition);
+    bool orderPos = (abs(viewPos) - abs(sunPosition)).x > 0;
+    vertexId = int(orderBody) | (int(orderPos) << 1);
 }
