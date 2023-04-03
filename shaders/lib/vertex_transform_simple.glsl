@@ -1,6 +1,10 @@
 #if ! defined INCLUDE_VERTEX_TRANSFORM_SIMPLE_GLSL
 #define INCLUDE_VERTEX_TRANSFORM_SIMPLE_GLSL
 
+
+// In Geometry Shaders, gl_* vertex attributes are not available
+#ifndef GEO
+
 vec3 getNormal() {
     return normalize(gl_NormalMatrix * gl_Normal);
 }
@@ -19,12 +23,16 @@ mat3 getTBN(vec4 tangentAttribute) {
 	return mat3(tangent, cross(tangent, normal), normal);
 }
 
+
 vec3 getView() {
     return mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
 }
 vec4 getView4() {
     return gl_ModelViewMatrix * gl_Vertex;
 }
+
+#endif
+
 vec3 viewToClip(vec3 viewPos) {
     return mat3(gl_ProjectionMatrix) * viewPos + gl_ProjectionMatrix[3].xyz;
 }
