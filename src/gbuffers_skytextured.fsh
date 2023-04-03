@@ -25,5 +25,17 @@ void main() {
 	#endif
 
 	FragOut0 = color;
-    //if (isAurora != 0) FragOut0.rgb = vec3(coord,0) / 2;
+    
+    if (isAurora == 1) {
+        vec4 aurora = vec4(1);
+
+        aurora.rgb = vec3(0,1,0.5) * (sin(coord.x * TWO_PI * 20) * .4 + .6);
+
+        aurora.a *= exp2(-(coord.y - 0.1) * 10);
+
+        aurora.a *= 1 - sq(sqmag(coord * 2 - 1));
+        FragOut0 = vec4(aurora.rgb * aurora.a, 1);
+
+        //FragOut0.rgb = vec3(noise(coord.x * 10) * 0.5);
+    }
 }
