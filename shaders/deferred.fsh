@@ -229,7 +229,7 @@ void main() {
 
 	vec3 color = getAlbedo(coord);
 
-	if (depth >= 1) { /*
+	if (depth >= 1) { 
 		#ifdef OVERWORLD
 		color += skyGradient.rgb;
 		#ifdef CAVE_SKY
@@ -239,7 +239,7 @@ void main() {
 		#else
 		color = skyGradient.rgb;
 		#endif
-	*/}
+	}
     else 
 	{
 

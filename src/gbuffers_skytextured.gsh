@@ -2,6 +2,8 @@
 #include "/lib/math.glsl"
 #include "/lib/vertex_transform.glsl"
 
+uniform float frameTimeCounter;
+
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 13) out;
 
@@ -35,58 +37,32 @@ void main() {
 
     isAurora = 1;
 
-    #define AURORA_HEIGHT 200
-    #define AURORA_SIZE 60
+    #define AURORA_HEIGHT 500
+    #define AURORA_SIZE 800
     #define AURORA_STRIP_LENGTH 5
-    vec2 vertices[AURORA_STRIP_LENGTH];
-    
-    if (vertexId[0] == 0) 
-        vertices = vec2[](
-            vec2(200,-100),
-            vec2(250,0),
-            vec2(200,100),
-            vec2(300,200),
-            vec2(250,300)
-        );
-    else if (vertexId[0] == 1)
-        vertices = vec2[](
-            vec2(-250,300),
-            vec2(-300,200),
-            vec2(-200,100),
-            vec2(-250,0),
-            vec2(-200,-100)
-        );
-    else if (vertexId[0] == 2)
-        vertices = vec2[](
-            vec2(100,-100),
-            vec2(150,0),
-            vec2(100,100),
-            vec2(200,200),
-            vec2(150,300)
-        );
-    else if (vertexId[0] == 3)
-        vertices = vec2[](
-            vec2(-150,300),
-            vec2(-200,200),
-            vec2(-100,100),
-            vec2(-150,0),
-            vec2(-100,-100)
-        );
+
+    float radius = rand(vertexId[0] << 4) * 2000 + 1000;
+    float start  = rand(vertexId[0]) * TWO_PI;
+    float len    = rand(vertexId[0] << 2) * PI + PI;
+    len         *= 0.5 * (2000 / radius);
 
     for (int i = 0; i < AURORA_STRIP_LENGTH; i++) {
 
-        float position = float(i) / (AURORA_STRIP_LENGTH - 1);
+        float progression = float(i) / (AURORA_STRIP_LENGTH - 1);
 
-        gl_Position = playerToClip(
-            vec3(vertices[i].x, AURORA_HEIGHT, vertices[i].y)
-        );
-        coord = vec2(position, 1);
+        float angle = start + len * progression;
+        float seed = angle + frameTimeCounter * 0.2 + radius;
+        float offset = noise(seed) + noise(seed * 1.5) * 0.5 + noise(seed * 2) * 0.25; 
+        vec2 position = vec2(sin(angle), cos(angle)) * (radius - offset * 250);
+
+        gl_Position = playerToClip( vec3(position.x, AURORA_HEIGHT, position.y) );
+        gl_Position.z /= 8;
+        coord = vec2(progression, 0);
         EmitVertex();
 
-        gl_Position = playerToClip(
-            vec3(vertices[i].x, AURORA_HEIGHT - AURORA_SIZE, vertices[i].y)
-        );
-        coord = vec2(position, 0);
+        gl_Position = playerToClip( vec3(position.x, AURORA_HEIGHT + AURORA_SIZE, position.y) );
+        gl_Position.z /= 8;
+        coord = vec2(progression, 1);
         EmitVertex();
 
     }

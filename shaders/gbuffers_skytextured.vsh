@@ -65,7 +65,7 @@ void main() {
     
     vec3 viewPos = getView();
     bool orderBody = sunOrMoonAccurate(viewPos, sunPosition, moonPosition);
-    bool orderPos = (abs(viewPos) - abs(sunPosition)).x > 0;
+    bool orderPos = orderBody ? textureCoordinate.y > 0.5 : textureCoordinate.y > 0.25 && textureCoordinate.y < 0.75;
     vertexId = int(orderBody) | (int(orderPos) << 1);
 }
 
