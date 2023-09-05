@@ -190,40 +190,48 @@ void main() {
 		color = skyGradient.rgb;
 		#endif
 	}
-    else 
+    else; 
 	{
 
 		vec4 lmcoord = getLightmap(coord);
 
 		#ifdef COLORED_LIGHTS
 
-		vec3 blockLightColor = (textureBicubic(colortex4, coord, vec2(16,9), 1./vec2(16,9)).rgb);
-		blockLightColor = blockLightColor / (maxc(blockLightColor) + 0.02);
-		blockLightColor = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
+			vec3 blockLightColor = (textureBicubic(colortex4, coord, vec2(16,9), 1./vec2(16,9)).rgb);
+			blockLightColor = blockLightColor / (maxc(blockLightColor) + 0.02);
+			blockLightColor = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
 
-		float dist = sqmag(playerPos);
-		float handLightBrightness = smoothstep(handLight.a * 5, 0, dist);
-		float handLightBrightnessExp = exp(-dist / handLight.a);
-		blockLightColor = blockLightColor + handLight.rgb * handLightBrightness;
-		blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightnessExp);
+			float dist = sqmag(playerPos);
+			float handLightBrightness = smoothstep(handLight.a * 5, 0, dist);
+			float handLightBrightnessExp = exp(-dist / handLight.a);
+			blockLightColor = blockLightColor + handLight.rgb * handLightBrightness;
+			blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightnessExp);
 
-		#if LIGHTMAP_COLOR_DEBUG == 0 // No Debug, Normal Mode
-		color *= getCustomLightmap(lmcoord.xyz, customLightmapBlend, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
-		#elif LIGHTMAP_COLOR_DEBUG == 1 // Debug, Mix Mode
-		color = mix(color, blockLightColor * (1 - lmcoord.a) + lmcoord.a, 0.666);
-		vec3 tmp = texture(colortex5, coord).rgb;
-		if (sum(tmp) != 0) color = tmp;
-		#elif LIGHTMAP_COLOR_DEBUG == 2 // Debug, Pure Mode
-		color = blockLightColor;
-		#elif LIGHTMAP_COLOR_DEBUG == 3 // Debug, Source Mode
-		vec3 tmp = texture(colortex5, coord).rgb;
-		if (sum(tmp) != 0) color = tmp;
-		else color = mix(color, vec3(1,0,0), 0.5);
-		#endif
+			#if LIGHTMAP_COLOR_DEBUG == 0 // No Debug, Normal Mode
+
+			color *= getCustomLightmap(lmcoord.xyz, customLightmapBlend, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
+
+			#elif LIGHTMAP_COLOR_DEBUG == 1 // Debug, Mix Mode
+
+			color = mix(color, blockLightColor * (1 - lmcoord.a) + lmcoord.a, 0.666);
+			vec3 tmp = texture(colortex5, coord).rgb;
+			if (sum(tmp) != 0) color = tmp;
+
+			#elif LIGHTMAP_COLOR_DEBUG == 2 // Debug, Pure Mode
+
+			color = blockLightColor * (1 - lmcoord.a) + lmcoord.a;
+
+			#elif LIGHTMAP_COLOR_DEBUG == 3 // Debug, Source Mode
+
+			vec3 tmp = texture(colortex5, coord).rgb;
+			if (sum(tmp) != 0) color = tmp;
+			else color = mix(color, vec3(1,0,0), 0.5);
+			
+			#endif
 
 		#else
 
-		color *= getCustomLightmap(lmcoord.xyz, customLightmapBlend) * (1 - lmcoord.a) + lmcoord.a;
+			color *= getCustomLightmap(lmcoord.xyz, customLightmapBlend) * (1 - lmcoord.a) + lmcoord.a;
 
 		#endif
 
