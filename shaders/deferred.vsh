@@ -31,7 +31,7 @@ out vec4 handLight; // rgb: color, a: brightness
 void main() {
 	gl_Position = ftransform();
 
-	handLight = vec4(0,0,0, heldBlockLightValue);
+	handLight = vec4(vec3(0),heldBlockLightValue);
 	switch (getID(heldItemId)) {
 		case 20:
 			handLight.rgb = vec3(1); // White
