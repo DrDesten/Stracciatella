@@ -26,7 +26,7 @@ void main() {
 	vec4 color = glcolor;
 	color.rgb *= texture(lightmap, lmcoord).rgb;
 
-	#if MC_VERSION < 11700 || defined IRIS
+	#if MC_VERSION < 11700 || defined IS_IRIS
 
 		#if BLOCK_OUTLINE_STYLE != 0
 		if (color.a < 0.5) {
