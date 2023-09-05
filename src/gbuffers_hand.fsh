@@ -14,6 +14,7 @@ uniform float customLightmapBlend;
 flat in vec2 lmcoord;
 in vec2 coord;
 flat in vec4 glcolor;
+flat in float emissiveness;
 
 /* DRAWBUFFERS:01 */
 layout(location = 0) out vec4 FragOut0;
@@ -33,5 +34,5 @@ void main() {
 
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
-	FragOut1 = vec4( encodeLightmapData(vec4(lmcoord, 1,0)), 1.0, 1.0 );
+	FragOut1 = vec4( encodeLightmapData(vec4(lmcoord, 1, emissiveness)), 1.0, 1.0 );
 }

@@ -5,16 +5,32 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/vertex_transform_simple.glsl"
-
+#if ! defined INCLUDE_UNIFORM_int_heldItemId
+#define INCLUDE_UNIFORM_int_heldItemId
+uniform int heldItemId; 
+#endif
 flat out vec2 lmcoord;
 out vec2 coord;
 flat out vec4 glcolor;
+flat out float emissiveness;
 
 void main() {
 	gl_Position = ftransform();
 	coord   = getCoord();
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
+
+	switch (getID(heldItemId)) {
+		case 20:
+		case 21:
+		case 22:
+		case 24:
+		case 25:
+			emissiveness = 1.0;
+			break;
+		default:
+			emissiveness = 0.0;
+	}
 
 	//float normalCheck = min(min(min(min(abs(gl_Normal.x - 1.0), abs(gl_Normal.x + 1.0)), abs(gl_Normal.z - .9)), abs(gl_Normal.y + .9)), abs(gl_Normal.y - .9)) * 10;
 
