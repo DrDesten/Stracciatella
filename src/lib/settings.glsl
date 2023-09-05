@@ -298,7 +298,7 @@ const float lightmap_complex_blocklight_blend_curve = ( ((100 - LIGHTMAP_COMPLEX
 #ifdef SHADER_NAME
 #endif
 
-#define CREDITS 0 // [0]
+#define CREDITS 0 // [0 1]
 #ifdef CREDITS
 #endif
 
