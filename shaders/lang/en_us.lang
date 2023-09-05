@@ -148,7 +148,7 @@ option.LIGHTMAP_COLOR_REGEN.comment=Sets how fast empty regions (with no color i
 option.LIGHTMAP_COLOR_FLICKER_RED=Flicker Reduction
 option.LIGHTMAP_COLOR_FLICKER_RED.comment=Increase this slider if you experience frequent spots of color blinking into existence. Higher values will decrease the speed at which new color spreads and appears.
 option.LIGHTMAP_COLOR_LOD_BIAS=Sample LOD Bias
-option.LIGHTMAP_COLOR_LOD_BIAS.comment=Controls the detail level at which colors are sampled. A higher value will make colors smoother but may cause small lights to be skipped. A lower value will sample at higher detail but will decrease smoothness and introduce flicker. The shader does its best to calculate the appropiate LOD itself.
+option.LIGHTMAP_COLOR_LOD_BIAS.comment=Controls the detail level at which colors are sampled. A higher value will make colors smoother but may cause small lights to be skipped. A lower value will sample at higher detail but will decrease smoothness and introduce flicker. The shader does its best to calculate the appropriate LOD itself.
 
 option.LIGHTMAP_COLOR_DEBUG=Colored Lights Debug
 value.LIGHTMAP_COLOR_DEBUG.0=OFF
@@ -199,7 +199,7 @@ value.NORMAL_TEXTURE_MODE.0=Generated
 value.NORMAL_TEXTURE_MODE.1=Texture
 
 option.GENERATED_NORMALS_RESOLUTION_MULTIPLIER=Normals Resolution Multiplier
-option.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.comment=Auto-Generated Normals may have a different resolution than your resource pack. This slider allows you to select a higher resolution for the normals. No performance impact.
+option.GENERATED_NORMALS_RESOLUTION_MULTIPLIER.comment=Auto-Generated normals may have a different resolution than your resource pack. This slider allows you to select a higher resolution for the normals. No performance impact.
 suffix.GENERATED_NORMALS_RESOLUTION_MULTIPLIER=x
 
 option.HDR_EMISSIVES=§eHDR§r Emissives
@@ -248,7 +248,7 @@ option.WAVING_BLOCKS=Waving Blocks
 option.WAVING_BLOCKS_AMOUNT=Waving Blocks Amount
 option.WAVING_BLOCKS_SPEED=Waving Blocks Speed
 option.WAVING_LEAVES=Waving §aLe§2a§av§2e§as§r
-option.WAVING_LILYPADS=Waving Lilypads
+option.WAVING_LILYPADS=Waving Lily pads
 option.WAVING_LILYPADS.comment=Controlled by "Waving Liquids Amount" and "Waving Liquids Speed".
 option.WAVING_LANTERNS=Waving Lanterns
 option.WAVING_FIRE=Waving §6F§ei§6r§ee§r
@@ -374,7 +374,7 @@ option.BLOCK_OUTLINE_COLOR_B=Block Outline Color §9B
 
 
 option.SHADER_NAME=Stracciatella Shaders
-value.SHADER_NAME.0=v1.5
+value.SHADER_NAME.0=v1.6
 
 profile.VANILLA=Vanilla
 profile.DEFAULT=Default
@@ -383,8 +383,8 @@ profile.STRACCIATELLA=Stracciatella
 option.IRIS=Iris Mode
 option.IRIS.comment=Enable this when you are playing using Iris.
 
-option.AGRESSIVE_OPTIMISATION=Agressive Optimisation
-option.AGRESSIVE_OPTIMISATION.comment=Activates Optimisations that can break the visuals or might break in future versions of Minecraft.
+option.AGRESSIVE_OPTIMISATION=Aggressive Optimization
+option.AGRESSIVE_OPTIMISATION.comment=Activates Optimizations that can break the visuals or might break in future versions of Minecraft.
 
 option.CREDITS=§oby§r
 value.CREDITS.0=§lDrDesten§r
