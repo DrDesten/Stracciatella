@@ -314,6 +314,17 @@ float rand(float x) {
 float rand(vec2 x) {
     return fract(sin(x.x * 12.9898 + x.y * 78.233) * 4375.5453);
 }
+
+vec2 rand2(float x) {
+    float t = rand(x);
+    return vec2(t, rand(t * 50 - 25));
+}
+vec2 rand2(vec2 x) {
+    float t = rand(x);
+    return vec2(t, rand(t * 50 - 25));
+}
+
+
 int irand(int x) {
     x ^= x << 13;
     x ^= x << 17;
@@ -347,6 +358,21 @@ float noise(float x) {
     float b = rand(i + 1);
 
 	return mix(a, b, f);
+}
+
+
+vec2 noise2(vec2 x) {
+    vec2 i = floor(x);
+    vec2 f = fract(x);
+
+	// Four corners in 2D of a tile
+	vec2 a = rand2(i);
+    vec2 b = rand2(i + vec2(1.0, 0.0));
+    vec2 c = rand2(i + vec2(0.0, 1.0));
+    vec2 d = rand2(i + vec2(1.0, 1.0));
+
+    vec2 u = f * f * (3.0 - 2.0 * f);
+	return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
 }
 
 float fbm(vec2 x, int n) {
