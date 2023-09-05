@@ -7,12 +7,6 @@ swamp colors?
 
 */
 
-//#define IRIS
-
-#ifdef IRIS
-// dummy
-#endif
-
 #define AGRESSIVE_OPTIMISATION
 
 ///////////////////////////////////////////////////////////
