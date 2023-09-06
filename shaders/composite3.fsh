@@ -5,6 +5,7 @@
 #include "/lib/math.glsl"
 #include "/lib/kernels.glsl"
 #include "/lib/composite_basics.glsl"
+#include "/lib/transform.glsl"
 
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 #if ! defined INCLUDE_UNIFORM_float_nearInverse
@@ -63,18 +64,23 @@ void main() {
 	// Noise
 
 	vec2  lineCoord = gl_FragCoord.xy;
-	float noiseStep = mod(floor(frameTimeCounter * 6), 5);
-	vec2  lineNoise = ( noise2(lineCoord / 4 + noiseStep) * 2 - 1 );
+	float noiseStepFast = mod(floor(frameTimeCounter * 8), 5);
+	float noiseStepSlow = mod(floor(frameTimeCounter * 3), 5);
 
-	coord += lineNoise * screenSizeInverse;
+	vec2 detailNoise = ( noise2(lineCoord / 4 + noiseStepFast) * 2 - 1 );
+	vec2 coarseNoise = ( noise2(lineCoord / 8 + noiseStepSlow) * 2 - 1 );
+
+	vec2 noiseCoord = coord + detailNoise * screenSizeInverse;
 
 	// Get Depth Information
 
-	float d  = getDepth(coord);
-	float dn = getDepth(coord + vec2(0, screenSizeInverse.y));
-	float ds = getDepth(coord - vec2(0, screenSizeInverse.y));
-	float de = getDepth(coord + vec2(screenSizeInverse.x, 0));
-	float dw = getDepth(coord - vec2(screenSizeInverse.x, 0));
+	float depth = getDepth(coord);
+
+	float d  = getDepth(noiseCoord);
+	float dn = getDepth(noiseCoord + vec2(0, screenSizeInverse.y));
+	float ds = getDepth(noiseCoord - vec2(0, screenSizeInverse.y));
+	float de = getDepth(noiseCoord + vec2(screenSizeInverse.x, 0));
+	float dw = getDepth(noiseCoord - vec2(screenSizeInverse.x, 0));
 
 	float maxDepthDiff =
 		max( max(
@@ -84,7 +90,7 @@ void main() {
 			abs(d - de),
 			abs(d - dw)
 		));
-	bool safeNormals = maxDepthDiff > 1 / float(1 << 23);
+	bool safeNormals = maxDepthDiff > 1 / float(1 << 22);
 
 	float ld  = linearizeDepth(d, near, far);
 	float ldn = linearizeDepth(dn, near, far);
@@ -103,10 +109,11 @@ void main() {
 	// Get Normal Information
 
 	vec3 n  = normalsFromDepth(ldn, lds, lde, ldw);
-	vec3 nn = normalsFromDepth(ldn, ld,  lde, ldw);
-	vec3 ns = normalsFromDepth(ld,  lds, lde, ldw);
-	vec3 ne = normalsFromDepth(ldn, lds, lde, ld);
-	vec3 nw = normalsFromDepth(ldn, lds, ld,  ldw);
+
+	vec3 nn = normalsFromDepth(ldn, ld + (ld - ldn), lde, ldw);
+	vec3 ns = normalsFromDepth(ld + (ld - lds), lds, lde, ldw);
+	vec3 ne = normalsFromDepth(ldn, lds, lde, ld + (ld - lde));
+	vec3 nw = normalsFromDepth(ldn, lds, ld + (ld - ldw), ldw);
 
 	float normalDiff =
 		abs(dot(n, nn)) +
@@ -117,6 +124,17 @@ void main() {
 	normalDiff = sqsq(normalDiff);
 	normalDiff = 1 - normalDiff;
 
+	// Get Position Information
+
+	vec3 viewPos   = toView(vec3(coord, depth) * 2 - 1);
+	vec3 playerPos = toPlayerEye(viewPos);
+
+	vec3 ppdx = dFdx(playerPos);
+	vec3 ppdy = dFdy(playerPos);
+	vec3 ppt  = normalize(cross(ppdx, ppdy)) * float(safeNormals);
+
+	float pptAngle = dot(ppt, vec3(1));
+
 	// Process Color
 
 	float brightness = luminance(color);
@@ -126,19 +144,19 @@ void main() {
 	color *= 0.75;
 	color  = applySaturation(color, 1.5);
 
-	int lineLevel = int(brightness * 6 + 0.5);
+	int lineLevel = int(brightness * 8 + 0.5);
 
 	// Effect
 
 	switch (lineLevel) {
 		case 0: 
 			color *= lines(lineCoord, 0);
-		case 1:
-			color *= lines((lineCoord + lineNoise * 0.5) / 2, TWO_PI / 4 )  * 0.75 + 0.25;
+		case 1: 
+			color *= lines(lineCoord, PI / 2);
 		case 2:
-			color *= lines((lineCoord + lineNoise * 0.75) / 4, TWO_PI / 8 )  * 0.5  + 0.5;
+			color *= lines((lineCoord + detailNoise * 0.5) / 4, PI / 4 )  * 0.5 + 0.5;
 		case 3:
-			color *= lines((lineCoord + lineNoise) / 6, TWO_PI / 16 ) * 0.25 + 0.75;
+			color *= lines((lineCoord + detailNoise * 0.75) / 6, PI / 8 )  * 0.25  + 0.75;
 	}
 
 	// Outline
