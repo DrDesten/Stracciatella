@@ -34,6 +34,13 @@ float lines(vec2 coord, float angle) {
 	lines = saturate(lines * 2 - 1);
 	return 1 - lines;
 }
+float lines(vec2 coord, vec2 dir) {
+	float len   = dot(coord, dir);
+	float lines = sin(len * PI);
+
+	lines = saturate(lines * 2 - 1);
+	return 1 - lines;
+}
 
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 FragOut0;
@@ -108,14 +115,24 @@ void main() {
 
 	// Get Position Information
 
-	vec3 viewPos   = toView(vec3(coord, depth) * 2 - 1);
-	vec3 playerPos = toPlayerEye(viewPos);
+	vec3 clipPos   = vec3(coord, depth) * 2 - 1;
+	vec3 viewPos   = toView(clipPos);
+	vec3 playerPos = toPlayer(viewPos);
 
 	vec3 ppdx = dFdx(playerPos);
 	vec3 ppdy = dFdy(playerPos);
-	vec3 ppt  = normalize(cross(ppdx, ppdy)) * float(safeNormals);
+	vec3 ppn  = normalize(cross(ppdx, ppdy));
 
-	float pptAngle = dot(ppt, vec3(1));
+	vec3 lineDir;
+	if (abs(ppn.y) > 0.5) { // Pointing up or down
+		lineDir = vec3(0,0,1);
+	} else { 
+		lineDir = vec3(0,1,0); 
+	}
+
+	vec3 playerLineEnd = playerPos + lineDir;
+	vec2 screenLineEnd = backToClip(backToView(playerLineEnd)).xy * .5 + .5;
+	vec2 screenLineDir = normalize(screenLineEnd - coord);
 
 	// Process Color
 
@@ -135,10 +152,10 @@ void main() {
 			color *= lines(lineCoord, 0);
 		case 1: 
 			color *= lines(lineCoord, PI / 2);
-		case 2:
-			color *= lines((lineCoord + detailNoise * 0.5) / 4, PI / 4 )  * 0.5 + 0.5;
+		/* case 2:
+			color *= lines((lineCoord + detailNoise * 0.5) / 4, screenLineDir )  * 0.5 + 0.5; */
 		case 3:
-			color *= lines((lineCoord + detailNoise * 0.75) / 6, PI / 8 )  * 0.25  + 0.75;
+			color *= lines((lineCoord + detailNoise * 0.75) / 6, screenLineDir )  * 0.25  + 0.75;
 	}
 
 	// Outline
@@ -147,6 +164,28 @@ void main() {
 
 	color *= vec3( 1 - depthDiff * outlineStrength );
 	color *= vec3( 1 - normalDiff * outlineStrength * float(safeNormals) );
+
+	//color = screenLineDir * .5 + .5;
+
+	//if (abs(ppn.y) > 0.5) color = vec3(1,0,0);
+
+	if (distance(playerPos, vec3(2,-1.8,0)) < 0.5) color = vec3(1,0,0);
+	if (distance(playerLineEnd, vec3(2,-1.8,0)) < 0.5) color = vec3(0,1,0);
+	
+	float len = dot(lineCoord, screenLineDir) * .1;
+	/* color = vec3( sin(len) * .5 + .5 );
+	color = vec3( screenLineDir * .5 + .5, 0 ); */
+
+#define DEBUG_SCREEN_LINEDIR( pos ) if (distance(coord, pos) < 0.01) color = vec3(1,1,0); if (distance(screenLineEnd, pos) < 0.01) color = vec3(0,1,1);
+
+	DEBUG_SCREEN_LINEDIR( vec2(.25) );
+	DEBUG_SCREEN_LINEDIR( vec2(.5)  );
+	DEBUG_SCREEN_LINEDIR( vec2(.75) );
+	DEBUG_SCREEN_LINEDIR( vec2(.25, .75) );
+	DEBUG_SCREEN_LINEDIR( vec2(.75, .25) );
+
+#undef DEBUG_SCREEN_LINEDIR
+
 
 	FragOut0   = vec4(color, 1);
 }
