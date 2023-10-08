@@ -4,7 +4,10 @@
 #include "/lib/gbuffers_basics.glsl"
 
 in vec2 coord;
-in float isAurora;
+
+#ifdef AURORA
+    in float isAurora;
+#endif
 
 #ifdef HORIZON_CLIP
     uniform vec3 up;
@@ -26,6 +29,8 @@ void main() {
 
 	FragOut0 = color;
     
+#ifdef AURORA
+
     if (isAurora == 1) {
         vec4 aurora = vec4(1);
 
@@ -38,4 +43,7 @@ void main() {
 
         //FragOut0.rgb = vec3(noise(coord.x * 10) * 0.5);
     }
+
+#endif
+
 }
