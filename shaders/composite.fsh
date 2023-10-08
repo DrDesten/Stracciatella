@@ -2,12 +2,14 @@
 #define INCLUDE_COMPOSITE_FSH
 
 #include "/lib/settings.glsl"
-#include "/lib/math.glsl"
-#include "/lib/kernels.glsl"
+#include "/core/math.glsl"
+#include "/lib/utils.glsl"
+#include "/core/kernels.glsl"
 #include "/lib/composite_basics.glsl"
 #include "/lib/transform.glsl"
 
-vec2 coord = gl_FragCoord.xy * vec2(1./16, 1./9);
+const vec2 pixel = vec2(1) / vec2(16, 9);
+vec2       coord = gl_FragCoord.xy * vec2(1./16, 1./9);
 
 #ifdef COLORED_LIGHTS
 
@@ -74,7 +76,7 @@ vec4 gauss3x3LodHit(sampler2D tex, vec2 coord, vec2 pix, float lod) {
     vec3 b = textureLod(tex, coord - .5 * pix.xy, lod).rgb;
     vec3 c = textureLod(tex, coord + .5 * vec2(pix.x, -pix.y), lod).rgb;
     vec3 d = textureLod(tex, coord + .5 * vec2(-pix.x, pix.y), lod).rgb;
-	return vec4(a * .25 + (b * .25 + (c * .25 + (d * .25))), mean(vec4(sum(a) > 0, sum(b) > 0, sum(c) > 0, sum(d) > 0)));
+	return vec4(a * .25 + (b * .25 + (c * .25 + (d * .25))), avg(vec4(sum(a) > 0, sum(b) > 0, sum(c) > 0, sum(d) > 0)));
 }
 
 #endif
@@ -83,20 +85,19 @@ vec4 gauss3x3LodHit(sampler2D tex, vec2 coord, vec2 pix, float lod) {
 layout(location = 0) out vec4 FragOut0;
 void main() {
 	
-	#ifdef COLORED_LIGHTS
+#ifdef COLORED_LIGHTS
 
 	vec3 screenPos = vec3(coord, getDepth(coord));
 
 	vec4 prevProj    = reprojectScreen(screenPos);
 	vec2 prevCoord   = prevProj.xy;
-	const vec2 pixel = 1./vec2(16,9);
 
 	vec3  prevCol   = gauss3x3(colortex4, prevProj.xy, pixel * 0.75);
 	float prevDepth = texture(colortex4, prevProj.xy).a;
 
-	float sampleLod = max(log2(mean(screenSize * pixel)) + LIGHTMAP_COLOR_LOD_BIAS, 0); // Calculate appropiate sampling LoD
-	vec2 jitter = R2(frameCounter%1000) * pixel - (pixel * .5);
-	vec3 color = gauss3x3Lod(colortex5, coord + jitter, pixel, sampleLod) * 10;
+	float sampleLod = max(log2(avg(screenSize * pixel)) + LIGHTMAP_COLOR_LOD_BIAS, 0); // Calculate appropiate sampling LoD
+	vec2  jitter    = R2(frameCounter%1000) * pixel - (pixel * .5);
+	vec3  color     = gauss3x3Lod(colortex5, coord + jitter, pixel, sampleLod) * 10;
 	color = color / (color + 1.0);
 
 	// Improves Accumulation by guessing pixel age and sample importance (there is no buffer space left for pixel age)
@@ -106,14 +107,25 @@ void main() {
 	mixTweak = mixTweak * (1 - LIGHTMAP_COLOR_FLICKER_RED) + LIGHTMAP_COLOR_FLICKER_RED; // Tweak value using user defined setting
 
 	#if LIGHTMAP_COLOR_REJECTION == 0
-	// Weak Rejection (coordinates and depth, high tolerances)
-	float rejection = max(saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -2 + 1), saturate( abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse)) * -0.25 + 1 ));
+
+		// Weak Rejection (coordinates and depth, high tolerances)
+		float depthError = abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse));
+		float coordError = sqmag(saturate(prevProj.xy) - prevProj.xy);
+		float rejection  = max(saturate(coordError * -2 + 1), saturate(depthError * -0.25 + 1));
+
 	#elif LIGHTMAP_COLOR_REJECTION == 1
-	// Normal Rejection (coordinates and depth, normal tolarance)
-	float rejection = max(saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -4 + 1), saturate( abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse)) * -0.5 + 1 ));
+
+		// Normal Rejection (coordinates and depth, normal tolarance)
+		float depthError = abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse));
+		float coordError = sqmag(saturate(prevProj.xy) - prevProj.xy);
+		float rejection  = max(saturate(coordError * -4 + 1), saturate(depthError * -0.5 + 1));
+
 	#elif LIGHTMAP_COLOR_REJECTION == 2
-	// Strong Rejection (only coordinates, no fallback)
-	float rejection = saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -4 + 1);
+
+		// Strong Rejection (only coordinates, no fallback)
+		float coordError = sqmag(saturate(prevProj.xy) - prevProj.xy);
+		float rejection  = saturate(coordError * -4 + 1);
+
 	#endif
 
 	// if the mix blend is 0, new color is used
@@ -124,7 +136,7 @@ void main() {
 	
 	FragOut0 = vec4(color, screenPos.z);
 
-	#endif
+#endif
 }
 
 /*

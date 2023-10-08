@@ -1,6 +1,7 @@
 #include "/lib/settings.glsl"
-#include "/lib/math.glsl"
-#include "/lib/kernels.glsl"
+#include "/core/math.glsl"
+#include "/lib/utils.glsl"
+#include "/core/kernels.glsl"
 #include "/lib/composite_basics.glsl"
 #include "/lib/transform.glsl"
 #include "/lib/sky.glsl"
@@ -79,14 +80,14 @@ vec2 cubemapCoords(vec3 direction) {
 float starVoronoi(vec2 coord, float maxDeviation) {
     vec2 guv = fract(coord) - 0.5;
     vec2 gid = floor(coord);
-	vec2 p   = (N22(gid) - 0.5) * maxDeviation; // Get Point in grid cell
+	vec2 p   = (rand2(gid) - 0.5) * maxDeviation; // Get Point in grid cell
 	float d  = sqmag(p-guv);                    // Get distance to that point
     return d;
 }
 vec2 starVoronoi_getCoord(vec2 coord, float maxDeviation) {
     vec2 guv = fract(coord) - 0.5;
     vec2 gid = floor(coord);
-	vec2 p   = (N22(gid) - 0.5) * maxDeviation; // Get Point in grid cell
+	vec2 p   = (rand2(gid) - 0.5) * maxDeviation; // Get Point in grid cell
     return p;
 }
 
@@ -135,7 +136,7 @@ void main() {
 
 			const mat2 skyRot = mat2(cos(sunPathRotation * (PI/180.)), sin(sunPathRotation * (PI/180.)), -sin(sunPathRotation * (PI/180.)), cos(sunPathRotation * (PI/180.)));
 			vec3 skyDir       = vec3(playerDir.x, skyRot * playerDir.yz);
-			skyDir            = vec3(rotationMatrix2D(normalizedTime * -TWO_PI) * skyDir.xy, skyDir.z);
+			skyDir            = vec3(mat2Rot(normalizedTime * -TWO_PI) * skyDir.xy, skyDir.z);
 			vec2 skyCoord     = cubemapCoords(skyDir) * 0.35;
 
 			float starNoise = starVoronoi(skyCoord * STAR_DENSITY, 0.85);

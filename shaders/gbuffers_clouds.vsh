@@ -2,8 +2,9 @@
 #define INCLUDE_GBUFFERS_CLOUDS_VSH
 
 #include "/lib/settings.glsl"
-#include "/lib/math.glsl"
-#include "/lib/kernels.glsl"
+#include "/core/math.glsl"
+#include "/lib/utils.glsl"
+#include "/core/kernels.glsl"
 
 #ifdef THICC_CLOUDS
 #include "/lib/vertex_transform.glsl"

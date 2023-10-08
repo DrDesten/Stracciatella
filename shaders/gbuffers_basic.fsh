@@ -2,8 +2,9 @@
 #define INCLUDE_GBUFFERS_BASIC_FSH
 
 #include "/lib/settings.glsl"
-#include "/lib/math.glsl"
-#include "/lib/kernels.glsl"
+#include "/core/math.glsl"
+#include "/lib/utils.glsl"
+#include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 #if ! defined INCLUDE_UNIFORM_sampler2D_lightmap
 #define INCLUDE_UNIFORM_sampler2D_lightmap
@@ -26,7 +27,7 @@ void main() {
 	vec4 color = glcolor;
 	color.rgb *= texture(lightmap, lmcoord).rgb;
 
-	#if MC_VERSION < 11700 || defined IS_IRIS
+	#if MC_VERSION < 11700
 
 		#if BLOCK_OUTLINE_STYLE != 0
 		if (color.a < 0.5) {
@@ -37,8 +38,7 @@ void main() {
 
 			#elif BLOCK_OUTLINE_STYLE == 2
 
-			//color.rgb = (sin(frameTimeCounter * vec3(-0.5, 1, 0.25)) * 0.5 + 0.6); // Rainbow
-			color.rgb = hsv2rgb(vec3(fract(frameTimeCounter * 10), 1, 1)); // Rainbow
+			color.rgb = (sin(frameTimeCounter * vec3(-0.5, 1, 0.25)) * 0.5 + 0.6); // Rainbow
 
 			#elif BLOCK_OUTLINE_STYLE == 3
 

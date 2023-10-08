@@ -2,7 +2,8 @@
 #extension GL_ARB_explicit_attrib_location : enable
 #define FRAG
 #define NETHER
-#include "/lib/math.glsl"
+#include "/core/math.glsl"
+#include "/lib/utils.glsl"
 #if ! defined INCLUDE_UNIFORM_vec3_fogColor
 #define INCLUDE_UNIFORM_vec3_fogColor
 uniform vec3 fogColor; 
