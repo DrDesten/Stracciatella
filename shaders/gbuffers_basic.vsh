@@ -11,7 +11,6 @@ flat out vec4 glcolor;
 
 void main() {
 	gl_Position = ftransform();
-	if (gl_Color.a < 0.5) gl_Position.z -= 0.0005;
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 }

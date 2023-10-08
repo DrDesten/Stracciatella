@@ -37,7 +37,8 @@ void main() {
 
 		#elif BLOCK_OUTLINE_STYLE == 2
 
-		color.rgb = (sin(frameTimeCounter * vec3(-0.5, 1, 0.25)) * 0.5 + 0.6); // Rainbow
+		//color.rgb = (sin(frameTimeCounter * vec3(-0.5, 1, 0.25)) * 0.5 + 0.6); // Rainbow
+		color.rgb = hsv2rgb(vec3(frameTimeCounter * 0.25, 1, 1)); // Rainbow
 
 		#elif BLOCK_OUTLINE_STYLE == 3
 
