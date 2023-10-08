@@ -136,21 +136,44 @@ void main() {
 	vec3 clipPos   = vec3(coord, depth) * 2 - 1;
 	vec3 viewPos   = toView(clipPos);
 	vec3 playerPos = toPlayer(viewPos);
+	vec3 worldPos  = toWorld(playerPos);
 
 	vec3 ppdx = dFdx(playerPos);
 	vec3 ppdy = dFdy(playerPos);
 	vec3 ppn  = normalize(cross(ppdx, ppdy));
 
-	vec3 lineDir;
-	if (abs(ppn.y) > 0.5) { // Pointing up or down
-		lineDir = vec3(0,0,1);
-	} else { 
-		lineDir = vec3(0,1,0); 
+	float       lineLength;
+	const float lineLengthEpsilon    = 1e-2;
+	vec3        playerLinePos        = playerPos;
+	vec3        playerLineTangentPos = playerPos;
+
+	// Pointing in y direction
+	if (abs(ppn.y) > 0.99) { 
+		lineLength              = worldPos.x;
+		playerLinePos.x        += lineLengthEpsilon;
+		playerLineTangentPos   += normalize(cross(ppn, vec3(1,0,0))) * lineLengthEpsilon;
+	// Pointing in x direction
+	} else if (abs(ppn.x) > 0.99) {
+		lineLength              = worldPos.z; 
+		playerLinePos.z        += lineLengthEpsilon;
+		playerLineTangentPos   += normalize(cross(ppn, vec3(0,0,1))) * lineLengthEpsilon;
+	// Pointing in z direction
+	} else if (abs(ppn.z) > 0.99) {
+		lineLength              = worldPos.x;
+		playerLinePos.x        += lineLengthEpsilon;
+		playerLineTangentPos   += normalize(cross(ppn, vec3(1,0,0))) * lineLengthEpsilon;
+	} else {
+		lineLength = -1;
 	}
 
-	vec3 playerLineEnd = playerPos + lineDir;
-	vec2 screenLineEnd = backToClip(backToView(playerLineEnd)).xy * .5 + .5;
-	vec2 screenLineDir = normalize(screenLineEnd - coord);
+	vec3  screenLinePos        = backToClip(backToView(playerLinePos))        * .5 + .5;
+	vec3  screenLineTangentPos = backToClip(backToView(playerLineTangentPos)) * .5 + .5;
+	vec2  screenLineDir        = (screenLinePos.xy - coord)        * screenSize;
+	vec2  screenLineTangent    = (screenLineTangentPos.xy - coord) * screenSize;
+
+	float screenLineLength          = length(screenLineDir) / lineLengthEpsilon;
+	float screenTangentAlign        = dot(normalize(screenLineDir), normalize(screenLineTangent));
+	float correctedScreenLineLength = screenLineLength * sqrt( 1 - sq(acos(screenTangentAlign) / HALF_PI - 1) );
 
 	// Process Color
 
@@ -167,13 +190,13 @@ void main() {
 
 	switch (lineLevel) {
 		case 0: 
-			color *= lines(lineCoord, 0);
+			color *= float(int(gl_FragCoord.x) % 2);
 		case 1: 
-			color *= lines(lineCoord, PI / 2);
+			color *= float(int(gl_FragCoord.y) % 2);
 		/* case 2:
-			color *= lines((lineCoord + detailNoise * 0.5) / 4, screenLineDir )  * 0.5 + 0.5; */
+			color *= lines((lineCoord + detailNoise * 0.5) / 4, screenLineDir )  * 0.5 + 0.5; 
 		case 3:
-			color *= lines((lineCoord + detailNoise * 0.75) / 6, screenLineDir )  * 0.25  + 0.75;
+			color *= lines((lineCoord + detailNoise * 0.75) / 6, screenLineDir )  * 0.25  + 0.75; */
 	}
 
 	// Outline
@@ -183,28 +206,25 @@ void main() {
 	color *= vec3( 1 - depthDiff * outlineStrength );
 	color *= vec3( 1 - normalDiff * outlineStrength * float(safeNormals) );
 
-	//color = screenLineDir * .5 + .5;
+	float lineSpacing       = correctedScreenLineLength / 10;
+	float hardLineSpacing   = exp2(floor(log2(lineSpacing)));
+	float smoothLineSpacing = 2 * (lineSpacing - hardLineSpacing) / exp2(ceil(log2(lineSpacing)));
 
-	//if (abs(ppn.y) > 0.5) color = vec3(1,0,0);
+	const float lineWidth     = 25;
+	const float lineSharpness = 3;
+	float lmul = lineWidth * ( 1 + smoothLineSpacing ) * lineSharpness;
+	float lsub = lmul - lineSharpness + (smoothLineSpacing / 2) * lineSharpness;
 
-	if (distance(playerPos, vec3(2,-1.8,0)) < 0.5) color = vec3(1,0,0);
-	if (distance(playerLineEnd, vec3(2,-1.8,0)) < 0.5) color = vec3(0,1,0);
-	
-	float len = dot(lineCoord, screenLineDir) * .1;
-	/* color = vec3( sin(len) * .5 + .5 );
-	color = vec3( screenLineDir * .5 + .5, 0 ); */
+	float line1 = saturate(cos(lineLength * hardLineSpacing * PI) * lmul - lsub);
+	float line2 = saturate(cos(lineLength * hardLineSpacing * PI + PI) * lmul - lsub);
 
-#define DEBUG_SCREEN_LINEDIR( pos ) if (distance(coord, pos) < 0.01) color = vec3(1,1,0); if (distance(screenLineEnd, pos) < 0.01) color = vec3(0,1,1);
-
-	DEBUG_SCREEN_LINEDIR( vec2(.25) );
-	DEBUG_SCREEN_LINEDIR( vec2(.5)  );
-	DEBUG_SCREEN_LINEDIR( vec2(.75) );
-	DEBUG_SCREEN_LINEDIR( vec2(.25, .75) );
-	DEBUG_SCREEN_LINEDIR( vec2(.75, .25) );
-
-#undef DEBUG_SCREEN_LINEDIR
-
-
+	/* if (lineLength != -1 && depth < 1) {
+		color *= 1 - line1;
+		color *= 1 - line2 * saturate(smoothLineSpacing);
+	} else {
+		color *= lines((lineCoord + detailNoise * 0.75) / 6, PI / 4 )  * 0.25  + 0.75;
+	}
+ */
 	FragOut0   = vec4(color, 1);
 }
 
