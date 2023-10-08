@@ -1,6 +1,7 @@
 #include "/lib/settings.glsl"
-#include "/lib/math.glsl"
-#include "/lib/kernels.glsl"
+#include "/core/math.glsl"
+#include "/lib/utils.glsl"
+#include "/core/kernels.glsl"
 
 #ifndef CUSTOM_STARS
 flat out vec4 starData; //rgb = star color, a = flag for weather or not this pixel is a star.

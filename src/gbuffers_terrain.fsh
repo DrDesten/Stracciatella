@@ -1,6 +1,7 @@
 #include "/lib/settings.glsl"
-#include "/lib/math.glsl"
-#include "/lib/kernels.glsl"
+#include "/core/math.glsl"
+#include "/lib/utils.glsl"
+#include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
 in vec2 lmcoord;
@@ -43,13 +44,13 @@ uniform float customLightmapBlend;
 flat in int mcEntity;
 
 float calculateHeight(vec2 coord) {
-	float baseHeight = mean(textureLod(gcolor, coord, 100.0).rgb);
-	float absHeight  = mean(texture(gcolor, coord).rgb);
+	float baseHeight = avg(textureLod(gcolor, coord, 100.0).rgb);
+	float absHeight  = avg(texture(gcolor, coord).rgb);
 	float relHeight  = (absHeight - baseHeight) * 0.5 + 0.5;
 	return relHeight;
 }
 float calculateHeight(vec2 coord, float baseHeight) {
-	float absHeight  = mean(texture(gcolor, coord).rgb);
+	float absHeight  = avg(texture(gcolor, coord).rgb);
 	float relHeight  = absHeight - baseHeight;
 	return relHeight;
 }
@@ -112,10 +113,10 @@ void main() {
 
 			// NORMAL MAP GENERATION ////////////////////////////////
 			vec2  atlasPixel = (1. / GENERATED_NORMALS_RESOLUTION_MULTIPLIER) / atlasSize;
-			float relHeightN = mean( texture(gcolor, clamp(coord + vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
-			float relHeightS = mean( texture(gcolor, clamp(coord - vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
-			float relHeightE = mean( texture(gcolor, clamp(coord + vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
-			float relHeightW = mean( texture(gcolor, clamp(coord - vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
+			float relHeightN = avg( texture(gcolor, clamp(coord + vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
+			float relHeightS = avg( texture(gcolor, clamp(coord - vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
+			float relHeightE = avg( texture(gcolor, clamp(coord + vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
+			float relHeightW = avg( texture(gcolor, clamp(coord - vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
 			
 			vec3  normal = normalize(vec3(relHeightW - relHeightE, relHeightS - relHeightN, 0.3333));
 			
@@ -154,7 +155,7 @@ void main() {
 			vec3  hsv       = rgb2hsv(color.rgb);
 			float brownness = saturate(sqmag((hsvBrown - hsv) * vec3(10,3,2)) * 2 - 1);
 			
-			color.rgb  = reinhard_sqrt_tonemap_inverse(color.rgb * 0.996, 0.5);
+			color.rgb  = tm_reinhard_sqrt_inverse(color.rgb * 0.996, 0.5);
 
 			if      (white)   emissiveness = saturate(hsv.z * 2 - 1);
 			else if (anyCol)  emissiveness = saturate(max(saturate(hsv.y * 2 - 0.5), saturate(hsv.z * 2 - 1)) * 2 - 0.5);
@@ -211,7 +212,7 @@ void main() {
 	#endif
 
 	#ifdef HDR_EMISSIVES
-		if (block.emissive) color.rgb = reinhard_sqrt_tonemap(color.rgb, 0.5);
+		if (block.emissive) color.rgb = tm_reinhard_sqrt(color.rgb, 0.5);
 	#endif
 
 	#ifdef BLINKING_ORES

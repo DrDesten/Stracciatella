@@ -1,6 +1,7 @@
 #include "/lib/settings.glsl"
-#include "/lib/math.glsl"
-#include "/lib/kernels.glsl"
+#include "/core/math.glsl"
+#include "/lib/utils.glsl"
+#include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
 uniform float customLightmapBlend;
@@ -34,7 +35,7 @@ void main() {
 		if (temperature >= 0.15) { // Rain (detected based on player temperature)
 		#elif RAIN_DETECTION_MODE == 1
 		vec3 normalizedColor = normalize(color.rgb);
-		if (saturate((color.b) - mean(color.rg)) > 0.25) { // Rain (detected based on blue dominance)
+		if (saturate((color.b) - avg(color.rg)) > 0.25) { // Rain (detected based on blue dominance)
 		#endif
 
 			rain    = fstep(0.01, color.a);

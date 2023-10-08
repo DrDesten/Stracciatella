@@ -1,6 +1,7 @@
 #include "/lib/settings.glsl"
-#include "/lib/math.glsl"
-#include "/lib/kernels.glsl"
+#include "/core/math.glsl"
+#include "/lib/utils.glsl"
+#include "/core/kernels.glsl"
 #include "/lib/composite_basics.glsl"
 #include "/lib/transform.glsl"
 
@@ -60,7 +61,7 @@ vec4 gauss3x3LodHit(sampler2D tex, vec2 coord, vec2 pix, float lod) {
     vec3 b = textureLod(tex, coord - .5 * pix.xy, lod).rgb;
     vec3 c = textureLod(tex, coord + .5 * vec2(pix.x, -pix.y), lod).rgb;
     vec3 d = textureLod(tex, coord + .5 * vec2(-pix.x, pix.y), lod).rgb;
-	return vec4(a * .25 + (b * .25 + (c * .25 + (d * .25))), mean(vec4(sum(a) > 0, sum(b) > 0, sum(c) > 0, sum(d) > 0)));
+	return vec4(a * .25 + (b * .25 + (c * .25 + (d * .25))), avg(vec4(sum(a) > 0, sum(b) > 0, sum(c) > 0, sum(d) > 0)));
 }
 
 #endif
@@ -79,7 +80,7 @@ void main() {
 	vec3  prevCol   = gauss3x3(colortex4, prevProj.xy, pixel * 0.75);
 	float prevDepth = texture(colortex4, prevProj.xy).a;
 
-	float sampleLod = max(log2(mean(screenSize * pixel)) + LIGHTMAP_COLOR_LOD_BIAS, 0); // Calculate appropiate sampling LoD
+	float sampleLod = max(log2(avg(screenSize * pixel)) + LIGHTMAP_COLOR_LOD_BIAS, 0); // Calculate appropiate sampling LoD
 	vec2  jitter    = R2(frameCounter%1000) * pixel - (pixel * .5);
 	vec3  color     = gauss3x3Lod(colortex5, coord + jitter, pixel, sampleLod) * 10;
 	color = color / (color + 1.0);

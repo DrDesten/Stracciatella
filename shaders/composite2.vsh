@@ -2,8 +2,9 @@
 #define INCLUDE_COMPOSITE2_VSH
 
 #include "/lib/settings.glsl"
-#include "/lib/math.glsl"
-#include "/lib/kernels.glsl"
+#include "/core/math.glsl"
+#include "/lib/utils.glsl"
+#include "/core/kernels.glsl"
 
 void main() {
 	#if defined FXAA || defined HQ_UPSCALING

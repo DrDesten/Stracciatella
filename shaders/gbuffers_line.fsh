@@ -2,8 +2,9 @@
 #define INCLUDE_GBUFFERS_LINE_FSH
 
 #include "/lib/settings.glsl"
-#include "/lib/math.glsl"
-#include "/lib/kernels.glsl"
+#include "/core/math.glsl"
+#include "/lib/utils.glsl"
+#include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
 flat in vec4 glcolor;
@@ -37,8 +38,7 @@ void main() {
 
 		#elif BLOCK_OUTLINE_STYLE == 2
 
-		//color.rgb = (sin(frameTimeCounter * vec3(-0.5, 1, 0.25)) * 0.5 + 0.6); // Rainbow
-		color.rgb = hsv2rgb(vec3(frameTimeCounter * 0.25, 1, 1)); // Rainbow
+		color.rgb = (sin(frameTimeCounter * vec3(-0.5, 1, 0.25)) * 0.5 + 0.6); // Rainbow
 
 		#elif BLOCK_OUTLINE_STYLE == 3
 

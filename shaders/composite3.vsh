@@ -2,8 +2,9 @@
 #define INCLUDE_COMPOSITE3_VSH
 
 #include "/lib/settings.glsl"
-#include "/lib/math.glsl"
-#include "/lib/kernels.glsl"
+#include "/core/math.glsl"
+#include "/lib/utils.glsl"
+#include "/core/kernels.glsl"
 
 void main() {
 	#ifdef POST_PROCESS_SHADERS

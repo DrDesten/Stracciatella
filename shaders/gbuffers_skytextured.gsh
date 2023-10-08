@@ -1,5 +1,6 @@
 #include "/lib/settings.glsl"
-#include "/lib/math.glsl"
+#include "/core/math.glsl"
+#include "/lib/utils.glsl"
 #include "/lib/vertex_transform.glsl"
 
 uniform float frameTimeCounter;
