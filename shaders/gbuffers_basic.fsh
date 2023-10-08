@@ -37,7 +37,8 @@ void main() {
 
 			#elif BLOCK_OUTLINE_STYLE == 2
 
-			color.rgb = (sin(frameTimeCounter * vec3(-0.5, 1, 0.25)) * 0.5 + 0.6); // Rainbow
+			//color.rgb = (sin(frameTimeCounter * vec3(-0.5, 1, 0.25)) * 0.5 + 0.6); // Rainbow
+			color.rgb = hsv2rgb(vec3(fract(frameTimeCounter * 10), 1, 1)); // Rainbow
 
 			#elif BLOCK_OUTLINE_STYLE == 3
 
@@ -57,6 +58,7 @@ void main() {
     #if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
+
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
 	FragOut1 = vec4( encodeLightmapData(vec4(lmcoord, 1,0)), 1,1 );

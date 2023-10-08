@@ -19,7 +19,7 @@ void main() {
 	vec4 color = glcolor;
 	color.rgb *= texture(lightmap, lmcoord).rgb;
 
-	#if MC_VERSION < 11700 || defined IS_IRIS
+	#if MC_VERSION < 11700
 
 		#if BLOCK_OUTLINE_STYLE != 0
 		if (color.a < 0.5) {
@@ -50,6 +50,7 @@ void main() {
     #if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
+
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
 	FragOut1 = vec4( encodeLightmapData(vec4(lmcoord, 1,0)), 1,1 );
