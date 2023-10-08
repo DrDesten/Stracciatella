@@ -11,13 +11,18 @@ in vec2[3] textureCoordinate;
 in int[3] vertexId;
 
 out vec2 coord;
-out float isAurora;
+
+#ifdef AURORA
+    out float isAurora;
+#endif
 
 void main() {
 
     // Passthrough of original primitives
 
+#ifdef AURORA
     isAurora = 0;
+#endif
 
 	gl_Position = gl_in[0].gl_Position;
 	coord = textureCoordinate[0];
@@ -32,7 +37,9 @@ void main() {
     EmitVertex();
 
     EndPrimitive();
-    
+
+#ifdef AURORA
+
     // New vertices
 
     isAurora = 1;
@@ -76,4 +83,6 @@ void main() {
     EmitVertex();
 
     EndPrimitive();   */ 
+
+#endif
 }
