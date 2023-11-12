@@ -4,9 +4,9 @@
 #include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
-
 uniform float customLightmapBlend;
 uniform float frameTimeCounter;
+
 #include "/lib/lightmap.glsl"
 
 flat in vec2 lmcoord;

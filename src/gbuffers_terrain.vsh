@@ -55,14 +55,14 @@ out vec2 basecoord;
 out vec4 glcolor;
 out vec3 viewPos;
 
+flat out int mcEntity;
+
+flat out vec2 spriteSize;
+flat out vec2 midTexCoord;
+
 #if defined DIRECTIONAL_LIGHTMAPS || (defined RAIN_PUDDLES && defined RAIN_PUDDLE_PARALLAX)
 attribute vec4 at_tangent;
 flat out  mat3 tbn;
-#endif
-
-#if defined DIRECTIONAL_LIGHTMAPS || defined HDR_EMISSIVES || (defined RAIN_PUDDLES && defined RAIN_PUDDLE_PARALLAX)
-flat out vec2  spriteSize;
-flat out vec2  midTexCoord;
 #endif
 
 #ifdef DIRECTIONAL_LIGHTMAPS
@@ -87,7 +87,6 @@ out     vec2  blockCoords;
 flat out float oreBlink;
 #endif
 
-flat out int mcEntity;
 
 void main() {
 	gl_Position = ftransform();
@@ -99,16 +98,12 @@ void main() {
 	mcEntity    = int(max(0,mc_Entity.x));
 	int blockId = getID(mcEntity);
 
+	spriteSize  = abs(basecoord - mc_midTexCoord.xy);
+	midTexCoord = mc_midTexCoord.xy;
+
 #if defined DIRECTIONAL_LIGHTMAPS || (defined RAIN_PUDDLES && defined RAIN_PUDDLE_PARALLAX)
 
 	tbn = getTBN(at_tangent);
-
-#endif
-
-#if defined DIRECTIONAL_LIGHTMAPS || defined HDR_EMISSIVES || (defined RAIN_PUDDLES && defined RAIN_PUDDLE_PARALLAX)
-
-	spriteSize  = abs(basecoord - mc_midTexCoord.xy);
-	midTexCoord = mc_midTexCoord.xy;
 
 #endif
 
