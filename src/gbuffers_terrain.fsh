@@ -12,13 +12,13 @@ in vec2 basecoord;
 in vec4 glcolor;
 in vec3 viewPos;
 
+flat in int mcEntity;
+
+flat in vec2 spriteSize;
+flat in vec2 midTexCoord;
+
 #if defined DIRECTIONAL_LIGHTMAPS || (defined RAIN_PUDDLES && defined RAIN_PUDDLE_PARALLAX)
 flat in mat3 tbn;
-#endif
-
-#if defined DIRECTIONAL_LIGHTMAPS || defined HDR_EMISSIVES || (defined RAIN_PUDDLES && defined RAIN_PUDDLE_PARALLAX)
-flat in vec2  spriteSize;
-flat in vec2  midTexCoord;
 #endif
 
 #ifdef DIRECTIONAL_LIGHTMAPS
@@ -50,7 +50,6 @@ in      vec2      blockCoords;
 flat in float oreBlink;
 #endif
 
-flat in int mcEntity;
 
 float calculateHeight(vec2 coord) {
 	float baseHeight = avg(textureLod(gcolor, coord, 100.0).rgb);
@@ -95,7 +94,7 @@ void main() {
 	#ifdef RAIN_PUDDLES
 	#ifdef RAIN_PUDDLE_PARALLAX
 
-	if (glNormal.y > 0.9) {
+	if (glNormal.y > 0.9 && rainPuddle > 1e-10) {
 
 		vec3 playerPos           = toPlayer(viewPos);
 		#ifdef RAIN_PUDDLE_PARALLAX_REFRACTION
@@ -124,6 +123,15 @@ void main() {
 	color.rgb *= glcolor.rgb;
 
 	blockInfo block = decodeID(mcEntity);
+
+	if (block.id == 10 || block.id == 11) {
+		vec2  blockCoords = (coord - midTexCoord + spriteSize) / (spriteSize * 2);
+		float ao = 1 - sq(
+			(1 - abs(blockCoords.x * 2 - 1)) *
+			(blockCoords.y)
+		);
+		color.rgb *= ao * 0.25 + 0.75;
+	}
 
 	#ifdef RAIN_PUDDLES
 
