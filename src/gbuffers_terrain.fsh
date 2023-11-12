@@ -3,42 +3,51 @@
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-
-in vec2 lmcoord;
-in vec2 coord;
-in vec4 glcolor;
-in vec3 viewPos;
-
-#ifdef DIRECTIONAL_LIGHTMAPS
-	uniform ivec2 atlasSize;
-	flat in vec2  spriteSize;
-	flat in vec2  midTexCoord;
-	flat in mat2  tbn;
-	flat in float directionalLightmapStrength;
-#elif defined HDR_EMISSIVES
-	flat in vec2 spriteSize;
-	flat in vec2 midTexCoord;
-#endif
-#ifdef HDR_EMISSIVES
-	flat in vec3 rawNormal;
-    in float worldPosY;
-#endif
-#if NORMAL_TEXTURE_MODE == 1 && defined MC_NORMAL_MAP && defined DIRECTIONAL_LIGHTMAPS 
-	uniform sampler2D normals;
-#endif
-
-#ifdef RAIN_PUDDLES
-	uniform sampler2D colortex4;
-	uniform float frameTimeCounter;
-	uniform float rainPuddle;
-	in float puddle;
-	in vec2  blockCoords;
-#endif
+#include "/lib/transform.glsl"
 
 uniform float customLightmapBlend;
 
+in vec2 lmcoord;
+in vec2 basecoord;
+in vec4 glcolor;
+in vec3 viewPos;
+
+#if defined DIRECTIONAL_LIGHTMAPS || (defined RAIN_PUDDLES && defined RAIN_PUDDLE_PARALLAX)
+flat in mat3 tbn;
+#endif
+
+#if defined DIRECTIONAL_LIGHTMAPS || defined HDR_EMISSIVES || (defined RAIN_PUDDLES && defined RAIN_PUDDLE_PARALLAX)
+flat in vec2  spriteSize;
+flat in vec2  midTexCoord;
+#endif
+
+#ifdef DIRECTIONAL_LIGHTMAPS
+uniform ivec2 atlasSize;
+flat in float directionalLightmapStrength;
+#endif
+
+#if defined HDR_EMISSIVES || (defined RAIN_PUDDLES && defined RAIN_PUDDLE_PARALLAX)
+flat in vec3 glNormal;
+#endif
+
+#ifdef HDR_EMISSIVES
+in float worldPosY;
+#endif
+
+#if NORMAL_TEXTURE_MODE == 1 && defined MC_NORMAL_MAP && defined DIRECTIONAL_LIGHTMAPS 
+uniform sampler2D normals;
+#endif
+
+#ifdef RAIN_PUDDLES
+uniform sampler2D colortex4;
+uniform float     frameTimeCounter;
+uniform float     rainPuddle;
+in      float     puddle;
+in      vec2      blockCoords;
+#endif
+
 #ifdef BLINKING_ORES
-	flat in float oreBlink;
+flat in float oreBlink;
 #endif
 
 flat in int mcEntity;
@@ -80,6 +89,37 @@ layout(location = 0) out vec4 FragOut0;
 layout(location = 1) out vec2 FragOut1;
 #endif
 void main() {
+
+	vec2 coord = basecoord;
+
+	#ifdef RAIN_PUDDLES
+	#ifdef RAIN_PUDDLE_PARALLAX
+
+	if (glNormal.y > 0.9) {
+
+		vec3 playerPos           = toPlayer(viewPos);
+		#ifdef RAIN_PUDDLE_PARALLAX_REFRACTION
+		vec3 refractedPlayerPos  = refract(normalize(playerPos), vec3(0,1,0), 1/1.33);
+		vec3 playerDisplacement  = (refractedPlayerPos / refractedPlayerPos.y);
+		#else
+		vec3 playerDisplacement  = (playerPos / playerPos.y);
+		#endif
+		vec3 viewDisplacement    = viewPos - backToView(playerPos + playerDisplacement * (RAIN_PUDDLE_PARALLAX_DEPTH * 2));
+		vec3 textureDisplacement = viewDisplacement * tbn;
+
+		coord += textureDisplacement.xy * spriteSize * smoothstep(0, 1, puddle);
+
+		coord  = coord - midTexCoord + spriteSize;
+		coord /= spriteSize * 2;
+		coord  = fract(coord);
+		coord *= spriteSize * 2;
+		coord  = coord - spriteSize + midTexCoord;
+
+	}
+
+	#endif
+	#endif
+
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb;
 
@@ -123,7 +163,7 @@ void main() {
 		#endif
 
 		// DIRECTIONAL LIGHTMAPS ////////////////////////////////
-		vec2 blockLightDir = getBlocklightDir(lmcoord, tbn);
+		vec2 blockLightDir = getBlocklightDir(lmcoord, mat2(tbn));
 		vec3 lightingDir   = normalize( vec3(blockLightDir, 0.5 + sq(sq(lmcoord.x))) ); // The closer to the light source, the "higher" the light is
 
 		float diffuse = dot(normal, lightingDir) * (DIRECTIONAL_LIGHTMAPS_STRENGTH * 0.5) + (0.5 * (1 - DIRECTIONAL_LIGHTMAPS_STRENGTH) + 0.5);
@@ -166,7 +206,7 @@ void main() {
             else if (redOre)  emissiveness = saturate( saturate(sq(peak05(fract(hsv.x + .5)))) * saturate( hsv.y * 2 - 1) * 0.5 );
             else if (blue)    emissiveness = saturate(sqmag((vec3(0.57, .8, .8) - hsv) * vec3(2,2,2)) * -1 + 1) + saturate(hsv.y * -5 + 4) * saturate(hsv.z * 5 - 4) * brownness;
 			else if (purple)  emissiveness = saturate(hsv.z * 1.5 - .5) * saturate(hsv.y * 3 - 2) + sq(saturate(hsv.z * 5 - 4));
-			else if (candle)  emissiveness = sqsq(saturate((midTexCoord.y - coord.y) * (0.5 / spriteSize.y) + 0.5 + saturate(rawNormal.y)));
+			else if (candle)  emissiveness = sqsq(saturate((midTexCoord.y - coord.y) * (0.5 / spriteSize.y) + 0.5 + saturate(glNormal.y)));
 
 			color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 1.5) * color.rgb;
 

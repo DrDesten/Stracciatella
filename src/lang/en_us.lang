@@ -229,14 +229,19 @@ option.ANGLED_RAIN_AMOUNT=Angled Rain Amount
 option.ANGLED_RAIN_ROTATION_SPEED=Angled Rain Rotation Speed
 
 option.RAIN_PUDDLES=Rain Puddles
-option.RAIN_PUDDLES_COVERAGE=Rain Puddle Coverage
-option.RAIN_PUDDLES_SIZE=Rain Puddle Size
-option.RAIN_PUDDLES_DEPTH=Rain Puddle Opacity
+option.RAIN_PUDDLE_COVERAGE=Rain Puddle Coverage
+option.RAIN_PUDDLE_SIZE=Rain Puddle Size
+option.RAIN_PUDDLE_OPACITY=Rain Puddle Opacity
 
 screen.RAIN_PUDDLE_COLOR_CONFIG=Rain Puddle Color
 option.RAIN_PUDDLE_COLOR_R=Rain Puddle Color §cR
 option.RAIN_PUDDLE_COLOR_G=Rain Puddle Color §2G
 option.RAIN_PUDDLE_COLOR_B=Rain Puddle Color §9B
+
+option.RAIN_PUDDLE_PARALLAX=Rain Puddle Parallax
+option.RAIN_PUDDLE_PARALLAX_REFRACTION=Parallax Refraction
+option.RAIN_PUDDLE_PARALLAX_DEPTH=Parallax Depth
+suffix.RAIN_PUDDLE_PARALLAX_DEPTH=m
 
 ///////////////////////////////////////////////////////////
 // WAVING
