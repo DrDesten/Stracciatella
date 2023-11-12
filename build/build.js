@@ -1,4 +1,5 @@
 const fs = require( "fs" )
+const path = require( "path" )
 const { guardFiles } = require( "./generateIncludeGuards.js" )
 const { guardUniforms } = require( "./parseUniforms.js" )
 const { PropertiesFile, PropertiesParser, PropertiesCompiler, loadProperties, compileProperties } = require( "./parseProperties.js" )
@@ -7,9 +8,14 @@ const { PropertiesFile, PropertiesParser, PropertiesCompiler, loadProperties, co
 // Copy Directory Over
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-fs.rmSync( `${__dirname}/../shaders`, { recursive: true } )
-fs.cpSync( `${__dirname}/../src`, `${__dirname}/../shaders`, { force: true, recursive: true } )
-const dir = `${__dirname}/../shaders`
+const src = `${__dirname}/../src`
+const shaders = `${__dirname}/../shaders`
+
+fs.rmSync( shaders, { recursive: true } )
+console.info( "Deleted `shaders`" )
+fs.cpSync( src, shaders, { force: true, recursive: true } )
+console.info( "Copied `src` into `shaders`" )
+const dir = shaders
 
 /** @param {string} dir @returns {string[]} */
 function gatherFiles( dir, fileList = [] ) {

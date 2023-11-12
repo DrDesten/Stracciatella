@@ -62,6 +62,16 @@ vec3 getWorld() {
     return getPlayer() + cameraPosition;
 }
 #endif
+
+vec3 worldToPlayer(vec3 worldPos) {
+    return worldPos - cameraPosition;
+}
+vec3 worldToView(vec3 worldPos) {
+    return playerToView(worldToPlayer(worldPos));
+}
+vec4 worldToView4(vec3 worldPos) {
+    return playerToView4(worldToPlayer(worldPos));
+}
 vec4 worldToClip(vec3 worldPos) {
     return playerToClip(vec4(worldPos - cameraPosition, 1));
 }
