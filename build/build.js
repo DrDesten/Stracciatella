@@ -11,8 +11,10 @@ const { PropertiesFile, PropertiesParser, PropertiesCompiler, loadProperties, co
 const src = `${__dirname}/../src`
 const shaders = `${__dirname}/../shaders`
 
-fs.rmSync( shaders, { recursive: true } )
-console.info( "Deleted `shaders`" )
+if ( fs.existsSync( shaders ) ) {
+    fs.rmSync( shaders, { recursive: true } )
+    console.info( "Deleted `shaders`" )
+}
 fs.cpSync( src, shaders, { force: true, recursive: true } )
 console.info( "Copied `src` into `shaders`" )
 const dir = shaders
