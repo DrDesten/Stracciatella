@@ -64,6 +64,13 @@ vec4 gauss3x3LodHit(sampler2D tex, vec2 coord, vec2 pix, float lod) {
 	return vec4(a * .25 + (b * .25 + (c * .25 + (d * .25))), avg(vec4(sum(a) > 0, sum(b) > 0, sum(c) > 0, sum(d) > 0)));
 }
 
+float getAge(vec3 color) {
+	return maxc(color);
+}
+vec3 getColor(vec3 color) {
+	return min(vec3(1), color / maxc(color));
+}
+
 #endif
 
 /* DRAWBUFFERS:4 */
@@ -78,6 +85,7 @@ void main() {
 	vec2 prevCoord   = prevProj.xy;
 
 	vec3  prevCol   = gauss3x3(colortex4, prevProj.xy, pixel * 0.75);
+	float prevAge   = getAge(prevCol);
 	float prevDepth = texture(colortex4, prevProj.xy).a;
 
 	float sampleLod = max(log2(avg(screenSize * pixel)) + LIGHTMAP_COLOR_LOD_BIAS, 0); // Calculate appropiate sampling LoD
@@ -86,9 +94,9 @@ void main() {
 	color = color / (color + 1.0);
 
 	// Improves Accumulation by guessing pixel age and sample importance (there is no buffer space left for pixel age)
-	float age = maxc(prevCol); age = age / (age + 0.025); // Estimates age using pixel brightness
+	float age              = prevAge / (prevAge + 0.025); // Estimates age using pixel brightness
 	float sampleImportance = luminance(color.rgb); // Estimates sample importance using sample brightness
-	float mixTweak = age * (sampleImportance) + (1 - sampleImportance); // If the age is high (value low), let more of the sample in, but only if there is something to sample
+	float mixTweak         = age * (sampleImportance) + (1 - sampleImportance); // If the age is high (value low), let more of the sample in, but only if there is something to sample
 	mixTweak = mixTweak * (1 - LIGHTMAP_COLOR_FLICKER_RED) + LIGHTMAP_COLOR_FLICKER_RED; // Tweak value using user defined setting
 
 	#if LIGHTMAP_COLOR_REJECTION == 0
@@ -119,6 +127,10 @@ void main() {
 	//    LIGHTMAP_COLOR_REGEN    0  will cause rejection to have no impact on the blend factor.
 	color = mix(color, prevCol * rejection, LIGHTMAP_COLOR_BLEND * (rejection * LIGHTMAP_COLOR_REGEN + (1 - LIGHTMAP_COLOR_REGEN)) * mixTweak);
 	
+	#if LIGHTMAP_COLOR_DEBUG == 2
+		color = vec3(age);
+	#endif
+
 	FragOut0 = vec4(color, screenPos.z);
 
 #endif
