@@ -109,6 +109,13 @@ vec4 getLightmap(vec2 coord) {
 }
 
 
+float getImportance(vec3 color) {
+	return maxc(color);
+}
+vec3 getColor(vec3 color) {
+	return min(vec3(1), color / maxc(color));
+}
+
 
 
 /* DRAWBUFFERS:0 */
@@ -198,9 +205,12 @@ void main() {
 
 		#ifdef COLORED_LIGHTS
 
-			vec3 blockLightColor = (textureBicubic(colortex4, coord, vec2(16,9), 1./vec2(16,9)).rgb);
-			blockLightColor = blockLightColor / (maxc(blockLightColor) + 0.02);
-			blockLightColor = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
+			vec4  rawColoredLight      = textureBicubic(colortex4, coord, LIGHTMAP_COLOR_RES, 1/LIGHTMAP_COLOR_RES);
+			vec3  blockLightColor      = getColor(rawColoredLight.rgb);
+			float blockLightImportance = getImportance(rawColoredLight.rgb);
+			
+			blockLightColor *= pow(-sq(blockLightImportance) + 2 * blockLightImportance, 1./4);
+			blockLightColor  = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
 
 			float dist = sqmag(playerPos);
 			float handLightBrightness = smoothstep(handLight.a * 5, 0, dist);
@@ -220,7 +230,7 @@ void main() {
 
 			#elif LIGHTMAP_COLOR_DEBUG == 2 // Debug, Mix Age
 
-			color = mix(color, blockLightColor, 0.666);
+			color = mix(color, vec3(maxc(blockLightColor)), 0.666);
 			vec3 tmp = texture(colortex5, coord).rgb;
 			if (sum(tmp) != 0) color = tmp;
 
