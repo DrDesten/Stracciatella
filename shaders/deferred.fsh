@@ -258,21 +258,27 @@ void main() {
 			blockLightColor = blockLightColor + handLight.rgb * handLightBrightness;
 			blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightnessExp);
 
-			#if LIGHTMAP_COLOR_DEBUG == 0 // No Debug, Normal Mode
+			#if LIGHTMAP_COLOR_DEBUG == 0 // No Debug
 
 			color *= getCustomLightmap(lmcoord.xyz, customLightmapBlend, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
 
-			#elif LIGHTMAP_COLOR_DEBUG == 1 // Debug, Mix Mode
+			#elif LIGHTMAP_COLOR_DEBUG == 1 // Debug, Mix Color
 
 			color = mix(color, blockLightColor * (1 - lmcoord.a) + lmcoord.a, 0.666);
 			vec3 tmp = texture(colortex5, coord).rgb;
 			if (sum(tmp) != 0) color = tmp;
 
-			#elif LIGHTMAP_COLOR_DEBUG == 2 // Debug, Pure Mode
+			#elif LIGHTMAP_COLOR_DEBUG == 2 // Debug, Mix Age
+
+			color = mix(color, blockLightColor, 0.666);
+			vec3 tmp = texture(colortex5, coord).rgb;
+			if (sum(tmp) != 0) color = tmp;
+
+			#elif LIGHTMAP_COLOR_DEBUG == 3 // Debug, Pure Color
 
 			color = blockLightColor * (1 - lmcoord.a) + lmcoord.a;
 
-			#elif LIGHTMAP_COLOR_DEBUG == 3 // Debug, Source Mode
+			#elif LIGHTMAP_COLOR_DEBUG == 4 // Debug, Source Color
 
 			vec3 tmp = texture(colortex5, coord).rgb;
 			if (sum(tmp) != 0) color = tmp;

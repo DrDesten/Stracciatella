@@ -152,9 +152,10 @@ option.LIGHTMAP_COLOR_LOD_BIAS.comment=Controls the detail level at which colors
 
 option.LIGHTMAP_COLOR_DEBUG=Colored Lights Debug
 value.LIGHTMAP_COLOR_DEBUG.0=OFF
-value.LIGHTMAP_COLOR_DEBUG.1=Mix
-value.LIGHTMAP_COLOR_DEBUG.2=Raw
-value.LIGHTMAP_COLOR_DEBUG.3=Source
+value.LIGHTMAP_COLOR_DEBUG.1=Mix Color
+value.LIGHTMAP_COLOR_DEBUG.2=Mix Age
+value.LIGHTMAP_COLOR_DEBUG.3=Raw Color
+value.LIGHTMAP_COLOR_DEBUG.4=Source Color
 
 screen.CUSTOM_LIGHTMAP_COLOR_CONFIG=Lightmap Colors
 
