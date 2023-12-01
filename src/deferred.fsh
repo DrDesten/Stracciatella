@@ -110,13 +110,11 @@ vec4 getLightmap(vec2 coord) {
 
 
 float getImportance(vec3 color) {
-	return maxc(color);
+	return color.x;
 }
 vec3 getColor(vec3 color) {
-	return min(vec3(1), color / maxc(color));
+	return sq(oklab2rgb(vec3(1, color.yz)));
 }
-
-
 
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 FragOut0;
@@ -205,11 +203,12 @@ void main() {
 
 		#ifdef COLORED_LIGHTS
 
-			vec4  rawColoredLight      = textureBicubic(colortex4, coord, LIGHTMAP_COLOR_RES, 1/LIGHTMAP_COLOR_RES);
-			vec3  blockLightColor      = getColor(rawColoredLight.rgb);
-			float blockLightImportance = getImportance(rawColoredLight.rgb);
+			vec3  rawColoredLight      = textureBicubic(colortex4, coord, LIGHTMAP_COLOR_RES, 1/LIGHTMAP_COLOR_RES).rgb;
+			vec3  blockLightColor      = getColor(rawColoredLight);
+			float blockLightImportance = getImportance(rawColoredLight);
 			
 			blockLightColor *= pow(-sq(blockLightImportance) + 2 * blockLightImportance, 1./4);
+			blockLightColor  = saturate(applySaturation(blockLightColor, 1.5));
 			blockLightColor  = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
 
 			float dist = sqmag(playerPos);

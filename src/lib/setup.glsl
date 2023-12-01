@@ -13,7 +13,7 @@ const int colortex2Format = R8;
 const int colortex3Format = R8;
 
 // Colored Lights Data ( RGB: Color, A: Depth ) ( fixed resolution )
-const int colortex4Format = RGBA16;
+const int colortex4Format = RGBA16_SNORM;
 
 // Emissive Colors ( used for colored lights )
 const int colortex5Format = RGB8;

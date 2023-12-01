@@ -64,13 +64,9 @@ vec4 gauss3x3LodHit(sampler2D tex, vec2 coord, vec2 pix, float lod) {
 	return vec4(a * .25 + (b * .25 + (c * .25 + (d * .25))), avg(vec4(sum(a) > 0, sum(b) > 0, sum(c) > 0, sum(d) > 0)));
 }
 
-float getImportance(vec3 color) {
-	return maxc(color);
+float getImportance(vec3 lab) {
+	return maxc(lab);
 }
-vec3 getColor(vec3 color) {
-	return min(vec3(1), color / maxc(color));
-}
-
 #endif
 
 /* DRAWBUFFERS:4 */
@@ -86,11 +82,12 @@ void main() {
 
 	vec3  prevCol        = gauss3x3(colortex4, prevProj.xy, pixel);
 	float prevImportance = getImportance(prevCol);
-	float prevDepth      = texture(colortex4, prevProj.xy).a;
+	float prevDepth      = texture(colortex4, prevProj.xy).a * 0.5 + 0.5;
 
 	float sampleLod  = max(log2(maxc(screenSize * pixel)) + LIGHTMAP_COLOR_LOD_BIAS, 0); // Calculate appropiate sampling LoD
 	vec2  jitter     = R2(frameCounter%1000) * pixel - (pixel * .5);
-	vec3  color      = gauss3x3Lod(colortex5, coord + jitter, pixel, sampleLod);
+	vec3  rawColor   = gauss3x3Lod(colortex5, coord + jitter, pixel, sampleLod);
+	vec3  color      = rgb2oklab(sqrt(rawColor));
 	float importance = getImportance(color);
 
 	// Calculate mix value based on current and previous importance values
@@ -130,11 +127,11 @@ void main() {
 	//    LIGHTMAP_COLOR_REGEN    0  will cause rejection to have no impact on the blend factor.
 	color = mix(
 		color, 
-		prevCol * rejection, 
+		prevCol * vec3(rejection, 1, 1), 
 		LIGHTMAP_COLOR_BLEND * (rejection * LIGHTMAP_COLOR_REGEN + (1 - LIGHTMAP_COLOR_REGEN)) * mixTweak
 	);
 	
-	FragOut0 = vec4(color, screenPos.z);
+	FragOut0 = vec4(color, screenPos.z * 2 - 1);
 
 #endif
 }
