@@ -108,6 +108,9 @@ vec2 rotation(float angle) {
 vec4 getLightmap(vec2 coord) {
     return vec2x16to4(texture(colortex1, coord).xy);
 }
+vec3 getColor(vec3 color) {
+	return sq(oklab2rgb(vec3(1, color.yz)));
+}
 
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 FragOut0;
@@ -196,16 +199,13 @@ void main() {
 
 		#ifdef COLORED_LIGHTS
 
-			vec3  rawColoredLight = textureBicubic(colortex4, coord, LIGHTMAP_COLOR_RES, 1/LIGHTMAP_COLOR_RES).rgb;
-			float blImportance    = decodeImportance(rawColoredLight);
-			vec3  blColor         = decodeColor(rawColoredLight);
+			vec3  rawColoredLight      = textureBicubic(colortex4, coord, LIGHTMAP_COLOR_RES, 1/LIGHTMAP_COLOR_RES).rgb;
+			vec3  blockLightColor      = getColor(rawColoredLight);
+			float blockLightImportance = rawColoredLight.x;
 			
-			blColor.yz /= sqrt(maxc(abs(blColor.yz)));
-
-			vec3 blockLightColor = oklab2rgb(blColor);
-			//blockLightColor     *= pow(-sq(blImportance) + 2 * blImportance, 1./4);
-			//blockLightColor      = saturate(applySaturation(blockLightColor, 2));
-			//blockLightColor      = saturate(applyVibrance(blockLightColor, 2 * LIGHTMAP_COLOR_VIBRANCE));
+			blockLightColor *= pow(-sq(blockLightImportance) + 2 * blockLightImportance, 1./4);
+			blockLightColor  = saturate(applySaturation(blockLightColor, 1.5));
+			blockLightColor  = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
 
 			float dist = sqmag(playerPos);
 			float handLightBrightness = smoothstep(handLight.a * 5, 0, dist);
@@ -223,9 +223,9 @@ void main() {
 			vec3 tmp = texture(colortex5, coord).rgb;
 			if (sum(tmp) != 0) color = tmp;
 
-			#elif LIGHTMAP_COLOR_DEBUG == 2 // Debug, Mix Importance
+			#elif LIGHTMAP_COLOR_DEBUG == 2 // Debug, Mix Age
 
-			color = mix(color, vec3(blImportance), 0.666);
+			color = mix(color, vec3(maxc(blockLightColor)), 0.666);
 			vec3 tmp = texture(colortex5, coord).rgb;
 			if (sum(tmp) != 0) color = tmp;
 
@@ -242,7 +242,7 @@ void main() {
 			#endif
 
 		#else
-
+		
 			color *= getCustomLightmap(lmcoord.xyz, customLightmapBlend) * (1 - lmcoord.a) + lmcoord.a;
 
 		#endif
