@@ -5,6 +5,7 @@
 #include "/lib/composite_basics.glsl"
 #include "/lib/transform.glsl"
 #include "/lib/sky.glsl"
+#include "/lib/colored_lights.glsl"
 
 uniform sampler2D colortex1;
 
@@ -108,14 +109,6 @@ vec4 getLightmap(vec2 coord) {
     return vec2x16to4(texture(colortex1, coord).xy);
 }
 
-
-float getImportance(vec3 color) {
-	return color.x;
-}
-vec3 getColor(vec3 color) {
-	return sq(oklab2rgb(vec3(1, color.yz)));
-}
-
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 FragOut0;
 void main() {
@@ -203,13 +196,16 @@ void main() {
 
 		#ifdef COLORED_LIGHTS
 
-			vec3  rawColoredLight      = textureBicubic(colortex4, coord, LIGHTMAP_COLOR_RES, 1/LIGHTMAP_COLOR_RES).rgb;
-			vec3  blockLightColor      = getColor(rawColoredLight);
-			float blockLightImportance = getImportance(rawColoredLight);
+			vec3  rawColoredLight = textureBicubic(colortex4, coord, LIGHTMAP_COLOR_RES, 1/LIGHTMAP_COLOR_RES).rgb;
+			float blImportance    = decodeImportance(rawColoredLight);
+			vec3  blColor         = decodeColor(rawColoredLight);
 			
-			blockLightColor *= pow(-sq(blockLightImportance) + 2 * blockLightImportance, 1./4);
-			blockLightColor  = saturate(applySaturation(blockLightColor, 1.5));
-			blockLightColor  = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
+			blColor.yz /= sqrt(maxc(abs(blColor.yz)));
+
+			vec3 blockLightColor = oklab2rgb(blColor);
+			//blockLightColor     *= pow(-sq(blImportance) + 2 * blImportance, 1./4);
+			//blockLightColor      = saturate(applySaturation(blockLightColor, 2));
+			//blockLightColor      = saturate(applyVibrance(blockLightColor, 2 * LIGHTMAP_COLOR_VIBRANCE));
 
 			float dist = sqmag(playerPos);
 			float handLightBrightness = smoothstep(handLight.a * 5, 0, dist);
@@ -227,9 +223,9 @@ void main() {
 			vec3 tmp = texture(colortex5, coord).rgb;
 			if (sum(tmp) != 0) color = tmp;
 
-			#elif LIGHTMAP_COLOR_DEBUG == 2 // Debug, Mix Age
+			#elif LIGHTMAP_COLOR_DEBUG == 2 // Debug, Mix Importance
 
-			color = mix(color, vec3(maxc(blockLightColor)), 0.666);
+			color = mix(color, vec3(blImportance), 0.666);
 			vec3 tmp = texture(colortex5, coord).rgb;
 			if (sum(tmp) != 0) color = tmp;
 
