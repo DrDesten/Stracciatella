@@ -9,9 +9,9 @@ uniform vec4  entityColor;
 uniform float customLightmapBlend;
 
 flat in vec2 lmcoord;
-in vec2 coord;
+in      vec2 coord;
 flat in vec4 glcolor;
-in vec3 viewPos;
+in      vec3 viewPos;
 
 /* DRAWBUFFERS:01 */
 layout(location = 0) out vec4 FragOut0;
@@ -19,6 +19,9 @@ layout(location = 1) out vec4 FragOut1; // Even if only two channels are used, I
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 	color.rgb  = mix(color.rgb, entityColor.rgb, entityColor.a);
+
+	// Todo:
+	// Entity Shadows render here and they are fucked up
 	
     #if DITHERING >= 2
 		color.rgb += ditherColor(gl_FragCoord.xy);
