@@ -70,7 +70,7 @@ vec4 gauss3x3LodHit(sampler2D tex, vec2 coord, vec2 pix, float lod) {
 /* DRAWBUFFERS:4 */
 layout(location = 0) out vec4 FragOut0;
 void main() {
-	
+
 #ifdef COLORED_LIGHTS
 
 	vec3 screenPos = vec3(coord, getDepth(coord));
@@ -78,23 +78,21 @@ void main() {
 	vec4 prevProj   = reprojectScreen(screenPos);
 	vec2 prevCoord  = prevProj.xy;
 
-	vec3  prevRaw        = gauss3x3(colortex4, prevProj.xy, pixel);
-	vec3  prevColor      = decodeColor(prevRaw);
-	float prevImportance = decodeImportance(prevRaw);
+	vec3  prevCol        = gauss3x3(colortex4, prevProj.xy, pixel);
+	float prevImportance = getImportance(prevCol);
 	float prevDepth      = texture(colortex4, prevProj.xy).a * 0.5 + 0.5;
-    
-	float sampleLod      = max(log2(maxc(screenSize * pixel)) + LIGHTMAP_COLOR_LOD_BIAS, 0); // Calculate appropiate sampling LoD
-	vec2  jitter         = R2(frameCounter%1000) * pixel - (pixel * .5);
-	vec3  currRaw        = gauss3x3Lod(colortex5, coord + jitter, pixel, sampleLod);
-	vec3  currColor      = rgb2oklab(max(currRaw / maxc(currRaw), 0));
-	float currImportance = getImportance(currRaw);
+
+	float sampleLod  = max(log2(maxc(screenSize * pixel)) + LIGHTMAP_COLOR_LOD_BIAS, 0); // Calculate appropiate sampling LoD
+	vec2  jitter     = R2(frameCounter%1000) * pixel - (pixel * .5);
+	vec3  rawColor   = gauss3x3Lod(colortex5, coord + jitter, pixel, sampleLod);
+	vec3  color      = rgb2oklab(sqrt(rawColor));
+	float importance = getImportance(color);
 
 	// Calculate mix value based on current and previous importance values
 	// 0: new <=> 1: old
-	float pI = prevImportance, cI = currImportance;
-	pI *= 2;
-	cI  = cI;
-	float softmax   = min(1, exp(pI) / (exp(pI) + exp(cI)));
+	prevImportance *= 2;
+	importance      = sqsq(importance);
+	float softmax   = min(1, exp(prevImportance) / (exp(prevImportance) + exp(importance)));
 	float mixTweak  = softmax / (softmax + 0.05);
 
 	mixTweak = mixTweak * (1 - LIGHTMAP_COLOR_FLICKER_RED) + LIGHTMAP_COLOR_FLICKER_RED; // Tweak value using user defined setting
@@ -125,21 +123,13 @@ void main() {
 	// rejection is zero when history is fully rejected, causing the history to be removed (multiplied by zero)
 	// if LIGHTMAP_COLOR_REGEN is 1, rejection == 0 will cause the new color to instantly fill the frame, while
 	//    LIGHTMAP_COLOR_REGEN    0  will cause rejection to have no impact on the blend factor.
-	float mixFactor = LIGHTMAP_COLOR_BLEND * (rejection * LIGHTMAP_COLOR_REGEN + (1 - LIGHTMAP_COLOR_REGEN)) * mixTweak;
-	vec3 nextColor = mix(
-		currColor, 
-		prevColor,
-		mixFactor
+	color = mix(
+		color, 
+		prevCol * vec3(rejection, 1, 1), 
+		LIGHTMAP_COLOR_BLEND * (rejection * LIGHTMAP_COLOR_REGEN + (1 - LIGHTMAP_COLOR_REGEN)) * mixTweak
 	);
-	float nextImportance = mix(
-		currImportance,
-		prevImportance * rejection,
-		mixFactor
-	);
-
-	currColor = encodeImportance(nextColor, nextImportance);
-		
-	FragOut0 = vec4(currColor, screenPos.z * 2 - 1);
+	
+	FragOut0 = vec4(color, screenPos.z * 2 - 1);
 
 #endif
 }
