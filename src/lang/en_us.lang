@@ -381,6 +381,7 @@ option.BLOCK_OUTLINE_COLOR_B=Block Outline Color §9B
 
 option.SHADER_NAME=Stracciatella Shaders
 value.SHADER_NAME.0=v1.6
+value.SHADER_NAME.1=§c§lfrom §6§lTogo §2§lwith§f ❤
 
 profile.VANILLA=Vanilla
 profile.DEFAULT=Default
@@ -389,8 +390,7 @@ profile.STRACCIATELLA=Stracciatella
 option.AGRESSIVE_OPTIMISATION=Aggressive Optimization
 option.AGRESSIVE_OPTIMISATION.comment=Activates Optimizations that can break the visuals or might break in future versions of Minecraft.
 
-option.CREDITS=--
-value.CREDITS.0=§c§lby §6§lDrDe§2§lsten§r :--
-value.CREDITS.1=§c§lfrom §6§lTogo §2§lwith§r ❤ :--
+option.CREDITS=by
+value.CREDITS.0=§c§lDr§6§lDes§2§lten§r
 
 screen.DEBUG.comment=Don't mess with the stuff in here unless you know what you're doing. Debug options and Internal toggles get dumped here.
