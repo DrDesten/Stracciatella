@@ -17,9 +17,9 @@ void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 	color.rgb *= texture(lightmap, lmcoord).rgb;
 
-	#if DITHERING >= 2
-		color.rgb += ditherColor(gl_FragCoord.xy);
-	#endif
+#if DITHERING >= 2
+	color.rgb += ditherColor(gl_FragCoord.xy);
+#endif
 
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;

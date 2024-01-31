@@ -20,7 +20,7 @@ layout(location = 1) out vec4 FragOut1;
 void main() {
 	vec4 color = glcolor;
 
-	#if BLOCK_OUTLINE_STYLE != 0
+#if BLOCK_OUTLINE_STYLE != 0
 	if (renderStage == MC_RENDER_STAGE_OUTLINE) {
 
 		#if BLOCK_OUTLINE_STYLE == 1
@@ -38,15 +38,15 @@ void main() {
 		#endif
 
 	}
-	#endif
+#endif
 
-	#ifdef BLOCK_OUTLINE_SOLID
+#ifdef BLOCK_OUTLINE_SOLID
     color.a = fstep(0.1, color.a);
-    #endif
+#endif
     
-    #if DITHERING >= 2
-		color.rgb += ditherColor(gl_FragCoord.xy);
-	#endif
+#if DITHERING >= 2
+	color.rgb += ditherColor(gl_FragCoord.xy);
+#endif
 
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;

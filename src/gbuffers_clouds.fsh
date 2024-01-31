@@ -1,4 +1,5 @@
 #include "/lib/settings.glsl"
+#include "/lib/blending.glsl"
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
@@ -37,21 +38,23 @@ void main() {
 
 	color.rgb  = mix(color.rgb, vec3(luminance(color.rgb)) * vec3(0.58,0.6,0.7), rainStrength);
 
-	#ifdef FOG
+#ifdef FOG
 
-		float fog = fogFactor(viewPos, min(far * 2, 350), gbufferModelViewInverse);
+	float fog = fogFactor(viewPos, min(far * 2, 350), gbufferModelViewInverse);
 
-		#ifndef CUSTOM_SKY
-			color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, sunset), fog);
-		#else
-			color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, sunset, rainStrength, daynight), fog);
-		#endif
-
+	#ifndef CUSTOM_SKY
+		color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, sunset), fog);
+	#else
+		color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, sunset, rainStrength, daynight), fog);
 	#endif
 
-	#if DITHERING >= 1
-		color.rgb += ditherColor(gl_FragCoord.xy);
-	#endif
+#endif
+
+#if DITHERING >= 1
+	color.rgb += ditherColor(gl_FragCoord.xy);
+#endif
+
+	color.rgb = blendColor(color.rgb);
 	
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
