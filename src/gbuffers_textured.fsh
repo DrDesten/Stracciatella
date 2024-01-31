@@ -1,4 +1,5 @@
 #include "/lib/settings.glsl"
+#include "/lib/blending.glsl"
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
@@ -38,15 +39,17 @@ void main() {
 	
 	color.rgb *= getCustomLightmap(vec3(lmcoord, glcolor.a), customLightmapBlend);
 
-	#ifdef FOG
-		float fog = fogFactor(viewPos, far, gbufferModelViewInverse);
-		color.a  *= (1-fog);
-		color.a  -= Bayer4(gl_FragCoord.xy) * 0.05;
-	#endif
+#ifdef FOG
+	float fog = fogFactor(viewPos, far, gbufferModelViewInverse);
+	color.a  *= (1-fog);
+	color.a  -= Bayer4(gl_FragCoord.xy) * 0.05;
+#endif
 
-    #if DITHERING >= 2
-		color.rgb += ditherColor(gl_FragCoord.xy);
-	#endif
+#if DITHERING >= 2
+	color.rgb += ditherColor(gl_FragCoord.xy);
+#endif
+
+	color.rgb = blendColor(color.rgb);
 	
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;

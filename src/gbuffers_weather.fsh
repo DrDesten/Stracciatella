@@ -27,32 +27,33 @@ layout(location = 0) out vec4 FragOut0;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 
-	#ifdef RAIN_REFRACTION
+#ifdef RAIN_REFRACTION
 
-		float rain = 0;
+	float rain = 0;
+	bool  isRain;
 
-		#if RAIN_DETECTION_MODE == 0
-		if (temperature >= 0.15) { // Rain (detected based on player temperature)
-		#elif RAIN_DETECTION_MODE == 1
-		vec3 normalizedColor = normalize(color.rgb);
-		if (saturate((color.b) - avg(color.rg)) > 0.25) { // Rain (detected based on blue dominance)
-		#endif
-
-			rain    = fstep(0.01, color.a);
-			color.a = rain * RAIN_OPACITY;
-		}
-
+	#if RAIN_DETECTION_MODE == 0
+	isRain = temperature >= 0.15; // Rain (detected based on player temperature)
+	#elif RAIN_DETECTION_MODE == 1
+	vec3 normalizedColor = normalize(color.rgb);
+	isRain = saturate((color.b) - avg(color.rg)) > 0.25; // Rain (detected based on blue dominance)
 	#endif
+	if (isRain) {
+		rain    = fstep(0.01, color.a);
+		color.a = rain * RAIN_OPACITY;
+	}
+
+#endif
 
 	color.rgb *= getCustomLightmap(vec3(lmcoord, 1), customLightmapBlend);
 
-    #if DITHERING >= 2
-		color.rgb += ditherColor(gl_FragCoord.xy);
-	#endif
+#if DITHERING >= 2
+	color.rgb += ditherColor(gl_FragCoord.xy);
+#endif
 	
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
-	#ifdef RAIN_REFRACTION
+#ifdef RAIN_REFRACTION
 	FragOut1 = vec4(rain, 0, 0, 0.25);
-	#endif
+#endif
 }

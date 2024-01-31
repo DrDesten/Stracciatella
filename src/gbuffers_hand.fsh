@@ -8,6 +8,7 @@
 #ifdef HAND_WATER
 	uniform float frameTimeCounter;
 	#include "/lib/lightmap.glsl"
+	#include "/lib/blending.glsl"
 #endif
 
 uniform float customLightmapBlend;
@@ -23,15 +24,17 @@ layout(location = 1) out vec4 FragOut1; // Even if only two channels are used, I
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 
-	#ifdef HAND_WATER
-
+#ifdef HAND_WATER
 	color.rgb *= getCustomLightmap(vec3(lmcoord, glcolor.a), customLightmapBlend);
+#endif
 
-	#endif
+#if DITHERING >= 2
+	color.rgb += ditherColor(gl_FragCoord.xy);
+#endif
 
-    #if DITHERING >= 2
-		color.rgb += ditherColor(gl_FragCoord.xy);
-	#endif
+#ifdef HAND_WATER
+	color.rgb = blendColor(color.rgb);
+#endif
 
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;

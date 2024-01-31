@@ -91,8 +91,8 @@ void main() {
 
 	vec2 coord = basecoord;
 
-	#ifdef RAIN_PUDDLES
-	#ifdef RAIN_PUDDLE_PARALLAX
+#ifdef RAIN_PUDDLES
+#ifdef RAIN_PUDDLE_PARALLAX
 
 	if (glNormal.y > 0.9 && rainPuddle > 1e-10) {
 
@@ -116,8 +116,8 @@ void main() {
 
 	}
 
-	#endif
-	#endif
+#endif
+#endif
 
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb;
@@ -133,143 +133,143 @@ void main() {
 		color.rgb *= ao * 0.25 + 0.75;
 	}
 
-	#ifdef RAIN_PUDDLES
+#ifdef RAIN_PUDDLES
 
-		if (rainPuddle > 1e-10) {
+	if (rainPuddle > 1e-10) {
 
-			vec2  waterTextureSize   = vec2(textureSize(colortex4, 0));
-			float waterTextureAspect = waterTextureSize.x / waterTextureSize.y;
-			vec2  waterCoords        = vec2(blockCoords.x, blockCoords.y * waterTextureAspect);
-			waterCoords.y           += waterTextureAspect * round(frameTimeCounter * 2);
-			vec4  waterTexture       = texture(colortex4, waterCoords);
-			waterTexture.rgb         = waterTexture.rgb * vec3(RAIN_PUDDLE_COLOR_R, RAIN_PUDDLE_COLOR_G, RAIN_PUDDLE_COLOR_B);
+		vec2  waterTextureSize   = vec2(textureSize(colortex4, 0));
+		float waterTextureAspect = waterTextureSize.x / waterTextureSize.y;
+		vec2  waterCoords        = vec2(blockCoords.x, blockCoords.y * waterTextureAspect);
+		waterCoords.y           += waterTextureAspect * round(frameTimeCounter * 2);
+		vec4  waterTexture       = texture(colortex4, waterCoords);
+		waterTexture.rgb         = waterTexture.rgb * vec3(RAIN_PUDDLE_COLOR_R, RAIN_PUDDLE_COLOR_G, RAIN_PUDDLE_COLOR_B);
 
-			color.rgb = mix(color.rgb, waterTexture.rgb, puddle * waterTexture.a);
+		color.rgb = mix(color.rgb, waterTexture.rgb, puddle * waterTexture.a);
 
-		}
+	}
 
-	#endif
+#endif
 
-	#ifdef DIRECTIONAL_LIGHTMAPS
+#ifdef DIRECTIONAL_LIGHTMAPS
 
-		#if NORMAL_TEXTURE_MODE == 1  && defined MC_NORMAL_MAP
+	#if NORMAL_TEXTURE_MODE == 1  && defined MC_NORMAL_MAP
 
-			vec3 normal = texture(normals, coord).xyz * 2 - 1;
-			normal.z    = sqrt(saturate(1 - dot(normal.xy, normal.xy)));
+		vec3 normal = texture(normals, coord).xyz * 2 - 1;
+		normal.z    = sqrt(saturate(1 - dot(normal.xy, normal.xy)));
 
-		#else
+	#else
 
-			// NORMAL MAP GENERATION ////////////////////////////////
-			vec2  atlasPixel = (1. / GENERATED_NORMALS_RESOLUTION_MULTIPLIER) / atlasSize;
-			float relHeightN = avg( texture(gcolor, clamp(coord + vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
-			float relHeightS = avg( texture(gcolor, clamp(coord - vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
-			float relHeightE = avg( texture(gcolor, clamp(coord + vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
-			float relHeightW = avg( texture(gcolor, clamp(coord - vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
-			
-			vec3  normal = normalize(vec3(relHeightW - relHeightE, relHeightS - relHeightN, 0.3333));
-			
-		#endif
-
-		// DIRECTIONAL LIGHTMAPS ////////////////////////////////
-		vec2 blockLightDir = getBlocklightDir(lmcoord, mat2(tbn));
-		vec3 lightingDir   = normalize( vec3(blockLightDir, 0.5 + sq(sq(lmcoord.x))) ); // The closer to the light source, the "higher" the light is
-
-		float diffuse = dot(normal, lightingDir) * (DIRECTIONAL_LIGHTMAPS_STRENGTH * 0.5) + (0.5 * (1 - DIRECTIONAL_LIGHTMAPS_STRENGTH) + 0.5);
-		diffuse       = diffuse * directionalLightmapStrength + (1 - directionalLightmapStrength);
-
-	#endif
-
-
-	#ifdef HDR_EMISSIVES
-
-		float emissiveness = 0;
-		if (block.emissive) {
-
-			// Adds an HDR effect to Emissive blocks. Works by boosting the brightness of emissive parts of blocks and the applying tonemapping to avoid clipping.
-
-			bool white   = block.id == 20 || block.id == 16 || block.id == 2;
-			bool orange  = block.id == 21;
-			bool red     = block.id == 22;
-            bool redPure = block.id == 23;
-            bool redOre  = block.id == 45;
-			bool blue    = block.id == 24;
-			bool purple  = block.id == 25;
-			bool anyCol  = block.id == 26 || block.id == 14;
-			bool anyLow  = block.id == 27;
-			bool candle  = block.id == 28;
-
-			const vec3 hsvBrown = vec3(39./360, .5, .5);
-
-			vec3  hsv       = rgb2hsv(color.rgb);
-			float brownness = saturate(sqmag((hsvBrown - hsv) * vec3(10,3,2)) * 2 - 1);
-			
-			color.rgb  = tm_reinhard_sqrt_inverse(color.rgb * 0.996, 0.5);
-
-			if      (white)   emissiveness = saturate(hsv.z * 2 - 1);
-			else if (anyCol)  emissiveness = saturate(max(saturate(hsv.y * 2 - 0.5), saturate(hsv.z * 2 - 1)) * 2 - 0.5);
-			else if (anyLow)  emissiveness = saturate(0.75 * hsv.z * hsv.z);
-			else if (orange)  emissiveness = saturate(peak05(fract(hsv.x + 0.45)) * 2 - 1) * saturate(hsv.z * 3 - 2);
-			else if (red)     emissiveness = saturate(brownness * 1.25 - .25) + saturate(hsv.z * 4 - 3);
-            else if (redPure) emissiveness = saturate( saturate( 5 * fract(worldPosY) - 1 ) + saturate( saturate(peak05(fract(hsv.x + .5)) * 2 - 1) * saturate( hsv.y * 2 - 1) ) * 0.5 );
-            else if (redOre)  emissiveness = saturate( saturate(sq(peak05(fract(hsv.x + .5)))) * saturate( hsv.y * 2 - 1) * 0.5 );
-            else if (blue)    emissiveness = saturate(sqmag((vec3(0.57, .8, .8) - hsv) * vec3(2,2,2)) * -1 + 1) + saturate(hsv.y * -5 + 4) * saturate(hsv.z * 5 - 4) * brownness;
-			else if (purple)  emissiveness = saturate(hsv.z * 1.5 - .5) * saturate(hsv.y * 3 - 2) + sq(saturate(hsv.z * 5 - 4));
-			else if (candle)  emissiveness = sqsq(saturate((midTexCoord.y - coord.y) * (0.5 / spriteSize.y) + 0.5 + saturate(glNormal.y)));
-
-			color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 1.5) * color.rgb;
-
-		}
-
-		#define coloredLightEmissive float(block.emissive) * ( block.data / 63. ) * blockLightEmissiveColor
+		// NORMAL MAP GENERATION ////////////////////////////////
+		vec2  atlasPixel = (1. / GENERATED_NORMALS_RESOLUTION_MULTIPLIER) / atlasSize;
+		float relHeightN = avg( texture(gcolor, clamp(coord + vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
+		float relHeightS = avg( texture(gcolor, clamp(coord - vec2(0, atlasPixel.y) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
+		float relHeightE = avg( texture(gcolor, clamp(coord + vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
+		float relHeightW = avg( texture(gcolor, clamp(coord - vec2(atlasPixel.x, 0) - midTexCoord, -spriteSize, spriteSize) + midTexCoord).rgb );
 		
-	#else
-
-	 	#define emissiveness 0
-		#define coloredLightEmissive float(block.emissive) * ( block.data / 63. ) * blockLightEmissiveColor
-
+		vec3  normal = normalize(vec3(relHeightW - relHeightE, relHeightS - relHeightN, 0.3333));
+		
 	#endif
 
-	#ifdef COLORED_LIGHTS
-		vec3 blockLightEmissiveColor;
-		switch (block.id) {
-			case 21:
-				blockLightEmissiveColor = LIGHTMAP_COLOR_ORANGE; // Orange
-				break;
-			case 22:
-            case 23:
-            case 45: // Redstone Ore
-				blockLightEmissiveColor = LIGHTMAP_COLOR_RED; // Red
-				break;
-			case 24:
-				blockLightEmissiveColor = LIGHTMAP_COLOR_BLUE; // Blue
-				break;
-			case 25:
-				blockLightEmissiveColor = LIGHTMAP_COLOR_PURPLE; // Purple
-				break;
-			default:
-				blockLightEmissiveColor = color.rgb; // Keep Color (all other id's)
-		}
-		//blockLightEmissiveColor *= lmcoord.x;
-	#endif
+	// DIRECTIONAL LIGHTMAPS ////////////////////////////////
+	vec2 blockLightDir = getBlocklightDir(lmcoord, mat2(tbn));
+	vec3 lightingDir   = normalize( vec3(blockLightDir, 0.5 + sq(sq(lmcoord.x))) ); // The closer to the light source, the "higher" the light is
 
-	#ifdef DIRECTIONAL_LIGHTMAPS
-		vec2 lightmapCoord = vec2(lmcoord.x * diffuse, lmcoord.y);
-	#else
-		// Should just replace the variable name
-		#define lightmapCoord lmcoord
-	#endif
+	float diffuse = dot(normal, lightingDir) * (DIRECTIONAL_LIGHTMAPS_STRENGTH * 0.5) + (0.5 * (1 - DIRECTIONAL_LIGHTMAPS_STRENGTH) + 0.5);
+	diffuse       = diffuse * directionalLightmapStrength + (1 - directionalLightmapStrength);
 
-	#ifdef HDR_EMISSIVES
-		if (block.emissive) color.rgb = tm_reinhard_sqrt(color.rgb, 0.5);
-	#endif
+#endif
 
-	#ifdef BLINKING_ORES
-		color.rgb = mix(color.rgb, sqrtf01(color.rgb) * 0.9 + 0.1, oreBlink * BLINKING_ORES_BRIGHTNESS);
-	#endif
 
-	#if DITHERING >= 2
-		color.rgb += ditherColor(gl_FragCoord.xy);
-	#endif
+#ifdef HDR_EMISSIVES
+
+	float emissiveness = 0;
+	if (block.emissive) {
+
+		// Adds an HDR effect to Emissive blocks. Works by boosting the brightness of emissive parts of blocks and the applying tonemapping to avoid clipping.
+
+		bool white   = block.id == 20 || block.id == 16 || block.id == 2;
+		bool orange  = block.id == 21;
+		bool red     = block.id == 22;
+		bool redPure = block.id == 23;
+		bool redOre  = block.id == 45;
+		bool blue    = block.id == 24;
+		bool purple  = block.id == 25;
+		bool anyCol  = block.id == 26 || block.id == 14;
+		bool anyLow  = block.id == 27;
+		bool candle  = block.id == 28;
+
+		const vec3 hsvBrown = vec3(39./360, .5, .5);
+
+		vec3  hsv       = rgb2hsv(color.rgb);
+		float brownness = saturate(sqmag((hsvBrown - hsv) * vec3(10,3,2)) * 2 - 1);
+		
+		color.rgb  = tm_reinhard_sqrt_inverse(color.rgb * 0.996, 0.5);
+
+		if      (white)   emissiveness = saturate(hsv.z * 2 - 1);
+		else if (anyCol)  emissiveness = saturate(max(saturate(hsv.y * 2 - 0.5), saturate(hsv.z * 2 - 1)) * 2 - 0.5);
+		else if (anyLow)  emissiveness = saturate(0.75 * hsv.z * hsv.z);
+		else if (orange)  emissiveness = saturate(peak05(fract(hsv.x + 0.45)) * 2 - 1) * saturate(hsv.z * 3 - 2);
+		else if (red)     emissiveness = saturate(brownness * 1.25 - .25) + saturate(hsv.z * 4 - 3);
+		else if (redPure) emissiveness = saturate( saturate( 5 * fract(worldPosY) - 1 ) + saturate( saturate(peak05(fract(hsv.x + .5)) * 2 - 1) * saturate( hsv.y * 2 - 1) ) * 0.5 );
+		else if (redOre)  emissiveness = saturate( saturate(sq(peak05(fract(hsv.x + .5)))) * saturate( hsv.y * 2 - 1) * 0.5 );
+		else if (blue)    emissiveness = saturate(sqmag((vec3(0.57, .8, .8) - hsv) * vec3(2,2,2)) * -1 + 1) + saturate(hsv.y * -5 + 4) * saturate(hsv.z * 5 - 4) * brownness;
+		else if (purple)  emissiveness = saturate(hsv.z * 1.5 - .5) * saturate(hsv.y * 3 - 2) + sq(saturate(hsv.z * 5 - 4));
+		else if (candle)  emissiveness = sqsq(saturate((midTexCoord.y - coord.y) * (0.5 / spriteSize.y) + 0.5 + saturate(glNormal.y)));
+
+		color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 1.5) * color.rgb;
+
+	}
+
+	#define coloredLightEmissive float(block.emissive) * ( block.data / 63. ) * blockLightEmissiveColor
+	
+#else
+
+	#define emissiveness 0
+	#define coloredLightEmissive float(block.emissive) * ( block.data / 63. ) * blockLightEmissiveColor
+
+#endif
+
+#ifdef COLORED_LIGHTS
+	vec3 blockLightEmissiveColor;
+	switch (block.id) {
+		case 21:
+			blockLightEmissiveColor = LIGHTMAP_COLOR_ORANGE; // Orange
+			break;
+		case 22:
+		case 23:
+		case 45: // Redstone Ore
+			blockLightEmissiveColor = LIGHTMAP_COLOR_RED; // Red
+			break;
+		case 24:
+			blockLightEmissiveColor = LIGHTMAP_COLOR_BLUE; // Blue
+			break;
+		case 25:
+			blockLightEmissiveColor = LIGHTMAP_COLOR_PURPLE; // Purple
+			break;
+		default:
+			blockLightEmissiveColor = color.rgb; // Keep Color (all other id's)
+	}
+	//blockLightEmissiveColor *= lmcoord.x;
+#endif
+
+#ifdef DIRECTIONAL_LIGHTMAPS
+	vec2 lightmapCoord = vec2(lmcoord.x * diffuse, lmcoord.y);
+#else
+	// Should just replace the variable name
+	#define lightmapCoord lmcoord
+#endif
+
+#ifdef HDR_EMISSIVES
+	if (block.emissive) color.rgb = tm_reinhard_sqrt(color.rgb, 0.5);
+#endif
+
+#ifdef BLINKING_ORES
+	color.rgb = mix(color.rgb, sqrtf01(color.rgb) * 0.9 + 0.1, oreBlink * BLINKING_ORES_BRIGHTNESS);
+#endif
+
+#if DITHERING >= 2
+	color.rgb += ditherColor(gl_FragCoord.xy);
+#endif
 
 	FragOut0 = color /* * vec2(saturate( 10 * fract(worldPosY) - 1 ), 1).xxxy */;
     if (FragOut0.a < 0.1) discard;

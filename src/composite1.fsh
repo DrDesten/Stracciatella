@@ -1,4 +1,5 @@
 #include "/lib/settings.glsl"
+#include "/lib/blending.glsl"
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
@@ -69,16 +70,16 @@ float squareVignette(vec2 coord) {
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 FragOut0;
 void main() {
-	#if RAIN_REFRACTION == 1
-		float rain  = texture(colortex3, coord).r;
-		coord      += rain * sin(vec2(coord * TWO_PI + frameTimeCounter * 0.3 )) * RAIN_REFRACTION_STRENGTH;
-	#elif RAIN_REFRACTION == 2
-		float rain  = texture(colortex3, coord).r;
-		float noise = fbm( coord * 15, 3, 3, 0.75);
-		coord      += rain * sin(vec2(noise * TWO_PI + frameTimeCounter * 0.3 )) * sqrt(noise) * RAIN_REFRACTION_STRENGTH;
-	#endif
+#if RAIN_REFRACTION == 1
+	float rain  = texture(colortex3, coord).r;
+	coord      += rain * sin(vec2(coord * TWO_PI + frameTimeCounter * 0.3 )) * RAIN_REFRACTION_STRENGTH;
+#elif RAIN_REFRACTION == 2
+	float rain  = texture(colortex3, coord).r;
+	float noise = fbm( coord * 15, 3, 3, 0.75);
+	coord      += rain * sin(vec2(noise * TWO_PI + frameTimeCounter * 0.3 )) * sqrt(noise) * RAIN_REFRACTION_STRENGTH;
+#endif
 
-	#ifdef DAMAGE_EFFECT
+#ifdef DAMAGE_EFFECT
 
 	vec3 color;
 	if (damage > 1e-15) {
@@ -95,17 +96,17 @@ void main() {
 		float cellNoise  = sin(rand(floor(noiseSeed)) * (10./DAMAGE_EFFECT_DISPLACEMENT_SIZE));
 		float finalNoise = damage * cellNoise * (0.02 * DAMAGE_EFFECT_DISPLACEMENT);
 
-		color.r = getAlbedo(coord + vec2(finalNoise,0)).r;
-		color.g = getAlbedo(coord - finalNoise).g * (damage * -DAMAGE_EFFECT_REDNESS + 1);
-		color.b = getAlbedo(coord + vec2(0,finalNoise)).b * (damage * -DAMAGE_EFFECT_REDNESS + 1);
+		color.r = unBlendColor(getAlbedo(coord + vec2(finalNoise,0))).r;
+		color.g = unBlendColor(getAlbedo(coord - finalNoise)).g * (damage * -DAMAGE_EFFECT_REDNESS + 1);
+		color.b = unBlendColor(getAlbedo(coord + vec2(0,finalNoise))).b * (damage * -DAMAGE_EFFECT_REDNESS + 1);
 
 	} else {
-		color = getAlbedo(coord);
+		color = unBlendColor(getAlbedo(coord));
 	}
 
-	#else
-		vec3 color = getAlbedo(coord);
-	#endif
+#else
+	vec3 color = unBlendColor(getAlbedo(coord));
+#endif
 
 	if (isEyeInWater == 1) {
 		vec3  viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
@@ -124,40 +125,40 @@ void main() {
 		color *= 1. / (sqmag(viewPos) * max(blindness, darknessFactor * 0.1) + 1);
 	}
 
-	#if CONTRAST != 0
-		const float contrastAmount = 1 / (1 - (CONTRAST / 300. + 0.5)) - 1;
-		color = applyContrast(color, contrastAmount);
-	#endif
-	#if VIBRANCE != 0
-		const float vibranceAmount = (VIBRANCE / 100.);
-		color = applyVibrance(color, vibranceAmount);
-	#endif
-	#if SATURATION != 0
-		const float saturationAmount = SATURATION / 100. + 1.;
-		color = applySaturation(color, saturationAmount);
-	#endif
-	#if BRIGHTNESS != 0
-		const float brightnessAmount      = 1 / (BRIGHTNESS / 250. + 0.5) - 1;
-		const float brightnessColorOffset = abs(BRIGHTNESS - 50.) / 500.;
-		color = applyBrightness(color, brightnessAmount, brightnessColorOffset);
-	#endif
+#if CONTRAST != 0
+	const float contrastAmount = 1 / (1 - (CONTRAST / 300. + 0.5)) - 1;
+	color = applyContrast(color, contrastAmount);
+#endif
+#if VIBRANCE != 0
+	const float vibranceAmount = (VIBRANCE / 100.);
+	color = applyVibrance(color, vibranceAmount);
+#endif
+#if SATURATION != 0
+	const float saturationAmount = SATURATION / 100. + 1.;
+	color = applySaturation(color, saturationAmount);
+#endif
+#if BRIGHTNESS != 0
+	const float brightnessAmount      = 1 / (BRIGHTNESS / 250. + 0.5) - 1;
+	const float brightnessColorOffset = abs(BRIGHTNESS - 50.) / 500.;
+	color = applyBrightness(color, brightnessAmount, brightnessColorOffset);
+#endif
 
-	#if VIGNETTE == 1
-		color *= roundVignette(coord) * VIGNETTE_STRENGTH + (1 - VIGNETTE_STRENGTH);;
-	#elif VIGNETTE == 2
-		color *= squareVignette(coord) * VIGNETTE_STRENGTH + (1 - VIGNETTE_STRENGTH);
-	#endif
+#if VIGNETTE == 1
+	color *= roundVignette(coord) * VIGNETTE_STRENGTH + (1 - VIGNETTE_STRENGTH);;
+#elif VIGNETTE == 2
+	color *= squareVignette(coord) * VIGNETTE_STRENGTH + (1 - VIGNETTE_STRENGTH);
+#endif
 
-	#ifdef COLOR_LUT
-		#ifdef LUT_LOG_COLOR
-		color = log(color * (E-1) + 1);
-		#endif
-		color -= Bayer8(gl_FragCoord.xy) * (3./ (LUT_CELL_SIZE * LUT_CELL_SIZE)) - (1.5/ (LUT_CELL_SIZE * LUT_CELL_SIZE));
-		color  = applyLUT(colortex2, color, LUT_CELL_SIZE);
+#ifdef COLOR_LUT
+	#ifdef LUT_LOG_COLOR
+	color = log(color * (E-1) + 1);
 	#endif
+	color -= Bayer8(gl_FragCoord.xy) * (3./ (LUT_CELL_SIZE * LUT_CELL_SIZE)) - (1.5/ (LUT_CELL_SIZE * LUT_CELL_SIZE));
+	color  = applyLUT(colortex2, color, LUT_CELL_SIZE);
+#endif
 
-	#if DITHERING >= 2 && !defined COLOR_LUT
-		color.rgb -= ditherColor(gl_FragCoord.xy);
-	#endif
+#if DITHERING >= 2 && !defined COLOR_LUT
+	color.rgb -= ditherColor(gl_FragCoord.xy);
+#endif
 	FragOut0 = vec4(color, luminance(color));
 }

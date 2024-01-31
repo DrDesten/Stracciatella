@@ -1,4 +1,5 @@
 #include "/lib/settings.glsl"
+#include "/lib/blending.glsl"
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
@@ -267,6 +268,7 @@ void main() {
 	#if DITHERING >= 1
 		color += ditherColor(gl_FragCoord.xy);
 	#endif
+	color = blendColor(color);
 	FragOut0 = vec4(color, 1.0); //gcolor
 }
 
