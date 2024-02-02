@@ -1,31 +1,27 @@
 import path from "path"
 
-class ShaderFile {
+export class ShaderFile {
     /** @param {string} filename @param {string[]} includes @param {string[]} defines   */
     constructor( filename, includes = [], defines = [] ) {
         this.filename = filename
         this.includes = includes
         this.defines = defines
 
-        switch ( path.extname( filename ) ) {
-            case ".gsh":
-                this.defines.push( "GEO" )
-                break
-            case ".vsh":
-                this.defines.push( "VERT" )
-                break
-            case ".fsh":
-                this.defines.push( "FRAG" )
-                break
-        }
+        this.addDefine( {
+            ".gsh": "GEO",
+            ".vsh": "VERT",
+            ".fsh": "FRAG",
+        }[path.extname( filename )] )
+
+        this.customContent = ""
     }
 
     addDefine( define ) {
-        this.defines.push( define )
+        if ( define ) this.defines.push( define )
         return this
     }
     addInclude( include ) {
-        this.includes.push( include )
+        if ( include ) this.includes.push( include )
         return this
     }
 
@@ -37,6 +33,7 @@ class ShaderFile {
         for ( const include of this.includes ) {
             content += `\n#include "${include}"`
         }
+        content += `\n${this.customContent}`
         return content
     }
 }
