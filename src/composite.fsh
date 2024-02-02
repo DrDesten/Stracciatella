@@ -36,7 +36,7 @@ void main() {
 	}
 
 	if (hits > 0) {
-		color = oklab2rgb(color / hits);
+		color = color / hits;
 	}
 
 	FragOut0 = vec4(color, 1);
