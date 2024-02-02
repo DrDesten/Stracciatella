@@ -11,24 +11,11 @@ vec2       coord = gl_FragCoord.xy * pixel;
 
 #ifdef COLORED_LIGHTS
 
-const bool colortex5MipmapEnabled = true;
-
 uniform sampler2D colortex4;
-uniform sampler2D colortex5;
 uniform sampler2D colortex6;
 
 uniform int frameCounter;
 uniform float nearInverse;
-
-/* vec3 sampleEmissive(vec2 coord, float lod) {
-	vec3 col = textureLod(colortex0, coord.xy, lod).rgb;
-	col /= max(0.05, maxc(col));
-	return col * textureLod(colortex2, coord.xy, lod).x * saturate(sqmag(saturate(coord.xy) - coord.xy) * -4 + 1);
-} */
-
-vec3 sampleEmissive(vec2 coord, float lod) {
-	return textureLod(colortex5, coord.xy, lod).rgb * saturate(sqmag(saturate(coord.xy) - coord.xy) * -5 + 1);
-}
 
 /* vec3 gauss3x3(sampler2D tex, vec2 coord, vec2 pix) {
 	return texture(tex, coord + .5 * pix.xy).rgb * .25 +
