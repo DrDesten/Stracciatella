@@ -307,7 +307,7 @@ void main() {
 #else
 	vec3 color = getAlbedo(coord);
 
-	color = color * 0.5 + texture(colortex6, coord * 0.125).rgb * 0.5;
+	color = color * 0.5 + texture(colortex6, coord / 81).rgb * 0.5;
 #endif
 	//color = FXAA311Upscale(coord, 2);
 	FragOut0 = vec4(color, 1.0);
