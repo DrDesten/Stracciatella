@@ -13,17 +13,21 @@ layout(location = 0) out vec4 FragOut0;
 void main() {
 	ivec2 pixel = ivec2(coord * screenSize);
 
-	vec3 colors[9] = vec3[](
-		texelFetch(colortex6, pixel + ivec2(-1, 1), 0).rgb,
-		texelFetch(colortex6, pixel + ivec2(0, 1), 0).rgb,
-		texelFetch(colortex6, pixel + ivec2(1, 1), 0).rgb,
-		texelFetch(colortex6, pixel + ivec2(-1, 0), 0).rgb,
-		texelFetch(colortex6, pixel + ivec2(0, 0), 0).rgb,
-		texelFetch(colortex6, pixel + ivec2(1, 0), 0).rgb,
-		texelFetch(colortex6, pixel + ivec2(-1, -1), 0).rgb,
-		texelFetch(colortex6, pixel + ivec2(0, -1), 0).rgb,
-		texelFetch(colortex6, pixel + ivec2(1, -1), 0).rgb
-	);
+	vec3 colors[9] = vec3[]( vec3(0),vec3(0),vec3(0),vec3(0),vec3(0),vec3(0),vec3(0),vec3(0),vec3(0) );
+
+	if (pixel.x < int(screenSize.x) / 9 && pixel.y < int(screenSize.y) / 9) {
+		colors = vec3[](
+			texelFetch(colortex6, pixel + ivec2(-1, 1), 0).rgb,
+			texelFetch(colortex6, pixel + ivec2(0, 1), 0).rgb,
+			texelFetch(colortex6, pixel + ivec2(1, 1), 0).rgb,
+			texelFetch(colortex6, pixel + ivec2(-1, 0), 0).rgb,
+			texelFetch(colortex6, pixel + ivec2(0, 0), 0).rgb,
+			texelFetch(colortex6, pixel + ivec2(1, 0), 0).rgb,
+			texelFetch(colortex6, pixel + ivec2(-1, -1), 0).rgb,
+			texelFetch(colortex6, pixel + ivec2(0, -1), 0).rgb,
+			texelFetch(colortex6, pixel + ivec2(1, -1), 0).rgb
+		);
+	}
 
 	float luma = 0;
 	vec3 color = vec3(0);
