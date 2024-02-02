@@ -11,7 +11,9 @@ vec2       coord = gl_FragCoord.xy * pixel;
 
 #ifdef COLORED_LIGHTS
 
+const bool colortex4MipmapEnabled = true;
 uniform sampler2D colortex4;
+
 uniform sampler2D colortex6;
 
 uniform int frameCounter;
@@ -60,6 +62,46 @@ layout(location = 0) out vec4 FragOut0;
 void main() {
 
 #ifdef COLORED_LIGHTS
+
+	vec3 screenPos  = vec3(coord, getDepth(coord));
+	vec4 prevProj   = reprojectScreen(screenPos);
+	vec2 prevCoord  = prevProj.xy;
+
+	vec3  prevCol   = textureLod(colortex4, prevProj.xy, 1).rgb;
+	float prevDepth = texture(colortex4, prevProj.xy).a;
+
+	vec2 mipCoords = coord / 81 + (2./3. + 2./9. + 2./27. + 2./81.);
+	vec3 color     = texture(colortex6, mipCoords).rgb;
+
+	// Improves Accumulation by guessing pixel age and sample importance (there is no buffer space left for pixel age)
+	float age = maxc(prevCol); // Estimates age using pixel brightness
+	float sampleImportance = luminance(color.rgb); // Estimates sample importance using sample brightness
+	float mixTweak = age * (sampleImportance) + (1 - sampleImportance); // If the age is high (value low), let more of the sample in, but only if there is something to sample
+	mixTweak = mixTweak * (1 - LIGHTMAP_COLOR_FLICKER_RED) + LIGHTMAP_COLOR_FLICKER_RED; // Tweak value using user defined setting
+
+	#if LIGHTMAP_COLOR_REJECTION == 0
+	// Weak Rejection (coordinates and depth, high tolerances)
+	float rejection = max(saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -2 + 1), saturate( abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse)) * -0.25 + 1 ));
+	#elif LIGHTMAP_COLOR_REJECTION == 1
+	// Normal Rejection (coordinates and depth, normal tolarance)
+	float rejection = max(saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -4 + 1), saturate( abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse)) * -0.5 + 1 ));
+	#elif LIGHTMAP_COLOR_REJECTION == 2
+	// Strong Rejection (only coordinates, no fallback)
+	float rejection = saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -4 + 1);
+	#endif
+
+	// if the mix blend is 0, new color is used
+	// rejection is zero when history is fully rejected, causing the history to be removed (multiplied by zero)
+	// if LIGHTMAP_COLOR_REGEN is 1, rejection == 0 will cause the new color to instantly fill the frame, while
+	//    LIGHTMAP_COLOR_REGEN    0  will cause rejection to have no impact on the blend factor.
+	color = mix(color, prevCol * rejection, LIGHTMAP_COLOR_BLEND * (rejection * LIGHTMAP_COLOR_REGEN + (1 - LIGHTMAP_COLOR_REGEN)) * mixTweak);
+	
+	FragOut0 = vec4(color, screenPos.z);
+
+#endif
+
+//#ifdef COLORED_LIGHTS
+#if 0
 
 	vec3 screenPos = vec3(coord, getDepth(coord));
 

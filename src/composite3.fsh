@@ -18,15 +18,15 @@ void main() {
 
 	if (pixel.x < int(screenSize.x) / 27 && pixel.y < int(screenSize.y) / 27) {
 		colors = vec3[](
-			(texelFetch(colortex6, pixel + ivec2(-1, 1), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(0, 1), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(1, 1), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(-1, 0), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(0, 0), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(1, 0), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(-1, -1), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(0, -1), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(1, -1), 0).rgb)
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(-1, 1), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(0, 1), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(1, 1), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(-1, 0), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(0, 0), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(1, 0), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(-1, -1), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(0, -1), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(1, -1), 0).rgb)
 		);
 	}
 

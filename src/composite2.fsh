@@ -18,15 +18,15 @@ void main() {
 
 	if (pixel.x < int(screenSize.x) / 9 && pixel.y < int(screenSize.y) / 9) {
 		colors = vec3[](
-			(texelFetch(colortex6, pixel + ivec2(-1, 1), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(0, 1), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(1, 1), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(-1, 0), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(0, 0), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(1, 0), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(-1, -1), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(0, -1), 0).rgb),
-			(texelFetch(colortex6, pixel + ivec2(1, -1), 0).rgb)
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(-1, 1), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(0, 1), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(1, 1), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(-1, 0), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(0, 0), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(1, 0), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(-1, -1), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(0, -1), 0).rgb),
+			rgb2oklab(texelFetch(colortex6, pixel + ivec2(1, -1), 0).rgb)
 		);
 	}
 
@@ -40,7 +40,7 @@ void main() {
 	}
 
 	if (hits > 0) {
-		color = (color / hits);
+		color = oklab2rgb(color / hits);
 	}
 
 	FragOut0 = vec4(color, 1);
