@@ -29,15 +29,18 @@ void main() {
 		);
 	}
 
-	float luma = 0;
+	float hits = 0;
 	vec3 color = vec3(0);
 	for (int i = 0; i < 9; i++) {
-		float l = luminance(colors[i]);
-		if (l > luma) {
-			luma = l;
-			color = colors[i];
+		if (colors[i] != vec3(0)) {
+			hits  += 1;
+			color += colors[i];
 		}
 	}
 
+	if (hits > 0) {
+		color = color / hits;
+	}
+	
 	FragOut0 = vec4(color, 1);
 }
