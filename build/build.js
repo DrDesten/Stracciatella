@@ -15,8 +15,10 @@ if ( fs.existsSync( shaders ) ) {
     fs.rmSync( shaders, { recursive: true } )
     console.info( "Deleted `shaders`" )
 }
+
 fs.cpSync( src, shaders, { force: true, recursive: true } )
 console.info( "Copied `src` into `shaders`" )
+
 const dir = shaders
 
 /** @param {string} dir @returns {string[]} */
