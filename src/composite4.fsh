@@ -67,15 +67,16 @@ void main() {
 	vec4 prevProj   = reprojectScreen(screenPos);
 	vec2 prevCoord  = prevProj.xy;
 
-	vec3  prevCol   = textureLod(colortex4, prevProj.xy, 1).rgb;
+	vec3  prevCol   = textureLod(colortex4, prevProj.xy, 0.5).rgb;
 	float prevDepth = texture(colortex4, prevProj.xy).a;
 
+	//vec2 mipCoords = coord / 81 + (2./3. + 2./9. + 2./27. + 2./81.);
 	vec2 mipCoords = coord / 81 + (2./3. + 2./9. + 2./27. + 2./81.);
-	vec3 color     = texture(colortex6, mipCoords).rgb;
+	vec3 newColor  = texture(colortex6, mipCoords).rgb;
 
 	// Improves Accumulation by guessing pixel age and sample importance (there is no buffer space left for pixel age)
 	float age = maxc(prevCol); // Estimates age using pixel brightness
-	float sampleImportance = luminance(color.rgb); // Estimates sample importance using sample brightness
+	float sampleImportance = luminance(newColor); // Estimates sample importance using sample brightness
 	float mixTweak = age * (sampleImportance) + (1 - sampleImportance); // If the age is high (value low), let more of the sample in, but only if there is something to sample
 	mixTweak = mixTweak * (1 - LIGHTMAP_COLOR_FLICKER_RED) + LIGHTMAP_COLOR_FLICKER_RED; // Tweak value using user defined setting
 
@@ -94,9 +95,9 @@ void main() {
 	// rejection is zero when history is fully rejected, causing the history to be removed (multiplied by zero)
 	// if LIGHTMAP_COLOR_REGEN is 1, rejection == 0 will cause the new color to instantly fill the frame, while
 	//    LIGHTMAP_COLOR_REGEN    0  will cause rejection to have no impact on the blend factor.
-	color = mix(color, prevCol * rejection, LIGHTMAP_COLOR_BLEND * (rejection * LIGHTMAP_COLOR_REGEN + (1 - LIGHTMAP_COLOR_REGEN)) * mixTweak);
+	newColor = mix(newColor, prevCol * rejection, LIGHTMAP_COLOR_BLEND * (rejection * LIGHTMAP_COLOR_REGEN + (1 - LIGHTMAP_COLOR_REGEN)) * mixTweak);
 	
-	FragOut0 = vec4(color, screenPos.z);
+	FragOut0 = vec4(newColor, screenPos.z);
 
 #endif
 
