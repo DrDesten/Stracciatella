@@ -15,6 +15,7 @@ const bool colortex5MipmapEnabled = true;
 
 uniform sampler2D colortex4;
 uniform sampler2D colortex5;
+uniform sampler2D colortex6;
 
 uniform int frameCounter;
 uniform float nearInverse;
@@ -47,14 +48,14 @@ vec4 gauss3x3full(sampler2D tex, vec2 coord, vec2 pix) {
     vec4 b = texture(tex, coord - .5 * pix.xy);
     vec4 c = texture(tex, coord + .5 * vec2(pix.x, -pix.y));
     vec4 d = texture(tex, coord + .5 * vec2(-pix.x, pix.y));
-	return a * .25 + (b * .25 + (c * .25 + (d * .25)));
+	return a * .25 + b * .25 + c * .25 + d * .25;
 }
 vec3 gauss3x3Lod(sampler2D tex, vec2 coord, vec2 pix, float lod) {
 	vec3 a = textureLod(tex, coord + .5 * pix.xy, lod).rgb;
     vec3 b = textureLod(tex, coord - .5 * pix.xy, lod).rgb;
     vec3 c = textureLod(tex, coord + .5 * vec2(pix.x, -pix.y), lod).rgb;
     vec3 d = textureLod(tex, coord + .5 * vec2(-pix.x, pix.y), lod).rgb;
-	return a * .25 + (b * .25 + (c * .25 + (d * .25)));
+	return a * .25 + b * .25 + c * .25 + d * .25;
 }
 
 vec4 gauss3x3LodHit(sampler2D tex, vec2 coord, vec2 pix, float lod) {
@@ -62,7 +63,7 @@ vec4 gauss3x3LodHit(sampler2D tex, vec2 coord, vec2 pix, float lod) {
     vec3 b = textureLod(tex, coord - .5 * pix.xy, lod).rgb;
     vec3 c = textureLod(tex, coord + .5 * vec2(pix.x, -pix.y), lod).rgb;
     vec3 d = textureLod(tex, coord + .5 * vec2(-pix.x, pix.y), lod).rgb;
-	return vec4(a * .25 + (b * .25 + (c * .25 + (d * .25))), avg(vec4(sum(a) > 0, sum(b) > 0, sum(c) > 0, sum(d) > 0)));
+	return vec4(a * .25 + b * .25 + c * .25 + d * .25, avg(vec4(sum(a) > 0, sum(b) > 0, sum(c) > 0, sum(d) > 0)));
 }
 
 #endif
@@ -84,7 +85,8 @@ void main() {
 
 	float sampleLod  = max(log2(maxc(screenSize * pixel)) + LIGHTMAP_COLOR_LOD_BIAS, 0); // Calculate appropiate sampling LoD
 	vec2  jitter     = R2(frameCounter%1000) * pixel - (pixel * .5);
-	vec3  rawColor   = gauss3x3Lod(colortex5, coord + jitter, pixel, sampleLod);
+	//vec3  rawColor   = gauss3x3Lod(colortex5, coord + jitter, pixel, sampleLod);
+	vec3  rawColor   = texture(colortex6, coord / 81 + (2./3. + 2./9. + 2./27. + 2./81.)).rgb;
 	vec3  color      = rgb2oklab(sqrt(rawColor));
 	float importance = getImportance(color);
 
