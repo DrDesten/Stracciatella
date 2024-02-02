@@ -29,6 +29,7 @@ console.info( "Copied subfolders into `shaders`" )
 
 // Get shader files
 const shaderFiles = fs.readdirSync( src ).filter( file => fs.statSync( path.join( src, file ) ).isFile() )
+const shaderFileSet = new Set( shaderFiles )
 for ( const file of shaderFiles ) {
     fs.cpSync( path.join( src, file ), path.join( shaders, file ) )
 }
@@ -45,17 +46,11 @@ for ( const file of shaderFiles ) {
         const files = FileMapping[file]
 
         for ( const file of files ) {
-            switch ( world ) {
-                case "world-1":
-                    file.addDefine( "NETHER" )
-                    break
-                case "world0":
-                    file.addDefine( "OVERWORLD" )
-                    break
-                case "world1":
-                    file.addDefine( "END" )
-                    break
-            }
+            file.addDefine( {
+                "world-1": "NETHER",
+                "world0": "OVERWORLD",
+                "world1": "END",
+            }[world] )
         }
 
         worlds[world].push( ...files )
@@ -71,7 +66,7 @@ for ( const [world, files] of Object.entries( worlds ) ) {
         fs.writeFileSync( path.join( worldDir, file.filename ), file.generate() )
     }
 }
-console.info( "generated world folders" )
+console.info( "Generated world folders" )
 
 const dir = shaders
 
@@ -96,7 +91,7 @@ function gatherFiles( dir, fileList = [] ) {
 
 const files = gatherFiles( dir )
 
-for ( const path of files ) {
+for ( const filepath of files ) {
 
     const fext = path => path.match( /.*\.(\w+)$/ )?.[1]
     const fname = path => path.match( /.*\/([\w\.]*)\.\w+$/ )?.[1]
@@ -104,23 +99,23 @@ for ( const path of files ) {
 
     const indir = ( path, dir ) => typeof dir == "string" ? path.includes( dir ) : dir.test( path )
 
-    if ( indir( path, "shaders/core" ) )
+    if ( indir( filepath, "shaders/core" ) )
         continue
 
-    switch ( fext( path ) ) {
-        case "properties":
-            if ( ["block", "item", "entity"].includes( fname( path ) ) ) {
+    switch ( path.extname( filepath ) ) {
+        case ".properties":
+            if ( ["block", "item", "entity"].includes( path.basename( filepath, ".properties" ) ) ) {
                 //new PropertiesCompiler(fs.readFileSync(path, {encoding: "utf8"})).parseProperties().orientTarget()
-                const propertiesFile = loadProperties( path )
+                const propertiesFile = loadProperties( filepath )
                 //console.log(propertiesFile.fileObject)
                 compileProperties( propertiesFile )
             }
             break
-        case "fsh":
-        case "vsh":
-        case "glsl":
-            if ( !indir( path, /world-?\d/ ) ) guardFiles( path )
-            guardUniforms( path )
+        case ".fsh":
+        case ".vsh":
+        case ".glsl":
+            if ( !indir( filepath, /world-?\d/ ) ) guardFiles( filepath )
+            guardUniforms( filepath )
             break
     }
 }
