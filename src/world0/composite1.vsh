@@ -2,4 +2,4 @@
 #extension GL_ARB_explicit_attrib_location : enable
 #define VERT
 #define OVERWORLD
-#include "/compositeQuad.glsl"
+#include "/composite1.vsh"
