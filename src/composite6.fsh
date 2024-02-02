@@ -3,210 +3,246 @@
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
 #include "/lib/composite_basics.glsl"
-#include "/lib/transform.glsl"
 
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 
-uniform float nearInverse;
-uniform float near;
-uniform float far;
+struct FXAALumas {
+	float n, s, w, e, m;
+	float ne, nw, se, sw;
+	float minimum, maximum, range;
+};
 
-uniform vec3 sunPosition;
-
-uniform float frameTimeCounter;
-
-vec3 normalsFromDepth(float linearDepth) {
-	float dx = dFdx(linearDepth) * screenSize.x;
-	float dy = dFdy(linearDepth) * screenSize.y;
-	return normalize(vec3(dx, dy, -1));
+float getLuma(vec2 coord) {
+	return texture(colortex0, coord).a;
 }
 
-vec3 normalsFromDepth(float ldn, float lds, float lde, float ldw) {
-	float dx = (lde - ldw) * screenSize.x;
-	float dy = (ldn - lds) * screenSize.y;
-	return normalize(vec3(dx, dy, -1));
+FXAALumas fillCross(vec2 coord) {
+	FXAALumas vals;
+	vals.n = getLuma(coord + vec2(0, screenSizeInverse.y));
+	vals.s = getLuma(coord - vec2(0, screenSizeInverse.y));
+	vals.e = getLuma(coord + vec2(screenSizeInverse.x, 0));
+	vals.w = getLuma(coord - vec2(screenSizeInverse.x, 0));
+	vals.m = getLuma(coord);
+
+	vals.maximum = max(max(max(max(vals.n, vals.s), vals.w), vals.e), vals.m);
+	vals.minimum  = min(min(min(min(vals.n, vals.s), vals.w), vals.e), vals.m);
+	vals.range = vals.maximum - vals.minimum;
+
+	return vals;
 }
 
-float lines(vec2 coord, float angle) {
-	vec2  dir   = vec2(sin(angle), cos(angle));
-	float len   = dot(coord, dir);
-	float lines = sin(len * PI);
+//FXAA 3.11 from http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html (modified)
+vec3 FXAA311(vec2 coord) {
+	float edgeThresholdMin = 0.0312;
+	float edgeThresholdMax = 0.125;
 
-	lines = saturate(lines * 2 - 1);
-	return 1 - lines;
+	FXAALumas lumas = fillCross(coord);
+	
+	if (lumas.range > max(edgeThresholdMin, lumas.maximum * edgeThresholdMax)) {
+		// Get the remaining data points
+		lumas.ne = getLuma(coord + screenSizeInverse);
+		lumas.nw = getLuma(coord + vec2(-screenSizeInverse.x, screenSizeInverse.y));
+		lumas.sw = getLuma(coord - screenSizeInverse);
+		lumas.se = getLuma(coord + vec2(screenSizeInverse.x, -screenSizeInverse.y));
+
+		// Calculate edge direction
+		float horizontalComponent = abs((lumas.nw -2 * lumas.w + lumas.sw)) + 2 * abs((lumas.n -2 * lumas.m + lumas.s)) + abs((lumas.ne -2 * lumas.e + lumas.se));
+		float verticalComponent   = abs((lumas.ne -2 * lumas.n + lumas.nw)) + 2 * abs((lumas.e -2 * lumas.m + lumas.w)) + abs((lumas.se -2 * lumas.s + lumas.sw));
+		
+		// Determine dominant edge direction
+		bool isHorizontal = (horizontalComponent >= verticalComponent);		
+		
+		// Using the edge direction, calculate on which side of the pixel the edge lies. 
+		// By computing the gradient between the pixels, we can assume the higher range edge to be the actual edge
+		float luma1 = isHorizontal ? lumas.s : lumas.w;
+		float luma2 = isHorizontal ? lumas.n : lumas.e;
+		float gradient1 = luma1 - lumas.m;
+		float gradient2 = luma2 - lumas.m;
+		
+		bool  isEdge1 = abs(gradient1) > abs(gradient2);
+		float lumaEscapeDiff = 0.25 * max(abs(gradient1), abs(gradient2));
+		
+		// Calculate the pixel width normal to the edge (perpendicular)
+		float normalStepLength = isHorizontal ? screenSizeInverse.y : screenSizeInverse.x;
+
+		float pixelEdgeLuma = 0.0;
+		if (isEdge1) {
+			normalStepLength = - normalStepLength;
+			pixelEdgeLuma = 0.5 * (luma1 + lumas.m);
+		} else {
+			pixelEdgeLuma = 0.5 * (luma2 + lumas.m);
+		}
+		
+		vec2 sampleCoord = coord; // Move the sample coordinate to the edge
+		if (isHorizontal) sampleCoord.y += normalStepLength * 0.5;
+		else              sampleCoord.x += normalStepLength * 0.5;
+
+		// Find Edge Lengths //////////////////////////////////////////////////////////////////////////
+		
+		vec2 traceStep = isHorizontal ? vec2(screenSizeInverse.x, 0.0) : vec2(0.0, screenSizeInverse.y);
+		
+		vec2 sco1 = sampleCoord;
+		vec2 sco2 = sampleCoord;
+
+		bool hit1 = false;
+		bool hit2 = false;
+		float lumaDiff1;
+		float lumaDiff2;
+		for(int i = 0; i < 9; i++) {
+			if (!hit1) {
+				sco1     -= traceStep * FXAASteps[i];
+				lumaDiff1 = getLuma(sco1) - pixelEdgeLuma;
+				hit1      = abs(lumaDiff1) >= lumaEscapeDiff;
+			}
+			if (!hit2) {
+				sco2     += traceStep * FXAASteps[i];
+				lumaDiff2 = getLuma(sco2) - pixelEdgeLuma;
+				hit2      = abs(lumaDiff2) >= lumaEscapeDiff;
+			}
+			if (hit1 && hit2) break;
+		}
+		sco1 -= traceStep * FXAASteps[9] * float(!hit1); // Faking an extra step
+		sco2 += traceStep * FXAASteps[9] * float(!hit2);
+		
+		float distance1 = isHorizontal ? (coord.x - sco1.x) : (coord.y - sco1.y);
+		float distance2 = isHorizontal ? (sco2.x - coord.x) : (sco2.y - coord.y);
+
+		float distanceToEdge = min(distance1, distance2);
+		float edgeLength     = distance1 + distance2;
+
+		float pixelOffset = 0.5 - distanceToEdge / edgeLength;
+		
+		bool isLumaCenterSmaller = lumas.m < pixelEdgeLuma;
+		bool correctVariation    = ((distance1 < distance2 ? lumaDiff1 : lumaDiff2) < 0.0) != isLumaCenterSmaller; // Only apply to edges bulging in
+
+		pixelOffset = correctVariation ? pixelOffset : 0.0;
+		
+		vec2 FXAACoord = coord;
+		if (isHorizontal) FXAACoord.y += pixelOffset * normalStepLength;
+		else              FXAACoord.x += pixelOffset * normalStepLength;
+
+		return texture(colortex0, FXAACoord).rgb;
+	}
+
+	return texture(colortex0, coord).rgb;
 }
-float lines(vec2 coord, vec2 dir) {
-	float len   = dot(coord, dir);
-	float lines = sin(len * PI);
+vec3 FXAA311HQ(vec2 coord) {
+	const float edgeThresholdMin = 0.0312;
+	const float edgeThresholdMax = 0.0363;
+	const float subpixelQuality  = 0.75;
 
-	lines = saturate(lines * 2 - 1);
-	return 1 - lines;
+	FXAALumas lumas = fillCross(coord);
+	
+	if (lumas.range > max(edgeThresholdMin, lumas.maximum * edgeThresholdMax)) {
+		// Get the remaining data points
+		lumas.ne = getLuma(coord + screenSizeInverse);
+		lumas.nw = getLuma(coord + vec2(-screenSizeInverse.x, screenSizeInverse.y));
+		lumas.sw = getLuma(coord - screenSizeInverse);
+		lumas.se = getLuma(coord + vec2(screenSizeInverse.x, -screenSizeInverse.y));
+
+		float lumaWCorners = lumas.nw + lumas.sw;
+		float lumaECorners = lumas.ne + lumas.se;
+
+		// Calculate edge direction
+		float horizontalComponent = abs((-2 * lumas.w + lumaWCorners)) + 2 * abs((lumas.n -2 * lumas.m + lumas.s)) + abs((-2 * lumas.e + lumaECorners));
+		float verticalComponent   = abs((lumas.ne -2 * lumas.n + lumas.nw)) + 2 * abs((lumas.e -2 * lumas.m + lumas.w)) + abs((lumas.se -2 * lumas.s + lumas.sw));
+		
+		// Determine dominant edge direction
+		bool isHorizontal = (horizontalComponent >= verticalComponent);		
+		
+		// Using the edge direction, calculate on which side of the pixel the edge lies. 
+		// By computing the gradient between the pixels, we can assume the higher range edge to be the actual edge
+		float luma1 = isHorizontal ? lumas.s : lumas.w;
+		float luma2 = isHorizontal ? lumas.n : lumas.e;
+		float gradient1 = luma1 - lumas.m;
+		float gradient2 = luma2 - lumas.m;
+		
+		bool  isEdge1 = abs(gradient1) > abs(gradient2);
+		float lumaEscapeDiff = 0.25 * max(abs(gradient1), abs(gradient2));
+		
+		// Calculate the pixel width normal to the edge (perpendicular)
+		float normalStepLength = isHorizontal ? screenSizeInverse.y : screenSizeInverse.x;
+
+		float pixelEdgeLuma = 0.0;
+		if (isEdge1) {
+			normalStepLength = - normalStepLength;
+			pixelEdgeLuma = 0.5 * (luma1 + lumas.m);
+		} else {
+			pixelEdgeLuma = 0.5 * (luma2 + lumas.m);
+		}
+		
+		vec2 sampleCoord = coord; // Move the sample coordinate to the edge
+		if (isHorizontal) sampleCoord.y += normalStepLength * 0.5;
+		else              sampleCoord.x += normalStepLength * 0.5;
+
+		// Find Edge Lengths //////////////////////////////////////////////////////////////////////////
+		
+		vec2 traceStep = isHorizontal ? vec2(screenSizeInverse.x, 0.0) : vec2(0.0, screenSizeInverse.y);
+		
+		vec2 sco1 = sampleCoord;
+		vec2 sco2 = sampleCoord;
+
+		bool hit1 = false;
+		bool hit2 = false;
+		float lumaDiff1;
+		float lumaDiff2;
+		for(int i = 0; i < 9; i++) {
+			if (!hit1) {
+				sco1     -= traceStep * FXAASteps[i];
+				lumaDiff1 = getLuma(sco1) - pixelEdgeLuma;
+				hit1      = abs(lumaDiff1) >= lumaEscapeDiff;
+			}
+			if (!hit2) {
+				sco2     += traceStep * FXAASteps[i];
+				lumaDiff2 = getLuma(sco2) - pixelEdgeLuma;
+				hit2      = abs(lumaDiff2) >= lumaEscapeDiff;
+			}
+			if (hit1 && hit2) break;
+		}
+		sco1 -= traceStep * FXAASteps[9] * float(!hit1); // Faking an extra step
+		sco2 += traceStep * FXAASteps[9] * float(!hit2);
+		
+		float distance1 = isHorizontal ? (coord.x - sco1.x) : (coord.y - sco1.y);
+		float distance2 = isHorizontal ? (sco2.x - coord.x) : (sco2.y - coord.y);
+
+		float distanceToEdge = min(distance1, distance2);
+		float edgeLength     = distance1 + distance2;
+
+		//return vec3(distanceToEdge * (isHorizontal? screenSize.x : screenSize.y)) / 59;
+
+		float pixelOffset = 0.5 - distanceToEdge / edgeLength;
+		
+		bool isLumaCenterSmaller = lumas.m < pixelEdgeLuma;
+		bool correctVariation    = ((distance1 < distance2 ? lumaDiff1 : lumaDiff2) < 0.0) != isLumaCenterSmaller; // Only apply to edges bulging in
+
+		pixelOffset = correctVariation ? pixelOffset : 0.0;
+
+		float lumaAverage     = (1./12.) * ((lumaECorners + lumaWCorners) + 2 * (lumas.n + lumas.s + lumas.e + lumas.w));
+		float subPixelOffset1 = ( abs(lumaAverage - lumas.m) / lumas.range );
+		float subPixelOffset2 = (-2.0 * subPixelOffset1 + 3.0) * subPixelOffset1 * subPixelOffset1;
+		float subPixelOffset  = subPixelOffset2 * subPixelOffset2 * subpixelQuality;
+
+		pixelOffset = max(pixelOffset, subPixelOffset);
+		
+		vec2 FXAACoord = coord;
+		if (isHorizontal) FXAACoord.y += pixelOffset * normalStepLength;
+		else              FXAACoord.x += pixelOffset * normalStepLength;
+
+		return texture(colortex0, FXAACoord).rgb;
+	}
+
+	return texture(colortex0, coord).rgb;
 }
 
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 FragOut0;
 void main() {
-
-	// Get Color Information
-	
-	vec3  color = getAlbedo(coord);
-
-	// Noise
-
-	vec2  lineCoord = gl_FragCoord.xy;
-	float noiseStepFast = mod(floor(frameTimeCounter * 8), 5);
-	float noiseStepSlow = mod(floor(frameTimeCounter * 3), 5);
-
-	vec2 detailNoise = ( noise2(lineCoord / 4 + noiseStepFast) * 2 - 1 );
-	vec2 coarseNoise = ( noise2(lineCoord / 8 + noiseStepSlow) * 2 - 1 );
-
-	vec2 noiseCoord = coord + detailNoise * screenSizeInverse;
-
-	// Get Depth Information
-
-	float depth = getDepth(coord);
-
-	float d  = getDepth(noiseCoord);
-	float dn = getDepth(noiseCoord + vec2(0, screenSizeInverse.y));
-	float ds = getDepth(noiseCoord - vec2(0, screenSizeInverse.y));
-	float de = getDepth(noiseCoord + vec2(screenSizeInverse.x, 0));
-	float dw = getDepth(noiseCoord - vec2(screenSizeInverse.x, 0));
-
-	float maxDepthDiff =
-		max( max(
-			abs(d - dn),
-			abs(d - ds)
-		), max(
-			abs(d - de),
-			abs(d - dw)
-		));
-	bool safeNormals = maxDepthDiff > 1 / float(1 << 22);
-
-	float ld  = linearizeDepth(d, near, far);
-	float ldn = linearizeDepth(dn, near, far);
-	float lds = linearizeDepth(ds, near, far);
-	float lde = linearizeDepth(de, near, far);
-	float ldw = linearizeDepth(dw, near, far);
-
-	float depthDiff =
-		abs(ld - ldn) +
-		abs(ld - lds) +
-		abs(ld - lde) +
-		abs(ld - ldw);
-	depthDiff = depthDiff / ( depthDiff + 1 );
-	depthDiff = sqsq(depthDiff) * 0.75;
-
-	// Get Normal Information
-
-	vec3 n  = normalsFromDepth(ldn, lds, lde, ldw);
-
-	vec3 nn = normalsFromDepth(ldn, ld + (ld - ldn), lde, ldw);
-	vec3 ns = normalsFromDepth(ld + (ld - lds), lds, lde, ldw);
-	vec3 ne = normalsFromDepth(ldn, lds, lde, ld + (ld - lde));
-	vec3 nw = normalsFromDepth(ldn, lds, ld + (ld - ldw), ldw);
-
-	float normalDiff =
-		abs(dot(n, nn)) +
-		abs(dot(n, ns)) +
-		abs(dot(n, ne)) +
-		abs(dot(n, nw));
-	normalDiff = normalDiff / 4;
-	normalDiff = sqsq(normalDiff);
-	normalDiff = 1 - normalDiff;
-
-	// Get Position Information
-
-	vec3 clipPos   = vec3(coord, depth) * 2 - 1;
-	vec3 viewPos   = toView(clipPos);
-	vec3 playerPos = toPlayer(viewPos);
-	vec3 worldPos  = toWorld(playerPos);
-
-	vec3 ppdx = dFdx(playerPos);
-	vec3 ppdy = dFdy(playerPos);
-	vec3 ppn  = normalize(cross(ppdx, ppdy));
-
-	float       lineLength;
-	const float lineLengthEpsilon    = 1e-2;
-	vec3        playerLinePos        = playerPos;
-	vec3        playerLineTangentPos = playerPos;
-
-	// Pointing in y direction
-	if (abs(ppn.y) > 0.99) { 
-		lineLength              = worldPos.x;
-		playerLinePos.x        += lineLengthEpsilon;
-		playerLineTangentPos   += normalize(cross(ppn, vec3(1,0,0))) * lineLengthEpsilon;
-	// Pointing in x direction
-	} else if (abs(ppn.x) > 0.99) {
-		lineLength              = worldPos.z; 
-		playerLinePos.z        += lineLengthEpsilon;
-		playerLineTangentPos   += normalize(cross(ppn, vec3(0,0,1))) * lineLengthEpsilon;
-	// Pointing in z direction
-	} else if (abs(ppn.z) > 0.99) {
-		lineLength              = worldPos.x;
-		playerLinePos.x        += lineLengthEpsilon;
-		playerLineTangentPos   += normalize(cross(ppn, vec3(1,0,0))) * lineLengthEpsilon;
-	} else {
-		lineLength = -1;
-	}
-
-	vec3  screenLinePos        = backToClip(backToView(playerLinePos))        * .5 + .5;
-	vec3  screenLineTangentPos = backToClip(backToView(playerLineTangentPos)) * .5 + .5;
-	vec2  screenLineDir        = (screenLinePos.xy - coord)        * screenSize;
-	vec2  screenLineTangent    = (screenLineTangentPos.xy - coord) * screenSize;
-
-	float screenLineLength          = length(screenLineDir) / lineLengthEpsilon;
-	float screenTangentAlign        = dot(normalize(screenLineDir), normalize(screenLineTangent));
-	float correctedScreenLineLength = screenLineLength * sqrt( 1 - sq(acos(screenTangentAlign) / HALF_PI - 1) );
-
-	// Process Color
-
-	float brightness = luminance(color);
-	color           /= brightness;
-	color 			 = min(color, 1);
-
-	color *= 0.75;
-	color  = applySaturation(color, 1.5);
-
-	int lineLevel = int(brightness * 8 + 0.5);
-
-	// Effect
-
-	switch (lineLevel) {
-		case 0: 
-			color *= float(int(gl_FragCoord.x) % 2);
-		case 1: 
-			color *= float(int(gl_FragCoord.y) % 2);
-		/* case 2:
-			color *= lines((lineCoord + detailNoise * 0.5) / 4, screenLineDir )  * 0.5 + 0.5; 
-		case 3:
-			color *= lines((lineCoord + detailNoise * 0.75) / 6, screenLineDir )  * 0.25  + 0.75; */
-	}
-
-	// Outline
-
-	float outlineStrength = saturate( 1 - sqsq(ld/far * 2) );
-
-	color *= vec3( 1 - depthDiff * outlineStrength );
-	color *= vec3( 1 - normalDiff * outlineStrength * float(safeNormals) );
-
-	float lineSpacing       = correctedScreenLineLength / 10;
-	float hardLineSpacing   = exp2(floor(log2(lineSpacing)));
-	float smoothLineSpacing = 2 * (lineSpacing - hardLineSpacing) / exp2(ceil(log2(lineSpacing)));
-
-	const float lineWidth     = 25;
-	const float lineSharpness = 3;
-	float lmul = lineWidth * ( 1 + smoothLineSpacing ) * lineSharpness;
-	float lsub = lmul - lineSharpness + (smoothLineSpacing / 2) * lineSharpness;
-
-	float line1 = saturate(cos(lineLength * hardLineSpacing * PI) * lmul - lsub);
-	float line2 = saturate(cos(lineLength * hardLineSpacing * PI + PI) * lmul - lsub);
-
-	/* if (lineLength != -1 && depth < 1) {
-		color *= 1 - line1;
-		color *= 1 - line2 * saturate(smoothLineSpacing);
-	} else {
-		color *= lines((lineCoord + detailNoise * 0.75) / 6, PI / 4 )  * 0.25  + 0.75;
-	}
- */
-	FragOut0   = vec4(color, 1);
+	vec3 color = FXAA311HQ(coord);
+	FragOut0   = vec4(color, 1.0);
 }
+
+/*
+#ifdef FXAA
+dummy code (not even code lol)
+#endif
+*/
