@@ -47,4 +47,5 @@ const vec4 colortex3ClearColor = vec4(0,0,0,0);
 const bool colortex4Clear = false;
 const bool colortex5Clear = true;
 const vec4 colortex5ClearColor = vec4(0,0,0,0);
+const bool colortex6Clear = true;
 #endif
