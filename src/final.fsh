@@ -305,7 +305,9 @@ void main() {
 	//vec3 color = textureBicubicComplexOpt(colortex0, coord * MC_RENDER_QUALITY, screenSize * (1./MC_RENDER_QUALITY), screenSizeInverse * MC_RENDER_QUALITY).rgb;
 	vec3 color = textureBicubicSharp(colortex0, coord, screenSize * (1./MC_RENDER_QUALITY), screenSizeInverse * MC_RENDER_QUALITY).rgb;
 #else
-	vec3 color = getAlbedo(coord) * .5 + texture(colortex6, coord).rgb * .5;
+	vec3 color = getAlbedo(coord);
+
+	color = color * 0.5 + texture(colortex6, coord * 0.125).rgb * 0.5;
 #endif
 	//color = FXAA311Upscale(coord, 2);
 	FragOut0 = vec4(color, 1.0);
