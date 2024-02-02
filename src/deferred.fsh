@@ -200,7 +200,7 @@ void main() {
 
 		#ifdef COLORED_LIGHTS
 
-			vec3  rawColoredLight      = textureBicubic(colortex4, coord, LIGHTMAP_COLOR_RES, 1/LIGHTMAP_COLOR_RES).rgb;
+			vec3  rawColoredLight      = rgb2oklab(textureBicubic(colortex4, coord, LIGHTMAP_COLOR_RES, 1/LIGHTMAP_COLOR_RES).rgb);
 			vec3  blockLightColor      = getColor(rawColoredLight);
 			float blockLightImportance = rawColoredLight.x;
 			
