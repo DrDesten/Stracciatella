@@ -200,12 +200,13 @@ void main() {
 
 		#ifdef COLORED_LIGHTS
 
-			vec3  rawColoredLight      = rgb2oklab(textureBicubic(colortex4, coord, LIGHTMAP_COLOR_RES, 1/LIGHTMAP_COLOR_RES).rgb);
-			vec3  blockLightColor      = getColor(rawColoredLight);
+			vec3  rawColoredLight      = textureBicubic(colortex4, coord, LIGHTMAP_COLOR_RES, 1/LIGHTMAP_COLOR_RES).rgb;
+			vec3  blockLightColor      = oklab2rgb(rawColoredLight);
 			float blockLightImportance = rawColoredLight.x;
 			
-			blockLightColor *= pow(-sq(blockLightImportance) + 2 * blockLightImportance, 1./4);
-			blockLightColor  = saturate(applySaturation(blockLightColor, 1.5));
+			//blockLightColor *= pow(-sq(blockLightImportance) + 2 * blockLightImportance, 1./4);
+			blockLightColor  = blockLightColor / (maxc(blockLightColor) + 0.0025);
+			blockLightColor  = saturate(applySaturation(blockLightColor, 0.5));
 			blockLightColor  = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
 
 			float dist = sqmag(playerPos);
@@ -226,7 +227,7 @@ void main() {
 
 			#elif LIGHTMAP_COLOR_DEBUG == 2 // Debug, Mix Age
 
-			color = mix(color, vec3(maxc(blockLightColor)), 0.666);
+			color = mix(color, vec3(luminance(blockLightColor)), 0.666);
 			vec3 tmp = texture(colortex5, coord).rgb;
 			if (sum(tmp) != 0) color = tmp;
 
@@ -236,8 +237,8 @@ void main() {
 
 			#elif LIGHTMAP_COLOR_DEBUG == 4 // Debug, Source Color
 
-			vec3 tmp = texture(colortex5, coord).rgb;
-			if (sum(tmp) != 0) color = tmp;
+			vec3 tmp1 = texture(colortex5, coord).rgb;
+			if (tmp != vec3(0)) color = tmp;
 			else color = mix(color, vec3(1,0,0), 0.5);
 			
 			#endif
