@@ -71,7 +71,7 @@ void main() {
 	float prevDepth = texture(colortex4, prevProj.xy).a;
 
 	//vec2 mipCoords = coord / 81 + (2./3. + 2./9. + 2./27. + 2./81.);
-	vec2 mipCoords = coord / 81 + (2./3. + 2./9. + 2./27. + 2./81.);
+	vec2 mipCoords = coord / 16 + (1./2 + 1./4 + 1./8 + 1./16);
 	vec3 newColor  = texture(colortex6, mipCoords).rgb;
 
 	// Improves Accumulation by guessing pixel age and sample importance (there is no buffer space left for pixel age)
