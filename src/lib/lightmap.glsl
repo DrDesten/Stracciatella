@@ -105,7 +105,7 @@ vec3 getCustomLightmap(vec3 lmcoord /* lmcoord + AO */, float customLightmapBlen
 
         //blocklightExtraColor  = blocklightExtraColor * (luminance(lightmapBlock) / luminance(blocklightExtraColor));
         blocklightExtraColor  = saturate(blocklightExtraColor);
-        blocklightColor = mix(lightmapBlock, blocklightExtraColor, maxc(blocklightExtraColor));
+        blocklightColor = mix(lightmapBlock, saturate(oklab2rgb(vec3(rgb2oklab(lightmapBlock).x, rgb2oklab(blocklightExtraColor).yz))), maxc(blocklightExtraColor));
 
         #if MC_VERSION >= 11900
             if (darknessFactor > 0) {

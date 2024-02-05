@@ -14,6 +14,7 @@ vec2       coord = gl_FragCoord.xy * pixel;
 const bool colortex4MipmapEnabled = true;
 uniform sampler2D colortex4;
 
+const bool colortex6MipmapEnabled = true;
 uniform sampler2D colortex6;
 
 uniform int frameCounter;
@@ -55,6 +56,13 @@ vec4 gauss3x3LodHit(sampler2D tex, vec2 coord, vec2 pix, float lod) {
 	return vec4(a * .25 + b * .25 + c * .25 + d * .25, avg(vec4(sum(a) > 0, sum(b) > 0, sum(c) > 0, sum(d) > 0)));
 }
 
+vec4 multiSample(vec2 colorcoords, float lod, vec2 depthcoords) {
+	return vec4(
+		textureLod(colortex6, colorcoords, lod).rgb,
+		linearizeDepthf(texture(depthtex0, depthcoords).x, nearInverse)
+	);
+}
+
 #endif
 
 /* DRAWBUFFERS:4 */
@@ -67,17 +75,48 @@ void main() {
 	vec4 prevProj   = reprojectScreen(screenPos);
 	vec2 prevCoord  = prevProj.xy;
 
-	vec3  prevCol   = textureLod(colortex4, prevProj.xy, 0.5).rgb;
+	vec3  prevCol   = oklab2rgb(textureLod(colortex4, prevProj.xy, 1).rgb);
 	float prevDepth = texture(colortex4, prevProj.xy).a;
 
 	//vec2 mipCoords = coord / 81 + (2./3. + 2./9. + 2./27. + 2./81.);
-	vec2 mipCoords = coord / 16 + (1./2 + 1./4 + 1./8 + 1./16);
-	vec3 newColor  = texture(colortex6, mipCoords).rgb;
+	vec2  mipCoords = coord / 16 + (1./2 + 1./4 + 1./8 + 1./16) - screenSizeInverse;
+	float lod       = max(0, log2(avg((screenSize / 16) / LIGHTMAP_COLOR_RES)) + LIGHTMAP_COLOR_LOD_BIAS);
+	vec2  jitter    = R2(frameCounter%1000) * (pixel / 32) - ((pixel / 32) * .5);
+	vec3  newColor  = gauss3x3Lod(colortex6, mipCoords, screenSizeInverse, lod);
+
+	/* // Experimental Depth Gradient
+	vec4 samples[9] = vec4[](
+		multiSample(mipCoords + screenSizeInverse * vec2(0,0), lod, coord + screenSizeInverse * 16 * vec2(0,0)),
+
+		multiSample(mipCoords + screenSizeInverse * vec2(-1,-1), lod, coord + screenSizeInverse * 16 * vec2(-1,-1)),
+		multiSample(mipCoords + screenSizeInverse * vec2(-1,0), lod, coord + screenSizeInverse * 16 * vec2(-1,0)),
+		multiSample(mipCoords + screenSizeInverse * vec2(-1,1), lod, coord + screenSizeInverse * 16 * vec2(-1,1)),
+		multiSample(mipCoords + screenSizeInverse * vec2(0,-1), lod, coord + screenSizeInverse * 16 * vec2(0,-1)),
+		// Center (moved to index 0)
+		multiSample(mipCoords + screenSizeInverse * vec2(0,1), lod, coord + screenSizeInverse * 16 * vec2(0,1)),
+		multiSample(mipCoords + screenSizeInverse * vec2(1,-1), lod, coord + screenSizeInverse * 16 * vec2(1,-1)),
+		multiSample(mipCoords + screenSizeInverse * vec2(1,0), lod, coord + screenSizeInverse * 16 * vec2(1,0)),
+		multiSample(mipCoords + screenSizeInverse * vec2(1,1), lod, coord + screenSizeInverse * 16 * vec2(1,1))
+	);
+
+	vec3  merged = samples[0].rgb;
+	float target = samples[0].w;
+	float weight = 1;
+	float decay  = 1;
+	for (int i = 1; i < 9; i++) {
+		float d = abs(target - samples[i].w);
+		float w = exp(-d * decay);
+		merged += samples[i].rgb * w;
+		weight += w;
+	}
+	merged /= weight;
+
+	newColor = merged; */
 
 	// Improves Accumulation by guessing pixel age and sample importance (there is no buffer space left for pixel age)
-	float age = maxc(prevCol); // Estimates age using pixel brightness
-	float sampleImportance = luminance(newColor); // Estimates sample importance using sample brightness
-	float mixTweak = age * (sampleImportance) + (1 - sampleImportance); // If the age is high (value low), let more of the sample in, but only if there is something to sample
+	float age              = maxc(prevCol); // Estimates age using pixel brightness
+	float sampleImportance = qrtf(maxc(newColor)); // Estimates sample importance using sample brightness
+	float mixTweak         = age * (sampleImportance) + (1 - sampleImportance); // If the age is high (value low), let more of the sample in, but only if there is something to sample
 	mixTweak = mixTweak * (1 - LIGHTMAP_COLOR_FLICKER_RED) + LIGHTMAP_COLOR_FLICKER_RED; // Tweak value using user defined setting
 
 	#if LIGHTMAP_COLOR_REJECTION == 0
@@ -97,7 +136,7 @@ void main() {
 	//    LIGHTMAP_COLOR_REGEN    0  will cause rejection to have no impact on the blend factor.
 	newColor = mix(newColor, prevCol * rejection, LIGHTMAP_COLOR_BLEND * (rejection * LIGHTMAP_COLOR_REGEN + (1 - LIGHTMAP_COLOR_REGEN)) * mixTweak);
 	
-	FragOut0 = vec4(newColor, screenPos.z);
+	FragOut0 = vec4(rgb2oklab(newColor), screenPos.z);
 
 #endif
 

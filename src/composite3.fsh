@@ -45,7 +45,7 @@ void main() {
 
 	vec3 colors[4] = vec3[]( vec3(0),vec3(0),vec3(0),vec3(0) );
 
-	if (pixel.x < int(screenSize.x) / 8 && pixel.y < int(screenSize.y) / 8) {
+	if (pixel.x < int(screenSize.x) / 8 - 1 && pixel.y < int(screenSize.y) / 8 - 1) {
 		colors = vec3[](
 			rgb2oklab(texelFetch(colortex6, pixel + ivec2(0, 0), 0).rgb),
 			rgb2oklab(texelFetch(colortex6, pixel + ivec2(1, 0), 0).rgb),
