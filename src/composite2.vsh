@@ -1,9 +1,9 @@
 out vec2 coord;
 
 void main() {
-	coord = gl_Vertex.xy / 9;
+	coord = gl_Vertex.xy / 4;
 
 	gl_Position = gl_Vertex * 2 - 1;
-	gl_Position.xy /= 27;
-	gl_Position.xy -= 2./3. + 2./9. + 2./27.;
+	gl_Position.xy /= 8;
+	gl_Position.xy -= 1./2. + 1./4. + 1./8.;
 }
