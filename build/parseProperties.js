@@ -1,4 +1,5 @@
 import fs from "fs"
+import util from "util"
 import { Lexer, Token, TokenMatcher } from "./RegLexer.js"
 
 export class PropertiesFile {
@@ -328,9 +329,9 @@ export function parseProperties( text ) {
         new TokenMatcher( TokenType.EscapedNewline, /\\\r?\n/, token => token.props.ignore = true ),
 
         new TokenMatcher( TokenType.Ident, /[a-zA-Z_][a-zA-Z0-9_]*(:[a-zA-Z_][a-zA-Z0-9_]*(=[a-zA-Z_][a-zA-Z0-9_]*)?)*/ ),
-        new TokenMatcher( TokenType.Number, /\d+/ ),
+        new TokenMatcher( TokenType.Number, /\d+/, token => token.props.value = Number( token.text ) ),
 
-        new TokenMatcher( TokenType.Newline, /(?:\r?\n)+/, token => token.props.unique = false ),
+        new TokenMatcher( TokenType.Newline, /(?:\r?\n)+/, token => token.props.concat = true ),
         new TokenMatcher( TokenType.Dot, /\./ ),
         new TokenMatcher( TokenType.Equals, /=/ ),
 
@@ -340,27 +341,29 @@ export function parseProperties( text ) {
         new TokenMatcher( TokenType.Less, /</ ),
         new TokenMatcher( TokenType.LessEquals, /<=/ ),
 
-        new TokenMatcher( TokenType.If, /#define[^\S\n\r]+(?<identifier>.*)[^\S\n\r]*(\r?\n)?/, preprocessorTokenParser ),
-        new TokenMatcher( TokenType.Ifdef, /#undef[^\S\n\r]+(?<identifier>.*)[^\S\n\r]*(\r?\n)?/, preprocessorTokenParser ),
+        new TokenMatcher( TokenType.If, /#define[^\S\n\r]+(?<identifier>.*)/, preprocessorTokenParser ),
+        new TokenMatcher( TokenType.Ifdef, /#undef[^\S\n\r]+(?<identifier>.*)/, preprocessorTokenParser ),
 
-        new TokenMatcher( TokenType.If, /#if[^\S\n\r]+(?<condition>.*)[^\S\n\r]*(\r?\n)?/, preprocessorTokenParser ),
-        new TokenMatcher( TokenType.Ifdef, /#ifdef[^\S\n\r]+(?<condition>.*)[^\S\n\r]*(\r?\n)?/, preprocessorTokenParser ),
-        new TokenMatcher( TokenType.Ifndef, /#ifndef[^\S\n\r]+(?<condition>.*)[^\S\n\r]*(\r?\n)?/, preprocessorTokenParser ),
-        new TokenMatcher( TokenType.Elif, /#elif[^\S\n\r]+(?<condition>.*)[^\S\n\r]*(\r?\n)?/, preprocessorTokenParser ),
-        new TokenMatcher( TokenType.Else, /#else[^\S\n\r]*(\r?\n)?/, preprocessorTokenParser ),
-        new TokenMatcher( TokenType.Endif, /#endif[^\S\n\r]*(\r?\n)?/, preprocessorTokenParser ),
+        new TokenMatcher( TokenType.If, /#if[^\S\n\r]+(?<condition>.*)/, preprocessorTokenParser ),
+        new TokenMatcher( TokenType.Ifdef, /#ifdef[^\S\n\r]+(?<condition>.*)/, preprocessorTokenParser ),
+        new TokenMatcher( TokenType.Ifndef, /#ifndef[^\S\n\r]+(?<condition>.*)/, preprocessorTokenParser ),
+        new TokenMatcher( TokenType.Elif, /#elif[^\S\n\r]+(?<condition>.*)/, preprocessorTokenParser ),
+        new TokenMatcher( TokenType.Else, /#else/, preprocessorTokenParser ),
+        new TokenMatcher( TokenType.Endif, /#endif/, preprocessorTokenParser ),
     ]
 
-    const NodeType = {
-        Ident: Symbol( "Ident" ),
-        Conditional: Symbol( "Conditional" ),
+    class Node {}
+    class ConditionalNode extends Node {
+        constructor( blocks ) {
+            super()
+            this.blocks = blocks
+        }
     }
-
-    class Node {
-        /** @param {{[property: string]: any}} props  */
-        constructor( type, props ) {
-            this.type = type
-            this.props = props
+    class AssignmentNode extends Node {
+        constructor( properties, targets ) {
+            super()
+            this.properties = properties
+            this.targets = targets
         }
     }
 
@@ -371,13 +374,23 @@ export function parseProperties( text ) {
             this.index = 0
         }
 
-        next( type ) {
+        eof() {
+            return this.index >= this.tokens.length
+        }
+        next( ...types ) {
             const token = this.tokens[this.index++]
-            if ( type && token.type !== type ) {
-                this.index -= 1
-                throw new Error( `Expected '${type}', got '${token.type}` )
+            if ( types.length > 0 && !types.includes( token.type ) ) {
+                throw new Error( `Expected ${types.join( " or " )}, got '${token.type}'` )
             }
             return token
+        }
+        nextIf( ...types ) {
+            const token = this.tokens[this.index]
+            if ( !this.eof() && types.includes( token.type ) ) {
+                this.index++
+                return true
+            }
+            return false
         }
         peek( lookahead = 0 ) {
             return this.tokens[this.index + lookahead]
@@ -388,10 +401,10 @@ export function parseProperties( text ) {
         }
         parseBlock() {
             let block = []
-            let statement = this.parseStatement()
-            while ( statement ) {
+            while ( !this.eof() ) {
+                const statement = this.parseStatement()
+                if ( !statement ) break
                 block.push( statement )
-                statement = this.parseStatement()
             }
             return block
         }
@@ -409,62 +422,92 @@ export function parseProperties( text ) {
         parseConditional() {
             const directive = this.next()
             const condition = directive.props.condition
-
-            const block = this.parseBlock()
-
-            const token = this.peek()
-            if ( token.type === TokenType.Endif ) {
-                this.next()
-
-                return new Node( NodeType.Conditional, {
-                    directive: directive,
-                    blocks: [{
-                        condition: condition,
-                        block: block
-                    }]
-                } )
-            }
-            if ( token.type === TokenType.Else ) {
-                this.next()
-                this.next( TokenType.Newline )
-
-                const elseBlock = this.parseBlock()
-                this.next( TokenType.Endif )
-
-                return new Node( NodeType.Conditional, {
-                    directive: directive,
-                    blocks: [{
-                        condition: condition,
-                        block: block
-                    }, {
-                        condition: null,
-                        block: elseBlock
-                    }]
-                } )
-            }
+            this.nextIf( TokenType.Newline )
 
             const blocks = [{
-                condition: condition,
-                block: block
-            }]
-
-            this.next( TokenType.Elif )
-            this.next( TokenType.Newline )
-
-            return new Node( NodeType.Conditional, {
                 directive: directive,
                 condition: condition,
-                block: block
-            } )
+                block: this.parseBlock()
+            }]
+
+            while ( this.peek().type === TokenType.Elif ) {
+                const elif = this.next()
+                const elifCondition = elif.props.condition
+                this.nextIf( TokenType.Newline )
+
+                blocks.push( {
+                    directive: elif,
+                    condition: elifCondition,
+                    block: this.parseBlock()
+                } )
+            }
+
+            if ( this.peek().type === TokenType.Else ) {
+                const elseDirective = this.next()
+                this.nextIf( TokenType.Newline )
+
+                blocks.push( {
+                    directive: elseDirective,
+                    condition: undefined,
+                    block: this.parseBlock()
+                } )
+
+                this.next( TokenType.Endif )
+                this.nextIf( TokenType.Newline )
+
+                return new ConditionalNode( blocks )
+            }
+
+            if ( this.nextIf( TokenType.Endif ) ) {
+                this.nextIf( TokenType.Newline )
+                return new ConditionalNode( blocks )
+            }
+
+            throw new Error( `Expected 'elif', 'else', or 'endif', got '${this.peek().type.toString()}'` )
+        }
+        parseAssignment() {
+            const properties = []
+            while ( this.peek().type === TokenType.Ident ) {
+                const property = { name: "", value: 1 }
+
+                property.name = this.next().text
+                if ( this.peek().type === TokenType.Dot ) {
+                    this.next()
+                    if ( this.peek().type === TokenType.Number ) {
+                        property.value = this.next().props.value
+                        this.nextIf( TokenType.Dot )
+                    }
+                }
+
+                properties.push( property )
+            }
+
+            this.next( TokenType.Equals )
+
+            const targets = []
+            while ( this.peek().type === TokenType.Ident ) {
+                targets.push( this.next().text )
+            }
+
+            this.next( TokenType.Newline )
+
+            return new AssignmentNode( properties, targets )
         }
 
     }
 
     const lexer = new Lexer( Tokens, TokenType.Error )
     const tokens = lexer.lex( text )
+    if ( tokens[0]?.type === TokenType.Newline ) tokens.shift()
 
-    return tokens
+    const parser = new Parser( tokens )
+    const ast = parser.parse()
+
+    return ast
 }
 
 let text = fs.readFileSync( "C:\\Users\\Raketil\\AppData\\Roaming\\.minecraft\\shaderpacks\\Stracciatella Shaders\\src\\block.properties" ).toString()
-console.log( parseProperties( text ) )
+let ast = parseProperties( text )
+
+console.log( ast )
+console.log( util.inspect( ast, { showHidden: false, depth: null, colors: true } ) )
