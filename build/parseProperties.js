@@ -331,7 +331,7 @@ export function parseProperties( text ) {
         new TokenMatcher( TokenType.Ident, /[a-zA-Z_][a-zA-Z0-9_]*(:[a-zA-Z_][a-zA-Z0-9_]*(=[a-zA-Z_][a-zA-Z0-9_]*)?)*/ ),
         new TokenMatcher( TokenType.Number, /\d+/, token => token.props.value = Number( token.text ) ),
 
-        new TokenMatcher( TokenType.Newline, /(?:\r?\n)+/, token => token.props.concat = true ),
+        new TokenMatcher( TokenType.Newline, /(?:\r?\n)+/, token => token.props.merge = true ),
         new TokenMatcher( TokenType.Dot, /\./ ),
         new TokenMatcher( TokenType.Equals, /=/ ),
 
