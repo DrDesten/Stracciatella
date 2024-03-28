@@ -4,10 +4,10 @@ export class Token {
     constructor( type, text ) {
         this.type = type
         this.text = text
-        /** @type {{[property: string]: any, ignore: boolean, unique: boolean}} */
+        /** @type {{[property: string]: any, ignore: boolean, concat: boolean}} */
         this.props = {
             ignore: false,
-            unique: true
+            concat: false
         }
     }
 
@@ -80,7 +80,7 @@ export class Lexer {
                 remaining = remaining.slice( 1 )
             } else {
                 if ( !token.props.ignore ) {
-                    if ( token.props.unique || tokens.length === 0 || tokens[tokens.length - 1].type !== token.type ) {
+                    if ( !token.props.concat || tokens.length === 0 || tokens[tokens.length - 1].type !== token.type ) {
                         tokens.push( token )
                     } else {
                         tokens[tokens.length - 1].text += token.text
