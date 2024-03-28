@@ -425,7 +425,7 @@ export function parseProperties( text ) {
             this.nextIf( TokenType.Newline )
 
             const blocks = [{
-                directive: directive,
+                directive: directive.type,
                 condition: condition,
                 block: this.parseBlock()
             }]
@@ -436,7 +436,7 @@ export function parseProperties( text ) {
                 this.nextIf( TokenType.Newline )
 
                 blocks.push( {
-                    directive: elif,
+                    directive: elif.type,
                     condition: elifCondition,
                     block: this.parseBlock()
                 } )
@@ -447,15 +447,10 @@ export function parseProperties( text ) {
                 this.nextIf( TokenType.Newline )
 
                 blocks.push( {
-                    directive: elseDirective,
+                    directive: elseDirective.type,
                     condition: undefined,
                     block: this.parseBlock()
                 } )
-
-                this.next( TokenType.Endif )
-                this.nextIf( TokenType.Newline )
-
-                return new ConditionalNode( blocks )
             }
 
             if ( this.nextIf( TokenType.Endif ) ) {
