@@ -1,6 +1,10 @@
 import fs from "fs"
 import util from "util"
+import path from "path"
+import url from "url"
 import { Lexer, Token, TokenMatcher } from "./RegLexer.js"
+
+const __dirname = path.dirname( url.fileURLToPath( import.meta.url ) )
 
 export class PropertiesFile {
     constructor( path, source, statementPrefix ) {
@@ -329,7 +333,7 @@ export function parseProperties( text ) {
         new TokenMatcher( TokenType.EscapedNewline, /\\\r?\n/, token => token.props.ignore = true ),
 
         new TokenMatcher( TokenType.Ident, /[a-zA-Z_][a-zA-Z0-9_]*(:[a-zA-Z_][a-zA-Z0-9_]*(=[a-zA-Z_][a-zA-Z0-9_]*)?)*/ ),
-        new TokenMatcher( TokenType.Number, /\d+/, token => token.props.value = Number( token.text ) ),
+        new TokenMatcher( TokenType.Number, /[+-]?\d+/, token => token.props.value = Number( token.text ) ),
 
         new TokenMatcher( TokenType.Newline, /(?:\r?\n)+/, token => token.props.merge = true ),
         new TokenMatcher( TokenType.Dot, /\./ ),
@@ -352,8 +356,18 @@ export function parseProperties( text ) {
         new TokenMatcher( TokenType.Endif, /#endif/, preprocessorTokenParser ),
     ]
 
-    class Node {}
+    class Node { }
+    class ConditionalBlock extends Node {
+        /** @param {Symbol} directive @param {string=} condition @param {Node[]} block */
+        constructor( directive, condition, block ) {
+            super()
+            this.directive = directive
+            this.condition = condition
+            this.nodes = block
+        }
+    }
     class ConditionalNode extends Node {
+        /** @param {ConditionalBlock[]} blocks */
         constructor( blocks ) {
             super()
             this.blocks = blocks
@@ -424,33 +438,33 @@ export function parseProperties( text ) {
             const condition = directive.props.condition
             this.nextIf( TokenType.Newline )
 
-            const blocks = [{
-                directive: directive.type,
-                condition: condition,
-                block: this.parseBlock()
-            }]
+            const blocks = [new ConditionalBlock(
+                directive.type,
+                condition,
+                this.parseBlock()
+            )]
 
             while ( this.peek().type === TokenType.Elif ) {
                 const elif = this.next()
                 const elifCondition = elif.props.condition
                 this.nextIf( TokenType.Newline )
 
-                blocks.push( {
-                    directive: elif.type,
-                    condition: elifCondition,
-                    block: this.parseBlock()
-                } )
+                blocks.push( new ConditionalBlock(
+                    elif.type,
+                    elifCondition,
+                    this.parseBlock()
+                ) )
             }
 
             if ( this.peek().type === TokenType.Else ) {
                 const elseDirective = this.next()
                 this.nextIf( TokenType.Newline )
 
-                blocks.push( {
-                    directive: elseDirective.type,
-                    condition: undefined,
-                    block: this.parseBlock()
-                } )
+                blocks.push( new ConditionalBlock(
+                    elseDirective.type,
+                    undefined,
+                    this.parseBlock()
+                ) )
             }
 
             if ( this.nextIf( TokenType.Endif ) ) {
@@ -491,6 +505,66 @@ export function parseProperties( text ) {
 
     }
 
+    class Visitor {
+        /**@param {Node|Node[]} node */
+        visit( node ) {
+            if ( node instanceof Array ) {
+                node.forEach( node => this.visit( node ) )
+            }
+            if ( node instanceof ConditionalBlock ) {
+                this.visitConditionalBlock( node )
+            }
+            if ( node instanceof ConditionalNode ) {
+                this.visitConditionalNode( node )
+            }
+            if ( node instanceof AssignmentNode ) {
+                this.visitAssignmentNode( node )
+            }
+        }
+
+        /**@param {ConditionalBlock} node */
+        visitConditionalBlock( node ) {
+            this.visit( node.nodes )
+        }
+
+        /**@param {ConditionalNode} node */
+        visitConditionalNode( node ) {
+            node.blocks.forEach( node => this.visit( node ) )
+        }
+
+        /**@param {AssignmentNode} node */
+        visitAssignmentNode( node ) { }
+    }
+
+    class CollectingVisitor extends Visitor {
+        constructor() {
+            super()
+            /** @type {Map<ClassDecorator,Node[]>} */
+            this.data = new Map( [
+                [ConditionalBlock, []],
+                [ConditionalNode, []],
+                [AssignmentNode, []]
+            ] )
+        }
+
+        /**@param {ConditionalBlock} node */
+        visitConditionalBlock( node ) {
+            this.data.get( ConditionalBlock ).push( node )
+            this.visit( node.nodes )
+        }
+
+        /**@param {ConditionalNode} node */
+        visitConditionalNode( node ) {
+            this.data.get( ConditionalNode ).push( node )
+            this.visit(node.blocks)
+        }
+
+        /**@param {AssignmentNode} node */
+        visitAssignmentNode( node ) {
+            this.data.get( AssignmentNode ).push( node )
+        }
+    }
+
     const lexer = new Lexer( Tokens, TokenType.Error )
     const tokens = lexer.lex( text )
     if ( tokens[0]?.type === TokenType.Newline ) tokens.shift()
@@ -498,10 +572,13 @@ export function parseProperties( text ) {
     const parser = new Parser( tokens )
     const ast = parser.parse()
 
-    return ast
+    const visitor = new CollectingVisitor()
+    ast.forEach( node => visitor.visit( node ) )
+
+    return visitor
 }
 
-let text = fs.readFileSync( "C:\\Users\\Raketil\\AppData\\Roaming\\.minecraft\\shaderpacks\\Stracciatella Shaders\\src\\block.properties" ).toString()
+let text = fs.readFileSync( path.join( __dirname, "test.conditions.properties" ) ).toString()
 let ast = parseProperties( text )
 
 console.log( ast )
