@@ -1,3 +1,5 @@
+#include "/core/dh/uniforms.glsl"
+
 const vec3 sunsetColor = vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B);
 
 const vec3 skyDayColor       = vec3(SKY_DAY_R, SKY_DAY_G, SKY_DAY_B);
@@ -17,6 +19,8 @@ const vec3 endSkyDown = vec3(END_SKY_DOWN_R, END_SKY_DOWN_G, END_SKY_DOWN_B);
 
 uniform vec3 fogColor;
 uniform vec3 skyColor;
+
+uniform float far;
 
 // SKY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -108,18 +112,34 @@ vec3 getCustomFogColor(float rainStrength, float daynight) {
 
 // FOG /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-float fogFactor(vec3 viewPos, float far) {
-    float farSQ     = sq(far);
-    return smoothstep( farSQ * (SQRT2 * FOG_START / FOG_END), farSQ, sqmag(viewPos) * (SQRT2 / FOG_END));
+float fogSmoothStep(float distSq, float far) {
+    float farSQ = sq(far);
+    return smoothstep( farSQ * (SQRT2 * FOG_START / FOG_END), farSQ, distSq * (SQRT2 / FOG_END));
+}
+float fogFactorTerrain(vec3 playerPos) {
+    playerPos.y *= 0.25;
+    return fogSmoothStep(sqmag(playerPos), far);
+}
+float fogfactorTerrainDH(float dist) {
+    return fogSmoothStep(sq(dist), dhFarPlane);
 }
 
-float fogFactorPlayer(vec3 playerPos, float far) {
+
+float fogFactor(vec3 viewPos, float far) {
+    return fogSmoothStep(sqmag(viewPos), far);
+}
+
+float fogFactorPlayer(vec3 playerPos) {
+#ifdef DISTANT_HORIZONS
+    float farSQ     = sq(dhFarPlane);
+#else
     float farSQ     = sq(far);
+#endif
     playerPos.y    *= 0.25;
     return smoothstep( farSQ * (SQRT2 * FOG_START / FOG_END), farSQ, sqmag(playerPos) * (SQRT2 / FOG_END));
 }
 float fogFactor(vec3 viewPos, float far, mat4 gbufferModelViewInverse) {
-    return fogFactorPlayer(mat3(gbufferModelViewInverse) * viewPos, far);
+    return fogFactorPlayer(mat3(gbufferModelViewInverse) * viewPos);
 }
 
 float fogExp(vec3 viewPos, float density) {

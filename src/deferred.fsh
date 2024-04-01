@@ -8,17 +8,18 @@
 #include "/lib/sky.glsl"
 #include "/lib/colored_lights.glsl"
 
+#include "/core/dh/uniforms.glsl"
+#include "/core/dh/textures.glsl"
+#include "/core/dh/transform.glsl"
+
 uniform sampler2D colortex1;
 
 #ifdef FOG
-
- uniform int   isEyeInWater;
- uniform float far;
-
- #ifdef OVERWORLD
-  uniform ivec2 eyeBrightnessSmooth;
- #endif
-
+	uniform int   isEyeInWater;
+	uniform float far;
+#endif
+#if (defined FOG || defined CAVE_SKY) && defined OVERWORLD
+	uniform ivec2 eyeBrightnessSmooth;
 #endif
 
 uniform vec3  sunDir;
@@ -186,13 +187,18 @@ void main() {
 	if (depth >= 1) { 
 
 		#ifdef OVERWORLD
+
 		color += skyGradient.rgb;
+
 		#ifdef CAVE_SKY
 		float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(cameraPosition.y * 0.25 - (CAVE_SKY_HEIGHT * 0.25)) );
 		color = mix(fogCaveColor, color, cave);
 		#endif
+
 		#else
+
 		color = skyGradient.rgb;
+
 		#endif
 
 	} else {
@@ -256,7 +262,8 @@ void main() {
 		//color *= mix(blockLightColor, color, lmcoord.a);
 
 		#ifdef FOG
-			float fog = fogFactorPlayer(playerPos, far);
+			float fog = fogFactorTerrain(playerPos);
+
 			#if defined OVERWORLD && defined CAVE_FOG
 				float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
 				color = mix(color, mix(fogCaveColor, skyGradient.rgb, cave), fog);
@@ -266,6 +273,32 @@ void main() {
 		#endif
 		
 	}
+
+	float truedist = (
+		depth == 1.
+			? length(screenToViewDH(vec3(coord, getDepthDH(coord))))
+			: length(viewPos)
+	);
+
+	float dhdist = length(screenToViewDH(vec3(coord, getDepthDH(coord))));
+	float prop = dhdist / dhFarPlane;
+	vec3 debugColor = vec3[]( vec3(-1),
+		vec3(1,1,1),
+		vec3(1,0,0),
+		vec3(0,1,0),
+		vec3(0,0,1)
+	)[int( prop * 4 )];
+	if (debugColor != vec3(-1)) {
+		//color = debugColor;
+	}
+
+	//color = vec3((truedist / dhFarPlane * 2));
+
+	#ifdef DISTANT_HORIZONS
+	//color = vec3(1,0,0);
+	color *= 1;
+	#endif
+
 
 	#if DITHERING >= 1
 		color += ditherColor(gl_FragCoord.xy);
