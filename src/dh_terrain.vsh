@@ -7,11 +7,12 @@
 out vec2 lmcoord;
 flat out vec4 glcolor;
 out vec3 viewPos;
+flat out int materialId;
 
 void main() {
-    glcolor = gl_Color;
-    lmcoord = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
-    viewPos = getView();
-    
+    glcolor     = gl_Color;
+    lmcoord     = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
+    viewPos     = getView();
+    materialId  = dhMaterialId;
     gl_Position = ftransform();
 }
