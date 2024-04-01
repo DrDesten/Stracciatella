@@ -184,7 +184,13 @@ void main() {
 
 	vec3 color = getAlbedo(coord);
 
-	if (depth >= 1) { 
+#ifndef DISTANT_HORIZONS
+	bool isSky = depth >= 1;
+#else
+	float dhdepth = getDepthDH(coord);
+	bool  isSky   = depth >= 1 && dhdepth >= 1;
+#endif
+	if (isSky) { 
 
 		#ifdef OVERWORLD
 
@@ -271,7 +277,6 @@ void main() {
 				color = mix(color, skyGradient.rgb, fog);
 			#endif
 		#endif
-		
 	}
 
 	float truedist = (
@@ -293,12 +298,6 @@ void main() {
 	}
 
 	//color = vec3((truedist / dhFarPlane * 2));
-
-	#ifdef DISTANT_HORIZONS
-	//color = vec3(1,0,0);
-	color *= 1;
-	#endif
-
 
 	#if DITHERING >= 1
 		color += ditherColor(gl_FragCoord.xy);
