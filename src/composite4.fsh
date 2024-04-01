@@ -75,43 +75,15 @@ void main() {
 	vec4 prevProj   = reprojectScreen(screenPos);
 	vec2 prevCoord  = prevProj.xy;
 
-	vec3  prevCol   = oklab2rgb(textureLod(colortex4, prevProj.xy, 1).rgb);
-	float prevDepth = texture(colortex4, prevProj.xy).a;
+	vec4  prevColRaw = textureBicubic(colortex4, prevProj.xy, LIGHTMAP_COLOR_RES, 1./LIGHTMAP_COLOR_RES);
+	vec3  prevCol    = oklab2rgb(prevColRaw.rgb);
+	float prevDepth  = prevColRaw.a;
 
 	//vec2 mipCoords = coord / 81 + (2./3. + 2./9. + 2./27. + 2./81.);
 	vec2  mipCoords = coord / 16 + (1./2 + 1./4 + 1./8 + 1./16) - screenSizeInverse;
 	float lod       = max(0, log2(avg((screenSize / 16) / LIGHTMAP_COLOR_RES)) + LIGHTMAP_COLOR_LOD_BIAS);
 	vec2  jitter    = R2(frameCounter%1000) * (pixel / 32) - ((pixel / 32) * .5);
 	vec3  newColor  = gauss3x3Lod(colortex6, mipCoords, screenSizeInverse, lod);
-
-	/* // Experimental Depth Gradient
-	vec4 samples[9] = vec4[](
-		multiSample(mipCoords + screenSizeInverse * vec2(0,0), lod, coord + screenSizeInverse * 16 * vec2(0,0)),
-
-		multiSample(mipCoords + screenSizeInverse * vec2(-1,-1), lod, coord + screenSizeInverse * 16 * vec2(-1,-1)),
-		multiSample(mipCoords + screenSizeInverse * vec2(-1,0), lod, coord + screenSizeInverse * 16 * vec2(-1,0)),
-		multiSample(mipCoords + screenSizeInverse * vec2(-1,1), lod, coord + screenSizeInverse * 16 * vec2(-1,1)),
-		multiSample(mipCoords + screenSizeInverse * vec2(0,-1), lod, coord + screenSizeInverse * 16 * vec2(0,-1)),
-		// Center (moved to index 0)
-		multiSample(mipCoords + screenSizeInverse * vec2(0,1), lod, coord + screenSizeInverse * 16 * vec2(0,1)),
-		multiSample(mipCoords + screenSizeInverse * vec2(1,-1), lod, coord + screenSizeInverse * 16 * vec2(1,-1)),
-		multiSample(mipCoords + screenSizeInverse * vec2(1,0), lod, coord + screenSizeInverse * 16 * vec2(1,0)),
-		multiSample(mipCoords + screenSizeInverse * vec2(1,1), lod, coord + screenSizeInverse * 16 * vec2(1,1))
-	);
-
-	vec3  merged = samples[0].rgb;
-	float target = samples[0].w;
-	float weight = 1;
-	float decay  = 1;
-	for (int i = 1; i < 9; i++) {
-		float d = abs(target - samples[i].w);
-		float w = exp(-d * decay);
-		merged += samples[i].rgb * w;
-		weight += w;
-	}
-	merged /= weight;
-
-	newColor = merged; */
 
 	// Improves Accumulation by guessing pixel age and sample importance (there is no buffer space left for pixel age)
 	float age              = maxc(prevCol); // Estimates age using pixel brightness

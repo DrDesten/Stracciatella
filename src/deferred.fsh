@@ -40,6 +40,7 @@ uniform float frameTimeCounter;
 uniform float customLightmapBlend;
 
 #ifdef COLORED_LIGHTS
+const bool colortex4MipmapEnabled = true;
 uniform sampler2D colortex4; 
 #if LIGHTMAP_COLOR_DEBUG != 0
 uniform sampler2D colortex5;
