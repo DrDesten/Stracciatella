@@ -43,6 +43,11 @@ function simpleShaderFile( filename ) {
 }
 
 /** @param {string} filename */
+function dh( filename ) {
+    return [simpleShaderFile( filename )]
+}
+
+/** @param {string} filename */
 function gbuffers( filename ) {
     if ( filename.startsWith( "gbuffers_hand" ) ) {
         return [
@@ -84,6 +89,9 @@ function final( filename ) {
 export const FileMapping = new Proxy( {}, {
     get( _, name ) {
         const file = String( name )
+        if ( file.startsWith( 'dh' ) ) {
+            return dh( file )
+        }
         if ( file.startsWith( 'gbuffers' ) ) {
             return gbuffers( file )
         }
