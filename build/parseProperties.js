@@ -356,7 +356,7 @@ export function parseProperties( text ) {
         new TokenMatcher( TokenType.Endif, /#endif/, preprocessorTokenParser ),
     ]
 
-    class Node { }
+    class Node {}
     class ConditionalBlock extends Node {
         /** @param {Symbol} directive @param {string=} condition @param {Node[]} block */
         constructor( directive, condition, block ) {
@@ -506,11 +506,17 @@ export function parseProperties( text ) {
     }
 
     class Visitor {
+        /**@param {Node} node */
+        visitHook( node ) {}
+
         /**@param {Node|Node[]} node */
         visit( node ) {
             if ( node instanceof Array ) {
-                node.forEach( node => this.visit( node ) )
+                return node.forEach( node => this.visit( node ) )
             }
+
+            this.visitHook( node )
+
             if ( node instanceof ConditionalBlock ) {
                 this.visitConditionalBlock( node )
             }
@@ -533,7 +539,7 @@ export function parseProperties( text ) {
         }
 
         /**@param {AssignmentNode} node */
-        visitAssignmentNode( node ) { }
+        visitAssignmentNode( node ) {}
     }
 
     class CollectingVisitor extends Visitor {
@@ -547,21 +553,8 @@ export function parseProperties( text ) {
             ] )
         }
 
-        /**@param {ConditionalBlock} node */
-        visitConditionalBlock( node ) {
-            this.data.get( ConditionalBlock ).push( node )
-            this.visit( node.nodes )
-        }
-
-        /**@param {ConditionalNode} node */
-        visitConditionalNode( node ) {
-            this.data.get( ConditionalNode ).push( node )
-            this.visit(node.blocks)
-        }
-
-        /**@param {AssignmentNode} node */
-        visitAssignmentNode( node ) {
-            this.data.get( AssignmentNode ).push( node )
+        visitHook( node ) {
+            this.data.get( node.constructor ).push( node )
         }
     }
 
@@ -573,7 +566,7 @@ export function parseProperties( text ) {
     const ast = parser.parse()
 
     const visitor = new CollectingVisitor()
-    ast.forEach( node => visitor.visit( node ) )
+    visitor.visit( ast )
 
     return visitor
 }
@@ -582,4 +575,4 @@ let text = fs.readFileSync( path.join( __dirname, "test.conditions.properties" )
 let ast = parseProperties( text )
 
 console.log( ast )
-console.log( util.inspect( ast, { showHidden: false, depth: null, colors: true } ) )
+//console.log( util.inspect( ast, { showHidden: false, depth: null, colors: true } ) )
