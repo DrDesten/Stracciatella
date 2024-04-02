@@ -5,11 +5,15 @@
 #include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
+#ifdef DISTANT_HORIZONS
+
+uniform vec2 screenSizeInverse;
 #include "/core/dh/textures.glsl"
 #include "/core/dh/transform.glsl"
 #include "/core/transform.glsl"
 
-uniform vec2 screenSizeInverse;
+#endif
+
 
 #ifdef FOG
 
