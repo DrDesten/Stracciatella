@@ -31,22 +31,39 @@ void main() {
         discard;
     }
     
-    FragOut0 = glcolor;
-	FragOut1 = encodeLightmapData(vec4(lmcoord, 1,0));
+    float texelDensity = max(
+        maxc(abs(dFdx(worldPos))),
+        maxc(abs(dFdy(worldPos)))
+    );
+
+    const float iter = 4;
+
+    float dhNoise    = 0;
+    float idealScale = (1./16) / texelDensity;
+    float scale      = clamp(exp2(round(log2(idealScale))), 0, 4);
+
+    vec3 globalRef = fract(worldPos / 1024) * 1024;
+    for (float i = 1; i <= iter; i++) {
+        vec3 seed   = floor(globalRef * scale + 1e-4) / scale;
+
+        dhNoise   += rand(seed);
+        scale     *= 2;
+    }
+    dhNoise /= iter;
+    dhNoise  = (dhNoise * 0.25 + 0.875);
+    
+    FragOut0      = glcolor;
+    FragOut0.rgb *= dhNoise;
+	FragOut1      = encodeLightmapData(vec4(lmcoord, 1,0));
+
+#ifdef COLORED_LIGHTS
 
     vec3 coloredLightEmissive = vec3(0);
     if ( materialId == DH_BLOCK_LAVA || materialId == DH_BLOCK_ILLUMINATED ) {
         coloredLightEmissive = glcolor.rgb * 0.5;
     }
     
-	#ifdef COLORED_LIGHTS
 	FragOut2 = vec4(coloredLightEmissive, 1);
-	#endif
 
-    /* if ( chunkdiscardable ) {
-        FragOut0 = vec4(0,1,0,1);
-    }
-    if ( distdiscardable ) {
-        FragOut0 = vec4(0,0,1,1);
-    } */
+#endif
 }
