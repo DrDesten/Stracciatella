@@ -5,6 +5,12 @@
 #include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
+#include "/core/dh/textures.glsl"
+#include "/core/dh/transform.glsl"
+#include "/core/transform.glsl"
+
+uniform vec2 screenSizeInverse;
+
 #ifdef FOG
 
 	#include "/lib/sky.glsl"
@@ -37,6 +43,16 @@ void main() {
 	color.a    = fstep(0.1, color.a); // Make clouds solid
 
 	color.rgb  = mix(color.rgb, vec3(luminance(color.rgb)) * vec3(0.58,0.6,0.7), rainStrength);
+
+#ifdef DISTANT_HORIZONS
+	vec3 screenPos = vec3(gl_FragCoord.xy * screenSizeInverse, gl_FragCoord.z);
+	vec3 dhViewPos = screenToViewDH(vec3(screenPos.xy, getDepthDH(screenPos.xy)));
+	vec3 dhScreenEquivalent = backToClip(dhViewPos) * .5 + .5;
+
+	if (dhScreenEquivalent.z < screenPos.z) {
+		discard;
+	}
+#endif
 
 #ifdef FOG
 

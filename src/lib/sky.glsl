@@ -132,15 +132,6 @@ float fogFactor(vec3 viewPos, float far) {
     return fogSmoothStep(sqmag(viewPos), far);
 }
 
-float fogFactorPlayer(vec3 playerPos) {
-    float farSQ     = sq(far);
-    playerPos.y    *= 0.25;
-    return smoothstep( farSQ * (SQRT2 * FOG_START / FOG_END), farSQ, sqmag(playerPos) * (SQRT2 / FOG_END));
-}
-float fogFactor(vec3 viewPos, float far, mat4 gbufferModelViewInverse) {
-    return fogFactorPlayer(mat3(gbufferModelViewInverse) * viewPos);
-}
-
 float fogExp(vec3 viewPos, float density) {
     return 1 - exp(-length(viewPos) * density);
 }
