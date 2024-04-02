@@ -27,8 +27,8 @@ flat in vec4 glcolor;
 
 #ifdef FOG
 	#include "/lib/sky.glsl"
+	#include "/core/transform.glsl"
 	uniform float far;
-	uniform mat4  gbufferModelViewInverse;
 #endif
 
 /* DRAWBUFFERS:01 */
@@ -40,7 +40,7 @@ void main() {
 	color.rgb *= getCustomLightmap(vec3(lmcoord, glcolor.a), customLightmapBlend);
 
 #ifdef FOG
-	float fog = fogFactor(viewPos, far, gbufferModelViewInverse);
+	float fog = fogFactorTerrain(toPlayer(viewPos));
 	color.a  *= (1-fog);
 	color.a  -= Bayer4(gl_FragCoord.xy) * 0.05;
 #endif
