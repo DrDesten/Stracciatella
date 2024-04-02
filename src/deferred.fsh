@@ -125,6 +125,19 @@ void main() {
 	vec3  playerPos = toPlayer(viewPos);
 	vec3  playerDir = normalize(playerPos);
 
+#ifdef DISTANT_HORIZONS
+	float dhDepth     = getDepthDH(coord);
+	vec3  dhScreenPos = vec3(coord, dhDepth);
+	vec3  dhViewPos   = screenToViewDH(dhScreenPos);
+	vec3  dhPlayerPos = toPlayer(dhViewPos);
+
+	vec3  combinedViewPos   = depth < 1 ? viewPos : dhViewPos;
+	vec3  combinedPlayerPos = depth < 1 ? playerPos : dhPlayerPos;
+#else
+	vec3  combinedViewPos   = viewPos;
+	vec3  combinedPlayerPos = playerPos;
+#endif
+
 	#ifdef CUSTOM_SKY
 	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir, up, sunset, rainStrength, daynight);
 	#else
@@ -187,8 +200,7 @@ void main() {
 #ifndef DISTANT_HORIZONS
 	bool isSky = depth >= 1;
 #else
-	float dhdepth = getDepthDH(coord);
-	bool  isSky   = depth >= 1 && dhdepth >= 1;
+	bool  isSky   = depth >= 1 && dhDepth >= 1;
 #endif
 	if (isSky) { 
 
@@ -268,7 +280,11 @@ void main() {
 		//color *= mix(blockLightColor, color, lmcoord.a);
 
 		#ifdef FOG
+			#ifndef DISTANT_HORIZONS
 			float fog = fogFactorTerrain(playerPos);
+			#else
+			float fog = fogFactorTerrainDH(combinedPlayerPos);
+			#endif
 
 			#if defined OVERWORLD && defined CAVE_FOG
 				float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
