@@ -19,7 +19,6 @@ uniform vec2 screenSizeInverse;
 
 	#include "/lib/sky.glsl"
 
-	uniform mat4  gbufferModelViewInverse;
 	uniform int   isEyeInWater;
 	uniform float far;
 
@@ -38,6 +37,7 @@ uniform float rainStrength;
 in vec2 coord;
 flat in vec4 glcolor;
 in vec3 viewPos;
+in vec3 playerPos;
 
 /* DRAWBUFFERS:01 */
 layout(location = 0) out vec4 FragOut0;
@@ -60,7 +60,9 @@ void main() {
 
 #ifdef FOG
 
-	float fog = fogFactor(viewPos, min(far * 2, 350), gbufferModelViewInverse);
+	float dist = sqmag(playerPos.xz);
+	float end  = sq(far * 2 * SQRT2);
+	float fog  = smoothstep(0, end, dist);
 
 	#ifndef CUSTOM_SKY
 		color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, sunset), fog);
