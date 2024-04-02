@@ -128,15 +128,11 @@ float fogFactorTerrainDH(vec3 playerPos) {
 #endif
 
 
-float fogFactor(vec3 viewPos, float far) {
-    return fogSmoothStep(sqmag(viewPos), far);
-}
-
 float fogExp(vec3 viewPos, float density) {
     return 1 - exp(-length(viewPos) * density);
 }
-float fogExp(float length, float density) {
-    return 1 - exp(-length * density);
+float fogExp(float dist, float density) {
+    return 1 - exp(-dist * density);
 }
 
 float fogBorderExp( float dist, float far, float density ) {
