@@ -12,8 +12,8 @@ uniform float frameTimeCounter;
 #ifdef FOG
 
 	#include "/lib/sky.glsl"
+	#include "/lib/transform.glsl"
 
-	uniform mat4  gbufferModelViewInverse;
 	uniform int   isEyeInWater;
 	uniform float far;
 
@@ -46,7 +46,12 @@ void main() {
 
 	#ifdef FOG
 
-		float fog = fogFactor(viewPos, far, gbufferModelViewInverse);
+		vec3 playerPos = toPlayer(viewPos);
+		#ifndef DISTANT_HORIZONS
+		float fog = fogFactorTerrain(playerPos);
+		#else 
+		float fog = fogFactorTerrainDH(playerPos);
+		#endif
 
 		#ifdef OVERWORLD
 			float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );

@@ -7,6 +7,7 @@
 #include "/core/dh/uniforms.glsl"
 #include "/lib/dh.glsl"
 
+uniform vec2 screenSize;
 uniform float frameTimeCounter;
 #include "/lib/lightmap.glsl"
 
@@ -19,7 +20,24 @@ uniform sampler2D colortex4;
 
 uniform float customLightmapBlend;
 
-uniform vec2 screenSize;
+#ifdef FOG
+
+	#include "/lib/sky.glsl"
+
+	uniform int   isEyeInWater;
+	uniform float far;
+
+	#ifdef CUSTOM_SKY
+		uniform float daynight;
+		uniform float rainStrength;
+	#endif
+
+	uniform vec3  sunDir;
+	uniform vec3  up;
+	uniform float sunset;
+	uniform ivec2 eyeBrightnessSmooth;
+
+#endif
 
 in vec2 lmcoord;
 in vec2 coord;
@@ -47,7 +65,7 @@ void main() {
         discard;
     }
     
-    FragOut0 = glcolor;
+    vec4 color = glcolor;
 
     if (materialId == DH_BLOCK_WATER) {
         vec2  waterTextureSize   = vec2(textureSize(colortex4, 0));
@@ -64,8 +82,28 @@ void main() {
         vec4  waterTexture = texture(colortex4, waterCoords);
         vec4  waterColor   = waterTexture * vec4(glcolor.rgb * 1.5, 1);
 
-        FragOut0 = mix(waterColor, FragOut0, textureBlend);
+        color = mix(waterColor, color, textureBlend);
     }
 
-	FragOut0.rgb *= getCustomLightmap(vec3(lmcoord, 1), customLightmapBlend);
+	color.rgb *= getCustomLightmap(vec3(lmcoord, 1), customLightmapBlend);
+
+	#ifdef FOG
+
+		float fog = fogFactorTerrainDH(playerPos);
+
+		#ifdef OVERWORLD
+			float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
+		#else
+			float cave = 1;
+		#endif
+
+		#ifndef CUSTOM_SKY
+			color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(normalize(viewPos), sunDir, up, sunset, isEyeInWater), cave), fog);
+		#else
+			color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(normalize(viewPos), sunDir, up, sunset, rainStrength, daynight, isEyeInWater), cave), fog);
+		#endif
+
+	#endif
+
+    FragOut0 = color;
 }

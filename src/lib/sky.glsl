@@ -120,9 +120,12 @@ float fogFactorTerrain(vec3 playerPos) {
     playerPos.y *= 0.25;
     return fogSmoothStep(sqmag(playerPos), far);
 }
-float fogfactorTerrainDH(float dist) {
-    return fogSmoothStep(sq(dist), dhFarPlane);
+#ifdef DISTANT_HORIZONS
+float fogFactorTerrainDH(vec3 playerPos) {
+    playerPos.y *= 0.25;
+    return fogSmoothStep(sqmag(playerPos), dhFarPlane);
 }
+#endif
 
 
 float fogFactor(vec3 viewPos, float far) {
@@ -130,11 +133,7 @@ float fogFactor(vec3 viewPos, float far) {
 }
 
 float fogFactorPlayer(vec3 playerPos) {
-#ifdef DISTANT_HORIZONS
-    float farSQ     = sq(dhFarPlane);
-#else
     float farSQ     = sq(far);
-#endif
     playerPos.y    *= 0.25;
     return smoothstep( farSQ * (SQRT2 * FOG_START / FOG_END), farSQ, sqmag(playerPos) * (SQRT2 / FOG_END));
 }
