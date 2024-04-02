@@ -5,6 +5,7 @@
 #include "/lib/gbuffers_basics.glsl"
 #include "/lib/transform.glsl"
 #include "/core/dh/uniforms.glsl"
+#include "/lib/dh.glsl"
 
 uniform float frameTimeCounter;
 #include "/lib/lightmap.glsl"
@@ -33,25 +34,8 @@ void main() {
     vec3 worldPos  = toWorld(playerPos);
 
     // Discarding Logic
-
-    float roundwh = floor(worldPos.y / 8 - (1./16)) * 8;
-    vec2  roundwp = floor(worldPos.xz / 16) * 16 + 8;
-    vec2  roundcp = floor(cameraPosition.xz / 16) * 16 + 8;
-
-    vec2  floorwp = floor(worldPos.xz / 16) * 16;
-    vec2  ceilwp  = ceil(worldPos.xz / 16) * 16;
-    float mindist = sqrt(min(
-        min(sqmag(vec2(floorwp.x, floorwp.y) - cameraPosition.xz),
-            sqmag(vec2(floorwp.x, ceilwp.y)  - cameraPosition.xz)),
-        min(sqmag(vec2(ceilwp.x,  floorwp.y) - cameraPosition.xz),
-            sqmag(vec2(ceilwp.x,  ceilwp.y)  - cameraPosition.xz))
-    ));
     
-    bool chunkdiscardable  = length(roundcp - roundwp) - 8 < far;
-    bool distdiscardable   = mindist < far;
-    bool heightdiscardable = abs(roundwh - cameraPosition.y) - 8 < far;
-
-    if ( chunkdiscardable && distdiscardable && heightdiscardable ) {
+    if ( materialId == DH_BLOCK_WATER ? discardDH(worldPos, 0) : discardDH(worldPos, 1e-5) ) {
         discard;
     }
 
@@ -70,7 +54,7 @@ void main() {
         float waterTextureAspect = waterTextureSize.x / waterTextureSize.y;
         vec2  blockCoords        = fract(worldPos.xz);
         vec2  waterCoords        = vec2(blockCoords.x, blockCoords.y * waterTextureAspect);
-        waterCoords.y           += waterTextureAspect * round(frameTimeCounter * 9);
+        waterCoords.y           += waterTextureAspect * floor(frameTimeCounter * 10);
 
         float texelDensity = max(
             length(dFdx(worldPos.xz)),
