@@ -4,6 +4,7 @@
 #include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 #include "/lib/transform.glsl"
+#include "/lib/dh.glsl"
 
 uniform float far;
 
@@ -26,26 +27,7 @@ void main() {
     vec3 playerPos = toPlayer(viewPos);
     vec3 worldPos  = toWorld(playerPos);
 
-    // Discarding Logic
-
-    float roundwh = floor(worldPos.y / 8 - (1./16)) * 8;
-    vec2  roundwp = floor(worldPos.xz / 16) * 16 + 8;
-    vec2  roundcp = floor(cameraPosition.xz / 16) * 16 + 8;
-
-    vec2  floorwp = floor(worldPos.xz / 16) * 16;
-    vec2  ceilwp  = ceil(worldPos.xz / 16) * 16;
-    float mindist = sqrt(min(
-        min(sqmag(vec2(floorwp.x, floorwp.y) - cameraPosition.xz),
-            sqmag(vec2(floorwp.x, ceilwp.y)  - cameraPosition.xz)),
-        min(sqmag(vec2(ceilwp.x,  floorwp.y) - cameraPosition.xz),
-            sqmag(vec2(ceilwp.x,  ceilwp.y)  - cameraPosition.xz))
-    ));
-    
-    bool chunkdiscardable  = length(roundcp - roundwp) - 8 < far;
-    bool distdiscardable   = mindist < far;
-    bool heightdiscardable = abs(roundwh - cameraPosition.y) - 8 < far;
-
-    if ( chunkdiscardable && distdiscardable && heightdiscardable ) {
+    if ( discardDH(worldPos) ) {
         discard;
     }
     
