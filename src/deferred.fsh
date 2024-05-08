@@ -107,6 +107,10 @@ vec2 rotation(float angle) {
 	return vec2(sin(angle), cos(angle));
 }
 
+float KleinNishina(float cosTheta, float e) {
+    // For clouds, e has to be around 700-1000
+    return e / (2.0 * PI * (e * (1.0 - cosTheta) + 1.0) * log(2.0 * e + 1.0));
+}
 
 vec4 getLightmap(vec2 coord) {
     return vec2x16to4(texture(colortex1, coord).xy);
@@ -200,7 +204,7 @@ void main() {
 #ifndef DISTANT_HORIZONS
 	bool isSky = depth >= 1;
 #else
-	bool  isSky   = depth >= 1 && dhDepth >= 1;
+	bool isSky = depth >= 1 && dhDepth >= 1;
 #endif
 	if (isSky) { 
 
@@ -216,6 +220,72 @@ void main() {
 		#else
 
 		color = skyGradient.rgb;
+
+		#endif
+
+		#ifdef CUSTOM_CLOUDS
+
+		if (playerDir.y > 0) {
+
+		float fadeDistance   = 6e3;
+		float cloudHeight    = 100;
+		float cloudThickness = 2;
+
+		float coverageShift = 0;
+		float coarseScale   = 1/100.;
+
+		float cloudDistance      = cloudHeight / playerDir.y;
+		float cloudFade          = exp2(-cloudDistance / fadeDistance);
+		vec2  cloudCoords        = (playerDir.xz * cloudDistance + cameraPosition.xz) * coarseScale;
+		
+		float density            = sin(frameTimeCounter) * 0.35 + 0.4;
+		float detailScale        = 10;
+		float perspectiveDensity = 1 - exp2(-log2(1 - density) / playerDir.y);
+
+		vec2  offsetRange = playerDir.xz * -min(cloudThickness / playerDir.y, 1.5);
+		float offset      = 1;
+		
+		float sampleHeight; // 2 Refinement Iterations
+		sampleHeight = pnoise(cloudCoords + offsetRange * offset);
+		offset       = sampleHeight;
+		sampleHeight = pnoise(cloudCoords + offsetRange * offset);
+		offset       = sampleHeight;
+		cloudCoords += offsetRange * offset;
+
+		vec2  cce = vec2(1e-1, 0);
+		float cc0 = pnoise(cloudCoords);
+		float ccX = pnoise(cloudCoords + cce.xy);
+		float ccZ = pnoise(cloudCoords + cce.yx);
+		vec3  cloudNormal = normalize(vec3(ccX - cc0, cce.x, ccZ - cc0));
+
+		float cloudCoverage = cc0;
+		cloudCoverage       = sigmoidNorm(cloudCoverage + coverageShift - 0.5); 
+		cloudThickness      = cloudCoverage * cloudThickness * 2;
+
+		// Lighting
+
+		float cloudBrightness = 0;
+
+		vec3  sunDirPlayerEye    = toPlayerEye(sunDir);
+        float sunDotView         = dot(sunDir, viewDir);
+        float volumeAlongRay     = sq(cloudThickness) * (abs(sunDotView) * (2 - HALF_PI) + HALF_PI); // How thick is the cloud along the view ray in direction to the light source
+        float visibilityAlongRay = exp(-volumeAlongRay);
+        float visibility         = exp(-cloudThickness);
+        float diffuseCloud       = dot(sunDirPlayerEye, cloudNormal);
+		
+		float anisotropicScatter = KleinNishina(sunDotView, 800) * visibilityAlongRay;
+		float interpolator       = smootherstep(-diffuseCloud);
+		float densityMixFactor   = visibility * (1 - interpolator) + interpolator;
+		cloudBrightness         += (
+			(diffuseCloud * -0.5 + 0.5) * densityMixFactor +
+			anisotropicScatter
+		);
+
+		color = mix(color, vec3(cloudBrightness), cloudCoverage * cloudFade);
+		//color = cloudNormal * .5 + .5;
+		color = vec3(diffuseCloud);
+
+		}
 
 		#endif
 
@@ -274,11 +344,6 @@ void main() {
 
 		#endif
 
-		//color.rg = lmcoord.xy;
-		//color = lmcoord.xyz;
-		//color = texture(colortex4, coord).rgb;
-		//color *= mix(blockLightColor, color, lmcoord.a);
-
 		#ifdef FOG
 			#ifndef DISTANT_HORIZONS
 			float fog = fogFactorTerrain(playerPos);
@@ -294,26 +359,6 @@ void main() {
 			#endif
 		#endif
 	}
-
-	float truedist = (
-		depth == 1.
-			? length(screenToViewDH(vec3(coord, getDepthDH(coord))))
-			: length(viewPos)
-	);
-
-	float dhdist = length(screenToViewDH(vec3(coord, getDepthDH(coord))));
-	float prop = dhdist / dhFarPlane;
-	vec3 debugColor = vec3[]( vec3(-1),
-		vec3(1,1,1),
-		vec3(1,0,0),
-		vec3(0,1,0),
-		vec3(0,0,1)
-	)[int( prop * 4 )];
-	if (debugColor != vec3(-1)) {
-		//color = debugColor;
-	}
-
-	//color = vec3((truedist / dhFarPlane * 2));
 
 	#if DITHERING >= 1
 		color += ditherColor(gl_FragCoord.xy);
