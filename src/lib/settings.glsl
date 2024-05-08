@@ -115,6 +115,7 @@ const float shooting_stars_thickness = SHOOTING_STARS_THICKNESS * shooting_stars
 #endif
 
 //#define AURORA
+#define CUSTOM_CLOUDS
 
 ///////////////////////////////////////////////////////////
 // LIGHTING
