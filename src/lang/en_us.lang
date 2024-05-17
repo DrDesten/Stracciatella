@@ -402,11 +402,10 @@ value.DEBUG_LIGHTMAP_MODE.2=AO
 value.DEBUG_LIGHTMAP_MODE.3=Emission
 
 option.DEBUG_COLORED_LIGHTS_MODE=Colored Lights > View
-value.DEBUG_COLORED_LIGHTS_MODE.0=OFF
-value.DEBUG_COLORED_LIGHTS_MODE.1=Mix Color
-value.DEBUG_COLORED_LIGHTS_MODE.2=Mix Age
-value.DEBUG_COLORED_LIGHTS_MODE.3=Raw Color
-value.DEBUG_COLORED_LIGHTS_MODE.4=Source Color
+value.DEBUG_COLORED_LIGHTS_MODE.0=Mix Color
+value.DEBUG_COLORED_LIGHTS_MODE.1=Mix Age
+value.DEBUG_COLORED_LIGHTS_MODE.2=Raw Color
+value.DEBUG_COLORED_LIGHTS_MODE.3=Source Color
 
 ///////////////////////////////////////////////////////////
 // NON-OPTIONS
