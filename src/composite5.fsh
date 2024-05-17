@@ -102,16 +102,16 @@ void main() {
 		float cellNoise  = sin(rand(floor(noiseSeed)) * (10./DAMAGE_EFFECT_DISPLACEMENT_SIZE));
 		float finalNoise = damage * cellNoise * (0.02 * DAMAGE_EFFECT_DISPLACEMENT);
 
-		color.r = unBlendColor(getAlbedo(coord + vec2(finalNoise,0))).r;
-		color.g = unBlendColor(getAlbedo(coord - finalNoise)).g * (damage * -DAMAGE_EFFECT_REDNESS + 1);
-		color.b = unBlendColor(getAlbedo(coord + vec2(0,finalNoise))).b * (damage * -DAMAGE_EFFECT_REDNESS + 1);
+		color.r = getAlbedo(coord + vec2(finalNoise,0)).r;
+		color.g = getAlbedo(coord - finalNoise).g * (damage * -DAMAGE_EFFECT_REDNESS + 1);
+		color.b = getAlbedo(coord + vec2(0,finalNoise)).b * (damage * -DAMAGE_EFFECT_REDNESS + 1);
 
 	} else {
-		color = unBlendColor(getAlbedo(coord));
+		color = getAlbedo(coord);
 	}
 
 #else
-	vec3 color = unBlendColor(getAlbedo(coord));
+	vec3 color = getAlbedo(coord);
 #endif
 
 	if (isEyeInWater == 1) {
@@ -144,9 +144,8 @@ void main() {
 	color = applySaturation(color, saturationAmount);
 #endif
 #if BRIGHTNESS != 0
-	const float brightnessAmount      = 1 / (BRIGHTNESS / 250. + 0.5) - 1;
-	const float brightnessColorOffset = abs(BRIGHTNESS - 50.) / 500.;
-	color = applyBrightness(color, brightnessAmount, brightnessColorOffset);
+	const float brightnessAmount = BRIGHTNESS / 100.;
+	color = applyBrightness(color, brightnessAmount);
 #endif
 
 #if VIGNETTE == 1
@@ -159,7 +158,8 @@ void main() {
 	#ifdef LUT_LOG_COLOR
 	color = log(color * (E-1) + 1);
 	#endif
-	color -= Bayer8(gl_FragCoord.xy) * (3./ (LUT_CELL_SIZE * LUT_CELL_SIZE)) - (1.5/ (LUT_CELL_SIZE * LUT_CELL_SIZE));
+	color -= Bayer8(gl_FragCoord.xy) 
+		   * (3./ (LUT_CELL_SIZE * LUT_CELL_SIZE)) - (1.5/ (LUT_CELL_SIZE * LUT_CELL_SIZE));
 	color  = applyLUT(colortex2, color, LUT_CELL_SIZE);
 #endif
 

@@ -264,10 +264,6 @@ option.WAVING_LIQUIDS_SPEED=Waving Liquids Speed
 
 screen.CAMERA=Camera and Color
 
-option.BLENDING=Blending Color Space
-value.BLENDING.0=RGB
-value.BLENDING.1=OKLAB
-
 option.FXAA=FXAA
 option.FXAA.comment=Enables Anti-Aliasing. Improves quality of edges.
 option.HQ_UPSCALING=High Quality Upscaling

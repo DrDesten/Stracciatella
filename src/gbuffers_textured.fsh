@@ -49,8 +49,6 @@ void main() {
 	color.rgb += ditherColor(gl_FragCoord.xy);
 #endif
 
-	color.rgb = blendColor(color.rgb);
-	
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
 	FragOut1 = vec4( encodeLightmapData(vec4(0,0,1,1)), 1,1 );

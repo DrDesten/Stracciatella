@@ -32,10 +32,6 @@ void main() {
 	color.rgb += ditherColor(gl_FragCoord.xy);
 #endif
 
-#ifdef HAND_WATER
-	color.rgb = blendColor(color.rgb);
-#endif
-
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
 	FragOut1 = vec4( encodeLightmapData(vec4(lmcoord, 1, emissiveness)), 1.0, 1.0 );
