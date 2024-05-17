@@ -17,7 +17,7 @@ uniform float frameTimeCounter;
 uniform sampler2D colortex2; // LUT
 #endif
 
-#ifdef RAIN_REFRACTION
+#if RAIN_REFRACTION != 0
 uniform sampler2D colortex3; // Rain Effects
 #endif
 

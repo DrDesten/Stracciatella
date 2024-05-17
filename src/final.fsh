@@ -2,10 +2,51 @@
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
-#include "/core/sampler.glsl"
 #include "/lib/composite_basics.glsl"
 
+#ifdef DEBUG
+uniform sampler2D colortex0;
+uniform sampler2D colortex1;
+uniform sampler2D colortex2;
+uniform sampler2D colortex3;
+uniform sampler2D colortex4;
+uniform sampler2D colortex5;
 uniform sampler2D colortex6;
+
+vec3 getBufferDebug(vec2 coord) {
+	vec4 data;
+	switch (DEBUG_BUFFER_INDEX) {
+	case 0: data = texture(colortex0, coord); break;
+	case 1: data = texture(colortex1, coord); break;
+	case 2: data = texture(colortex2, coord); break;
+	case 3: data = texture(colortex3, coord); break;
+	case 4: data = texture(colortex4, coord); break;
+	case 5: data = texture(colortex5, coord); break;
+	case 6: data = texture(colortex6, coord); break;
+	}
+	
+	vec3 color;
+	switch (DEBUG_BUFFER_CHANNELS) {
+	case 0: color = data.xyz; break;
+	case 1: color = data.xxx; break;
+	case 2: color = data.yyy; break;
+	case 3: color = data.zzz; break;
+	case 4: color = data.www; break;
+	}
+
+	return color;
+}
+
+vec3 getDebug(vec2 coord) {
+	switch (DEBUG_MODE) {
+	case 0: return getBufferDebug(coord);
+	case 1: return vec3(0);
+	case 2: return vec3(0);
+	}
+	return vec3(0);
+}
+
+#endif
 
 vec2 coord = gl_FragCoord.xy * screenSizeInverse * MC_RENDER_QUALITY;
 
@@ -16,9 +57,12 @@ void main() {
 	vec3 color = textureBicubic(colortex0, coord, screenSize * (1./MC_RENDER_QUALITY), screenSizeInverse * MC_RENDER_QUALITY).rgb;
 #else
 	vec3 color = getAlbedo(coord);
-	//color = color * 0.5 + texture(colortex6, coord / 16 + (1./2 + 1./4 + 1./8 + 1./16) - screenSizeInverse).rgb * 0.5;
 #endif
-	//color = FXAA311Upscale(coord, 2);
+
+#ifdef DEBUG
+	color = mix(color, getDebug(coord), DEBUG_BLEND);
+#endif
+
 	FragOut0 = vec4(color, 1.0);
 }
 
