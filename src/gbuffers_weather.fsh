@@ -45,16 +45,17 @@ void main() {
 
 		#elif RAIN_REFRACTION == 2
 
-		ivec2 texSize    = textureSize(gcolor, 0);
-		vec2  texelCoord = coord * vec2(texSize) - 0.5;
-		ivec2 texel      = ivec2(texelCoord) % texSize;
-		vec2  frac       = fract(texelCoord);
+		vec2 texSize    = vec2(textureSize(gcolor, 0));
+		vec2 texelSize  = 1 / texSize;
+		vec2 texelCoord = coord * texSize - 0.5;
+		vec2 texel      = floor(texelCoord) * texelSize;
+		vec2 frac       = fract(texelCoord);
 
 		vec4 samples = vec4(
-			texelFetch(gcolor, texel + ivec2(0, 0), 0).a,
-			texelFetch(gcolor, texel + ivec2(1, 0), 0).a,
-			texelFetch(gcolor, texel + ivec2(0, 1), 0).a,
-			texelFetch(gcolor, texel + ivec2(1, 1), 0).a
+			getAlbedo(texel + vec2(0, 0) * texelSize).a,
+			getAlbedo(texel + vec2(1, 0) * texelSize).a,
+			getAlbedo(texel + vec2(0, 1) * texelSize).a,
+			getAlbedo(texel + vec2(1, 1) * texelSize).a
 		);
 		float res = mix(
 			mix(samples.x, samples.y, frac.x), 
@@ -77,7 +78,7 @@ void main() {
 #endif
 	
 	FragOut0 = color; //gcolor
-    if (FragOut0.a < 1e-2) discard;
+    if (FragOut0.a < 0.02) discard;
 #if RAIN_REFRACTION != 0
 	FragOut1 = vec4(rain, 0, 0, 1);
 #endif

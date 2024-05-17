@@ -81,7 +81,7 @@ void main() {
 		float rainX = texture(colortex3, coord + vec2(screenSizeInverse.x, 0)).r;
 		float rainY = texture(colortex3, coord + vec2(0, screenSizeInverse.y)).r;
 		vec2  dir   = normalize(vec2(rain0 - rainX, rain0 - rainY));
-		coord      += dir * (1 - rain0 * .75) * RAIN_REFRACTION_STRENGTH * 0.5;
+		coord      += dir * (1 - rain0 * .75) * RAIN_REFRACTION_STRENGTH * 0.3;
 	}
 #endif
 
