@@ -40,7 +40,7 @@ void main() {
 	#endif
 	if (isRain) {
 		rain    = fstep(0.01, color.a);
-		color.a *= RAIN_OPACITY;
+		color.a = diagosymmetricLift(color.a, RAIN_OPACITY * 2 - 1);
 	}
 
 #endif

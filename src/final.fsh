@@ -4,6 +4,8 @@
 #include "/core/kernels.glsl"
 #include "/lib/composite_basics.glsl"
 
+uniform float frameTimeCounter;
+
 #ifdef DEBUG
 uniform sampler2D colortex0;
 uniform sampler2D colortex1;
