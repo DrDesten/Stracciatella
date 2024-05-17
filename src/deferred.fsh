@@ -25,7 +25,7 @@ uniform vec3  sunDir;
 uniform vec3  up;
 uniform vec3  upPosition;
 uniform float sunset;
-#ifdef CUSTOM_SKY
+#if defined CUSTOM_SKY
 uniform float daynight;
 uniform float rainStrength;
 #endif
@@ -141,7 +141,7 @@ void main() {
 	vec3  combinedPlayerPos = playerPos;
 #endif
 
-#ifdef CUSTOM_SKY
+#if defined CUSTOM_SKY
 	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir, up, sunset, rainStrength, daynight);
 #else
 	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir, up, sunset);

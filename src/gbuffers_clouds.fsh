@@ -21,7 +21,7 @@ uniform vec2 screenSizeInverse;
 uniform int   isEyeInWater;
 uniform float far;
 
-#ifdef CUSTOM_SKY
+#if defined CUSTOM_SKY
 	uniform float daynight;
 #endif
 

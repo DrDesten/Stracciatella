@@ -27,7 +27,7 @@ uniform float customLightmapBlend;
 	uniform int   isEyeInWater;
 	uniform float far;
 
-	#ifdef CUSTOM_SKY
+	#if defined CUSTOM_SKY
 		uniform float daynight;
 		uniform float rainStrength;
 	#endif

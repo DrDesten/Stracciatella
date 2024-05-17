@@ -377,7 +377,9 @@ option.BLOCK_OUTLINE_COLOR_B=Block Outline Color §9B
 ///////////////////////////////////////////////////////////
 
 screen.DEBUG_OPTS=Debug Options
-screen.DEBUG_OPTS.comment=Don't mess with the stuff in here unless you know what you're doing. Debug options and Internal toggles get dumped here.
+screen.DEBUG_OPTS.comment=Debug options and Internal toggles get dumped here.
+
+screen.EXPERIMENTAL=Experimental Feature Flags
 
 option.DEBUG=Debug View
 option.DEBUG_MODE=Debug View
@@ -406,6 +408,8 @@ value.DEBUG_COLORED_LIGHTS_MODE.0=Mix Color
 value.DEBUG_COLORED_LIGHTS_MODE.1=Mix Age
 value.DEBUG_COLORED_LIGHTS_MODE.2=Raw Color
 value.DEBUG_COLORED_LIGHTS_MODE.3=Source Color
+
+screen.DEBUG_DUMP=Ze Dumpster
 
 ///////////////////////////////////////////////////////////
 // NON-OPTIONS
