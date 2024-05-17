@@ -39,10 +39,24 @@ vec3 getBufferDebug(vec2 coord) {
 	return color;
 }
 
+vec3 getLightmapDebug(vec2 coord) {
+	vec4 data = vec2x16to4( texture(colortex1, coord).xy );
+
+	vec3 color;
+	switch (DEBUG_LIGHTMAP_MODE) {
+	case 0: color = data.xyz; break;
+	case 1: color = vec3(data.xy, 0); break;
+	case 2: color = data.zzz; break;
+	case 3: color = data.www; break;
+	}
+	
+	return color;
+}
+
 vec3 getDebug(vec2 coord) {
 	switch (DEBUG_MODE) {
 	case 0: return getBufferDebug(coord);
-	case 1: return vec3(0);
+	case 1: return getLightmapDebug(coord);
 	case 2: return vec3(0);
 	}
 	return vec3(0);
@@ -61,7 +75,7 @@ void main() {
 	vec3 color = getAlbedo(coord);
 #endif
 
-#ifdef DEBUG
+#if defined DEBUG && DEBUG_MODE != 2
 	color = mix(color, getDebug(coord), DEBUG_BLEND);
 #endif
 

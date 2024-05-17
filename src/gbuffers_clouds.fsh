@@ -1,5 +1,4 @@
 #include "/lib/settings.glsl"
-#include "/lib/blending.glsl"
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
@@ -17,18 +16,18 @@ uniform vec2 screenSizeInverse;
 
 #ifdef FOG
 
-	#include "/lib/sky.glsl"
+#include "/lib/sky.glsl"
 
-	uniform int   isEyeInWater;
-	uniform float far;
+uniform int   isEyeInWater;
+uniform float far;
 
-	#ifdef CUSTOM_SKY
-		uniform float daynight;
-	#endif
+#ifdef CUSTOM_SKY
+	uniform float daynight;
+#endif
 
-	uniform vec3  sunDir;
-	uniform vec3  up;
-	uniform float sunset;
+uniform vec3  sunDir;
+uniform vec3  up;
+uniform float sunset;
 
 #endif
 

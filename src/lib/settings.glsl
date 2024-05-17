@@ -314,7 +314,7 @@ const float lightmap_complex_blocklight_blend_curve = ( ((100 - LIGHTMAP_COMPLEX
 #define DEBUG_BUFFER_INDEX 0        // [0 1 2 3 4 5 6]
 #define DEBUG_BUFFER_CHANNELS 0     // 0:XYZ 1:X 2:Y 3:Z 4:W [0 1 2 3 4]
 #define DEBUG_LIGHTMAP_MODE 0       // 0:Lightmap+AO 1:Lightmap 2:AO 3:Emission [0 1 2 3]
-#define DEBUG_COLORED_LIGHTS_MODE 0 // [0 1 2 3 4]
+#define DEBUG_COLORED_LIGHTS_MODE 0 // [0 1 2 3]
 
 
 

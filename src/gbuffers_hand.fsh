@@ -4,11 +4,9 @@
 #include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
-
 #ifdef HAND_WATER
-	uniform float frameTimeCounter;
-	#include "/lib/lightmap.glsl"
-	#include "/lib/blending.glsl"
+uniform float frameTimeCounter;
+#include "/lib/lightmap.glsl"
 #endif
 
 uniform float customLightmapBlend;

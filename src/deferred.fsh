@@ -1,5 +1,4 @@
 #include "/lib/settings.glsl"
-#include "/lib/blending.glsl"
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
@@ -43,7 +42,7 @@ uniform float customLightmapBlend;
 #ifdef COLORED_LIGHTS
 const bool colortex4MipmapEnabled = true;
 uniform sampler2D colortex4; 
-#if DEBUG_COLORED_LIGHTS_MODE != 0
+#if defined DEBUG && DEBUG_MODE == 2
 uniform sampler2D colortex5;
 #endif
 #endif
@@ -142,14 +141,14 @@ void main() {
 	vec3  combinedPlayerPos = playerPos;
 #endif
 
-	#ifdef CUSTOM_SKY
+#ifdef CUSTOM_SKY
 	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir, up, sunset, rainStrength, daynight);
-	#else
+#else
 	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir, up, sunset);
-	#endif
+#endif
 
-	#ifdef OVERWORLD
-	#ifdef CUSTOM_STARS
+#ifdef OVERWORLD
+#ifdef CUSTOM_STARS
 
 		if (customStarBlend > 1e-6 && playerPos.y > 0) {
 
@@ -196,8 +195,8 @@ void main() {
 
 		}
 
-	#endif
-	#endif
+#endif
+#endif
 
 	vec3 color = getAlbedo(coord);
 
@@ -208,7 +207,7 @@ void main() {
 #endif
 	if (isSky) { 
 
-		#ifdef OVERWORLD
+#ifdef OVERWORLD
 
 		color += skyGradient.rgb;
 
@@ -217,13 +216,13 @@ void main() {
 		color = mix(fogCaveColor, color, cave);
 		#endif
 
-		#else
+#else
 
 		color = skyGradient.rgb;
 
-		#endif
+#endif
 
-		#ifdef CUSTOM_CLOUDS
+#ifdef CUSTOM_CLOUDS
 
 		if (playerDir.y > 0) {
 
@@ -287,82 +286,97 @@ void main() {
 
 		}
 
-		#endif
+#endif
 
 	} else {
 
 		vec4 lmcoord = getLightmap(coord);
 
-		#ifdef COLORED_LIGHTS
+#ifdef COLORED_LIGHTS
 
-			vec3  rawColoredLight      = textureBicubic(colortex4, coord, LIGHTMAP_COLOR_RES, 1/LIGHTMAP_COLOR_RES).rgb;
-			vec3  blockLightColor      = oklab2rgb(rawColoredLight);
-			float blockLightImportance = rawColoredLight.x;
-			
-			//blockLightColor *= pow(-sq(blockLightImportance) + 2 * blockLightImportance, 1./4);
-			blockLightColor  = blockLightColor / (maxc(blockLightColor) + 0.0025);
-			blockLightColor  = saturate(applySaturation(blockLightColor, 0.5));
-			blockLightColor  = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
+		vec3  rawColoredLight      = textureBicubic(colortex4, coord, LIGHTMAP_COLOR_RES, 1/LIGHTMAP_COLOR_RES).rgb;
+		vec3  blockLightColor      = oklab2rgb(rawColoredLight);
+		float blockLightImportance = rawColoredLight.x;
+		
+		//blockLightColor *= pow(-sq(blockLightImportance) + 2 * blockLightImportance, 1./4);
+		blockLightColor  = blockLightColor / (maxc(blockLightColor) + 0.0025);
+		blockLightColor  = saturate(applySaturation(blockLightColor, 0.5));
+		blockLightColor  = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
 
-			float dist = sqmag(playerPos);
-			float handLightBrightness = smoothstep(handLight.a * 5, 0, dist);
-			float handLightBrightnessExp = exp(-dist / handLight.a);
-			blockLightColor = blockLightColor + handLight.rgb * handLightBrightness;
-			blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightnessExp);
+		float dist = sqmag(playerPos);
+		float handLightBrightness = smoothstep(handLight.a * 5, 0, dist);
+		float handLightBrightnessExp = exp(-dist / handLight.a);
+		blockLightColor = blockLightColor + handLight.rgb * handLightBrightness;
+		blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightnessExp);
 
-			#if DEBUG_COLORED_LIGHTS_MODE == 0 // No Debug
+		#ifndef DEBUG
 
 			color *= getCustomLightmap(lmcoord.xyz, customLightmapBlend, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
 
-			#elif DEBUG_COLORED_LIGHTS_MODE == 1 // Debug, Mix Color
+		#elif DEBUG_MODE == 2
 
-			color = mix(color, blockLightColor * (1 - lmcoord.a) + lmcoord.a, 0.666);
-			vec3 tmp = texture(colortex5, coord).rgb;
-			if (sum(tmp) != 0) color = tmp;
+			switch (DEBUG_COLORED_LIGHTS_MODE) {
+			case 0: { // Mix Color
 
-			#elif DEBUG_COLORED_LIGHTS_MODE == 2 // Debug, Mix Age
+				color = mix(color, blockLightColor * (1 - lmcoord.a) + lmcoord.a, 0.666);
+				vec3 tmp = texture(colortex5, coord).rgb;
+				if (sum(tmp) != 0) color = tmp;
 
-			color = mix(color, vec3(luminance(blockLightColor)), 0.666);
-			vec3 tmp = texture(colortex5, coord).rgb;
-			if (sum(tmp) != 0) color = tmp;
+				break;
+			}
+			case 1: { // Mix Age
+				
+				color = mix(color, vec3(luminance(blockLightColor)), 0.666);
+				vec3 tmp = texture(colortex5, coord).rgb;
+				if (sum(tmp) != 0) color = tmp;
 
-			#elif DEBUG_COLORED_LIGHTS_MODE == 3 // Debug, Pure Color
+				break;
+			}
+			case 2: { // Pure Color
 
-			color = blockLightColor * (1 - lmcoord.a) + lmcoord.a;
+				color = blockLightColor * (1 - lmcoord.a) + lmcoord.a;
 
-			#elif DEBUG_COLORED_LIGHTS_MODE == 4 // Debug, Source Color
+				break;
+			}
+			case 3: { // Source Color
+				
+				vec3 tmp = texture(colortex5, coord).rgb;
+				if (tmp != vec3(0)) color = tmp;
+				else color *= 1 - DEBUG_BLEND;
 
-			vec3 tmp1 = texture(colortex5, coord).rgb;
-			if (tmp != vec3(0)) color = tmp;
-			else color = mix(color, vec3(1,0,0), 0.5);
-			
-			#endif
+				break;
+			}
+			}
 
-		#else
+		#endif
+
+#else
 		
-			color *= getCustomLightmap(lmcoord.xyz, customLightmapBlend) * (1 - lmcoord.a) + lmcoord.a;
+		color *= getCustomLightmap(lmcoord.xyz, customLightmapBlend) * (1 - lmcoord.a) + lmcoord.a;
 
-		#endif
+#endif
 
-		#ifdef FOG
-			#ifndef DISTANT_HORIZONS
-			float fog = fogFactorTerrain(playerPos);
-			#else
-			float fog = fogFactorTerrainDH(combinedPlayerPos);
-			#endif
+#ifdef FOG
 
-			#if defined OVERWORLD && defined CAVE_FOG
-				float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
-				color = mix(color, mix(fogCaveColor, skyGradient.rgb, cave), fog);
-			#else
-				color = mix(color, skyGradient.rgb, fog);
-			#endif
-		#endif
+	#ifndef DISTANT_HORIZONS
+		float fog = fogFactorTerrain(playerPos);
+	#else
+		float fog = fogFactorTerrainDH(combinedPlayerPos);
+	#endif
+
+	#if defined OVERWORLD && defined CAVE_FOG
+		float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
+		color = mix(color, mix(fogCaveColor, skyGradient.rgb, cave), fog);
+	#else
+		color = mix(color, skyGradient.rgb, fog);
+	#endif
+
+#endif
 	}
 
-	#if DITHERING >= 1
-		color += ditherColor(gl_FragCoord.xy);
-	#endif
+#if DITHERING >= 1
+	color += ditherColor(gl_FragCoord.xy);
+#endif
 	FragOut0 = vec4(color, 1.0); //gcolor
 }
 
