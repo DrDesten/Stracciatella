@@ -243,8 +243,6 @@ const float lightmap_complex_blocklight_blend_curve = ( ((100 - LIGHTMAP_COMPLEX
 // CAMERA
 ///////////////////////////////////////////////////////////
 
-#define BLENDING 0 // [0 1]
-
 #define FXAA
 //#define HQ_UPSCALING
 
