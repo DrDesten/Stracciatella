@@ -13,10 +13,10 @@ in vec2 coord;
 flat in vec4 glcolor;
 
 #if RAIN_DETECTION_MODE == 0
-uniform float temperature;
+uniform float playerTemperature;
 #endif
 
-#ifdef RAIN_REFRACTION
+#if RAIN_REFRACTION != 0
 /* DRAWBUFFERS:03 */
 layout(location = 0) out vec4 FragOut0;
 layout(location = 1) out vec4 FragOut1;
@@ -27,20 +27,20 @@ layout(location = 0) out vec4 FragOut0;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 
-#ifdef RAIN_REFRACTION
+#if RAIN_REFRACTION != 0
 
 	float rain = 0;
 	bool  isRain;
 
 	#if RAIN_DETECTION_MODE == 0
-	isRain = temperature >= 0.15; // Rain (detected based on player temperature)
+	isRain = playerTemperature >= 0.15; // Rain (detected based on player playerTemperature)
 	#elif RAIN_DETECTION_MODE == 1
 	vec3 normalizedColor = normalize(color.rgb);
 	isRain = saturate((color.b) - avg(color.rg)) > 0.25; // Rain (detected based on blue dominance)
 	#endif
 	if (isRain) {
 		rain    = fstep(0.01, color.a);
-		color.a = rain * RAIN_OPACITY;
+		color.a *= RAIN_OPACITY;
 	}
 
 #endif
@@ -52,8 +52,8 @@ void main() {
 #endif
 	
 	FragOut0 = color; //gcolor
-    if (FragOut0.a < 0.1) discard;
-#ifdef RAIN_REFRACTION
+    if (FragOut0.a < 1e-2) discard;
+#if RAIN_REFRACTION != 0
 	FragOut1 = vec4(rain, 0, 0, 0.25);
 #endif
 }

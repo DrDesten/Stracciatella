@@ -43,7 +43,7 @@ uniform float customLightmapBlend;
 #ifdef COLORED_LIGHTS
 const bool colortex4MipmapEnabled = true;
 uniform sampler2D colortex4; 
-#if LIGHTMAP_COLOR_DEBUG != 0
+#if DEBUG_COLORED_LIGHTS_MODE != 0
 uniform sampler2D colortex5;
 #endif
 #endif
@@ -310,27 +310,27 @@ void main() {
 			blockLightColor = blockLightColor + handLight.rgb * handLightBrightness;
 			blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightnessExp);
 
-			#if LIGHTMAP_COLOR_DEBUG == 0 // No Debug
+			#if DEBUG_COLORED_LIGHTS_MODE == 0 // No Debug
 
 			color *= getCustomLightmap(lmcoord.xyz, customLightmapBlend, blockLightColor) * (1 - lmcoord.a) + lmcoord.a;
 
-			#elif LIGHTMAP_COLOR_DEBUG == 1 // Debug, Mix Color
+			#elif DEBUG_COLORED_LIGHTS_MODE == 1 // Debug, Mix Color
 
 			color = mix(color, blockLightColor * (1 - lmcoord.a) + lmcoord.a, 0.666);
 			vec3 tmp = texture(colortex5, coord).rgb;
 			if (sum(tmp) != 0) color = tmp;
 
-			#elif LIGHTMAP_COLOR_DEBUG == 2 // Debug, Mix Age
+			#elif DEBUG_COLORED_LIGHTS_MODE == 2 // Debug, Mix Age
 
 			color = mix(color, vec3(luminance(blockLightColor)), 0.666);
 			vec3 tmp = texture(colortex5, coord).rgb;
 			if (sum(tmp) != 0) color = tmp;
 
-			#elif LIGHTMAP_COLOR_DEBUG == 3 // Debug, Pure Color
+			#elif DEBUG_COLORED_LIGHTS_MODE == 3 // Debug, Pure Color
 
 			color = blockLightColor * (1 - lmcoord.a) + lmcoord.a;
 
-			#elif LIGHTMAP_COLOR_DEBUG == 4 // Debug, Source Color
+			#elif DEBUG_COLORED_LIGHTS_MODE == 4 // Debug, Source Color
 
 			vec3 tmp1 = texture(colortex5, coord).rgb;
 			if (tmp != vec3(0)) color = tmp;

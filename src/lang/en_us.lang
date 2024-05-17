@@ -150,12 +150,12 @@ option.LIGHTMAP_COLOR_FLICKER_RED.comment=Increase this slider if you experience
 option.LIGHTMAP_COLOR_LOD_BIAS=Sample LOD Bias
 option.LIGHTMAP_COLOR_LOD_BIAS.comment=Controls the detail level at which colors are sampled. A higher value will make colors smoother but may cause small lights to be skipped. A lower value will sample at higher detail but will decrease smoothness and introduce flicker. The shader does its best to calculate the appropriate LOD itself.
 
-option.LIGHTMAP_COLOR_DEBUG=Colored Lights Debug
-value.LIGHTMAP_COLOR_DEBUG.0=OFF
-value.LIGHTMAP_COLOR_DEBUG.1=Mix Color
-value.LIGHTMAP_COLOR_DEBUG.2=Mix Age
-value.LIGHTMAP_COLOR_DEBUG.3=Raw Color
-value.LIGHTMAP_COLOR_DEBUG.4=Source Color
+option.DEBUG_COLORED_LIGHTS_MODE=Colored Lights Debug
+value.DEBUG_COLORED_LIGHTS_MODE.0=OFF
+value.DEBUG_COLORED_LIGHTS_MODE.1=Mix Color
+value.DEBUG_COLORED_LIGHTS_MODE.2=Mix Age
+value.DEBUG_COLORED_LIGHTS_MODE.3=Raw Color
+value.DEBUG_COLORED_LIGHTS_MODE.4=Source Color
 
 screen.CUSTOM_LIGHTMAP_COLOR_CONFIG=Lightmap Colors
 
@@ -392,9 +392,10 @@ profile.DEFAULT=Default
 profile.STRACCIATELLA=Stracciatella
 
 option.AGRESSIVE_OPTIMISATION=Aggressive Optimization
-option.AGRESSIVE_OPTIMISATION.comment=Activates Optimizations that can break the visuals or might break in future versions of Minecraft.
+option.AGRESSIVE_OPTIMISATION.comment=Activates Optimizations that can break some visuals or might break in future versions of Minecraft.
 
 option.CREDITS=by
 value.CREDITS.0=§c§lDr§6§lDes§2§lten§r
 
-screen.DEBUG.comment=Don't mess with the stuff in here unless you know what you're doing. Debug options and Internal toggles get dumped here.
+screen.DEBUG_OPTS=Debug Options
+screen.DEBUG_OPTS.comment=Don't mess with the stuff in here unless you know what you're doing. Debug options and Internal toggles get dumped here.
