@@ -72,11 +72,17 @@ layout(location = 0) out vec4 FragOut0;
 void main() {
 #if RAIN_REFRACTION == 1
 	float rain  = texture(colortex3, coord).r;
-	coord      += rain * sin(vec2(coord * TWO_PI + frameTimeCounter * 0.3 )) * RAIN_REFRACTION_STRENGTH;
+	coord      += rain 
+				* sin(vec2(coord * TWO_PI + frameTimeCounter * 0.3 )) 
+				* RAIN_REFRACTION_STRENGTH;
 #elif RAIN_REFRACTION == 2
-	float rain  = texture(colortex3, coord).r;
-	float noise = fbm( coord * 15, 3, 3, 0.75);
-	coord      += rain * sin(vec2(noise * TWO_PI + frameTimeCounter * 0.3 )) * sqrt(noise) * RAIN_REFRACTION_STRENGTH;
+	float rain0 = texture(colortex3, coord).r;
+	if (rain0 > 0) {
+		float rainX = texture(colortex3, coord + vec2(screenSizeInverse.x, 0)).r;
+		float rainY = texture(colortex3, coord + vec2(0, screenSizeInverse.y)).r;
+		vec2  dir   = normalize(vec2(rain0 - rainX, rain0 - rainY));
+		coord      += dir * (1 - rain0 * .75) * RAIN_REFRACTION_STRENGTH * 0.5;
+	}
 #endif
 
 #ifdef DAMAGE_EFFECT

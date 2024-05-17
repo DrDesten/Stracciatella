@@ -39,7 +39,32 @@ void main() {
 	isRain = saturate((color.b) - avg(color.rg)) > 0.25; // Rain (detected based on blue dominance)
 	#endif
 	if (isRain) {
-		rain    = fstep(0.01, color.a);
+		#if RAIN_REFRACTION == 1
+
+		rain = color.a;
+
+		#elif RAIN_REFRACTION == 2
+
+		ivec2 texSize    = textureSize(gcolor, 0);
+		vec2  texelCoord = coord * vec2(texSize) - 0.5;
+		ivec2 texel      = ivec2(texelCoord) % texSize;
+		vec2  frac       = fract(texelCoord);
+
+		vec4 samples = vec4(
+			texelFetch(gcolor, texel + ivec2(0, 0), 0).a,
+			texelFetch(gcolor, texel + ivec2(1, 0), 0).a,
+			texelFetch(gcolor, texel + ivec2(0, 1), 0).a,
+			texelFetch(gcolor, texel + ivec2(1, 1), 0).a
+		);
+		float res = mix(
+			mix(samples.x, samples.y, frac.x), 
+			mix(samples.z, samples.w, frac.x),
+			frac.y
+		);
+		rain = res;
+
+		#endif
+
 		color.a = diagosymmetricLift(color.a, RAIN_OPACITY * 2 - 1);
 	}
 
@@ -54,6 +79,6 @@ void main() {
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 1e-2) discard;
 #if RAIN_REFRACTION != 0
-	FragOut1 = vec4(rain, 0, 0, 0.25);
+	FragOut1 = vec4(rain, 0, 0, 1);
 #endif
 }

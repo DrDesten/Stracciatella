@@ -225,9 +225,9 @@ value.RAIN_REFRACTION.2=Fancy
 option.RAIN_REFRACTION_STRENGTH=Rain Refraction Strength
 option.RAIN_OPACITY=Rain Opacity
 
-option.ANGLED_RAIN=§oAngled§r Rain
-option.ANGLED_RAIN_AMOUNT=Angled Rain Amount
-option.ANGLED_RAIN_ROTATION_SPEED=Angled Rain Rotation Speed
+option.ANGLED_DOWNFALL=§oAngled§r Downfall
+option.ANGLED_DOWNFALL_AMOUNT=Angled Downfall Amount
+option.ANGLED_DOWNFALL_ROTATION_SPEED=Angled Downfall Rotation Speed
 
 option.RAIN_PUDDLES=Rain Puddles
 option.RAIN_PUDDLE_COVERAGE=Rain Puddle Coverage

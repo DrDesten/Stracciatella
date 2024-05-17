@@ -3,7 +3,7 @@
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
 
-#ifdef ANGLED_RAIN
+#ifdef ANGLED_DOWNFALL
 
 	#include "/lib/vertex_transform.glsl"
 	
@@ -38,10 +38,10 @@ out vec2 coord;
 flat out vec4 glcolor;
 
 void main() {
-	#ifdef ANGLED_RAIN
+	#ifdef ANGLED_DOWNFALL
 
 	vec3 playerPos = getPlayer();
-	vec3 offset    = wavyRain(playerPos, ANGLED_RAIN_AMOUNT, ANGLED_RAIN_ROTATION_SPEED * 0.1);
+	vec3 offset    = wavyRain(playerPos, ANGLED_DOWNFALL_AMOUNT, ANGLED_DOWNFALL_ROTATION_SPEED * 0.1);
 	gl_Position    = playerToClip(playerPos + offset);
 
 	#else
