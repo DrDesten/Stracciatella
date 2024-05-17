@@ -150,13 +150,6 @@ option.LIGHTMAP_COLOR_FLICKER_RED.comment=Increase this slider if you experience
 option.LIGHTMAP_COLOR_LOD_BIAS=Sample LOD Bias
 option.LIGHTMAP_COLOR_LOD_BIAS.comment=Controls the detail level at which colors are sampled. A higher value will make colors smoother but may cause small lights to be skipped. A lower value will sample at higher detail but will decrease smoothness and introduce flicker. The shader does its best to calculate the appropriate LOD itself.
 
-option.DEBUG_COLORED_LIGHTS_MODE=Colored Lights Debug
-value.DEBUG_COLORED_LIGHTS_MODE.0=OFF
-value.DEBUG_COLORED_LIGHTS_MODE.1=Mix Color
-value.DEBUG_COLORED_LIGHTS_MODE.2=Mix Age
-value.DEBUG_COLORED_LIGHTS_MODE.3=Raw Color
-value.DEBUG_COLORED_LIGHTS_MODE.4=Source Color
-
 screen.CUSTOM_LIGHTMAP_COLOR_CONFIG=Lightmap Colors
 
 screen.END_SKYLIGHT=End Skylight
@@ -383,6 +376,46 @@ option.BLOCK_OUTLINE_COLOR_G=Block Outline Color §2G
 option.BLOCK_OUTLINE_COLOR_B=Block Outline Color §9B
 
 
+///////////////////////////////////////////////////////////
+// DEBUG
+///////////////////////////////////////////////////////////
+
+screen.DEBUG_OPTS=Debug Options
+screen.DEBUG_OPTS.comment=Don't mess with the stuff in here unless you know what you're doing. Debug options and Internal toggles get dumped here.
+
+option.DEBUG=Debug View
+option.DEBUG_MODE=Debug View
+value.DEBUG_MODE.0=Buffer
+value.DEBUG_MODE.1=Lightmap
+value.DEBUG_MODE.2=Colored Lights
+option.DEBUG_BLEND=Debug View Opacity
+
+option.DEBUG_BUFFER_INDEX=Buffer
+prefix.DEBUG_BUFFER_INDEX=colortex
+option.DEBUG_BUFFER_CHANNELS=Buffer > Channel
+value.DEBUG_BUFFER_CHANNELS.0=RGB / XYZ
+value.DEBUG_BUFFER_CHANNELS.1=R / X
+value.DEBUG_BUFFER_CHANNELS.2=G / Y
+value.DEBUG_BUFFER_CHANNELS.3=B / Z
+value.DEBUG_BUFFER_CHANNELS.4=A / W
+
+option.DEBUG_LIGHTMAP_MODE=Lightmap > View
+value.DEBUG_LIGHTMAP_MODE.0=Lightmap + AO
+value.DEBUG_LIGHTMAP_MODE.1=Lightmap
+value.DEBUG_LIGHTMAP_MODE.2=AO
+value.DEBUG_LIGHTMAP_MODE.3=Emission
+
+option.DEBUG_COLORED_LIGHTS_MODE=Colored Lights > View
+value.DEBUG_COLORED_LIGHTS_MODE.0=OFF
+value.DEBUG_COLORED_LIGHTS_MODE.1=Mix Color
+value.DEBUG_COLORED_LIGHTS_MODE.2=Mix Age
+value.DEBUG_COLORED_LIGHTS_MODE.3=Raw Color
+value.DEBUG_COLORED_LIGHTS_MODE.4=Source Color
+
+///////////////////////////////////////////////////////////
+// NON-OPTIONS
+///////////////////////////////////////////////////////////
+
 option.SHADER_NAME=Stracciatella Shaders
 value.SHADER_NAME.0=v1.6
 value.SHADER_NAME.1=§c§lfrom §6§lTogo §2§lwith§f ❤
@@ -396,6 +429,3 @@ option.AGRESSIVE_OPTIMISATION.comment=Activates Optimizations that can break som
 
 option.CREDITS=by
 value.CREDITS.0=§c§lDr§6§lDes§2§lten§r
-
-screen.DEBUG_OPTS=Debug Options
-screen.DEBUG_OPTS.comment=Don't mess with the stuff in here unless you know what you're doing. Debug options and Internal toggles get dumped here.
