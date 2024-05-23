@@ -1,6 +1,7 @@
 #include "/lib/settings.glsl"
 #include "/core/math.glsl"
 #include "/core/core/color.glsl"
+#include "/core/core/dither.glsl"
 
 uniform vec2 screenSize;
 uniform vec2 screenSizeInverse;
@@ -33,6 +34,6 @@ void main() {
 	if (hits > 0) {
 		color = oklab2rgb(color / hits);
 	}
-
+	
 	FragOut0 = vec4(color, 1);
 }
