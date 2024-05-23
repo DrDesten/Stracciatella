@@ -1,3 +1,5 @@
+#include "/lib/vertex_transform_composite.glsl"
+
 void main() {
-	gl_Position = gl_Vertex * 2 - 1;
+	gl_Position = getPosition();
 }
