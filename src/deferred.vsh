@@ -1,20 +1,19 @@
 #include "/lib/settings.glsl"
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
-#include "/core/kernels.glsl"
-#include "/lib/vertex_transform_simple.glsl"
+#include "/lib/vertex_transform_composite.glsl"
 
 uniform int heldItemId;
 uniform int heldBlockLightValue;
-/* uniform int heldItemId2;
-uniform int heldBlockLightValue2; */
+uniform int heldItemId2;
+uniform int heldBlockLightValue2;
 
 out vec4 handLight; // rgb: color, a: brightness
 
 void main() {
-	gl_Position = ftransform();
+	gl_Position = getPosition();
 
-	handLight = vec4(vec3(0),heldBlockLightValue);
+	handLight = vec4( vec3(0), heldBlockLightValue );
 	switch (getID(heldItemId)) {
 		case 20:
 			handLight.rgb = vec3(1); // White

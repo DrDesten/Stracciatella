@@ -1,5 +1,5 @@
 vec2 getCoord() {
-    return gl_Vertex.xy
+    return gl_Vertex.xy;
 }
 
 vec4 getPosition() {
