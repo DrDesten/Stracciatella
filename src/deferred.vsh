@@ -8,28 +8,31 @@ uniform int heldBlockLightValue;
 uniform int heldItemId2;
 uniform int heldBlockLightValue2;
 
-out vec4 handLight; // rgb: color, a: brightness
+flat out vec4 handLight; // rgb: color, a: brightness
+
+vec3 getHandlightColor(int itemId) {
+	switch (itemId) {
+		case 20: return vec3(1); // White
+		case 21: return LIGHTMAP_COLOR_ORANGE; // Orange
+		case 22: return LIGHTMAP_COLOR_RED; // Red
+		case 24: return LIGHTMAP_COLOR_BLUE; // Blue
+		case 25: return LIGHTMAP_COLOR_PURPLE; // Purple
+	}
+	return vec3(0);
+}
 
 void main() {
 	gl_Position = getPosition();
 
-	handLight = vec4( vec3(0), heldBlockLightValue );
-	switch (getID(heldItemId)) {
-		case 20:
-			handLight.rgb = vec3(1); // White
-			break;
-		case 21:
-			handLight.rgb = LIGHTMAP_COLOR_ORANGE; // Orange
-			break;
-		case 22:
-			handLight.rgb = LIGHTMAP_COLOR_RED; // Red
-			break;
-		case 24:
-			handLight.rgb = LIGHTMAP_COLOR_BLUE; // Blue
-			break;
-		case 25:
-			handLight.rgb = LIGHTMAP_COLOR_PURPLE; // Purple
-			break;
-	}
-	
+	vec4 handLight1 = vec4( getHandlightColor( getID( heldItemId ) ), heldBlockLightValue / 15. );
+	vec4 handLight2 = vec4( getHandlightColor( getID( heldItemId2 ) ), heldBlockLightValue2 / 15. );
+
+	float handLight1Mix = sqrtf01(handLight1.a); 
+	float handLight2Mix = sqrtf01(handLight2.a); 
+
+	float handLightMix = handLight1Mix != 0. && handLight2Mix != 0.
+		? handLight2Mix / ( handLight1Mix + handLight2Mix )
+		: 0.5;
+
+	handLight = vec4( mix(handLight1.rgb, handLight2.rgb, handLightMix), handLight1.a + handLight2.a );
 }

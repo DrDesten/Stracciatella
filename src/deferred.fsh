@@ -47,7 +47,7 @@ uniform sampler2D colortex5;
 #endif
 #endif
 
-in vec4 handLight;
+flat in vec4 handLight;
 
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 
@@ -304,8 +304,8 @@ void main() {
 		blockLightColor  = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
 
 		float dist = sqmag(playerPos);
-		float handLightBrightness = smoothstep(handLight.a * 5, 0, dist);
-		float handLightBrightnessExp = exp(-dist / handLight.a);
+		float handLightBrightness = smoothstep(handLight.a * 75, 0, dist);
+		float handLightBrightnessExp = exp(-dist / handLight.a * 15);
 		blockLightColor = blockLightColor + handLight.rgb * handLightBrightness;
 		blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightnessExp);
 
