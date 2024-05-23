@@ -15,7 +15,11 @@ vec3 mixLightmap(vec3 lmcoord /* lmcoord (xy) + AO (z) */, vec3 skyLight, vec3 b
     skyLight *= (
         lmcoord.y * lmcoord.y                                              // Skylight
         #if LIGHTMAP_SKYLIGHT_AO != 100
+        #if LIGHTMAP_SKYLIGHT_AO <= 100
         * (lmcoord.z * lightmap_skylight_ao + (1. - lightmap_skylight_ao)) // Skylight AO
+        #else
+        * pow(lmcoord.z, lightmap_skylight_ao)
+        #endif
         #else
         * lmcoord.z
         #endif
@@ -25,7 +29,11 @@ vec3 mixLightmap(vec3 lmcoord /* lmcoord (xy) + AO (z) */, vec3 skyLight, vec3 b
     blockLight *= (
         saturate(lmcoord.x * lmcoord.x * 1.1)                                  // Blocklight
         #if LIGHTMAP_BLOCKLIGHT_AO != 100
+        #if LIGHTMAP_BLOCKLIGHT_AO <= 100
         * (lmcoord.z * lightmap_blocklight_ao + (1. - lightmap_blocklight_ao)) // Blocklight AO
+        #else
+        * pow(lmcoord.z, lightmap_blocklight_ao)
+        #endif
         #else
         * lmcoord.z
         #endif
