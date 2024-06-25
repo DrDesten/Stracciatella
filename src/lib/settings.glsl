@@ -193,6 +193,11 @@ const float lightmap_complex_blocklight_blend_curve = ( ((100 - LIGHTMAP_COMPLEX
 #define LIGHTMAP_COLOR_LIGHT_BLUE vec3(0.5,.8,1)
 #define LIGHTMAP_COLOR_PURPLE vec3(.7,.3,1)
 
+#define HANDLIGHT_COLOR_ORANGE vec3(1,.3,0)
+#define HANDLIGHT_COLOR_RED vec3(1,0,0)
+#define HANDLIGHT_COLOR_BLUE LIGHTMAP_COLOR_BLUE
+#define HANDLIGHT_COLOR_LIGHT_BLUE vec3(0,.7,1)
+#define HANDLIGHT_COLOR_PURPLE vec3(.8,0,1)
 
 
 ///////////////////////////////////////////////////////////
