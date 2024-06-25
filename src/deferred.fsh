@@ -304,8 +304,8 @@ void main() {
 		blockLightColor  = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
 
 		float dist = sqmag(playerPos);
-		float handLightBrightness = smoothstep(handLight.a * 75, 0, dist);
-		float handLightBrightnessExp = exp(-dist / handLight.a * 15);
+		float handLightBrightness = smoothstep(handLight.a * 25, 0, dist);
+		float handLightBrightnessExp = exp(-sq(dist / handLight.a * 15));
 		blockLightColor = blockLightColor + handLight.rgb * handLightBrightness;
 		blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightnessExp);
 
