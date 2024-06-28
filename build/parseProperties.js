@@ -570,9 +570,9 @@ export function parseProperties( text ) {
 
     return visitor
 }
-
+/* 
 let text = fs.readFileSync( path.join( __dirname, "test.conditions.properties" ) ).toString()
 let ast = parseProperties( text )
 
 console.log( ast )
-//console.log( util.inspect( ast, { showHidden: false, depth: null, colors: true } ) )
+//console.log( util.inspect( ast, { showHidden: false, depth: null, colors: true } ) ) */
