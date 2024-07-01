@@ -370,8 +370,9 @@ void main() {
 	#else
 		color = mix(color, skyGradient.rgb, fog);
 	#endif
-
+		
 #endif
+
 	}
 
 #if DITHERING >= 1
