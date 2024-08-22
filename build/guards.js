@@ -1,8 +1,8 @@
 import fs from "fs"
+import path from "path"
 
-const fext = path => path.match( /.*\.(\w+)$/ )?.[1]
-const fname = path => path.match( /.*\/([\w\.]*)\.\w+$/ )?.[1]
-const ffull = path => `${fname( path )}.${fext( path )}`
+const fext = p => path.basename( p ).match( /(?<=\.)[^\.]*$/ )[0]
+const fname = p => path.basename( p ).match( /^[^\.]*/ )[0]
 
 export function guardFiles( path ) {
     let content = fs.readFileSync( path, { encoding: "utf-8" } )

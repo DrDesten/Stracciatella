@@ -274,9 +274,8 @@ function packData( id, emissive, data ) {
 }
 
 
-const fext = path => path.match( /.*\.(\w+)$/ )?.[1]
-const fname = path => path.match( /.*\/([\w\.]*)\.\w+$/ )?.[1]
-const ffull = path => `${fname( path )}.${fext( path )}`
+const fext = p => path.basename( p ).match( /(?<=\.)[^\.]*$/ )[0]
+const fname = p => path.basename( p ).match( /^[^\.]*/ )[0]
 
 /** @param {string} path */
 export function loadProperties( path ) {
