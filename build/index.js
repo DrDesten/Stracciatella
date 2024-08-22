@@ -3,25 +3,20 @@ import path from "path"
 import url from "url"
 import { guardFiles } from "./guards.js"
 import { guardUniforms } from "./parseUniforms.js"
-import { PropertiesFile, PropertiesParser, PropertiesCompiler, loadProperties, compileProperties } from "./parseProperties.js"
+import { loadProperties, compileProperties } from "./parseProperties.js"
 import { FileMapping } from "./filemap.js"
 import Changes from "./changes/index.js"
 
-const __dirname = path.dirname( url.fileURLToPath( import.meta.url ) )
+const __dirname = path.resolve( path.dirname( url.fileURLToPath( import.meta.url ) ) )
+const __root = path.join( __dirname, "../" )
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Copy Directory Over
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-const src = path.join( __dirname, "../src" )
-const shaders = path.join( __dirname, "../shaders" )
+const src = path.join( __root, "src" )
+const shaders = path.join( __root, "shaders" )
 const changes = new Changes( src )
 
-// Force Rebuild
-if ( process.argv[2] === "-f" || process.argv[2] === "--force" ) {
-    fs.rmSync( shaders, { recursive: true, force: true } )
-    changes.clearCache()
-}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Build
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // copy all files
 changes.addChangeListener( "*", filepath => {
@@ -46,21 +41,68 @@ changes.addChangeListener( ["/*.fsh", "/*.vsh", "/*.gsh"], filepath => {
     }
 } )
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Compile Files
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// guard includes and uniforms
 changes.addChangeListener( ["*.fsh", "*.vsh", "*.gsh", "*.glsl"], filepath => {
     const dstpath = path.join( shaders, filepath )
     guardFiles( dstpath )
     guardUniforms( dstpath )
-    console.log( `Compiled ${filepath}` )
+    console.info( `Compiled ${filepath}` )
 } )
+
+// compile .properties
 changes.addChangeListener( ["block.properties", "item.properties", "entity.properties"], filepath => {
     const dstpath = path.join( shaders, filepath )
     const propertiesFile = loadProperties( dstpath )
     compileProperties( propertiesFile )
-    console.log( `Compiled ${filepath}` )
+    console.info( `Compiled ${filepath}` )
 } )
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Command line Options
+const options = {
+    persistent: false,
+    force: false,
+}
+const args = process.argv.slice( 2 )
+for ( const option in options ) {
+    if ( args.includes( `-${option[0]}` ) || args.includes( `--${option}` ) )
+        options[option] = true
+}
+
+if ( options.force ) {
+    fs.rmSync( shaders, { recursive: true, force: true } )
+    changes.clearCache()
+}
+
+if ( options.persistent ) {
+    console.log( "Running in persistent mode. Watching for changes..." )
+
+    const debounced = new Set
+    const buffer = new Map
+    function debouce( filename ) {
+        clearTimeout( buffer.get( filename ) )
+        buffer.set( filename, setTimeout( () => {
+            debounced.add( filename )
+            buffer.delete( filename )
+            if ( buffer.size === 0 ) trigger()
+        }, 1000 ) )
+    }
+    function trigger() {
+        changes.applyPartial( Array.from( debounced ) )
+        debounced.clear()
+    }
+
+    const watcher = fs.watch( src, { persistent: true, recursive: true }, ( _, filename ) => {
+        if ( filename === null ) {
+            console.info( "Your system does not support persistent mode. Terminating..." )
+            watcher.close()
+            process.exit()
+        }
+        debouce( filename )
+    } )
+}
+
+// Run Build
 await changes.apply()
