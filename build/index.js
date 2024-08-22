@@ -5,6 +5,7 @@ import { guardFiles } from "./generateIncludeGuards.js"
 import { guardUniforms } from "./parseUniforms.js"
 import { PropertiesFile, PropertiesParser, PropertiesCompiler, loadProperties, compileProperties } from "./parseProperties.js"
 import { FileMapping } from "./filemap.js"
+import Changes from "./changes/index.js"
 
 const __dirname = path.dirname( url.fileURLToPath( import.meta.url ) )
 
@@ -12,63 +13,34 @@ const __dirname = path.dirname( url.fileURLToPath( import.meta.url ) )
 // Copy Directory Over
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const src = `${__dirname}/../src`
-const shaders = `${__dirname}/../shaders`
+const src = path.join( __dirname, "../src" )
+const shaders = path.join( __dirname, "../shaders" )
+const changes = new Changes( src )
 
-if ( fs.existsSync( shaders ) ) {
-    fs.rmSync( shaders, { recursive: true } )
-    console.info( "Deleted `shaders`" )
-}
+// copy all files
+changes.addChangeListener( "*", filepath => {
+    const dst = path.join( shaders, filepath )
+    fs.mkdirSync( path.dirname( dst ), { recursive: true } )
+    fs.cpSync( path.join( src, filepath ), dst )
+    console.info( `Copied ${filepath}` )
+} )
 
-fs.mkdirSync( shaders )
-fs.cpSync( path.join( src, "core" ), path.join( shaders, "core" ), { recursive: true } )
-fs.cpSync( path.join( src, "lang" ), path.join( shaders, "lang" ), { recursive: true } )
-fs.cpSync( path.join( src, "lib" ), path.join( shaders, "lib" ), { recursive: true } )
-fs.cpSync( path.join( src, "lut" ), path.join( shaders, "lut" ), { recursive: true } )
-console.info( "Copied subfolders into `shaders`" )
-
-// Get shader files
-const shaderFiles = fs.readdirSync( src ).filter( file => fs.statSync( path.join( src, file ) ).isFile() )
-const shaderFileSet = new Set( shaderFiles )
-for ( const file of shaderFiles ) {
-    fs.cpSync( path.join( src, file ), path.join( shaders, file ) )
-}
-console.info( "Copied shader files into `shaders`" )
-
-// Generate world folders
-const worlds = {
-    "world-1": [],
-    "world0": [],
-    "world1": [],
-}
-for ( const file of shaderFiles ) {
-    for ( const world in worlds ) {
-        const files = FileMapping[file]
-
+// generate world folders
+changes.addChangeListener( ["/*.fsh", "/*.vsh", "/*.gsh"], filepath => {
+    const worlds = [["world-1", "NETHER"], ["world0", "OVERWORLD"], ["world1", "END"]]
+    for ( const [world, define] of worlds ) {
+        const files = FileMapping[filepath]
+        const dir = path.join( shaders, world )
+        fs.mkdirSync( dir, { recursive: true } )
         for ( const file of files ) {
-            file.addDefine( {
-                "world-1": "NETHER",
-                "world0": "OVERWORLD",
-                "world1": "END",
-            }[world] )
+            file.addDefine( define )
+            fs.writeFileSync( path.join( dir, file.filename ), file.generate() )
+            console.info( `Generated ${world}/${file.filename}` )
         }
-
-        worlds[world].push( ...files )
     }
-}
+} )
 
-// Save World Folders
-for ( const [world, files] of Object.entries( worlds ) ) {
-    const worldDir = path.join( shaders, world )
-    fs.mkdirSync( worldDir )
-
-    for ( const file of files ) {
-        fs.writeFileSync( path.join( worldDir, file.filename ), file.generate() )
-    }
-}
-console.info( "Generated world folders" )
-
-const dir = shaders
+await changes.apply()
 
 /** @param {string} dir @returns {string[]} */
 function gatherFiles( dir, fileList = [] ) {
@@ -89,7 +61,7 @@ function gatherFiles( dir, fileList = [] ) {
 // Compile Files
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const files = gatherFiles( dir )
+const files = gatherFiles( shaders )
 
 for ( const filepath of files ) {
 
