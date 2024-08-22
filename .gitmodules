@@ -1,3 +1,6 @@
 [submodule "src/core"]
 	path = src/core
 	url = https://github.com/DrDesten/ShaderCore.git
+[submodule "build/changes"]
+	path = build/changes
+	url = https://www.github.com/DrDesten/changes.git

@@ -1,4 +1,5 @@
-/shaders/*
-.vscode
+/.*
+*/.changes
+/shaders
 test
 *.zip
