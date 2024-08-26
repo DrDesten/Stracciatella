@@ -375,8 +375,8 @@ void main() {
 
 #ifdef FOG_EXPERIMENTAL
 
-	vec3 worldPos    = toWorld(playerPos);
-	vec3 playerNormY = playerPos / abs(playerPos.y);
+	vec3 worldPos    = toWorld(combinedPlayerPos);
+	vec3 playerNormY = combinedPlayerPos / abs(combinedPlayerPos.y);
 
 	const float fe_start_height = 100;
 	const float fe_start = 0;
@@ -390,7 +390,7 @@ void main() {
 		float hit_mix     = saturate((worldPos.y - fe_end_height) / fe_height);
 		float hit_density = mix(fe_end, fe_start, hit_mix);
 
-		vec3 hit_ray = playerPos 
+		vec3 hit_ray = combinedPlayerPos 
 			- (playerNormY * max(0, cameraPosition.y - fe_start_height)) // Remove part of ray before medium
 			- (playerNormY * max(0, fe_end_height - worldPos.y));        // Remove part of ray after medium
 		
