@@ -13,21 +13,21 @@ blockInfo decodeID( int id ) {
     );
 }
 
-int getID( vec4 entityAttribute ) {
-    return int(entityAttribute.x) & 255;
-}
 int getID( int id ) {
     return id & 255;
 }
-bool getEmissive( vec4 entityAttribute ) {
-    return bool(int(entityAttribute.x) & 256);
+int getID( vec4 entityAttribute ) {
+    return getID(int(entityAttribute.x));
 }
 bool getEmissive( int id ) {
     return bool(id & 256);
 }
-int getData( vec4 entityAttribute ) {
-    return int(entityAttribute.x) >> 9;
+bool getEmissive( vec4 entityAttribute ) {
+    return getEmissive(int(entityAttribute.x));
 }
 int getData( int id ) {
     return id >> 9;
+}
+int getData( vec4 entityAttribute ) {
+    return getData(int(entityAttribute.x));
 }

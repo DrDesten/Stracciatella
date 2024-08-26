@@ -42,7 +42,7 @@ changes.addChangeListener( ["/*.fsh", "/*.vsh", "/*.gsh"], filepath => {
 } )
 
 // guard includes and uniforms
-changes.addChangeListener( ["*.fsh", "*.vsh", "*.gsh", "*.glsl"], filepath => {
+changes.addChangeListener( ["*.fsh", "*.vsh", "*.gsh", "*.glsl", "!/core/**"], filepath => {
     const dstpath = path.join( shaders, filepath )
     guardFiles( dstpath )
     guardUniforms( dstpath )

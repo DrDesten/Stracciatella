@@ -14,9 +14,13 @@ out vec3 playerPos;
 } */
 
 void main() {
+#ifdef DISTANT_HORIZONS
+	gl_Position = vec4(-1);
+#else
 	coord       = getCoord();
 	glcolor     = gl_Color;
 	gl_Position = ftransform();
 	viewPos     = getView();
 	playerPos   = toPlayer(viewPos);
+#endif
 }

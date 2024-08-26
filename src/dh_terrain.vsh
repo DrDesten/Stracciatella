@@ -6,7 +6,7 @@
 #include "/lib/transform.glsl"
 
 out vec2 lmcoord;
-flat out vec4 glcolor;
+out vec4 glcolor;
 out vec3 viewPos;
 flat out int materialId;
 

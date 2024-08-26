@@ -13,7 +13,6 @@ uniform vec2 screenSizeInverse;
 
 #endif
 
-
 #ifdef FOG
 
 #include "/lib/sky.glsl"
