@@ -1,12 +1,11 @@
 import fs from "fs"
 import path from "path"
+import crypto from "crypto"
 
-const fext = p => path.basename( p ).match( /(?<=\.)[^\.]*$/ )[0]
-const fname = p => path.basename( p ).match( /^[^\.]*/ )[0]
-
-export function guardFiles( path ) {
-    let content = fs.readFileSync( path, { encoding: "utf-8" } )
-    const define = `INCLUDE_${fname( path )}_${fext( path )}`.toUpperCase()
+export function guardFiles( filepath ) {
+    let content = fs.readFileSync( filepath, { encoding: "utf-8" } )
+    const hash = crypto.createHash( "sha1" ).update( filepath ).digest( "hex" ).slice( 0, 4 )
+    const define = `INCLUDE_${path.basename( filepath ).replace( /\W+/g, "_" )}_${hash}`.toUpperCase()
     content = `#if ! defined ${define}\n#define ${define}\n\n${content}\n\n#endif`
-    fs.writeFileSync( path, content )
+    fs.writeFileSync( filepath, content )
 }
