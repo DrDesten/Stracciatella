@@ -9,7 +9,7 @@
 uniform float far;
 
 in vec2 lmcoord;
-flat in vec4 glcolor;
+in vec4 glcolor;
 in vec3 viewPos;
 flat in int materialId;
 
@@ -30,31 +30,41 @@ void main() {
     if ( discardDH(worldPos) ) {
         discard;
     }
-    
-    float texelDensity = max(
-        maxc(abs(dFdx(worldPos))),
-        maxc(abs(dFdy(worldPos)))
-    );
 
-    const float iter = 4;
+    vec4 color = glcolor;
 
-    float dhNoise    = 0;
-    float idealScale = (1./16) / texelDensity;
-    float scale      = clamp(exp2(round(log2(idealScale))), 0, 4);
+    if ( worldPos.y > 256 ) {
 
-    vec3 globalRef = fract(worldPos / 1024) * 1024;
-    for (float i = 1; i <= iter; i++) {
-        vec3 seed   = floor(globalRef * scale + 1e-4) / scale;
+    } else {
 
-        dhNoise   += rand(seed);
-        scale     *= 2;
+        float texelDensity = max(
+            maxc(abs(dFdx(worldPos))),
+            maxc(abs(dFdy(worldPos)))
+        );
+
+        const float iter = 4;
+
+        float dhNoise    = 0;
+        float idealScale = (1./16) / texelDensity;
+        float scale      = clamp(exp2(round(log2(idealScale))), 0, 4);
+
+        vec3 globalRef = fract(worldPos / 1024) * 1024;
+        for (float i = 1; i <= iter; i++) {
+            vec3 seed   = floor(globalRef * scale + 1e-4) / scale;
+
+            dhNoise   += rand(seed);
+            scale     *= 2;
+        }
+        dhNoise /= iter;
+        dhNoise  = (dhNoise * 0.25 + 0.875);
+
+        color.rgb *= dhNoise;
+
     }
-    dhNoise /= iter;
-    dhNoise  = (dhNoise * 0.25 + 0.875);
     
-    FragOut0      = glcolor;
-    FragOut0.rgb *= dhNoise;
-	FragOut1      = encodeLightmapData(vec4(lmcoord, 1,0));
+    
+    FragOut0 = color;
+	FragOut1 = encodeLightmapData(vec4(lmcoord, 1,0));
 
 #ifdef COLORED_LIGHTS
 
