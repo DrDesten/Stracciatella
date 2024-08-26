@@ -123,7 +123,7 @@ float fogFactorTerrain(vec3 playerPos) {
 #ifdef DISTANT_HORIZONS
 float fogFactorTerrainDH(vec3 playerPos) {
     playerPos.y *= 0.25;
-    return fogSmoothStep(sqmag(playerPos), dhFarPlane);
+    return fogSmoothStep(sqmag(playerPos), dhFarPlane * 0.75 / SQRT2);
 }
 #endif
 
