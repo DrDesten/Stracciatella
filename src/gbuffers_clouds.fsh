@@ -62,11 +62,7 @@ void main() {
 	float end  = sq(far * 2 * SQRT2);
 	float fog  = smoothstep(0, end, dist);
 
-	#ifndef CUSTOM_SKY
-		color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, sunset), fog);
-	#else
-		color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir, up, sunset, rainStrength, daynight), fog);
-	#endif
+	color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), sunDir), fog);
 
 #endif
 

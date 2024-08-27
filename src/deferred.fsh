@@ -141,11 +141,7 @@ void main() {
 	vec3  combinedPlayerPos = playerPos;
 #endif
 
-#if defined CUSTOM_SKY
-	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir, up, sunset, rainStrength, daynight);
-#else
-	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir, up, sunset);
-#endif
+	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir);
 
 #ifdef OVERWORLD
 #ifdef CUSTOM_STARS
@@ -362,7 +358,7 @@ void main() {
 
 	#ifdef FOG_EXPERIMENTAL
 		float fe = fogFactorExperimental(combinedPlayerPos);
-		fog = 1 - ((1 - fog) * fe);
+		fog = max(fog, 1 - fe);
 	#endif
 
 	#if defined OVERWORLD && defined CAVE_FOG
