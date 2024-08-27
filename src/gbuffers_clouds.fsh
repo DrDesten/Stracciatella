@@ -1,17 +1,10 @@
+#ifndef DISTANT_HORIZONS
+
 #include "/lib/settings.glsl"
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-
-#ifdef DISTANT_HORIZONS
-
-uniform vec2 screenSizeInverse;
-#include "/core/dh/textures.glsl"
-#include "/core/dh/transform.glsl"
-#include "/core/transform.glsl"
-
-#endif
 
 #ifdef FOG
 
@@ -43,18 +36,7 @@ layout(location = 1) out vec2 FragOut1;
 void main() {
 	vec4 color = getAlbedo(coord) * glcolor;
 	color.a    = fstep(0.1, color.a); // Make clouds solid
-
 	color.rgb  = mix(color.rgb, vec3(luminance(color.rgb)) * vec3(0.58,0.6,0.7), rainStrength);
-
-#ifdef DISTANT_HORIZONS
-	vec3 screenPos = vec3(gl_FragCoord.xy * screenSizeInverse, gl_FragCoord.z);
-	vec3 dhViewPos = screenToViewDH(vec3(screenPos.xy, getDepthDH(screenPos.xy)));
-	vec3 dhScreenEquivalent = backToClip(dhViewPos) * .5 + .5;
-
-	if (dhScreenEquivalent.z < screenPos.z) {
-		discard;
-	}
-#endif
 
 #ifdef FOG
 
@@ -74,3 +56,9 @@ void main() {
     if (FragOut0.a < 0.1) discard;
 	FragOut1 = encodeLightmapData(vec4(1));
 }
+
+#else 
+
+void main() {} // DISTANT_HORIZONS
+
+#endif
