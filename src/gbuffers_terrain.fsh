@@ -224,7 +224,7 @@ void main() {
 	
 #else
 
-	#define emissiveness 0
+	float emissiveness = 0;
 	#define coloredLightEmissive float(block.emissive) * ( block.data / 63. ) * blockLightEmissiveColor
 
 #endif
