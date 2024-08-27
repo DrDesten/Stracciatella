@@ -220,19 +220,27 @@ float fogFactorExperimental(vec3 playerPos)	{
 
 #else 
 
-    const float shift = 20;
-    const float scale = 0.03;
-    const float factor = 0.004;
-
-    const float morningShift = 20;
-    const float morningScale = 0.02;
+    const float morningShift  = 20;
+    const float morningScale  = 0.02;
     const float morningFactor = 0.008;
 
-    const float noonShift = 20;
-    const float noonScale = 0.03;
+    const float noonShift  = 20;
+    const float noonScale  = 0.03;
     const float noonFactor = 0.004;
-
     
+    const float rainShift  = 40;
+    const float rainScale  = 0.027;
+    const float rainFactor = 0.07;
+
+    #if 1
+    float shift  = mix( mix(noonShift,  morningShift, sunset), rainShift, rainStrength );
+    float scale  = mix( mix(noonScale,  morningScale, sunset), rainScale, rainStrength );
+    float factor = mix( mix(noonFactor, morningFactor, sunset), rainFactor, rainStrength );
+    #else
+    const float shift = 40;
+    const float scale = 0.027;
+    const float factor = 0.08;
+    #endif
 
     const float dfacMin = 80;
     const float dfacMax = 200;
