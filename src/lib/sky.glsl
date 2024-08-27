@@ -171,3 +171,72 @@ vec3 getFogSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, float sunset, float rain
         return fogColor;
     }
 }
+
+	
+#ifdef FOG_EXPERIMENTAL
+
+#include "/core/transform.glsl"
+
+float FE_density(float x, float df) {
+	return 1 - exp(-df * x);
+}
+float FE_densityI(float x, float df) {
+	return (1 / df) * exp(-df * x) + x;
+}
+float FE_densityII(float x, float df) {
+	return FE_densityI(x, df) - FE_densityI(0, df);
+}
+
+
+float fogFactorExperimental(vec3 playerPos)	{
+    vec3 worldPos = toWorld(playerPos);
+
+#if 0
+
+    vec3 playerNormY = playerPos / abs(playerPos.y);
+    const float fe_start_height = 100;
+    const float fe_start = 0;
+    const float fe_end_height = 80;
+    const float fe_end = 0.01;
+    const float fe_height = fe_start_height - fe_end_height;
+
+    float fe_density = 0;
+
+    if ( cameraPosition.y >= fe_start_height && worldPos.y < fe_start_height ) {
+        float hit_mix     = saturate((worldPos.y - fe_end_height) / fe_height);
+        float hit_density = mix(fe_end, fe_start, hit_mix);
+
+        vec3 hit_ray = playerPos 
+            - (playerNormY * max(0, cameraPosition.y - fe_start_height)) // Remove part of ray before medium
+            - (playerNormY * max(0, fe_end_height - worldPos.y));        // Remove part of ray after medium
+        
+        fe_density += hit_density * length(hit_ray);
+
+        //color = vec3(length(hit_ray)) / 100;
+    }
+
+    float fe = exp2(-fe_density);
+    return fe;
+
+#else 
+
+    vec3  playerDir = normalize(playerPos);
+    float yFactor = playerDir.y;
+    float dist = length(playerPos.xz);
+
+    const float ds = 65;
+    const float df = 0.08;
+
+    float diff = (
+        FE_densityI(worldPos.y - ds, df) - FE_densityI(cameraPosition.y - ds, df)
+    ) / (worldPos.y - cameraPosition.y);
+
+    float density = saturate(1 - diff) * 0.01;
+    float fe = exp2(-length(playerPos) * density);
+
+    return fe;
+    
+#endif
+}
+
+#endif
