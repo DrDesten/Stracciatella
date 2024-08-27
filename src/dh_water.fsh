@@ -3,7 +3,7 @@
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-#include "/lib/transform.glsl"
+#include "/core/transform.glsl"
 #include "/core/dh/uniforms.glsl"
 #include "/lib/dh.glsl"
 

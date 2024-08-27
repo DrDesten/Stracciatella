@@ -3,7 +3,7 @@
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
 #include "/lib/composite_basics.glsl"
-#include "/lib/transform.glsl"
+#include "/core/transform.glsl"
 #include "/lib/colored_lights.glsl"
 
 const vec2 pixel = vec2(1) / LIGHTMAP_COLOR_RES;

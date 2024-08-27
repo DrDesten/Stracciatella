@@ -20,7 +20,7 @@ uniform sampler2D colortex2; // LUT
 uniform sampler2D colortex3; // Rain Effects
 #endif
 
-#include "/lib/transform.glsl"
+#include "/core/transform.glsl"
 #include "/lib/sky.glsl"
 
 uniform int   isEyeInWater;

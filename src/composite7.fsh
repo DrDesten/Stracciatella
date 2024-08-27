@@ -3,7 +3,7 @@
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
 #include "/lib/composite_basics.glsl"
-#include "/lib/transform.glsl"
+#include "/core/transform.glsl"
 
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
 

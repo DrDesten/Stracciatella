@@ -3,7 +3,7 @@
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
 #include "/lib/composite_basics.glsl"
-#include "/lib/transform.glsl"
+#include "/core/transform.glsl"
 #include "/lib/sky.glsl"
 #include "/lib/colored_lights.glsl"
 
@@ -359,9 +359,14 @@ void main() {
 #ifdef FOG
 
 	#ifndef DISTANT_HORIZONS
-		float fog = fogFactorTerrain(playerPos);
+		float fog = fogFactorTerrain(combinedPlayerPos);
 	#else
 		float fog = fogFactorTerrainDH(combinedPlayerPos);
+	#endif
+
+	#ifdef FOG_EXPERIMENTAL
+		float fe = fogFactorExperimental(combinedPlayerPos);
+		fog = 1 - ((1 - fog) * fe);
 	#endif
 
 	#if defined OVERWORLD && defined CAVE_FOG
@@ -371,38 +376,6 @@ void main() {
 		color = mix(color, skyGradient.rgb, fog);
 	#endif
 		
-#endif
-
-#ifdef FOG_EXPERIMENTAL
-
-	vec3 worldPos    = toWorld(combinedPlayerPos);
-	vec3 playerNormY = combinedPlayerPos / abs(combinedPlayerPos.y);
-
-	const float fe_start_height = 100;
-	const float fe_start = 0;
-	const float fe_end_height = 80;
-	const float fe_end = 0.01;
-	const float fe_height = fe_start_height - fe_end_height;
-
-	float fe_density = 0;
-
-	if ( cameraPosition.y >= fe_start_height && worldPos.y < fe_start_height ) {
-		float hit_mix     = saturate((worldPos.y - fe_end_height) / fe_height);
-		float hit_density = mix(fe_end, fe_start, hit_mix);
-
-		vec3 hit_ray = combinedPlayerPos 
-			- (playerNormY * max(0, cameraPosition.y - fe_start_height)) // Remove part of ray before medium
-			- (playerNormY * max(0, fe_end_height - worldPos.y));        // Remove part of ray after medium
-		
-		fe_density += hit_density * length(hit_ray);
-
-		//color = vec3(length(hit_ray)) / 100;
-	}
-
-	float fe = exp2(-fe_density);
-
-	color = mix(vec3(1), color, fe);
-
 #endif
 
 	}

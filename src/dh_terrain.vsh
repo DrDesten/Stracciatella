@@ -3,7 +3,7 @@
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
 #include "/lib/vertex_transform_simple.glsl"
-#include "/lib/transform.glsl"
+#include "/core/transform.glsl"
 
 out vec2 lmcoord;
 out vec4 glcolor;
