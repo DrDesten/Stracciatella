@@ -1,4 +1,3 @@
-
 #include "/core/core.glsl"
 #include "/core/transform.glsl"
 

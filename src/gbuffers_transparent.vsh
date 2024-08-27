@@ -3,7 +3,7 @@
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
 
-#if defined WAVING_BLOCKS || defined WAVING_LIQUIDS
+#if defined DISTANT_HORIZONS || defined WAVING_BLOCKS || defined WAVING_LIQUIDS
 #include "/lib/vertex_transform.glsl"
 #else
 #include "/lib/vertex_transform_simple.glsl"
@@ -40,19 +40,29 @@ out vec2 coord;
 out vec4 glcolor;
 out vec3 viewPos;
 
+#ifdef DISTANT_HORIZONS
+out vec3 worldPos;
+#endif
+
 void main() {
 	gl_Position = ftransform();
 	coord   = getCoord();
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 	viewPos = getView();
+	
+	#ifdef DISTANT_HORIZONS
+	worldPos = getWorld();
+	#endif
 
 	#ifdef WAVING_LIQUIDS
 
 		// Waving Liquids
 		if (getID(mc_Entity) == 1) {
 
+			#ifndef DISTANT_HORIZONS
 			vec3  worldPos = getWorld();
+			#endif
 			float flowHeight = fract(worldPos.y + 0.01);
 			
 			float offset  = wavySineY(worldPos, WAVING_LIQUIDS_AMOUNT * flowHeight, WAVING_LIQUIDS_SPEED * 2.).y;

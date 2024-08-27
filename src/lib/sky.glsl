@@ -116,14 +116,16 @@ float fogSmoothStep(float distSq, float far) {
     float farSQ = sq(far);
     return smoothstep( farSQ * (SQRT2 * FOG_START / FOG_END), farSQ, distSq * (SQRT2 / FOG_END));
 }
+
+#ifdef DISTANT_HORIZONS
+float fogFactorTerrain(vec3 playerPos) {
+    playerPos.y *= 0.25;
+    return fogSmoothStep(sqmag(playerPos), dhFarPlane * 0.75 / SQRT2);
+}
+#else
 float fogFactorTerrain(vec3 playerPos) {
     playerPos.y *= 0.25;
     return fogSmoothStep(sqmag(playerPos), far);
-}
-#ifdef DISTANT_HORIZONS
-float fogFactorTerrainDH(vec3 playerPos) {
-    playerPos.y *= 0.25;
-    return fogSmoothStep(sqmag(playerPos), dhFarPlane * 0.75 / SQRT2);
 }
 #endif
 
@@ -177,16 +179,14 @@ vec3 getFogSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, float sunset, float rain
 
 #include "/core/transform.glsl"
 
-float FE_density(float x, float df) {
-	return 1 - exp(-df * x);
+// FOG_EXPERIMENTAL density based on y-value
+float FE_density(float y, float df) {
+	return 1 - exp(-df * y);
 }
-float FE_densityI(float x, float df) {
-	return (1 / df) * exp(-df * x) + x;
+// Integral of FE_density
+float FE_densityI(float y, float df) {
+	return (1 / df) * exp(-df * y) + y;
 }
-float FE_densityII(float x, float df) {
-	return FE_densityI(x, df) - FE_densityI(0, df);
-}
-
 
 float fogFactorExperimental(vec3 playerPos)	{
     vec3 worldPos = toWorld(playerPos);
@@ -220,18 +220,23 @@ float fogFactorExperimental(vec3 playerPos)	{
 
 #else 
 
-    vec3  playerDir = normalize(playerPos);
-    float yFactor = playerDir.y;
-    float dist = length(playerPos.xz);
+    const float shift = 40;
+    const float scale = 0.04;
+    const float factor = 0.012;
 
-    const float ds = 65;
-    const float df = 0.08;
+    const float dfacMin   = shift + 20;
+    const float dfacMax   = shift + 60;
+    const float dfacRange = dfacMax - dfacMin;
+
+    float dynamicFactor = smoothstep(0, 1, cameraPosition.y / dfacRange - dfacMin / dfacRange);
+    dynamicFactor       = dynamicFactor * .5 + .5;
 
     float diff = (
-        FE_densityI(worldPos.y - ds, df) - FE_densityI(cameraPosition.y - ds, df)
+        FE_densityI(worldPos.y - shift, scale) - 
+        FE_densityI(cameraPosition.y - shift, scale)
     ) / (worldPos.y - cameraPosition.y);
 
-    float density = saturate(1 - diff) * 0.01;
+    float density = saturate(1 - diff) * factor * dynamicFactor;
     float fe = exp2(-length(playerPos) * density);
 
     return fe;

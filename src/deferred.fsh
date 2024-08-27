@@ -358,11 +358,7 @@ void main() {
 
 #ifdef FOG
 
-	#ifndef DISTANT_HORIZONS
-		float fog = fogFactorTerrain(combinedPlayerPos);
-	#else
-		float fog = fogFactorTerrainDH(combinedPlayerPos);
-	#endif
+	float fog = fogFactorTerrain(combinedPlayerPos);
 
 	#ifdef FOG_EXPERIMENTAL
 		float fe = fogFactorExperimental(combinedPlayerPos);

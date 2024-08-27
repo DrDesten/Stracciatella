@@ -89,7 +89,12 @@ void main() {
 
 	#ifdef FOG
 
-		float fog = fogFactorTerrainDH(playerPos);
+		float fog = fogFactorTerrain(playerPos);
+        
+        #ifdef FOG_EXPERIMENTAL
+            float fe = fogFactorExperimental(playerPos);
+            fog = 1 - ((1 - fog) * fe);
+        #endif
 
 		#ifdef OVERWORLD
 			float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
