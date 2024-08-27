@@ -33,6 +33,8 @@ void main() {
 
     vec4 color = glcolor;
 
+    float emissiveness = 0;
+
     if ( worldPos.y > 256 ) {
 
     } else {
@@ -59,18 +61,30 @@ void main() {
         dhNoise  = (dhNoise * 0.25 + 0.875);
 
         color.rgb *= dhNoise;
+        
+#ifdef HDR_EMISSIVES
+            
+        bool isEmissive = materialId == DH_BLOCK_LAVA || materialId == DH_BLOCK_ILLUMINATED;
+        if ( isEmissive ) {
+            color.rgb    = tm_reinhard_sqrt_inverse(color.rgb * 0.996, 0.5);
+            emissiveness = saturate(maxc(color.rgb) * 7 - 2);
+
+            color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 1.5) * color.rgb;
+            color.rgb  = tm_reinhard_sqrt(color.rgb, 0.5);
+        }
+
+#endif
 
     }
-    
-    
+
     FragOut0 = color;
-	FragOut1 = encodeLightmapData(vec4(lmcoord, 1,0));
+	FragOut1 = encodeLightmapData(vec4(lmcoord, 1, emissiveness));
 
 #ifdef COLORED_LIGHTS
 
     vec3 coloredLightEmissive = vec3(0);
     if ( materialId == DH_BLOCK_LAVA || materialId == DH_BLOCK_ILLUMINATED ) {
-        coloredLightEmissive = glcolor.rgb * 0.5;
+        coloredLightEmissive = glcolor.rgb;
     }
     
 	FragOut2 = vec4(coloredLightEmissive, 1);
