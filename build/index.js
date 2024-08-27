@@ -19,7 +19,7 @@ const changes = new Changes( src )
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // copy all files
-changes.addChangeListener( "*", filepath => {
+changes.addChangeListener( "**", filepath => {
     const dst = path.join( shaders, filepath )
     fs.mkdirSync( path.dirname( dst ), { recursive: true } )
     fs.cpSync( path.join( src, filepath ), dst )
@@ -27,7 +27,7 @@ changes.addChangeListener( "*", filepath => {
 } )
 
 // generate world folders
-changes.addChangeListener( ["/*.fsh", "/*.vsh", "/*.gsh"], filepath => {
+changes.addChangeListener( ["*.fsh", "*.vsh", "*.gsh"], filepath => {
     const worlds = [["world-1", "NETHER"], ["world0", "OVERWORLD"], ["world1", "END"]]
     for ( const [world, define] of worlds ) {
         const files = FileMapping[filepath]
@@ -42,7 +42,7 @@ changes.addChangeListener( ["/*.fsh", "/*.vsh", "/*.gsh"], filepath => {
 } )
 
 // guard includes and uniforms
-changes.addChangeListener( ["*.fsh", "*.vsh", "*.gsh", "*.glsl", "!/core/**"], filepath => {
+changes.addChangeListener( ["**.fsh", "**.vsh", "**.gsh", "**.glsl", "!core/**"], filepath => {
     const dstpath = path.join( shaders, filepath )
     guardFiles( dstpath )
     guardUniforms( dstpath )
@@ -64,6 +64,7 @@ changes.addChangeListener( ["block.properties", "item.properties", "entity.prope
 const options = {
     persistent: false,
     force: false,
+    debug: false,
 }
 const args = process.argv.slice( 2 )
 for ( const option in options ) {
@@ -77,7 +78,7 @@ if ( options.force ) {
 }
 
 if ( options.persistent ) {
-    console.log( "Running in persistent mode. Watching for changes..." )
+    console.info( "Running in persistent mode. Press Ctrl+C to stop.\nWatching for changes..." )
 
     const debounced = new Set
     const buffer = new Map
