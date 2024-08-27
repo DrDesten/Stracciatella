@@ -17,44 +17,22 @@ const vec3 fogNightRainColor = vec3(FOG_NIGHT_RAIN_R, FOG_NIGHT_RAIN_G, FOG_NIGH
 const vec3 endSkyUp   = vec3(END_SKY_UP_R, END_SKY_UP_G, END_SKY_UP_B);
 const vec3 endSkyDown = vec3(END_SKY_DOWN_R, END_SKY_DOWN_G, END_SKY_DOWN_B);
 
+uniform float sunset;
+uniform float daynight;
+uniform float rainStrength;
+uniform int   isEyeInWater;
+
 uniform vec3 fogColor;
 uniform vec3 skyColor;
 
 uniform float far;
+uniform vec3  up;
 
 // SKY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir, vec3 up, float sunset) {
-    #ifdef NETHER
+#ifdef CUSTOM_SKY
 
-        return vec4(fogColor, 1);
-
-    #endif
-    #ifdef END 
-    
-        float viewHeight = dot(viewDir, up) * 0.5 + 0.5;
-        return vec4(mix(vec3(END_SKY_DOWN_R, END_SKY_DOWN_G, END_SKY_DOWN_B), vec3(END_SKY_UP_R, END_SKY_UP_G, END_SKY_UP_B), viewHeight), 1);
-
-    #endif
-
-    float sunDot  = sq(dot(viewDir, sunDir) * 0.5 + 0.5);
-	#ifdef SUN_SIZE_CHANGE
-		sunDot = sunDot * (SUN_SIZE * 0.25) + sunDot;
-	#endif
-
-    vec3  fogCol  = fogColor;
-	float fogArea = smoothstep(-sunDot * 0.5 - 0.1, 0.05, dot(viewDir, -up)); // Adding sunDot to the upper smoothstep limit to increase fog close to sun
-    
-    #ifdef SKY_CUSTOM_SUNSET
-	    fogCol = mix(fogCol, vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B), (sunDot / (1 + sunDot)) * sunset); // Make fog Color change for sunsets
-    #endif
-
-	return vec4(mix(skyColor, fogCol, fogArea), fogArea);
-}
-
-vec3 getSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, float sunset) { return getSkyColor_fogArea(viewDir, sunDir, up, sunset).rgb; }
-
-vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir, vec3 up, float sunset, float rainStrength, float daynight) {
+vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir) {
     #ifdef NETHER
 
         return vec4(fogColor, 1);
@@ -100,9 +78,41 @@ vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir, vec3 up, float sunset, float
 	return vec4(mix(skyCol, fogCol, fogArea), fogArea);
 }
 
-vec3 getSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, float sunset, float rainStrength, float daynight) { return getSkyColor_fogArea(viewDir, sunDir, up, sunset, rainStrength, daynight).rgb; }
+#else
 
-vec3 getCustomFogColor(float rainStrength, float daynight) {
+vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir) {
+    #ifdef NETHER
+
+        return vec4(fogColor, 1);
+
+    #endif
+    #ifdef END 
+    
+        float viewHeight = dot(viewDir, up) * 0.5 + 0.5;
+        return vec4(mix(vec3(END_SKY_DOWN_R, END_SKY_DOWN_G, END_SKY_DOWN_B), vec3(END_SKY_UP_R, END_SKY_UP_G, END_SKY_UP_B), viewHeight), 1);
+
+    #endif
+
+    float sunDot  = sq(dot(viewDir, sunDir) * 0.5 + 0.5);
+	#ifdef SUN_SIZE_CHANGE
+		sunDot = sunDot * (SUN_SIZE * 0.25) + sunDot;
+	#endif
+
+    vec3  fogCol  = fogColor;
+	float fogArea = smoothstep(-sunDot * 0.5 - 0.1, 0.05, dot(viewDir, -up)); // Adding sunDot to the upper smoothstep limit to increase fog close to sun
+    
+    #ifdef SKY_CUSTOM_SUNSET
+	    fogCol = mix(fogCol, vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B), (sunDot / (1 + sunDot)) * sunset); // Make fog Color change for sunsets
+    #endif
+
+	return vec4(mix(skyColor, fogCol, fogArea), fogArea);
+}
+
+#endif
+
+vec3 getSkyColor(vec3 viewDir, vec3 sunDir) { return getSkyColor_fogArea(viewDir, sunDir).rgb; }
+
+vec3 getCustomFogColor() {
     vec3 fogRainColor  = mix(vec3(FOG_NIGHT_RAIN_R, FOG_NIGHT_RAIN_G, FOG_NIGHT_RAIN_B), vec3(FOG_DAY_RAIN_R, FOG_DAY_RAIN_G, FOG_DAY_RAIN_B), daynight); 
     vec3 fogClearColor = mix(vec3(FOG_NIGHT_R, FOG_NIGHT_G, FOG_NIGHT_B),                vec3(FOG_DAY_R, FOG_DAY_G, FOG_DAY_B), daynight);
     return mix(fogClearColor, fogRainColor, rainStrength);
@@ -119,8 +129,7 @@ float fogSmoothStep(float distSq, float far) {
 
 #ifdef DISTANT_HORIZONS
 float fogFactorTerrain(vec3 playerPos) {
-    playerPos.y *= 0.25;
-    return fogSmoothStep(sqmag(playerPos), dhFarPlane * 0.75 / SQRT2);
+    return fogSmoothStep(sqmag(playerPos.xz), dhFarPlane);
 }
 #else
 float fogFactorTerrain(vec3 playerPos) {
@@ -157,18 +166,9 @@ float expHeightFog(float dist, float cameraY, float pixelY) {
     return 1 - exp(-fogDensity);
 }
 
-
-
-vec3 getFogSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, float sunset, int isEyeInWater) {
+vec3 getFogSkyColor(vec3 viewDir, vec3 sunDir) {
     if (isEyeInWater == 0) {
-        return getSkyColor(viewDir, sunDir, up, sunset);
-    } else {
-        return fogColor;
-    }
-}
-vec3 getFogSkyColor(vec3 viewDir, vec3 sunDir, vec3 up, float sunset, float rainStrength, float daynight, int isEyeInWater) {
-    if (isEyeInWater == 0) {
-        return getSkyColor(viewDir, sunDir, up, sunset, rainStrength, daynight);
+        return getSkyColor(viewDir, sunDir);
     } else {
         return fogColor;
     }
@@ -220,16 +220,23 @@ float fogFactorExperimental(vec3 playerPos)	{
 
 #else 
 
-    const float shift = 40;
-    const float scale = 0.04;
-    const float factor = 0.012;
+    const float shift = 20;
+    const float scale = 0.03;
+    const float factor = 0.004;
 
-    const float dfacMin   = shift + 20;
-    const float dfacMax   = shift + 60;
-    const float dfacRange = dfacMax - dfacMin;
+    const float morningShift = 20;
+    const float morningScale = 0.02;
+    const float morningFactor = 0.008;
 
-    float dynamicFactor = smoothstep(0, 1, cameraPosition.y / dfacRange - dfacMin / dfacRange);
-    dynamicFactor       = dynamicFactor * .5 + .5;
+    const float noonShift = 20;
+    const float noonScale = 0.03;
+    const float noonFactor = 0.004;
+
+    
+
+    const float dfacMin = 80;
+    const float dfacMax = 200;
+    float dynamicFactor = 0.5 + smoothstep(dfacMin, dfacMax, cameraPosition.y);
 
     float diff = (
         FE_densityI(worldPos.y - shift, scale) - 

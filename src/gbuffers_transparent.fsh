@@ -26,7 +26,6 @@ uniform float frameTimeCounter;
 
 	uniform vec3  sunDir;
 	uniform vec3  up;
-	uniform float sunset;
 	uniform ivec2 eyeBrightnessSmooth;
 
 #endif
@@ -56,7 +55,7 @@ void main() {
 		
 		#ifdef FOG_EXPERIMENTAL
 			float fe = fogFactorExperimental(playerPos);
-			fog = 1 - ((1 - fog) * fe);
+			fog = max(fog, 1 - fe);
 		#endif
 
 		#ifdef OVERWORLD
@@ -65,11 +64,7 @@ void main() {
 			float cave = 1;
 		#endif
 
-		#ifndef CUSTOM_SKY
-			color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(normalize(viewPos), sunDir, up, sunset, isEyeInWater), cave), fog);
-		#else
-			color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(normalize(viewPos), sunDir, up, sunset, rainStrength, daynight, isEyeInWater), cave), fog);
-		#endif
+		color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(normalize(viewPos), sunDir), cave), fog);
 
 	#endif
 
