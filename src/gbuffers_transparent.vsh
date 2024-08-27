@@ -35,14 +35,15 @@
 
 #endif
 
+#ifdef DISTANT_HORIZONS
+uniform float far;
+out vec3 worldPos;
+#endif
+
 out vec2 lmcoord;
 out vec2 coord;
 out vec4 glcolor;
 out vec3 viewPos;
-
-#ifdef DISTANT_HORIZONS
-out vec3 worldPos;
-#endif
 
 void main() {
 	gl_Position = ftransform();
@@ -61,14 +62,20 @@ void main() {
 		if (getID(mc_Entity) == 1) {
 
 			#ifndef DISTANT_HORIZONS
-			vec3  worldPos = getWorld();
+			vec3 worldPos = getWorld();
 			#endif
+
 			float flowHeight = fract(worldPos.y + 0.01);
 			
 			float offset  = wavySineY(worldPos, WAVING_LIQUIDS_AMOUNT * flowHeight, WAVING_LIQUIDS_SPEED * 2.).y;
 			offset       -= WAVING_LIQUIDS_AMOUNT * flowHeight * 0.5;
-			worldPos.y   += offset;
 
+			#ifdef DISTANT_HORIZONS
+			float edgeFade = 1 - smoothstep(0.75, 0.95, sqmag(worldPos.xz - cameraPosition.xz) / (far * far));
+			offset        *= edgeFade;
+			#endif
+
+			worldPos.y   += offset;
 			gl_Position   = worldToClip(worldPos);
 
 		}

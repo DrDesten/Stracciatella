@@ -22,11 +22,6 @@ void main() {
     // Move down to match vanilla
     if (materialId == DH_BLOCK_WATER) {
         vertexPos.y -= 1.8/16.0;
-
-#ifdef WAVING_LIQUIDS
-        float flowHeight = 1. - (1.8) / 16.;
-        vertexPos.y     -= WAVING_LIQUIDS_AMOUNT * flowHeight * 2;
-#endif
     }
 
     gl_Position = gl_ModelViewProjectionMatrix * vertexPos;
