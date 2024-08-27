@@ -272,9 +272,12 @@ void main() {
 #endif
 
 	FragOut0 = color /* * vec2(saturate( 10 * fract(worldPosY) - 1 ), 1).xxxy */;
-    if (FragOut0.a < 0.1) discard;
 	FragOut1 = encodeLightmapData(vec4(lightmapCoord, glcolor.a, saturate(emissiveness)));
 	#ifdef COLORED_LIGHTS
 	FragOut2 = vec4(coloredLightEmissive, 1);
 	#endif
+	
+#if defined CUTOUT || !defined IS_IRIS
+    if (FragOut0.a < 0.1) discard;
+#endif
 }

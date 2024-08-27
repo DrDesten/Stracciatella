@@ -66,6 +66,12 @@ function gbuffers( filename ) {
             new ShaderFile( filename.replace( "gbuffers_transparent", "gbuffers_water" ), [`/${filename}`] ),
         ]
     }
+    if ( filename.startsWith( "gbuffers_terrain" ) ) {
+        return [
+            simpleShaderFile( filename ),
+            new ShaderFile( filename.replace( "gbuffers_terrain", "gbuffers_terrain_cutout" ), [`/${filename}`], ["CUTOUT"] ),
+        ]
+    }
 
     return [simpleShaderFile( filename )]
 }
