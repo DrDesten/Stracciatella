@@ -1,8 +1,8 @@
 
 #include "/core/core.glsl"
+#include "/core/transform.glsl"
 
 uniform float far;
-uniform vec3 cameraPosition;
 
 bool discardDH(vec3 worldPos, float borderTolerance) {
     vec3  borderCorrection = vec3(lessThan(cameraPosition, worldPos)) * 2 * borderTolerance - borderTolerance;

@@ -11,7 +11,7 @@ uniform float frameTimeCounter;
 #ifdef FOG
 
 	#include "/lib/sky.glsl"
-	#include "/lib/transform.glsl"
+	#include "/core/transform.glsl"
 
 	uniform int   isEyeInWater;
 	uniform float far;
