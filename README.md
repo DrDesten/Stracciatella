@@ -4,6 +4,19 @@ It is highly configurable and lets you craft your own personal vanilla experienc
 
 <br>
 
+## Installation
+Stracciatella requires Optifine or Iris to work.  
+Stracciatella (with Optifine) supports Minecraft versions from 1.8.9 onwards.  
+
+### Installation (Release) *Recommended*
+Download the .zip file from the newest release and put it into your `.minecraft/shaderpacks` folder.  
+
+### Installation (Dev)
+Clone the repository into your `.minecraft/shaderpacks` folder. Run `git submodule update --init --recursive` to download the required dependencies.  
+Open your terminal or command prompt and navigate into the `Stracciatella` folder. It should contain `build` and `src` directories.  
+Make sure you have NodeJS installed, and run `node build -f`. A directory named `shaders` should be created.  
+Stracciatella is now built and can be loaded as a shader.  
+
 ## Features
 - Colored Block Light
 - Colored Hand Light
