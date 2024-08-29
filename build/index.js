@@ -6,6 +6,7 @@ import { guardUniforms } from "./parseUniforms.js"
 import { loadProperties, compileProperties } from "./parseProperties.js"
 import { FileMapping } from "./filemap.js"
 import Changes from "./changes/index.js"
+import { parseArgv } from "./argv.js"
 
 const __dirname = path.resolve( path.dirname( url.fileURLToPath( import.meta.url ) ) )
 const __root = path.join( __dirname, "../" )
@@ -61,15 +62,16 @@ changes.addChangeListener( ["block.properties", "item.properties", "entity.prope
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Command line Options
-const options = {
+const options = parseArgv( {
+    readme: {},
     persistent: false,
     force: false,
     debug: false,
-}
-const args = process.argv.slice( 2 )
-for ( const option in options ) {
-    if ( args.includes( `-${option[0]}` ) || args.includes( `--${option}` ) )
-        options[option] = true
+}, process.argv )
+
+if ( options.command === "readme" ) {
+    console.info( "Readme" )
+    process.exit()
 }
 
 if ( options.force ) {
