@@ -289,11 +289,10 @@ export function compileProperties( propertiesFile ) {
 }
 
 export function parseProperties( text ) {
-
     const TokenType = Object.freeze( {
+        Comment: Symbol( "Comment" ),
         Whitespace: Symbol( "Whitespace" ),
         EscapedNewline: Symbol( "EscapedNewline" ),
-        Comment: Symbol( "Comment" ),
 
         Ident: Symbol( "Ident" ),
         Number: Symbol( "Number" ),
@@ -302,85 +301,45 @@ export function parseProperties( text ) {
         Dot: Symbol( "Dot" ),
         Equals: Symbol( "Equals" ),
 
-        EqualsEquals: Symbol( "EqualsEquals" ),
-        Greater: Symbol( "Greater" ),
-        GreaterEquals: Symbol( "GreaterEquals" ),
-        Less: Symbol( "Less" ),
-        LessEquals: Symbol( "LessEquals" ),
-
-        If: Symbol( "If" ),
-        Ifdef: Symbol( "Ifdef" ),
-        Ifndef: Symbol( "Ifndef" ),
-        Elif: Symbol( "Elif" ),
-        Else: Symbol( "Else" ),
-        Endif: Symbol( "Endif" ),
-
         Error: Symbol( "Error" ),
+        Eof: Symbol( "Eof" ),
     } )
 
-    function preprocessorTokenParser( token, match ) {
-        if ( match.groups ) {
-            for ( const group in match.groups ) {
-                token.props[group] = match.groups[group].trim()
-            }
-        }
-    }
-
     const Tokens = [
-        new TokenMatcher( TokenType.Whitespace, /[^\S\n\r]+/, token => token.props.ignore = true ),
-        new TokenMatcher( TokenType.Comment, /#(?!define|undef|ifdef|ifndef|if|elif|else|endif).*(\r?\n)?/, token => token.props.ignore = true ),
-        new TokenMatcher( TokenType.EscapedNewline, /\\\r?\n/, token => token.props.ignore = true ),
+        new TokenMatcher( TokenType.Comment, /#(\\\r?\n|.)*/, { ignore: true } ),
+        new TokenMatcher( TokenType.Whitespace, /[^\S\n]+/, { ignore: true } ),
+        new TokenMatcher( TokenType.EscapedNewline, /\\\r?\n/, { ignore: true } ),
 
         new TokenMatcher( TokenType.Ident, /[a-zA-Z_][a-zA-Z0-9_]*(:[a-zA-Z_][a-zA-Z0-9_]*(=[a-zA-Z_][a-zA-Z0-9_]*)?)*/ ),
-        new TokenMatcher( TokenType.Number, /[+-]?\d+/, token => token.props.value = Number( token.text ) ),
+        new TokenMatcher( TokenType.Number, /[+-]?\d+/, token => token.props.value = +token.text ),
 
-        new TokenMatcher( TokenType.Newline, /(?:\r?\n)+/, token => token.props.merge = true ),
+        new TokenMatcher( TokenType.Newline, /(\r?\n)+/, { merge: true } ),
         new TokenMatcher( TokenType.Dot, /\./ ),
         new TokenMatcher( TokenType.Equals, /=/ ),
-
-        new TokenMatcher( TokenType.EqualsEquals, /==/ ),
-        new TokenMatcher( TokenType.Greater, />/ ),
-        new TokenMatcher( TokenType.GreaterEquals, />=/ ),
-        new TokenMatcher( TokenType.Less, /</ ),
-        new TokenMatcher( TokenType.LessEquals, /<=/ ),
-
-        new TokenMatcher( TokenType.If, /#define[^\S\n\r]+(?<identifier>.*)/, preprocessorTokenParser ),
-        new TokenMatcher( TokenType.Ifdef, /#undef[^\S\n\r]+(?<identifier>.*)/, preprocessorTokenParser ),
-
-        new TokenMatcher( TokenType.If, /#if[^\S\n\r]+(?<condition>.*)/, preprocessorTokenParser ),
-        new TokenMatcher( TokenType.Ifdef, /#ifdef[^\S\n\r]+(?<condition>.*)/, preprocessorTokenParser ),
-        new TokenMatcher( TokenType.Ifndef, /#ifndef[^\S\n\r]+(?<condition>.*)/, preprocessorTokenParser ),
-        new TokenMatcher( TokenType.Elif, /#elif[^\S\n\r]+(?<condition>.*)/, preprocessorTokenParser ),
-        new TokenMatcher( TokenType.Else, /#else/, preprocessorTokenParser ),
-        new TokenMatcher( TokenType.Endif, /#endif/, preprocessorTokenParser ),
     ]
 
-    class Node {}
-    class ConditionalBlock extends Node {
-        /** @param {Symbol} directive @param {string=} condition @param {Node[]} block */
-        constructor( directive, condition, block ) {
-            super()
-            this.directive = directive
-            this.condition = condition
-            this.nodes = block
-        }
-    }
-    class ConditionalNode extends Node {
-        /** @param {ConditionalBlock[]} blocks */
-        constructor( blocks ) {
-            super()
-            this.blocks = blocks
-        }
-    }
-    class AssignmentNode extends Node {
+    class Property {
+        /** @param {string[]} properties @param {string[]} targets  */
         constructor( properties, targets ) {
-            super()
             this.properties = properties
             this.targets = targets
         }
     }
+    class NProperty {
+        /** @param {Token[]} properties @param {Token[]} targets  */
+        constructor( properties, targets ) {
+            this.properties = properties
+            this.targets = targets
+        }
+        flatten() {
+            return new Property(
+                this.properties.map( t => t.toPrimitive() ),
+                this.targets.map( t => t.toPrimitive() )
+            )
+        }
+    }
 
-    class Parser {
+    class PropertiesParser {
         /** @param {Token[]} tokens */
         constructor( tokens ) {
             this.tokens = tokens
@@ -388,190 +347,66 @@ export function parseProperties( text ) {
         }
 
         eof() {
-            return this.index >= this.tokens.length
+            return this.tokens[this.index].type === TokenType.Eof
+                || this.index >= this.tokens.length
         }
-        next( ...types ) {
+        peek( lookahead = 0 ) {
+            return this.tokens[this.index + lookahead]
+        }
+        advance( ...types ) {
             const token = this.tokens[this.index++]
-            if ( types.length > 0 && !types.includes( token.type ) ) {
-                throw new Error( `Expected ${types.join( " or " )}, got '${token.type}'` )
+            if ( !types.includes( token.type ) ) {
+                throw new Error( `Expected ${types.join( " or " )} but got ${token.type}` )
             }
             return token
         }
-        nextIf( ...types ) {
+        advanceIf( ...types ) {
             const token = this.tokens[this.index]
-            if ( !this.eof() && types.includes( token.type ) ) {
+            if ( types.includes( token.type ) ) {
                 this.index++
                 return true
             }
             return false
         }
-        peek( lookahead = 0 ) {
-            return this.tokens[this.index + lookahead]
-        }
 
         parse() {
-            return this.parseBlock()
+            return this.parseProperties()
         }
-        parseBlock() {
-            let block = []
+        parseProperties() {
+            let properties = []
             while ( !this.eof() ) {
-                const statement = this.parseStatement()
-                if ( !statement ) break
-                block.push( statement )
+                properties.push( this.parseProperty() )
             }
-            return block
+            return properties
         }
-        parseStatement() {
-            const token = this.peek()
-            switch ( token.type ) {
-                case TokenType.If:
-                case TokenType.Ifdef:
-                case TokenType.Ifndef:
-                    return this.parseConditional()
-                case TokenType.Ident:
-                    return this.parseAssignment()
-            }
-        }
-        parseConditional() {
-            const directive = this.next()
-            const condition = directive.props.condition
-            this.nextIf( TokenType.Newline )
-
-            const blocks = [new ConditionalBlock(
-                directive.type,
-                condition,
-                this.parseBlock()
-            )]
-
-            while ( this.peek().type === TokenType.Elif ) {
-                const elif = this.next()
-                const elifCondition = elif.props.condition
-                this.nextIf( TokenType.Newline )
-
-                blocks.push( new ConditionalBlock(
-                    elif.type,
-                    elifCondition,
-                    this.parseBlock()
-                ) )
-            }
-
-            if ( this.peek().type === TokenType.Else ) {
-                const elseDirective = this.next()
-                this.nextIf( TokenType.Newline )
-
-                blocks.push( new ConditionalBlock(
-                    elseDirective.type,
-                    undefined,
-                    this.parseBlock()
-                ) )
-            }
-
-            if ( this.nextIf( TokenType.Endif ) ) {
-                this.nextIf( TokenType.Newline )
-                return new ConditionalNode( blocks )
-            }
-
-            throw new Error( `Expected 'elif', 'else', or 'endif', got '${this.peek().type.toString()}'` )
-        }
-        parseAssignment() {
+        parseProperty() {
             const properties = []
-            while ( this.peek().type === TokenType.Ident ) {
-                const property = { name: "", value: 1 }
-
-                property.name = this.next().text
-                if ( this.peek().type === TokenType.Dot ) {
-                    this.next()
-                    if ( this.peek().type === TokenType.Number ) {
-                        property.value = this.next().props.value
-                        this.nextIf( TokenType.Dot )
-                    }
-                }
-
-                properties.push( property )
-            }
-
-            this.next( TokenType.Equals )
-
             const targets = []
-            while ( this.peek().type === TokenType.Ident ) {
-                targets.push( this.next().text )
+            properties.push( this.advance( TokenType.Ident ) )
+            while ( this.advanceIf( TokenType.Dot ) ) {
+                properties.push( this.advance( TokenType.Ident, TokenType.Number ) )
             }
-
-            this.next( TokenType.Newline )
-
-            return new AssignmentNode( properties, targets )
-        }
-
-    }
-
-    class Visitor {
-        /**@param {Node} node */
-        visitHook( node ) {}
-
-        /**@param {Node|Node[]} node */
-        visit( node ) {
-            if ( node instanceof Array ) {
-                return node.forEach( node => this.visit( node ) )
+            this.advance( TokenType.Equals )
+            while ( !this.advanceIf( TokenType.Newline ) ) {
+                targets.push( this.advance( TokenType.Ident ) )
             }
-
-            this.visitHook( node )
-
-            if ( node instanceof ConditionalBlock ) {
-                this.visitConditionalBlock( node )
-            }
-            if ( node instanceof ConditionalNode ) {
-                this.visitConditionalNode( node )
-            }
-            if ( node instanceof AssignmentNode ) {
-                this.visitAssignmentNode( node )
-            }
-        }
-
-        /**@param {ConditionalBlock} node */
-        visitConditionalBlock( node ) {
-            this.visit( node.nodes )
-        }
-
-        /**@param {ConditionalNode} node */
-        visitConditionalNode( node ) {
-            node.blocks.forEach( node => this.visit( node ) )
-        }
-
-        /**@param {AssignmentNode} node */
-        visitAssignmentNode( node ) {}
-    }
-
-    class CollectingVisitor extends Visitor {
-        constructor() {
-            super()
-            /** @type {Map<ClassDecorator,Node[]>} */
-            this.data = new Map( [
-                [ConditionalBlock, []],
-                [ConditionalNode, []],
-                [AssignmentNode, []]
-            ] )
-        }
-
-        visitHook( node ) {
-            this.data.get( node.constructor ).push( node )
+            return new NProperty( properties, targets )
         }
     }
 
-    const lexer = new Lexer( Tokens, TokenType.Error )
+    const lexer = new Lexer( Tokens, TokenType.Error, TokenType.Eof )
     const tokens = lexer.lex( text )
     if ( tokens[0]?.type === TokenType.Newline ) tokens.shift()
 
-    const parser = new Parser( tokens )
-    const ast = parser.parse()
+    const parser = new PropertiesParser( tokens )
+    const ast = parser.parse().map( p => p.flatten() )
 
-    const visitor = new CollectingVisitor()
-    visitor.visit( ast )
-
-    return visitor
+    return ast
 }
 /* 
-let text = fs.readFileSync( path.join( __dirname, "test.conditions.properties" ) ).toString()
+let text = fs.readFileSync( path.join( __dirname, "test.block.properties" ) ).toString()
 let ast = parseProperties( text )
 
 console.log( ast )
+console.log( new PropertiesParser( text ).parse() )
 //console.log( util.inspect( ast, { showHidden: false, depth: null, colors: true } ) ) */
