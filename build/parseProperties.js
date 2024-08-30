@@ -30,6 +30,7 @@ const TokenType = Object.freeze( {
     Newline: "Newline",
     Dot: "Dot",
     Equals: "Equals",
+    Char: "Char",
 
     Error: "Error",
     Eof: "Eof",
@@ -41,14 +42,16 @@ const Tokens = [
     new TokenMatcher( TokenType.Whitespace, /([^\S\r\n]|\r(?!\n))+/, { ignore: true } ),
     new TokenMatcher( TokenType.EscapedNewline, /\\\r?\n/, { ignore: true } ),
 
-    new TokenMatcher( TokenType.Ident, /[a-zA-Z_][a-zA-Z0-9_]*(:[a-zA-Z_][a-zA-Z0-9_]*(=[a-zA-Z_][a-zA-Z0-9_]*)?)*/ ),
+    new TokenMatcher( TokenType.Ident, /[[<]?[a-zA-Z_][a-zA-Z0-9_\-/]*(:[a-zA-Z_][a-zA-Z0-9_\-/]*(=[a-zA-Z_][a-zA-Z0-9_\-/]*)?)*[\]>]?/ ),
     new TokenMatcher( TokenType.Number, /[+-]?\d+/, token => token.props.value = +token.text ),
 
     new TokenMatcher( TokenType.Newline, /(\r?\n)+/, { merge: true } ),
     new TokenMatcher( TokenType.Dot, /\./ ),
     new TokenMatcher( TokenType.Equals, /=/ ),
+    new TokenMatcher( TokenType.Char, /./ ),
 ]
 
+/** @extends {Array<Preprocessor|Property>} */
 class Block extends Array {
     /** @param {"preprocessor"|"properties"} type */
     constructor( type ) {
@@ -57,16 +60,16 @@ class Block extends Array {
     }
 }
 class Preprocessor {
-    /** @param {string} token */
-    constructor( token ) {
-        this.token = token
+    /** @param {string} text */
+    constructor( text ) {
+        this.text = text
     }
 }
 class Property {
-    /** @param {string[]} properties @param {string[]} targets  */
-    constructor( properties, targets ) {
-        this.properties = properties
-        this.targets = targets
+    /** @param {string[]} key @param {string[]} value  */
+    constructor( key, value ) {
+        this.key = key
+        this.value = value
     }
 }
 
@@ -87,7 +90,7 @@ class PropertiesParser {
     advance( ...types ) {
         const token = this.tokens[this.index++]
         if ( types.length && !types.includes( token.type ) ) {
-            throw new Error( `Expected ${types.map( t => t.toString() ).join( " or " )} but got ${token.type.toString()}` )
+            throw new Error( `Expected ${types.join( " or " )} but got ${token.type} "${token.text}" at [l:${token.position.line} c:${token.position.column}]` )
         }
         return token
     }
@@ -95,9 +98,8 @@ class PropertiesParser {
         const token = this.tokens[this.index]
         if ( types.includes( token.type ) ) {
             this.index++
-            return true
+            return token
         }
-        return false
     }
 
     parse() {
@@ -125,21 +127,29 @@ class PropertiesParser {
         return new Preprocessor( token.toPrimitive() )
     }
     parseProperty() {
-        let properties = []
-        let targets = []
-        properties.push( this.advance( TokenType.Ident ) )
+        let key = []
+        let value = []
+        let valueIsIdentifierList = true
+        key.push( this.advance( TokenType.Ident ).toPrimitive() )
         while ( this.advanceIf( TokenType.Dot ) ) {
-            properties.push( this.advance( TokenType.Ident, TokenType.Number ) )
+            key.push( this.advance( TokenType.Ident, TokenType.Number ).toPrimitive() )
         }
         this.advance( TokenType.Equals )
         while ( !this.advanceIf( TokenType.Newline ) ) {
-            targets.push( this.advance( TokenType.Ident ) )
+            if ( !valueIsIdentifierList ) {
+                value[0] += this.advanceIf( TokenType.Char )?.text ?? " " + this.advance().text
+            } else if ( this.peek().type === TokenType.Ident ) {
+                value.push( this.advance( TokenType.Ident ).toPrimitive() )
+            } else {
+                valueIsIdentifierList = false
+                value = [value.join( " " ) + this.advanceIf( TokenType.Char )?.text ?? " " + this.advance().text]
+            }
         }
-        return new Property( properties.map( t => t.toPrimitive() ), targets.map( t => t.toPrimitive() ) )
+        return new Property( key, value )
     }
 }
 
-function parseProperties( text ) {
+export function parseProperties( text ) {
     const lexer = new Lexer( Tokens, TokenType.Error, TokenType.Eof )
     const tokens = lexer.lex( text )
     const parser = new PropertiesParser( tokens )
@@ -151,18 +161,18 @@ function parseProperties( text ) {
 function compileProperties( blocks, prefix ) {
     /** @param {Block} block  */
     function compileBlock( block ) {
-        if ( block.type === "preprocessor" ) return block.map( n => n.token.trim() ).join( "\n" )
+        if ( block.type === "preprocessor" ) return block.map( n => n.text.trim() ).join( "\n" )
 
         const targets = new Map
 
         // Accumulate properties
-        for ( const { properties: props, targets: t } of block ) {
+        for ( const { key: props, value: propTargets } of block ) {
             const properties = {}
             for ( let i = 0; i < props.length; i++ ) {
                 const p = props[i], v = props[i + 1]
                 properties[p] = typeof v === "number" ? ( ++i, v ) : 1
             }
-            for ( const target of t ) {
+            for ( const target of propTargets ) {
                 if ( !targets.has( target ) ) targets.set( target, properties )
                 else Object.assign( targets.get( target ), properties )
             }
@@ -192,7 +202,7 @@ function compileProperties( blocks, prefix ) {
 /** @param {string} filepath */
 export function compilePropertiesFile( filepath ) {
     const prefix = path.basename( filepath, ".properties" )
-    const content = fs.readFileSync( filepath, { encoding: "utf8" } )
+    const content = fs.readFileSync( filepath, "utf8" )
     const compiled = compileProperties( parseProperties( content ), prefix )
     fs.writeFileSync( filepath, compiled )
 }

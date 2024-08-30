@@ -3,7 +3,7 @@ import path from "path"
 import url from "url"
 import { guardFiles } from "./guards.js"
 import { guardUniforms } from "./parseUniforms.js"
-import { compilePropertiesFile } from "./parseProperties.js"
+import { compilePropertiesFile, parseProperties } from "./parseProperties.js"
 import { FileMapping } from "./filemap.js"
 import Changes from "./changes/index.js"
 import { parseArgv } from "./argv.js"
@@ -69,7 +69,8 @@ const options = parseArgv( {
 }, process.argv )
 
 if ( options.command === "readme" ) {
-    console.info( "Readme" )
+    const shadersProperties = fs.readFileSync( path.join( src, "shaders.properties" ), "utf8" )
+    console.log( parseProperties( shadersProperties ) )
     process.exit()
 }
 
