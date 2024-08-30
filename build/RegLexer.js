@@ -46,8 +46,9 @@ export class Range {
 /**
  * @typedef {{[property: string]: any, ignore: boolean, merge: boolean, value?: boolean|number|string}} TokenProperties
  */
+/** @template {string} T */
 export class Token {
-    /** @param {Symbol} type @param {string} text @param {Range} range */
+    /** @param {T} type @param {string} text @param {Range} range */
     constructor( type, text, range ) {
         this.type = type
         this.text = text
@@ -72,22 +73,28 @@ export class Token {
 }
 
 // TokenMatcher class
+/** @template {string} T */
 export class TokenMatcher {
-    /** @param {Symbol} type @param {RegExp} regex @param {TokenProperties|(token: Token, match: RegExpExecArray) => void} parser @param {{[property:string]:any}} props */
+    static compileRegex( regex ) {
+        return new RegExp( `^(?:${regex.source})` )
+    }
+
+    /** @param {T} type @param {RegExp} regex @param {TokenProperties|(token: Token, match: RegExpExecArray) => void} parser @param {{[property:string]:any}} props */
     constructor( type, regex, parser, props = {} ) {
         this.type = type
-        this.regex = regex
+        this.regex = TokenMatcher.compileRegex( regex )
         this.parser = parser
         this.props = props
     }
 }
 
+/** @template {string} T */
 export class Lexer {
-    /** @param {TokenMatcher[]} matchers @param {Symbol} errorSymbol @param {Symbol} eofSymbol */
-    constructor( matchers, errorSymbol, eofSymbol, { postprocess = true } = {} ) {
+    /** @param {TokenMatcher<T>[]} matchers @param {T} errorToken @param {T} eofToken */
+    constructor( matchers, errorToken, eofToken, { postprocess = true } = {} ) {
         this.matchers = matchers
-        this.errorSymbol = errorSymbol
-        this.eofSymbol = eofSymbol
+        this.errorToken = errorToken
+        this.eofToken = eofToken
         this.props = { postprocess }
     }
 
@@ -97,25 +104,20 @@ export class Lexer {
      * Matches each token only once.
      * @param {string} text - The input text to be tokenized.
      * @param {Position} position - The current position in the input text.
-     * @returns {Token|null} The tokenized result, or null if no match is found.
+     * @returns {Token<T>|null} The tokenized result, or null if no match is found.
      */
     next( text, position ) {
-        const matches = []
-
-        for ( const matcher of this.matchers ) {
-            const regex = matcher.regex
-            const match = regex.exec( text )
-            if ( match && match.index === 0 ) {
-                matches.push( { match, matcher: matcher } )
+        let match, matcher
+        for ( const x of this.matchers ) {
+            const m = x.regex.exec( text )
+            if ( m ) {
+                match = m
+                matcher = x
+                break
             }
         }
+        if ( !match ) return null
 
-        matches.sort( ( a, b ) => b.match[0].length - a.match[0].length )
-
-        const longestMatch = matches[0]
-        if ( !longestMatch ) return null
-
-        const { match, matcher } = longestMatch
         const token = new Token( matcher.type, match[0], new Range( position.clone(), position.clone().advance( match[0] ) ) )
         if ( matcher.parser ) {
             if ( typeof matcher.parser === 'function' ) {
@@ -132,7 +134,7 @@ export class Lexer {
      * Tokenizes the input text based on the defined TokenMatchers.
      * Matches all tokens in the input text.
      * @param {string} text - The input text to be tokenized.
-     * @returns {Token[]} An array of tokenized results.
+     * @returns {Token<T>[]} An array of tokenized results.
      */
     lex( text ) {
         const tokens = []
@@ -144,7 +146,7 @@ export class Lexer {
 
             if ( !token ) {
                 // If no token found, add an error token and advance text by one character
-                tokens.push( new Token( this.errorSymbol, remaining[0], new Range( position.clone(), position.clone().advance( remaining[0] ) ) ) )
+                tokens.push( new Token( this.errorToken, remaining[0], new Range( position.clone(), position.clone().advance( remaining[0] ) ) ) )
                 position.advance( remaining[0] )
                 remaining = remaining.slice( 1 )
                 continue
@@ -169,7 +171,7 @@ export class Lexer {
             remaining = remaining.slice( token.text.length ) // Remove matched token from remaining text
         }
 
-        tokens.push( new Token( this.eofSymbol, '', new Range( position.clone(), position.clone() ) ) ) // Add EOF token at end of text
+        tokens.push( new Token( this.eofToken, '', new Range( position.clone(), position.clone() ) ) ) // Add EOF token at end of text
         return tokens
     }
 }
