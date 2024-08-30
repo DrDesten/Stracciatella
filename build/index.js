@@ -12,6 +12,7 @@ const __dirname = path.resolve( path.dirname( url.fileURLToPath( import.meta.url
 const __root = path.join( __dirname, "../" )
 
 const src = path.join( __root, "src" )
+const out = path.join( __root, "out" )
 const shaders = path.join( __root, "shaders" )
 const changes = new Changes( src )
 
@@ -62,13 +63,13 @@ changes.addChangeListener( ["block.properties", "item.properties", "entity.prope
 
 // Command line Options
 const options = parseArgv( {
-    readme: {},
+    "feature-list": {},
     persistent: false,
     force: false,
     debug: false,
 }, process.argv )
 
-if ( options.command === "readme" ) {
+if ( options.command === "feature-list" ) {
     const enUsLang = fs.readFileSync( path.join( src, "lang", "en_us.lang" ), "utf8" )
     const names = Object.fromEntries(
         [...enUsLang.matchAll(/(option|screen)\.(?<key>\w+)=(?<name>.*)/g)]
@@ -119,7 +120,9 @@ if ( options.command === "readme" ) {
         return string
     }
     const featureList = generateFeatureList(screen)
-    console.log(featureList)
+    
+    fs.mkdirSync(out, {recursive: true})
+    fs.writeFileSync( path.join(out, "feature-list.md"), featureList )
     process.exit()
 }
 
