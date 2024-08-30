@@ -3,7 +3,7 @@ import path from "path"
 import url from "url"
 import { guardFiles } from "./guards.js"
 import { guardUniforms } from "./parseUniforms.js"
-import { loadProperties, compileProperties } from "./parseProperties.js"
+import { compilePropertiesFile } from "./parseProperties.js"
 import { FileMapping } from "./filemap.js"
 import Changes from "./changes/index.js"
 import { parseArgv } from "./argv.js"
@@ -53,8 +53,7 @@ changes.addChangeListener( ["**.fsh", "**.vsh", "**.gsh", "**.glsl", "!core/**"]
 // compile .properties
 changes.addChangeListener( ["block.properties", "item.properties", "entity.properties"], filepath => {
     const dstpath = path.join( shaders, filepath )
-    const propertiesFile = loadProperties( dstpath )
-    compileProperties( propertiesFile )
+    compilePropertiesFile( dstpath )
     console.info( `Compiled ${filepath}` )
 } )
 
