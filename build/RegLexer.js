@@ -88,6 +88,7 @@ export class TokenMatcher {
     }
 }
 
+// Lexer class
 /** @template {string} T */
 export class Lexer {
     /** @param {TokenMatcher<T>[]} matchers @param {T} errorToken @param {T} eofToken */
@@ -176,6 +177,34 @@ export class Lexer {
     }
 }
 
+// Parser class
+/** @template {string} T */
+export class Parser {
+    /** @param {Token<T>[]} tokens */
+    constructor( tokens ) {
+        this.tokens = tokens
+        this.index = 0
+    }
 
-
+    /** @param {number} [lookahead=0] */
+    peek( lookahead = 0 ) {
+        return this.tokens[this.index + lookahead]
+    }
+    /** @param {...T} types */
+    advance( ...types ) {
+        const token = this.tokens[this.index++]
+        if ( types.length && !types.includes( token.type ) ) {
+            throw new Error( `Expected ${types.join( " or " )} but got ${token.type} "${token.text}" at [l:${token.position.line} c:${token.position.column}]` )
+        }
+        return token
+    }
+    /** @param {...T} types */
+    advanceIf( ...types ) {
+        const token = this.tokens[this.index]
+        if ( types.length && types.includes( token.type ) ) {
+            this.index++
+            return token
+        }
+    }
+}
 

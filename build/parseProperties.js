@@ -2,7 +2,7 @@ import fs from "fs"
 import util from "util"
 import path from "path"
 import url from "url"
-import { Lexer, Token, TokenMatcher } from "./RegLexer.js"
+import { Lexer, Parser, Token, TokenMatcher } from "./RegLexer.js"
 
 const __dirname = path.dirname( url.fileURLToPath( import.meta.url ) )
 
@@ -73,7 +73,7 @@ class Property {
     }
 }
 
-class PropertiesParser {
+class PropertiesParserBlockID {
     /** @param {Token<string>[]} tokens */
     constructor( tokens ) {
         this.tokens = tokens
@@ -149,10 +149,44 @@ class PropertiesParser {
     }
 }
 
+class PropertiesParser extends Parser {
+    eof() {
+        return this.peek().type === TokenType.Eof
+    }
+
+    parse() {
+        return this.parseBlocks()
+    }
+    parseBlocks() {
+        let blocks = []
+        while ( !this.eof() ) {
+            while ( this.advanceIf( TokenType.Newline ) ) {}
+            const ttype = this.peek().type
+            if ( ttype === TokenType.Preprocessor ) {
+                const node = this.parsePreprocessor()
+                if ( blocks.at( -1 )?.type !== "preprocessor" ) blocks.push( new Block( "preprocessor" ) )
+                blocks.at( -1 ).push( node )
+            } else {
+                const node = this.parseProperty()
+                if ( blocks.at( -1 )?.type !== "properties" ) blocks.push( new Block( "properties" ) )
+                blocks.at( -1 ).push( node )
+            }
+        }
+        return blocks
+    }
+    parsePreprocessor() {
+        const token = this.advance( TokenType.Preprocessor )
+        return new Preprocessor( token.toPrimitive() )
+    }
+    parseProperty() {
+        
+    }
+}
+
 export function parseProperties( text ) {
     const lexer = new Lexer( Tokens, TokenType.Error, TokenType.Eof )
     const tokens = lexer.lex( text )
-    const parser = new PropertiesParser( tokens )
+    const parser = new PropertiesParserBlockID( tokens )
     const blocks = parser.parse()
     return blocks
 }
