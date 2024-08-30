@@ -69,8 +69,57 @@ const options = parseArgv( {
 }, process.argv )
 
 if ( options.command === "readme" ) {
+    const enUsLang = fs.readFileSync( path.join( src, "lang", "en_us.lang" ), "utf8" )
+    const names = Object.fromEntries(
+        [...enUsLang.matchAll(/(option|screen)\.(?<key>\w+)=(?<name>.*)/g)]
+            .map(({groups: {key, name}}) => [key, name.replace(/§\w/g, "")])
+    )
+    
     const shadersProperties = fs.readFileSync( path.join( src, "shaders.properties" ), "utf8" )
-    console.log( parseProperties( shadersProperties ) )
+    const parsed = parseProperties( shadersProperties ) 
+    const allScreens = new Map
+    for (const block of parsed) {
+        if (block.type !== "properties") continue
+        for (const p of block) if (p.key[0] === "screen" && p.key.at(-1) !== "columns") {
+            const key = p.key[1] ?? ""
+            const values = p.value
+                .filter(x => x !== "<empty>" && x !== "*")
+                .map(x => x.replace(/\W/g, ""))
+            allScreens.set(key, values)
+        }
+    }
+
+    function createScreen( keys ) {
+        const screen = {}
+        for (const key of keys) {
+            if (allScreens.has(key)) {
+                screen[names[key] ?? key] = createScreen(allScreens.get(key))
+            } else {
+                screen[names[key] ?? key] = null
+            }
+        }
+        return screen
+    }
+    const screen = createScreen(allScreens.get(""))
+
+    function generateFeatureList( screen, indent = -1 ) {
+        let string = ""
+        for (const opt in screen) {
+            if (screen[opt]) {
+                if (indent === -1) string += `\n### ${opt}\n\n`
+                else string += " ".repeat(indent * 2) + ` - **${opt}**\n`
+            } else {
+                string += " ".repeat(Math.max(indent,0) * 2) + ` - ${opt}\n`
+            }
+
+            if (screen[opt]) {
+                string += generateFeatureList( screen[opt], indent + 1 )
+            }
+        }
+        return string
+    }
+    const featureList = generateFeatureList(screen)
+    console.log(featureList)
     process.exit()
 }
 
