@@ -7,6 +7,7 @@ import { compilePropertiesFile, parseProperties } from "./parsePropertiesID.js"
 import { FileMapping } from "./filemap.js"
 import Changes from "./changes/index.js"
 import { parseArgv } from "./argv.js"
+import { parseLang } from "./parseProperties.js"
 
 const __dirname = path.resolve( path.dirname( url.fileURLToPath( import.meta.url ) ) )
 const __root = path.join( __dirname, "../" )
@@ -71,6 +72,35 @@ const options = parseArgv( {
 
 if ( options.command === "feature-list" ) {
     const enUsLang = fs.readFileSync( path.join( src, "lang", "en_us.lang" ), "utf8" )
+    const parsedLang = parseLang(enUsLang)
+
+    const parsedLangData = Object.fromEntries(
+        parsedLang.map(prop => [prop.key[1], { name: "", comment: "", values: null }])
+    )
+    for (const { key: [type, id, sub], value } of parsedLang) {
+        if (type === "screen") {
+            parsedLangData[id].name = value 
+            continue
+        }
+        if (type === "value") {
+            parsedLangData[id].values ??= {}
+            parsedLangData[id].values[sub] = value 
+            continue
+        }
+        if (type === "option") {
+            if (sub === "comment") {
+                parsedLangData[id].comment = value 
+            } else {
+                parsedLangData[id].name = value 
+            }
+            continue
+        }
+    }
+    
+    console.log(parsedLangData)
+
+    process.exit(0)
+
     const names = Object.fromEntries(
         [...enUsLang.matchAll(/(option|screen)\.(?<key>\w+)=(?<name>.*)/g)]
             .map(({groups: {key, name}}) => [key, name.replace(/§\w/g, "")])

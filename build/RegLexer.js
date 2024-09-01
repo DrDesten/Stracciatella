@@ -75,14 +75,10 @@ export class Token {
 // TokenMatcher class
 /** @template {string} T */
 export class TokenMatcher {
-    static compileRegex( regex ) {
-        return new RegExp( `^(?:${regex.source})` )
-    }
-
     /** @param {T} type @param {RegExp} regex @param {TokenProperties|(token: Token, match: RegExpExecArray) => void} parser @param {{[property:string]:any}} props */
     constructor( type, regex, parser, props = {} ) {
         this.type = type
-        this.regex = TokenMatcher.compileRegex( regex )
+        this.regex = regex
         this.parser = parser
         this.props = props
     }
@@ -91,9 +87,16 @@ export class TokenMatcher {
 // Lexer class
 /** @template {string} T */
 export class Lexer {
+    /** @template {string} T @param {TokenMatcher<T>[]} matchers */
+    static compileMatchers( matchers ) {
+        let compiled = matchers.map(({regex}, i) => `(?<__${i}>${regex.source})`).join("|")
+        return new RegExp(compiled, "y")
+    }
+
     /** @param {TokenMatcher<T>[]} matchers @param {T} errorToken @param {T} eofToken */
     constructor( matchers, errorToken, eofToken, { postprocess = true } = {} ) {
         this.matchers = matchers
+        this.regex = Lexer.compileMatchers(matchers)
         this.errorToken = errorToken
         this.eofToken = eofToken
         this.props = { postprocess }
@@ -108,16 +111,18 @@ export class Lexer {
      * @returns {Token<T>|null} The tokenized result, or null if no match is found.
      */
     next( text, position ) {
-        let match, matcher
-        for ( const x of this.matchers ) {
-            const m = x.regex.exec( text )
-            if ( m ) {
-                match = m
-                matcher = x
-                break
-            }
-        }
-        if ( !match ) return null
+        let index = position.index
+        this.regex.lastIndex = index
+
+        const result = this.regex.exec(text)
+        if ( !result ) return null
+
+        const matcherIndex = +Object.keys(result.groups)
+            .filter(key => /__\d+/.test(key) && result.groups[key] !== undefined)
+            [0].slice(2)
+        
+        const match = result
+        const matcher = this.matchers[matcherIndex]
 
         const token = new Token( matcher.type, match[0], new Range( position.clone(), position.clone().advance( match[0] ) ) )
         if ( matcher.parser ) {
@@ -139,17 +144,19 @@ export class Lexer {
      */
     lex( text ) {
         const tokens = []
-        let remaining = text
         let position = new Position( 0, 1, 1 )
 
-        while ( remaining.length > 0 ) {
-            const token = this.next( remaining, position )
+        while ( position.index < text.length ) {
+            const token = this.next( text, position )
 
             if ( !token ) {
                 // If no token found, add an error token and advance text by one character
-                tokens.push( new Token( this.errorToken, remaining[0], new Range( position.clone(), position.clone().advance( remaining[0] ) ) ) )
-                position.advance( remaining[0] )
-                remaining = remaining.slice( 1 )
+                tokens.push( new Token( 
+                    this.errorToken, 
+                    text[position.index], 
+                    new Range( position.clone(), position.clone().advance( text[position.index] ) ) ) 
+                )
+                position.advance( text[position.index] )
                 continue
             }
 
@@ -169,7 +176,6 @@ export class Lexer {
             }
 
             position.advance( token.text )
-            remaining = remaining.slice( token.text.length ) // Remove matched token from remaining text
         }
 
         tokens.push( new Token( this.eofToken, '', new Range( position.clone(), position.clone() ) ) ) // Add EOF token at end of text
