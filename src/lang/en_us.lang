@@ -112,7 +112,7 @@ option.END_SKY_DOWN_B=End Sky Lower §9B
 screen.LIGHTING=Lighting
 
 option.CUSTOM_LIGHTMAP_MODE=Lightmap
-option.CUSTOM_LIGHTMAP_MODE.comment=§nDefault§r. All Features. §nSimple§r. Reduced features (only 'Adaptive Blocklight Reduction' and 'Minimum Light').
+option.CUSTOM_LIGHTMAP_MODE.comment=§nDefault§r. All Features. §nSimple§r. Reduced features (only "Adaptive Blocklight Reduction" and "Minimum Light").
 value.CUSTOM_LIGHTMAP_MODE.0=Simple
 value.CUSTOM_LIGHTMAP_MODE.1=Default
 
