@@ -10,11 +10,11 @@ import { parseArgv } from "./argv.js"
 import { parseLang } from "./parseProperties.js"
 
 const __dirname = path.resolve( path.dirname( url.fileURLToPath( import.meta.url ) ) )
-const __root = path.join( __dirname, "../" )
 
-const src = path.join( __root, "src" )
-const out = path.join( __root, "out" )
-const shaders = path.join( __root, "shaders" )
+const root = path.join( __dirname, "../" )
+const src = path.join( root, "src" )
+const out = path.join( root, "out" )
+const shaders = path.join( root, "shaders" )
 const changes = new Changes( src )
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -77,12 +77,12 @@ if ( options.command === "feature-list" ) {
     const parsedLangData = Object.fromEntries(
         parsedLang.map(prop => [prop.key[1], { name: "", comment: "", values: null }])
     )
-    for (const { key: [type, id, sub], value } of parsedLang) {
-        if (type === "screen") {
+    for (let { key: [type, id, sub], value } of parsedLang) {
+        if (type === "screen" && sub !== "comment") {
             parsedLangData[id].name = value 
             continue
         }
-        if (type === "value") {
+        if (type === "value" && sub !== "comment") {
             parsedLangData[id].values ??= {}
             parsedLangData[id].values[sub] = value 
             continue
@@ -97,20 +97,10 @@ if ( options.command === "feature-list" ) {
         }
     }
     
-    console.log(parsedLangData)
-
-    process.exit(0)
-
-    const names = Object.fromEntries(
-        [...enUsLang.matchAll(/(option|screen)\.(?<key>\w+)=(?<name>.*)/g)]
-            .map(({groups: {key, name}}) => [key, name.replace(/§\w/g, "")])
-    )
-    
     const shadersProperties = fs.readFileSync( path.join( src, "shaders.properties" ), "utf8" )
-    const parsed = parseProperties( shadersProperties ) 
+    const parsedProperties = parseProperties( shadersProperties ).filter(blk => blk.type === "properties")
     const allScreens = new Map
-    for (const block of parsed) {
-        if (block.type !== "properties") continue
+    for (const block of parsedProperties) {
         for (const p of block) if (p.key[0] === "screen" && p.key.at(-1) !== "columns") {
             const key = p.key[1] ?? ""
             const values = p.value
@@ -121,38 +111,73 @@ if ( options.command === "feature-list" ) {
     }
 
     function createScreen( keys ) {
+        // Create nested options screen structure
         const screen = {}
         for (const key of keys) {
+            screen[key] = parsedLangData[key] ?? { name: key }
             if (allScreens.has(key)) {
-                screen[names[key] ?? key] = createScreen(allScreens.get(key))
-            } else {
-                screen[names[key] ?? key] = null
+                screen[key].children = createScreen(allScreens.get(key))
             }
         }
+
+        // Merge *[RGB] color picker options into one
+        const colorPickersOpts = Object.entries(screen).filter(([key]) => /_[RGB]$/.test(key))
+        const colorPickers = {}
+        for (let [key, value] of colorPickersOpts) {
+            value = structuredClone(value)
+            value.name = value.name
+                .replace(/§\w/g, "")
+                .replace(/\s*[RGB]$/, "")
+                .replace(/\s*Color$/i, "")
+            value.name += " *(RGB Color Picker)*"
+            colorPickers[key.slice(0,-2)] ??= { data: value, keys: [] }
+            colorPickers[key.slice(0,-2)].keys.push(key)
+        }
+        for (let [_, { data, keys }] of Object.entries(colorPickers)) {
+            if (keys.length !== 3) throw new Error([screen, data, keys])
+            screen[keys[0]] = data
+            delete screen[keys[1]]
+            delete screen[keys[2]]
+        }
+
         return screen
     }
     const screen = createScreen(allScreens.get(""))
 
     function generateFeatureList( screen, indent = -1 ) {
         let string = ""
-        for (const opt in screen) {
-            if (screen[opt]) {
-                if (indent === -1) string += `\n### ${opt}\n\n`
-                else string += " ".repeat(indent * 2) + ` - **${opt}**\n`
+        for (const [key, data] of Object.entries(screen)) {
+            let { name, comment, values, children } = data
+            name = name?.replace(/§\w/g, "")
+            comment = comment?.replace(/\.(\s+|$)/g, "  \n").trim()
+                .replace(/^(?=.)|(?<=\n)/g, "&emsp;")
+                .replace(/§c§n\/!\\§r\s*(.*)(?=  \n|$)/g, "**$1**")
+                .replace(/§c(.+?)§r/g, "**$1**")
+                .replace(/§n(.+?):?§r/g, "$1:")
+                    
+            if (children) {
+                if (indent === -1) {
+                    string += `\n### ${name}\n\n`
+                } else {
+                    string += " ".repeat(indent * 2) + ` - **${name}**\n`
+                }
+                string += generateFeatureList(children, indent + 1)
             } else {
-                string += " ".repeat(Math.max(indent,0) * 2) + ` - ${opt}\n`
-            }
-
-            if (screen[opt]) {
-                string += generateFeatureList( screen[opt], indent + 1 )
+                string += " ".repeat(Math.max(indent, 0) * 2) 
+                string += ` - ${name}`
+                string += values ? ` - *${Object.values(values).map(v => v.replace(/§\w/g, "")).join(", ")}*` : ""
+                string += comment ? `  \n${comment}` : ""
+                string += "\n"
             }
         }
         return string
     }
     const featureList = generateFeatureList(screen)
     
+    const dstpath = path.join(out, "feature-list.md")
     fs.mkdirSync(out, {recursive: true})
-    fs.writeFileSync( path.join(out, "feature-list.md"), featureList )
+    fs.writeFileSync(dstpath, featureList)
+    console.info(`Compiled feature list to ${dstpath}`)
     process.exit()
 }
 
