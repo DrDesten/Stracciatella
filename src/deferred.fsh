@@ -5,6 +5,7 @@
 #include "/lib/composite_basics.glsl"
 #include "/core/transform.glsl"
 #include "/lib/sky.glsl"
+#include "/lib/stars.glsl"
 #include "/lib/colored_lights.glsl"
 
 #include "/core/dh/uniforms.glsl"
@@ -50,7 +51,7 @@ uniform sampler2D colortex5;
 flat in vec4 handLight;
 
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
-
+#if 0
 vec2 cubemapCoords(vec3 direction) {
     float l  = max(max(abs(direction.x), abs(direction.y)), abs(direction.z));
     vec3 dir = direction / l;
@@ -110,7 +111,7 @@ float KleinNishina(float cosTheta, float e) {
     // For clouds, e has to be around 700-1000
     return e / (2.0 * PI * (e * (1.0 - cosTheta) + 1.0) * log(2.0 * e + 1.0));
 }
-
+#endif
 vec4 getLightmap(vec2 coord) {
     return vec2x16to4(texture(colortex1, coord).xy);
 }
@@ -146,6 +147,10 @@ void main() {
 #ifdef OVERWORLD
 #ifdef CUSTOM_STARS
 
+		vec4 stars      = getStars(playerPos, playerDir, 1 - skyGradient.a);
+		stars.a        *= saturate(abs(dot(viewDir, sunDir)) * -200 + 199);
+		skyGradient.rgb = mix(skyGradient.rgb, stars.rgb, stars.a);
+#if 0
 		if (customStarBlend > 1e-6 && playerPos.y > 0) {
 
 			// STARS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,7 +195,7 @@ void main() {
 			skyGradient.rgb = mix(skyGradient.rgb, vec3(1), stars * customStarBlend * saturate(abs(dot(viewDir, sunDir)) * -200 + 199.5));
 
 		}
-
+#endif
 #endif
 #endif
 

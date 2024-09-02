@@ -6,8 +6,6 @@
 #include "/core/transform.glsl"
 #include "/lib/dh.glsl"
 
-uniform float far;
-
 in vec2 lmcoord;
 in vec4 glcolor;
 in vec3 viewPos;
@@ -27,17 +25,16 @@ void main() {
     vec3 playerPos = toPlayer(viewPos);
     vec3 worldPos  = toWorld(playerPos);
 
-    if ( discardDH(worldPos) ) {
+    bool isCloud =  worldPos.y > 256; 
+    if ( !isCloud && discardDH(worldPos, 0.5) ) {
         discard;
     }
-
+    
     vec4 color = glcolor;
 
     float emissiveness = 0;
 
-    if ( worldPos.y > 256 ) {
-
-    } else {
+    if ( !isCloud ) {
 
         float texelDensity = max(
             maxc(abs(dFdx(worldPos))),
