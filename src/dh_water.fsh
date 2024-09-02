@@ -51,7 +51,8 @@ void main() {
 
     // Discarding Logic
     
-    if ( materialId == DH_BLOCK_WATER ? discardDH(worldPos, 0) : discardDH(worldPos, 1e-5) ) {
+    float borderTolerance =  materialId == DH_BLOCK_WATER ? 0 : 1e-5;
+    if ( discardDH(worldPos, borderTolerance) ) {
         discard;
     }
 
