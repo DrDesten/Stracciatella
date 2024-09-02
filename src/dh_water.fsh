@@ -18,7 +18,7 @@ uniform float far;
 uniform sampler2D colortex4;
 uniform float customLightmapBlend;
 
-#ifdef FOG
+#if FOG != 0
 uniform ivec2 eyeBrightnessSmooth;
 #include "/lib/sky.glsl"
 #endif
@@ -72,15 +72,15 @@ void main() {
 
 	color.rgb *= getCustomLightmap(vec3(lmcoord, 1), customLightmapBlend);
 
-	#ifdef FOG
+	#if FOG != 0
 
 		vec3  viewDir   = normalize(viewPos);
 
 		float fog = fogFactorTerrain(playerPos);
         
-        #ifdef FOG_EXPERIMENTAL
-            float fe = fogFactorExperimental(viewDir, playerPos);
-		    fog = max(fog, 1 - fe);
+        #if FOG_ADVANCED
+        float fa = fogFactorAdvanced(viewDir, playerPos);
+        fog      = max(fog, fa);
         #endif
 
 		#ifdef OVERWORLD

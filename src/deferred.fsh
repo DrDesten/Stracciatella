@@ -242,13 +242,13 @@ void main() {
 
 #endif
 
-#ifdef FOG
+#if FOG != 0
 
 	float fog = fogFactorTerrain(combinedPlayerPos);
 
-	#ifdef FOG_EXPERIMENTAL
-		float fe = fogFactorExperimental(viewDir, combinedPlayerPos);
-		fog = max(fog, 1 - fe);
+	#if FOG_ADVANCED
+	float fa = fogFactorAdvanced(viewDir, combinedPlayerPos);
+	fog      = max(fog, fa);
 	#endif
 
 	#if defined OVERWORLD && defined CAVE_FOG

@@ -5,10 +5,51 @@
 screen.ATMOSPHERICS=Fog and Sky
 
 option.FOG=Fog
+option.FOG.comment=§nBorder§r. Simple, comparable to vanilla. §nAuto§r. Enables "Advanced" fog when Distant Horizons is present. §nAdvanced§r. Border fog aswell as configurable exponential distance and height based fog.
+value.FOG.0=OFF
+value.FOG.1=Border
+value.FOG.2=Auto
+value.FOG.3=Advanced
+
+screen.FOG_ADVANCED_CONFIG=Advanced Fog
+option.FA_CONSTANT_DENSITY=Constant Density
+option.FA_CONSTANT_DENSITY.comment=Constant fog density applied regardless of world height
+
+option.FA_SCALE_MULTIPLIER=Height Scale Multiplier
+option.FA_SCALE_MULTIPLIER.comment=Multiplier applied to the scale factor used to calculate height fog. Higher values correspond to a harsher density falloff.
+option.FA_FACTOR_MULTIPLIER=Height Density Multiplier
+option.FA_FACTOR_MULTIPLIER.comment=Multiplier applied to the density calculated from world height
+
+option.FA_SUNSET_ANISOTROPY=Anisotropic Sunset Fog
+option.FA_SUNSET_ANISOTROPY.comment=Fog density at sunset and sunrise increases more in direction of the sun
+option.FA_SUNSET_MULTIPLIER=Sunset Fog Multiplier
+option.FA_SUNSET_MULTIPLIER.comment=Controls how much the fog changes during sunset and sunrise
+
+option.FA_DYNAMIC_FACTOR_START=Dynamic Density Start Height
+suffix.FA_DYNAMIC_FACTOR_START=\ blocks
+option.FA_DYNAMIC_FACTOR_START.comment=Fog density starts to increase with player height after the selected world height. Set to the default value, this acts as a correctional factor to keep the fog density (visually) constant.
+option.FA_DYNAMIC_FACTOR_MULTIPLIER=Dynamic Density Multiplier
+option.FA_DYNAMIC_FACTOR_MULTIPLIER.comment=Controls how much player height influences fog density
+
 option.FOG_START=Fog Start
 option.FOG_START.comment=Sets where the fog starts appearing. Relative to render distance.
 option.FOG_END=Fog End
 option.FOG_END.comment=Sets where the fog reaches its maximum. Relative to render distance.
+
+screen.CAVE_SKY_CONFIG=Cave Fog and Sky
+option.CAVE_FOG=Cave Fog
+option.CAVE_FOG.comment=Fog changes to a different color when you are underground
+option.CAVE_SKY=Cave Sky
+option.CAVE_SKY.comment=Sky changes to a different color when you are underground
+option.CAVE_SKY_HEIGHT=Cave Sky Height Threshold
+option.CAVE_SKY_HEIGHT.comment=Controls which world height is necessary for the sky color to change
+
+option.FOG_CAVE_R=Cave Fog §cR
+option.FOG_CAVE_R.comment=Color of fog inside of caves.
+option.FOG_CAVE_G=Cave Fog §2G
+option.FOG_CAVE_G.comment=Color of fog inside of caves.
+option.FOG_CAVE_B=Cave Fog §9B
+option.FOG_CAVE_B.comment=Color of fog inside of caves.
 
 screen.SUN_MOON_CONFIG=§eSun§r and §7Moon§r
 option.SUN_SIZE_CHANGE=Change Sun and Moon Size
@@ -42,8 +83,7 @@ option.SHOOTING_STARS_SPEED=Speed
 option.SHOOTING_STARS_LENGTH=Trail Length
 option.SHOOTING_STARS_THICKNESS=Trail Thickness
 
-option.SKY_CUSTOM_SUNSET=Custom Sunset Color
-screen.SKY_CUSTOM_SUNSET_CONFIG=Sunset Color Configuration
+option.SKY_CUSTOM_SUNSET=Custom Sunset
 option.SKY_SUNSET_R=Sky Sunset §cR
 option.SKY_SUNSET_G=Sky Sunset §2G
 option.SKY_SUNSET_B=Sky Sunset §9B
@@ -79,22 +119,6 @@ option.FOG_NIGHT_B=Fog Night §9B
 option.FOG_NIGHT_RAIN_R=Fog Night Rain §cR
 option.FOG_NIGHT_RAIN_G=Fog Night Rain §2G
 option.FOG_NIGHT_RAIN_B=Fog Night Rain §9B
-
-
-screen.CAVE_SKY_CONFIG=Cave Fog and Sky
-option.CAVE_FOG=Cave Fog
-option.CAVE_FOG.comment=Fog changes to a different color when you are underground
-option.CAVE_SKY=Cave Sky
-option.CAVE_SKY.comment=Sky changes to a different color when you are underground
-option.CAVE_SKY_HEIGHT=Cave Sky Height Threshold
-option.CAVE_SKY_HEIGHT.comment=Controls which world height is necessary for the sky color to change
-
-option.FOG_CAVE_R=Cave Fog §cR
-option.FOG_CAVE_R.comment=Color of fog inside of caves.
-option.FOG_CAVE_G=Cave Fog §2G
-option.FOG_CAVE_G.comment=Color of fog inside of caves.
-option.FOG_CAVE_B=Cave Fog §9B
-option.FOG_CAVE_B.comment=Color of fog inside of caves.
 
 screen.END_SKY_CONFIG=End Sky
 option.END_SKY_UP_R=End Sky Upper §cR

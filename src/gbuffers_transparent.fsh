@@ -11,7 +11,7 @@ uniform float frameTimeCounter;
 #include "/lib/dh.glsl"
 #endif
 
-#ifdef FOG
+#if FOG != 0
 uniform ivec2 eyeBrightnessSmooth;
 #include "/lib/sky.glsl"
 #include "/core/transform.glsl"
@@ -35,15 +35,15 @@ void main() {
 	color.rgb *= glcolor.rgb * glcolor.a;
 	color.rgb *= getCustomLightmap(vec3(lmcoord, glcolor.a), customLightmapBlend);
 
-	#ifdef FOG
+	#if FOG != 0
 
 		vec3  viewDir   = normalize(viewPos);
 		vec3  playerPos = toPlayer(viewPos);
 		float fog       = fogFactorTerrain(playerPos);
 		
-		#ifdef FOG_EXPERIMENTAL
-			float fe = fogFactorExperimental(viewDir, playerPos);
-			fog = max(fog, 1 - fe);
+		#if FOG_ADVANCED
+		float fa = fogFactorAdvanced(viewDir, playerPos);
+		fog      = max(fog, fa);
 		#endif
 
 		#ifdef OVERWORLD

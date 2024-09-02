@@ -14,17 +14,17 @@ flat in vec4 glcolor;
 
 #ifdef AGRESSIVE_OPTIMISATION
     noperspective in vec2 coord;
-    #ifdef FOG
+    #if FOG != 0
     flat in vec3 viewPos;
     #endif
 #else
     in vec2 coord;
-    #ifdef FOG
+    #if FOG != 0
     in vec3 viewPos;
     #endif
 #endif
 
-#ifdef FOG
+#if FOG != 0
 	#include "/lib/sky.glsl"
 	#include "/core/transform.glsl"
 	uniform float far;
@@ -38,7 +38,7 @@ void main() {
 	
 	color.rgb *= getCustomLightmap(vec3(lmcoord, glcolor.a), customLightmapBlend);
 
-#ifdef FOG
+#if FOG != 0
 	float fog = fogFactorTerrain(toPlayer(viewPos));
 	color.a  *= (1-fog);
 	color.a  -= Bayer4(gl_FragCoord.xy) * 0.05;

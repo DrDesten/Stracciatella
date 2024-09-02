@@ -6,16 +6,12 @@
 #include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
-#ifdef FOG
+#if FOG != 0
 
 #include "/lib/sky.glsl"
 
 uniform int   isEyeInWater;
 uniform float far;
-
-#if defined CUSTOM_SKY
-	uniform float daynight;
-#endif
 
 uniform vec3  sunDir;
 uniform vec3  up;
@@ -38,7 +34,7 @@ void main() {
 	color.a    = fstep(0.1, color.a); // Make clouds solid
 	color.rgb  = mix(color.rgb, vec3(luminance(color.rgb)) * vec3(0.58,0.6,0.7), rainStrength);
 
-#ifdef FOG
+#if FOG != 0
 
 	float dist = sqmag(playerPos.xz);
 	float end  = sq(far * 2 * SQRT2);
