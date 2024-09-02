@@ -1,4 +1,5 @@
 #include "/core/dh/uniforms.glsl"
+#include "/core/transform.glsl"
 
 const vec3 sunsetColor = vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B);
 
@@ -27,12 +28,13 @@ uniform vec3 skyColor;
 
 uniform float far;
 uniform vec3  up;
+uniform vec3  sunDir;
 
 // SKY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef CUSTOM_SKY
 
-vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir) {
+vec4 getSkyColor_fogArea(vec3 viewDir) {
     #ifdef NETHER
 
         return vec4(fogColor, 1);
@@ -80,7 +82,7 @@ vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir) {
 
 #else
 
-vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir) {
+vec4 getSkyColor_fogArea(vec3 viewDir) {
     #ifdef NETHER
 
         return vec4(fogColor, 1);
@@ -110,7 +112,7 @@ vec4 getSkyColor_fogArea(vec3 viewDir, vec3 sunDir) {
 
 #endif
 
-vec3 getSkyColor(vec3 viewDir, vec3 sunDir) { return getSkyColor_fogArea(viewDir, sunDir).rgb; }
+vec3 getSkyColor(vec3 viewDir) { return getSkyColor_fogArea(viewDir).rgb; }
 
 vec3 getCustomFogColor() {
     vec3 fogRainColor  = mix(vec3(FOG_NIGHT_RAIN_R, FOG_NIGHT_RAIN_G, FOG_NIGHT_RAIN_B), vec3(FOG_DAY_RAIN_R, FOG_DAY_RAIN_G, FOG_DAY_RAIN_B), daynight); 
@@ -166,9 +168,9 @@ float expHeightFog(float dist, float cameraY, float pixelY) {
     return 1 - exp(-fogDensity);
 }
 
-vec3 getFogSkyColor(vec3 viewDir, vec3 sunDir) {
+vec3 getFogSkyColor(vec3 viewDir) {
     if (isEyeInWater == 0) {
-        return getSkyColor(viewDir, sunDir);
+        return getSkyColor(viewDir);
     } else {
         return fogColor;
     }
@@ -189,36 +191,17 @@ float FE_densityI(float y, float df) {
 }
 
 float fogFactorExperimental(vec3 playerPos)	{
+    vec3 viewPos  = backToView(playerPos);
+    vec3 viewDir  = normalize(viewPos);
     vec3 worldPos = toWorld(playerPos);
 
-#if 0
+    const float constantDensity = 3e-4;
 
-    vec3 playerNormY = playerPos / abs(playerPos.y);
-    const float fe_start_height = 100;
-    const float fe_start = 0;
-    const float fe_end_height = 80;
-    const float fe_end = 0.01;
-    const float fe_height = fe_start_height - fe_end_height;
-
-    float fe_density = 0;
-
-    if ( cameraPosition.y >= fe_start_height && worldPos.y < fe_start_height ) {
-        float hit_mix     = saturate((worldPos.y - fe_end_height) / fe_height);
-        float hit_density = mix(fe_end, fe_start, hit_mix);
-
-        vec3 hit_ray = playerPos 
-            - (playerNormY * max(0, cameraPosition.y - fe_start_height)) // Remove part of ray before medium
-            - (playerNormY * max(0, fe_end_height - worldPos.y));        // Remove part of ray after medium
-        
-        fe_density += hit_density * length(hit_ray);
-
-        //color = vec3(length(hit_ray)) / 100;
-    }
-
-    float fe = exp2(-fe_density);
-    return fe;
-
-#else 
+    const float scaleMultiplier  = 1;
+    const float factorMultiplier = 2;
+    
+    const float dynamicFactorStart = 65;
+    const float dynamicFactorMultiplier = 0.015;
 
     const float morningShift  = 20;
     const float morningScale  = 0.02;
@@ -232,31 +215,31 @@ float fogFactorExperimental(vec3 playerPos)	{
     const float rainScale  = 0.027;
     const float rainFactor = 0.07;
 
+    float dynamicFactor = max(cameraPosition.y - dynamicFactorStart, 0) * dynamicFactorMultiplier + 1;
+
+    float anisotropy        = dot(viewDir, sunDir);
+    float sunAnisotropy     = anisotropy * .5 + .5;
+    float anisotropicSunset = sunset * sunAnisotropy;
+
     #if 1
-    float shift  = mix( mix(noonShift,  morningShift, sunset), rainShift, rainStrength );
-    float scale  = mix( mix(noonScale,  morningScale, sunset), rainScale, rainStrength );
-    float factor = mix( mix(noonFactor, morningFactor, sunset), rainFactor, rainStrength );
+    float shift  = mix( mix(noonShift,  morningShift, anisotropicSunset), rainShift, rainStrength );
+    float scale  = mix( mix(noonScale,  morningScale, anisotropicSunset), rainScale, rainStrength ) * scaleMultiplier;
+    float factor = mix( mix(noonFactor, morningFactor, anisotropicSunset), rainFactor, rainStrength ) * factorMultiplier;
     #else
     const float shift = 40;
     const float scale = 0.027;
     const float factor = 0.08;
     #endif
 
-    const float dfacMin = 80;
-    const float dfacMax = 200;
-    float dynamicFactor = 0.5 + smoothstep(dfacMin, dfacMax, cameraPosition.y);
-
     float diff = (
         FE_densityI(worldPos.y - shift, scale) - 
         FE_densityI(cameraPosition.y - shift, scale)
     ) / (worldPos.y - cameraPosition.y);
 
-    float density = saturate(1 - diff) * factor * dynamicFactor;
+    float density = saturate(1 - diff) * factor * dynamicFactor + constantDensity;
     float fe = exp2(-length(playerPos) * density);
 
     return fe;
-    
-#endif
 }
 
 #endif
