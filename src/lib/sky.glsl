@@ -154,20 +154,6 @@ float fogBorderExp( float dist, float far, float density ) {
     return 1 - saturate( expFog - farFog ) * (1 + farFog); // Dividing by (1 - farFog) is technically correct here, but for small farFog they are close. Multiplication is faster.
 }
 
-float expFogDensity(float worldHeight) {
-    worldHeight = exp(-(worldHeight - FOG_EXP_START) * ( 1. / (FOG_EXP_END - FOG_EXP_START)) );
-    return (worldHeight);
-}
-float expFogDensityIntegral(float worldHeight) {
-    worldHeight = exp((worldHeight - FOG_EXP_START) * ( -1. / (FOG_EXP_END - FOG_EXP_START)) ) * (FOG_EXP_END - FOG_EXP_START);
-    return (worldHeight);
-}
-float expHeightFog(float dist, float cameraY, float pixelY) {
-    float fogDensity = (expFogDensityIntegral(pixelY) - expFogDensityIntegral(cameraY)) / (cameraY - pixelY);
-    fogDensity       = fogDensity * dist * FOG_EXP_DENSITY;
-    return 1 - exp(-fogDensity);
-}
-
 vec3 getFogSkyColor(vec3 viewDir) {
     if (isEyeInWater == 0) {
         return getSkyColor(viewDir);
