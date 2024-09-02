@@ -190,10 +190,21 @@ void main() {
 		blockLightColor  = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
 
 		float dist = sqmag(playerPos);
+		#ifdef IS_IRIS
+
+		float falloff = smoothstep(0.05, 1, exp2( -dist * 0.03 / handLight.a ));
+		blockLightColor = blockLightColor + handLight.rgb * falloff;
+		blockLightColor = mix(blockLightColor, handLight.rgb, falloff);
+		lmcoord.x = max(lmcoord.x, falloff * handLight.a);
+
+		#else
+
 		float handLightBrightness = smoothstep(handLight.a * 25, 0, dist);
 		float handLightBrightnessExp = exp(-sq(dist / handLight.a * 15));
 		blockLightColor = blockLightColor + handLight.rgb * handLightBrightness;
 		blockLightColor = mix(blockLightColor, handLight.rgb, handLightBrightnessExp);
+
+		#endif
 
 		#ifndef DEBUG
 
