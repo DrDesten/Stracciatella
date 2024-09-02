@@ -13,22 +13,11 @@
 
 uniform sampler2D colortex1;
 
-#ifdef FOG
-	uniform int   isEyeInWater;
-	uniform float far;
-#endif
 #if (defined FOG || defined CAVE_SKY) && defined OVERWORLD
-	uniform ivec2 eyeBrightnessSmooth;
+uniform ivec2 eyeBrightnessSmooth;
 #endif
 
-uniform vec3  sunDir;
-uniform vec3  up;
-uniform vec3  upPosition;
-uniform float sunset;
-#if defined CUSTOM_SKY
-uniform float daynight;
-uniform float rainStrength;
-#endif
+uniform vec3 sunDir;
 
 #ifdef CUSTOM_STARS
 #include "/lib/stars.glsl"
@@ -83,7 +72,7 @@ void main() {
 	vec3  combinedPlayerPos = playerPos;
 #endif
 
-	vec4 skyGradient = getSkyColor_fogArea(viewDir, sunDir);
+	vec4 skyGradient = getSkyColor_fogArea(viewDir);
 
 #ifdef OVERWORLD
 #ifdef CUSTOM_STARS

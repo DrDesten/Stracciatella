@@ -19,22 +19,8 @@ uniform sampler2D colortex4;
 uniform float customLightmapBlend;
 
 #ifdef FOG
-
-	#include "/lib/sky.glsl"
-
-	uniform int   isEyeInWater;
-	uniform float far;
-
-	#if defined CUSTOM_SKY
-		uniform float daynight;
-		uniform float rainStrength;
-	#endif
-
-	uniform vec3  sunDir;
-	uniform vec3  up;
-	uniform float sunset;
-	uniform ivec2 eyeBrightnessSmooth;
-
+uniform ivec2 eyeBrightnessSmooth;
+#include "/lib/sky.glsl"
 #endif
 
 in vec2 lmcoord;
@@ -101,7 +87,7 @@ void main() {
 			float cave = 1;
 		#endif
 
-        color.rgb = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(normalize(viewPos), sunDir), cave), fog);
+        color.rgb = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(normalize(viewPos)), cave), fog);
 
 	#endif
 

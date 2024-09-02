@@ -12,22 +12,9 @@ uniform float frameTimeCounter;
 #endif
 
 #ifdef FOG
-
-	#include "/lib/sky.glsl"
-	#include "/core/transform.glsl"
-
-	uniform int   isEyeInWater;
-	uniform float far;
-
-	#if defined CUSTOM_SKY
-		uniform float daynight;
-		uniform float rainStrength;
-	#endif
-
-	uniform vec3  sunDir;
-	uniform vec3  up;
-	uniform ivec2 eyeBrightnessSmooth;
-
+uniform ivec2 eyeBrightnessSmooth;
+#include "/lib/sky.glsl"
+#include "/core/transform.glsl"
 #endif
 
 uniform float customLightmapBlend;
@@ -64,7 +51,7 @@ void main() {
 			float cave = 1;
 		#endif
 
-		color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(normalize(viewPos), sunDir), cave), fog);
+		color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(normalize(viewPos)), cave), fog);
 
 	#endif
 
