@@ -176,15 +176,14 @@ float FE_densityI(float y, float df) {
 	return (1 / df) * exp(-df * y) + y;
 }
 
-float fogFactorExperimental(vec3 playerPos)	{
-    vec3 viewPos  = backToView(playerPos);
-    vec3 viewDir  = normalize(viewPos);
+float fogFactorExperimental(vec3 viewDir, vec3 playerPos)	{
     vec3 worldPos = toWorld(playerPos);
 
     const float constantDensity = 3e-4;
 
     const float scaleMultiplier  = 1;
-    const float factorMultiplier = 2;
+    const float factorMultiplier = 1;
+    const float sunsetMultiplier = 1;
     
     const float dynamicFactorStart = 65;
     const float dynamicFactorMultiplier = 0.015;
@@ -205,7 +204,7 @@ float fogFactorExperimental(vec3 playerPos)	{
 
     float anisotropy        = dot(viewDir, sunDir);
     float sunAnisotropy     = anisotropy * .5 + .5;
-    float anisotropicSunset = sunset * sunAnisotropy;
+    float anisotropicSunset = sunset * sunAnisotropy * sunsetMultiplier;
 
     #if 1
     float shift  = mix( mix(noonShift,  morningShift, anisotropicSunset), rainShift, rainStrength );
