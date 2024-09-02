@@ -37,11 +37,12 @@ void main() {
 
 	#ifdef FOG
 
+		vec3  viewDir   = normalize(viewPos);
 		vec3  playerPos = toPlayer(viewPos);
 		float fog       = fogFactorTerrain(playerPos);
 		
 		#ifdef FOG_EXPERIMENTAL
-			float fe = fogFactorExperimental(playerPos);
+			float fe = fogFactorExperimental(viewDir, playerPos);
 			fog = max(fog, 1 - fe);
 		#endif
 
@@ -51,7 +52,7 @@ void main() {
 			float cave = 1;
 		#endif
 
-		color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(normalize(viewPos)), cave), fog);
+		color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(viewDir), cave), fog);
 
 	#endif
 

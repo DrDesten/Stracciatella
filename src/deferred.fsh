@@ -247,7 +247,7 @@ void main() {
 	float fog = fogFactorTerrain(combinedPlayerPos);
 
 	#ifdef FOG_EXPERIMENTAL
-		float fe = fogFactorExperimental(combinedPlayerPos);
+		float fe = fogFactorExperimental(viewDir, combinedPlayerPos);
 		fog = max(fog, 1 - fe);
 	#endif
 
