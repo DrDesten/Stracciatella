@@ -58,27 +58,27 @@ void main() {
 
 	#ifdef WAVING_LIQUIDS
 
-		// Waving Liquids
-		if (getID(mc_Entity) == 1) {
+	// Waving Liquids
+	if (getID(mc_Entity) == 1) {
 
-			#ifndef DISTANT_HORIZONS
-			vec3 worldPos = getWorld();
-			#endif
+		#ifndef DISTANT_HORIZONS
+		vec3 worldPos = getWorld();
+		#endif
 
-			float flowHeight = fract(worldPos.y + 0.01);
-			
-			float offset  = wavySineY(worldPos, WAVING_LIQUIDS_AMOUNT * flowHeight, WAVING_LIQUIDS_SPEED * 2.).y;
-			offset       -= WAVING_LIQUIDS_AMOUNT * flowHeight * 0.5;
+		float flowHeight = fract(worldPos.y + 0.01);
+		
+		float offset  = wavySineY(worldPos, WAVING_LIQUIDS_AMOUNT * flowHeight, WAVING_LIQUIDS_SPEED * 2.).y;
+		offset       -= WAVING_LIQUIDS_AMOUNT * flowHeight * 0.5;
 
-			#ifdef DISTANT_HORIZONS
-			float edgeFade = 1 - smoothstep(0.75, 0.95, sqmag(worldPos.xz - cameraPosition.xz) / (far * far));
-			offset        *= edgeFade;
-			#endif
+		#ifdef DISTANT_HORIZONS
+		float edgeFade = 1 - smoothstep(0.75, 0.95, sqmag(worldPos.xz - cameraPosition.xz) / (far * far));
+		offset        *= edgeFade;
+		#endif
 
-			worldPos.y   += offset;
-			gl_Position   = worldToClip(worldPos);
+		worldPos.y   += offset;
+		gl_Position   = worldToClip(worldPos);
 
-		}
+	}
 	
 	#endif
 }

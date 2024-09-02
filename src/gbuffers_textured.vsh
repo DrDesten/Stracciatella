@@ -9,12 +9,12 @@ flat out vec4 glcolor;
 
 #ifdef AGRESSIVE_OPTIMISATION
     noperspective out vec2 coord;
-    #ifdef FOG
+    #if FOG != 0
     flat out vec3 viewPos;
     #endif
 #else
     out vec2 coord;
-    #ifdef FOG
+    #if FOG != 0
     out vec3 viewPos;
     #endif
 #endif
@@ -26,7 +26,7 @@ void main() {
 	lmcoord = getLmCoord();
 	glcolor = gl_Color;
 
-	#ifdef FOG
+	#if FOG != 0
 	viewPos = getView();
 	#endif
 }

@@ -32,8 +32,6 @@ uniform vec3  sunDir;
 
 // SKY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef CUSTOM_SKY
-
 vec4 getSkyColor_fogArea(vec3 viewDir) {
     #ifdef NETHER
 
@@ -75,51 +73,11 @@ vec4 getSkyColor_fogArea(vec3 viewDir) {
 	    fogCol = mix(fogCol, sunsetColor, (sunDot * 10 / (0.45 + sunDot * 9)) * sunset); // Make fog Color change for sunsets
     #endif
 
-
     //return vec4(vec3(sunset), fogArea);
 	return vec4(mix(skyCol, fogCol, fogArea), fogArea);
 }
 
-#else
-
-vec4 getSkyColor_fogArea(vec3 viewDir) {
-    #ifdef NETHER
-
-        return vec4(fogColor, 1);
-
-    #endif
-    #ifdef END 
-    
-        float viewHeight = dot(viewDir, up) * 0.5 + 0.5;
-        return vec4(mix(endSkyDown, endSkyUp, viewHeight), 1);
-
-    #endif
-
-    float sunDot  = sq(dot(viewDir, sunDir) * 0.5 + 0.5);
-	#ifdef SUN_SIZE_CHANGE
-		sunDot = sunDot * (SUN_SIZE * 0.25) + sunDot;
-	#endif
-
-    vec3  fogCol  = fogColor;
-	float fogArea = smoothstep(-sunDot * 0.5 - 0.1, 0.05, dot(viewDir, -up)); // Adding sunDot to the upper smoothstep limit to increase fog close to sun
-    
-    #ifdef SKY_CUSTOM_SUNSET
-	    fogCol = mix(fogCol, sunsetColor, (sunDot / (1 + sunDot)) * sunset); // Make fog Color change for sunsets
-    #endif
-
-	return vec4(mix(skyColor, fogCol, fogArea), fogArea);
-}
-
-#endif
-
 vec3 getSkyColor(vec3 viewDir) { return getSkyColor_fogArea(viewDir).rgb; }
-
-vec3 getCustomFogColor() {
-    vec3 fogRainColor  = mix(fogNightRainColor, fogDayRainColor, daynight);
-    vec3 fogClearColor = mix(fogNightColor,     fogDayColor,     daynight);
-    return mix(fogClearColor, fogRainColor, rainStrength);
-}
-
 
 
 // FOG /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,11 +121,11 @@ vec3 getFogSkyColor(vec3 viewDir) {
 }
 
 	
-#ifdef FOG_EXPERIMENTAL
+#if FOG_ADVANCED
 
 #include "/core/transform.glsl"
 
-// FOG_EXPERIMENTAL density based on y-value
+// Height fog density based on y-value
 float FE_density(float y, float df) {
 	return 1 - exp(-df * y);
 }
@@ -176,17 +134,17 @@ float FE_densityI(float y, float df) {
 	return (1 / df) * exp(-df * y) + y;
 }
 
-float fogFactorExperimental(vec3 viewDir, vec3 playerPos)	{
+float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
     vec3 worldPos = toWorld(playerPos);
 
-    const float constantDensity = 3e-4;
+    const float constantDensity = FA_CONSTANT_DENSITY;
 
-    const float scaleMultiplier  = 1;
-    const float factorMultiplier = 1;
-    const float sunsetMultiplier = 1;
+    const float scaleMultiplier  = FA_SCALE_MULTIPLIER;
+    const float factorMultiplier = FA_FACTOR_MULTIPLIER;
+    const float sunsetMultiplier = FA_SUNSET_MULTIPLIER;
     
-    const float dynamicFactorStart = 65;
-    const float dynamicFactorMultiplier = 0.015;
+    const float dynamicFactorStart = FA_DYNAMIC_FACTOR_START;
+    const float dynamicFactorMultiplier = FA_DYNAMIC_FACTOR_MULTIPLIER;
 
     const float morningShift  = 20;
     const float morningScale  = 0.02;
@@ -202,14 +160,19 @@ float fogFactorExperimental(vec3 viewDir, vec3 playerPos)	{
 
     float dynamicFactor = max(cameraPosition.y - dynamicFactorStart, 0) * dynamicFactorMultiplier + 1;
 
+#ifdef FA_SUNSET_ANISOTROPY
     float anisotropy        = dot(viewDir, sunDir);
     float sunAnisotropy     = anisotropy * .5 + .5;
-    float anisotropicSunset = sunset * sunAnisotropy * sunsetMultiplier;
+    float anisotropicSunset = sunset * sunAnisotropy;
+    float sunsetMix         = anisotropicSunset * sunsetMultiplier;
+#else
+    float sunsetMix = sunset * sunsetMultiplier;
+#endif
 
     #if 1
-    float shift  = mix( mix(noonShift,  morningShift, anisotropicSunset), rainShift, rainStrength );
-    float scale  = mix( mix(noonScale,  morningScale, anisotropicSunset), rainScale, rainStrength ) * scaleMultiplier;
-    float factor = mix( mix(noonFactor, morningFactor, anisotropicSunset), rainFactor, rainStrength ) * factorMultiplier;
+    float shift  = mix( mix(noonShift,  morningShift, sunsetMix), rainShift, rainStrength );
+    float scale  = mix( mix(noonScale,  morningScale, sunsetMix), rainScale, rainStrength ) * scaleMultiplier;
+    float factor = mix( mix(noonFactor, morningFactor, sunsetMix), rainFactor, rainStrength ) * factorMultiplier;
     #else
     const float shift = 40;
     const float scale = 0.027;
@@ -224,7 +187,7 @@ float fogFactorExperimental(vec3 viewDir, vec3 playerPos)	{
     float density = saturate(1 - diff) * factor * dynamicFactor + constantDensity;
     float fe = exp2(-length(playerPos) * density);
 
-    return fe;
+    return 1 - fe;
 }
 
 #endif
