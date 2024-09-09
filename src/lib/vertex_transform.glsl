@@ -17,12 +17,17 @@ vec4 toPlayer(vec4 viewPos) {
 }
 
 #ifndef GEO
+#ifdef SMOOTHCAM
+vec3 getPlayer() { return smoothPlayer().xyz; }
+vec4 getPlayer4() { return smoothPlayer(); }
+#else
 vec3 getPlayer() {
     return mat3(gbufferModelViewInverse) * getView() + gbufferModelViewInverse[3].xyz;
 }
 vec4 getPlayer4() {
     return gbufferModelViewInverse * getView4();
 }
+#endif
 #endif
 
 vec3 playerToView(vec3 playerPos) {
@@ -42,9 +47,13 @@ vec4 playerToClip(vec4 playerPos) {
 }
 
 #ifndef GEO
+#ifdef SMOOTHCAM
+vec3 getWorld() { return smoothWorld(); }
+#else
 vec3 getWorld() {
     return getPlayer() + cameraPosition;
 }
+#endif
 #endif
 
 vec3 worldToPlayer(vec3 worldPos) {

@@ -18,7 +18,7 @@ out vec3 playerPos;
 void main() {
 	coord       = getCoord();
 	glcolor     = gl_Color;
-	gl_Position = ftransform();
+	gl_Position = getPosition();
 	viewPos     = getView();
 	playerPos   = toPlayer(viewPos);
 }

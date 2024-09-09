@@ -89,7 +89,7 @@ flat out float oreBlink;
 
 
 void main() {
-	gl_Position = ftransform();
+	gl_Position = getPosition();
 	basecoord   = getCoord();
 	lmcoord 	= getLmCoord();
 	glcolor 	= gl_Color;
