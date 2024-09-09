@@ -1,5 +1,4 @@
 uniform vec3 cameraPosition;
-uniform vec3 cameraPositionSmooth;
 uniform mat4 gbufferModelView;
 uniform mat4 gbufferModelViewInverse;
 uniform mat4 gbufferProjectionInverse;
@@ -8,6 +7,8 @@ uniform mat4 gbufferProjectionInverse;
 #ifndef GEO
 
 #ifdef SMOOTHCAM
+uniform vec3 cameraPositionSmooth;
+
 vec4 smoothPlayer(vec4 vertex) {
     return vec4((gbufferModelViewInverse * (gl_ModelViewMatrix * vertex)).xyz + cameraPosition - cameraPositionSmooth, 1);
 }
