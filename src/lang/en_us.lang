@@ -449,6 +449,9 @@ profile.STRACCIATELLA=Stracciatella
 
 option.AGRESSIVE_OPTIMISATION=Aggressive Optimization
 option.AGRESSIVE_OPTIMISATION.comment=Activates Optimizations that can break some visuals or might break in future versions of Minecraft.
+value.AGRESSIVE_OPTIMISATION.0=OFF
+value.AGRESSIVE_OPTIMISATION.1=On
+value.AGRESSIVE_OPTIMISATION.2=Unsafe
 
 option.CREDITS=by
 value.CREDITS.0=§c§lDr§6§lDes§2§lten§r
