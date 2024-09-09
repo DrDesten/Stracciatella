@@ -12,10 +12,10 @@ flat out vec4 glcolor;
 flat out float emissiveness;
 
 void main() {
-	gl_Position = ftransform();
-	coord   = getCoord();
-	lmcoord = getLmCoord();
-	glcolor = gl_Color;
+	gl_Position = getPosition();
+	coord       = getCoord();
+	lmcoord     = getLmCoord();
+	glcolor     = gl_Color;
 
 	switch (getID(heldItemId)) {
 		case 20:

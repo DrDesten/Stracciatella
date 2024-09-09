@@ -21,10 +21,10 @@ flat out vec4 glcolor;
 
 
 void main() {
-	gl_Position = ftransform();
-	coord   = getCoord();
-	lmcoord = getLmCoord();
-	glcolor = gl_Color;
+	gl_Position = getPosition();
+	coord       = getCoord();
+	lmcoord     = getLmCoord();
+	glcolor     = gl_Color;
 
 	#if FOG != 0
 	viewPos = getView();

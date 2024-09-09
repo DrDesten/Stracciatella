@@ -62,8 +62,8 @@ void main() {
 	#endif
 
 	FragOut0 = color; //gcolor
-#ifdef DISTANT_HORIZONS
-    if (FragOut0.a < 0.1 || !discardDH(worldPos, 0)) discard;
+#if defined DISTANT_HORIZONS && defined DH_TRANSPARENT_DISCARD
+    if (FragOut0.a < 0.1 || !discardDH(worldPos, DH_TRANSPARENT_DISCARD_TOLERANCE)) discard;
 #else
     if (FragOut0.a < 0.1) discard;
 #endif

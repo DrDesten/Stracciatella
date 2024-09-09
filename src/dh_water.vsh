@@ -14,7 +14,6 @@ flat out int materialId;
 void main() {
     lmcoord    = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
     glcolor    = gl_Color;
-    viewPos    = getView();
     materialId = dhMaterialId;
     
     vec4 vertexPos = gl_Vertex;
@@ -24,5 +23,6 @@ void main() {
         vertexPos.y -= 1.8/16.0;
     }
 
-    gl_Position = gl_ModelViewProjectionMatrix * vertexPos;
+    viewPos     = getView(vertexPos);
+    gl_Position = getPosition(vertexPos);
 }

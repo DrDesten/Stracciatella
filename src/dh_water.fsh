@@ -42,6 +42,10 @@ void main() {
     if ( discardDH(worldPos, borderTolerance) ) {
         discard;
     }
+#else
+    if (sqmag(playerPos) < sq(far - 16 * DH_TRANSPARENT_DISCARD_TOLERANCE)) {
+        discard;
+    }
 #endif
 
     float depth    = texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x;

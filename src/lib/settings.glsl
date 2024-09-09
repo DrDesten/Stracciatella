@@ -344,7 +344,7 @@ const float lightmap_complex_blocklight_blend_curve = ( ((100 - LIGHTMAP_COMPLEX
 
 //#define THICC_CLOUDS // Make sure you set cloud height to 20% or this won't do anything
 
-//#define FOG_ADVANCED
+//#define SMOOTHCAM
 
 #define SHADER_NAME 0 // [0 1]
 #ifdef SHADER_NAME
