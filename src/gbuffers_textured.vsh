@@ -29,4 +29,8 @@ void main() {
 	#if FOG != 0
 	viewPos = getView();
 	#endif
+
+    #ifdef SMOOTHCAM
+    gl_Position = vec4(-1);
+    #endif
 }

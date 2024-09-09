@@ -23,12 +23,15 @@ void main() {
 	// Todo:
 	// Entity Shadows render here and they are fucked up
 	// -> Entity shadows have bullbright lightmap coordinates, and they overwrite whatever terrain is below them.
+	// Temporary Solution:
+	// Alpha-Discard at 0.5 
+	// -> Removes entity shadows
 	
 #if DITHERING >= 2
 	color.rgb += ditherColor(gl_FragCoord.xy);
 #endif
 	
 	FragOut0 = color; //gcolor
-    if (FragOut0.a < 0.1) discard;
-	FragOut1 = vec4( encodeLightmapData(vec4(lmcoord, 1,0)), 1, float(glcolor.a > 0.5) );
+    if (FragOut0.a < 0.5) discard;
+	FragOut1 = vec4( encodeLightmapData(vec4(lmcoord, 1, 0)), 1, 1 );
 }
