@@ -26,9 +26,11 @@ void main() {
     vec3 worldPos  = toWorld(playerPos);
 
     bool isCloud =  worldPos.y > 256; 
-    if ( !isCloud && discardDH(worldPos, 0.5) ) {
+#ifdef DH_TERRAIN_DISCARD
+    if ( !isCloud && discardDH(worldPos, DH_TERRAIN_DISCARD_TOLERANCE) ) {
         discard;
     }
+#endif
     
     vec4 color = glcolor;
 

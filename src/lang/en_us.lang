@@ -368,6 +368,12 @@ option.DAMAGE_EFFECT_DISPLACEMENT_SIZE=Damage Effect Cell Size
 
 screen.OTHER=Other
 
+screen.DH_CONFIG=Distant Horizons
+option.DH_TERRAIN_DISCARD=Discard DH Terrain
+option.DH_TERRAIN_DISCARD_TOLERANCE=Terrain Discard Tolerance
+option.DH_TRANSPARENT_DISCARD=Discard DH Transparents
+option.DH_TRANSPARENT_DISCARD_TOLERANCE=Transparents Discard Tolerance
+
 //option.DITHERING=§7D§rit§7h§re§7r§rin§7g§r
 option.DITHERING=Dithering
 value.DITHERING.0=None
