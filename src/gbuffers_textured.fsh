@@ -12,7 +12,7 @@ uniform float frameTimeCounter;
 flat in vec2 lmcoord;
 flat in vec4 glcolor;
 
-#ifdef OPT_SAFE
+#if OPT_SAFE
     noperspective in vec2 coord;
     #if FOG != 0
     flat in vec3 viewPos;
