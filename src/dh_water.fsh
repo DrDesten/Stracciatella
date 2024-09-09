@@ -37,10 +37,12 @@ void main() {
 
     // Discarding Logic
     
-    float borderTolerance =  materialId == DH_BLOCK_WATER ? 0 : 1e-5;
+#ifdef DH_TRANSPARENT_DISCARD
+    float borderTolerance = (materialId == DH_BLOCK_WATER ? 0 : 1e-5) + DH_TRANSPARENT_DISCARD_TOLERANCE;
     if ( discardDH(worldPos, borderTolerance) ) {
         discard;
     }
+#endif
 
     float depth    = texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x;
     float ldepth   = linearizeDepth(depth, near, far);
