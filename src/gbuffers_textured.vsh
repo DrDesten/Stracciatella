@@ -7,7 +7,7 @@
 flat out vec2 lmcoord;
 flat out vec4 glcolor;
 
-#ifdef OPT_SAFE
+#if OPT_SAFE
     noperspective out vec2 coord;
     #if FOG != 0
     flat out vec3 viewPos;

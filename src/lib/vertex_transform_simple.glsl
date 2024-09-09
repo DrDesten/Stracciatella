@@ -54,7 +54,7 @@ vec3 getNormal() {
     return normalize(gl_NormalMatrix * gl_Normal);
 }
 
-#ifdef OPT_UNSAFE
+#if OPT_UNSAFE
 vec2 getCoord() {
     return mat2(gl_TextureMatrix[0]) * gl_MultiTexCoord0.xy + gl_TextureMatrix[0][3].xy;
 }
@@ -64,7 +64,7 @@ vec2 getCoord() {
 }
 #endif
 
-#ifdef OPT_SAFE
+#if OPT_SAFE
 vec2 getLmCoord() {
     return gl_MultiTexCoord1.xy * (1./240);
 }

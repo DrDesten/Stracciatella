@@ -5,13 +5,8 @@ swamp colors?
 */
 
 #define AGRESSIVE_OPTIMISATION 0 // [0 1 2]
-
-#if AGRESSIVE_OPTIMISATION >= 1
-    #define OPT_SAFE
-#endif
-#if AGRESSIVE_OPTIMISATION >= 2
-    #define OPT_UNSAFE
-#endif
+#define OPT_SAFE (AGRESSIVE_OPTIMISATION >= 1)
+#define OPT_UNSAFE (AGRESSIVE_OPTIMISATION >= 2)
 
 ///////////////////////////////////////////////////////////
 // ATMOSPHERICS
