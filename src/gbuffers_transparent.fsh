@@ -48,6 +48,7 @@ void main() {
 
 		#ifdef OVERWORLD
 			float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
+			cave       = saturate( cave + float(cameraPosition.y > 512) );
 		#else
 			float cave = 1;
 		#endif
