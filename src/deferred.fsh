@@ -257,7 +257,7 @@ void main() {
 
 	float fog = fogFactorTerrain(combinedPlayerPos);
 
-	#if FOG_ADVANCED
+	#if FOG_ADVANCED && defined OVERWORLD 
 	float fa = fogFactorAdvanced(viewDir, combinedPlayerPos);
 	fog      = max(fog, fa);
 	#endif

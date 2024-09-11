@@ -5,36 +5,48 @@
 
 uniform float frameTimeCounter;
 
-layout (triangles) in;
-layout (triangle_strip, max_vertices = 13) out;
+in  vec2[3] _coord;
+out vec2    coord;
 
-in vec2[3] textureCoordinate;
-in int[3] vertexId;
-
-out vec2 coord;
-
-#ifdef AURORA
-    out float isAurora;
+#ifdef HORIZON_CLIP
+in  vec3[3] _viewPos;
+out vec3    viewPos;
 #endif
 
-void main() {
+#ifdef AURORA
+in  int[3] vertexId;
+out float  isAurora;
+#endif
 
-    // Passthrough of original primitives
+layout (triangles) in;
+layout (triangle_strip, max_vertices = 13) out;
+void main() {
 
 #ifdef AURORA
     isAurora = 0;
 #endif
 
+    // Passthrough of original primitives
+
 	gl_Position = gl_in[0].gl_Position;
-	coord = textureCoordinate[0];
+	coord       = _coord[0];
+    #ifdef HORIZON_CLIP
+    viewPos     = _viewPos[0];
+    #endif
     EmitVertex();
 
 	gl_Position = gl_in[1].gl_Position;
-	coord = textureCoordinate[1];
+	coord       = _coord[1];
+    #ifdef HORIZON_CLIP
+    viewPos     = _viewPos[1];
+    #endif
     EmitVertex();
 
 	gl_Position = gl_in[2].gl_Position;    
-	coord = textureCoordinate[2];
+	coord       = _coord[2];
+    #ifdef HORIZON_CLIP
+    viewPos     = _viewPos[2];
+    #endif
     EmitVertex();
 
     EndPrimitive();
@@ -76,14 +88,6 @@ void main() {
     }
     
     EndPrimitive();   
-
-	/* gl_Position = playerToClip(vertices[1]);
-    EmitVertex();
-
-	gl_Position = playerToClip(vertices[2]);
-    EmitVertex();
-
-    EndPrimitive();   */ 
 
 #endif
 }

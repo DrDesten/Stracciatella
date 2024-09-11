@@ -30,7 +30,7 @@ void main() {
 	viewPos = getView();
 	#endif
 
-    #ifdef SMOOTHCAM
+    /* #ifdef SMOOTHCAM
     gl_Position = vec4(-1);
-    #endif
+    #endif */
 }

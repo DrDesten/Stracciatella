@@ -12,11 +12,15 @@ uniform mat4 gbufferModelView;
 uniform vec3 sunPosition;
 uniform vec3 moonPosition;
 
+out vec2 _coord;
+
 #ifdef HORIZON_CLIP
-out vec3 viewPos;
+out vec3 _viewPos;
 #endif
-out vec2 textureCoordinate;
+
+#ifdef AURORA
 out int vertexId;
+#endif
 
 bool sunOrMoon(vec3 sunPosition, vec3 moonPosition) { // True = Sun, False = Moon
 	return sunPosition.z < moonPosition.z;
@@ -28,20 +32,21 @@ bool sunOrMoonAccurate(vec3 viewPos, vec3 sunPosition, vec3 moonPosition) { // T
 }
 
 void main() {
+
+#ifdef HORIZON_CLIP
+	_viewPos = getView();
+#endif
+
 #ifndef SUN_SIZE_CHANGE
 
 	gl_Position = getPosition();
-	
-	#ifdef HORIZON_CLIP
-	viewPos = getView();
-	#endif
 
 #else
 
 	#ifdef HORIZON_CLIP
-		viewPos = getView();
+	vec3 viewPos = _viewPos;
 	#else
-		vec3 viewPos = getView();
+	vec3 viewPos = getView();
 	#endif
 
 	bool isSun      = sunOrMoonAccurate(viewPos, sunPosition, moonPosition);
@@ -52,10 +57,14 @@ void main() {
 
 #endif
     
-	textureCoordinate = getCoord();
-    
+	_coord = getCoord();
+
+#ifdef AURORA
+
     vec3 viewPos = getView();
     bool orderBody = sunOrMoonAccurate(viewPos, sunPosition, moonPosition);
-    bool orderPos = orderBody ? textureCoordinate.y > 0.5 : textureCoordinate.y > 0.25 && textureCoordinate.y < 0.75;
+    bool orderPos = orderBody ? _coord.y > 0.5 : _coord.y > 0.25 && _coord.y < 0.75;
     vertexId = int(orderBody) | (int(orderPos) << 1);
+
+#endif
 }

@@ -121,7 +121,7 @@ vec3 getFogSkyColor(vec3 viewDir) {
 }
 
 	
-#if FOG_ADVANCED
+#if FOG_ADVANCED && defined OVERWORLD 
 
 #include "/core/transform.glsl"
 
