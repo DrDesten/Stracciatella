@@ -37,10 +37,16 @@ void main() {
 
     // Discarding Logic
     
-    float borderTolerance =  materialId == DH_BLOCK_WATER ? 0 : 1e-5;
+#ifdef DH_TRANSPARENT_DISCARD
+    float borderTolerance = (materialId == DH_BLOCK_WATER ? 0 : 1e-5) + DH_TRANSPARENT_DISCARD_TOLERANCE;
     if ( discardDH(worldPos, borderTolerance) ) {
         discard;
     }
+#else
+    if (sqmag(playerPos) < sq(far - 16 * DH_TRANSPARENT_DISCARD_TOLERANCE)) {
+        discard;
+    }
+#endif
 
     float depth    = texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x;
     float ldepth   = linearizeDepth(depth, near, far);
@@ -74,7 +80,7 @@ void main() {
 
 	#if FOG != 0
 
-		vec3  viewDir   = normalize(viewPos);
+		vec3 viewDir = normalize(viewPos);
 
 		float fog = fogFactorTerrain(playerPos);
         
@@ -85,6 +91,7 @@ void main() {
 
 		#ifdef OVERWORLD
 			float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
+		    cave       = saturate( cave + float(cameraPosition.y > 512) );
 		#else
 			float cave = 1;
 		#endif

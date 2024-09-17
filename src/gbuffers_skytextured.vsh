@@ -1,4 +1,6 @@
 #include "/lib/settings.glsl"
+#undef SMOOTHCAM
+
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
@@ -28,7 +30,7 @@ bool sunOrMoonAccurate(vec3 viewPos, vec3 sunPosition, vec3 moonPosition) { // T
 void main() {
 #ifndef SUN_SIZE_CHANGE
 
-	gl_Position = ftransform();
+	gl_Position = getPosition();
 	
 	#ifdef HORIZON_CLIP
 	viewPos = getView();

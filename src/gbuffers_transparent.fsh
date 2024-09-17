@@ -48,6 +48,7 @@ void main() {
 
 		#ifdef OVERWORLD
 			float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
+			cave       = saturate( cave + float(cameraPosition.y > 512) );
 		#else
 			float cave = 1;
 		#endif
@@ -61,8 +62,8 @@ void main() {
 	#endif
 
 	FragOut0 = color; //gcolor
-#ifdef DISTANT_HORIZONS
-    if (FragOut0.a < 0.1 || !discardDH(worldPos, 0)) discard;
+#if defined DISTANT_HORIZONS && defined DH_TRANSPARENT_DISCARD
+    if (FragOut0.a < 0.1 || !discardDH(worldPos, DH_TRANSPARENT_DISCARD_TOLERANCE)) discard;
 #else
     if (FragOut0.a < 0.1) discard;
 #endif

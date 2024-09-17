@@ -158,7 +158,7 @@ float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
     const float rainScale  = 0.027;
     const float rainFactor = 0.07;
 
-    float dynamicFactor = max(cameraPosition.y - dynamicFactorStart, 0) * dynamicFactorMultiplier + 1;
+    float dynamicFactor = clamp(cameraPosition.y - dynamicFactorStart, 0, 512) * dynamicFactorMultiplier + 1;
 
 #ifdef FA_SUNSET_ANISOTROPY
     float anisotropy        = dot(viewDir, sunDir);

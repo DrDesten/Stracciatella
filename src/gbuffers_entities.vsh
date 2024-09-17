@@ -12,11 +12,11 @@ flat out vec4 glcolor;
 out vec3 viewPos;
 
 void main() {
-	gl_Position = ftransform();
-	coord   = getCoord();
-	lmcoord = getLmCoord();
-	viewPos = getView();
+	gl_Position = getPosition();
+	coord       = getCoord();
+	lmcoord     = getLmCoord();
+	viewPos     = getView();
 
-	glcolor = gl_Color;
+	glcolor      = gl_Color;
 	glcolor.rgb *= dot(up, getNormal()) * 0.3 + 0.7;
 }

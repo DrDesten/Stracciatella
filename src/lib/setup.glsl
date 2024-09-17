@@ -23,7 +23,7 @@ const int colortex6Format = RGB8;
 */
 
 
-#ifdef AGRESSIVE_OPTIMISATION
+#if OPT_SAFE
 
     #if MC_VERSION < 11900
     const bool colortex0Clear = false;

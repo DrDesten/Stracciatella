@@ -60,6 +60,11 @@ changes.addChangeListener( ["**.fsh", "**.vsh", "**.gsh", "**.glsl", "!core/**"]
     guardUniforms( dstpath )
     console.info( `Compiled ${filepath}` )
 } )
+changes.addChangeListener( ["core/**"], filepath => {
+    const dstpath = path.join( shaders, filepath )
+    guardUniforms( dstpath )
+    console.info( `Compiled ${filepath}` )
+} )
 
 // compile .properties
 changes.addChangeListener( ["block.properties", "item.properties", "entity.properties"], filepath => {
