@@ -29,11 +29,7 @@ export class ShaderFile {
 
     generate() {
         let content = ""
-        if (this.targetVersion >= Semver.parse("1.17")) {
-            content = "#version 150\n#extension GL_ARB_explicit_attrib_location : enable"
-        } else {
-            content = "#version 150 compatibility\n#extension GL_ARB_explicit_attrib_location : enable"
-        }
+        content = "#version 150 compatibility\n#extension GL_ARB_explicit_attrib_location : enable"
         for ( const define of this.defines ) {
             content += `\n#define ${define}`
         }
