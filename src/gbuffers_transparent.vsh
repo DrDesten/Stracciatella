@@ -46,11 +46,11 @@ out vec4 glcolor;
 out vec3 viewPos;
 
 void main() {
-	gl_Position = ftransform();
-	coord   = getCoord();
-	lmcoord = getLmCoord();
-	glcolor = gl_Color;
-	viewPos = getView();
+	gl_Position = getPosition();
+	coord       = getCoord();
+	lmcoord     = getLmCoord();
+	glcolor     = gl_Color;
+	viewPos     = getView();
 	
 	#ifdef DISTANT_HORIZONS
 	worldPos = getWorld();

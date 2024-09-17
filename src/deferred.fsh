@@ -264,6 +264,7 @@ void main() {
 
 	#if defined OVERWORLD && defined CAVE_FOG
 		float cave = max( saturate(eyeBrightnessSmooth.y * (4./240.) - 0.25), saturate(lmcoord.y * 1.5 - 0.25) );
+		cave       = saturate( cave + float(cameraPosition.y > 512) );
 		color = mix(color, mix(fogCaveColor, skyGradient.rgb, cave), fog);
 	#else
 		color = mix(color, skyGradient.rgb, fog);

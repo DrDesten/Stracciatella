@@ -7,7 +7,7 @@
 flat out vec2 lmcoord;
 flat out vec4 glcolor;
 
-#ifdef AGRESSIVE_OPTIMISATION
+#if OPT_SAFE
     noperspective out vec2 coord;
     #if FOG != 0
     flat out vec3 viewPos;
@@ -21,12 +21,16 @@ flat out vec4 glcolor;
 
 
 void main() {
-	gl_Position = ftransform();
-	coord   = getCoord();
-	lmcoord = getLmCoord();
-	glcolor = gl_Color;
+	gl_Position = getPosition();
+	coord       = getCoord();
+	lmcoord     = getLmCoord();
+	glcolor     = gl_Color;
 
 	#if FOG != 0
 	viewPos = getView();
 	#endif
+
+    #ifdef SMOOTHCAM
+    gl_Position = vec4(-1);
+    #endif
 }

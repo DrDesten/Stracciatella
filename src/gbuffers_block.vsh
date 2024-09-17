@@ -12,7 +12,7 @@ flat out vec4 glcolor;
 out vec3 viewPos;
 
 void main() {
-	gl_Position  = ftransform();
+	gl_Position  = getPosition();
 	coord        = getCoord();
 	lmcoord      = getLmCoord();
 	viewPos      = getView();

@@ -8,7 +8,7 @@ out vec2 coord;
 flat out vec4 glcolor;
 
 void main() {
-	gl_Position = ftransform();
-	coord = getCoord();
-	glcolor = gl_Color;
+	gl_Position = getPosition();
+	coord       = getCoord();
+	glcolor     = gl_Color;
 }
