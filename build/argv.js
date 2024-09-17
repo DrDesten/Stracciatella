@@ -1,5 +1,6 @@
 /**
- * @typedef {boolean} ArgOption
+ * @typedef {boolean|string} ArgOptionValue
+ * @typedef {ArgOptionValue|[ArgOptionValue, (arg: string) => any]} ArgOption
  * @typedef {{[command: string]: ArgCommand} & {[option: string]: ArgOption}} ArgCommand
  */
 
@@ -25,16 +26,33 @@ export function parseArgv( schema, argv, slice = 2 ) {
     let shortkeys = Object.fromEntries(keys.map(key => [key[0], key]).reverse())
     while ( argv.length ) {
         const input = argv.shift()
-        if ( input.startsWith( "--" ) ) { // --option / --no-option
-            const value = !input.startsWith( "--no-" )
-            const arg = input.slice( value ? 2 : 5 )
-
+        if ( input.startsWith( "--" ) ) { // --option / --no-option / --option value
+            const negated = input.startsWith( "--no-" )
+            const arg = input.slice( negated ? 5 : 2 )
+            
             if ( !(arg in fullkeys) ) {
                 console.warn(`Unknown option "${arg}"`)
                 continue
             }
+        
+            const type = typeof options[arg]
             
-            options[arg] = value
+            if ( negated && type === "boolean" ) {
+                console.warn(`"${arg}" is not a boolean option, it cannot be negated`)
+                continue
+            }
+            
+            switch (type) {
+                case "boolean": {
+                    options[arg] = !negated
+                } break;
+                case "string": {
+                    options[arg] = argv.shift() ?? options[arg]
+                } break;
+                default: {
+                    console.warn(`Cannot resolve argument "${arg}", arguments of type "${type}" are unsupported`)
+                }
+            }
             continue
         }
         if ( input.startsWith( "-" ) ) { // -o / -no-o
