@@ -10,6 +10,7 @@ import Changes from "./changes/index.js"
 import { parseArgv } from "./argv.js"
 import { Semver } from "./semver.js"
 import { generateFeatureList } from "./featurelist.js"
+import { filterDeep } from "./utils.js"
 
 const changes = new Changes( src )
 
@@ -21,9 +22,11 @@ const options = parseArgv( {
     debug: false,
     "target-version": "latest"
 }, process.argv )
-const optionHash = JSON.stringify(options)
+const optionHash = JSON.stringify( filterDeep( options, ( v, k ) =>
+    k !== "command" && !["boolean"].includes( typeof v )
+) )
 
-options["target-version"] = Semver.parse(options["target-version"])
+options["target-version"] = Semver.parse( options["target-version"] )
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Build
