@@ -1,5 +1,6 @@
 uniform float nightVision;
 uniform float darknessFactor;
+uniform vec3 fogColor;
 
 const vec3 lightmapDay   = vec3(LIGHTMAP_SKY_DAY_R, LIGHTMAP_SKY_DAY_G, LIGHTMAP_SKY_DAY_B);
 const vec3 lightmapNight = vec3(LIGHTMAP_SKY_NIGHT_R, LIGHTMAP_SKY_NIGHT_G, LIGHTMAP_SKY_NIGHT_B);
@@ -8,7 +9,8 @@ const vec3 lightmapComplexBlockBright = vec3(LIGHTMAP_COMPLEX_BLOCK_BRIGHT_R, LI
 const vec3 lightmapComplexBlockDark   = vec3(LIGHTMAP_COMPLEX_BLOCK_DARK_R, LIGHTMAP_COMPLEX_BLOCK_DARK_G, LIGHTMAP_COMPLEX_BLOCK_DARK_B);
 
 const vec3 lightmapEnd    = vec3(END_SKY_UP_R, END_SKY_UP_G, END_SKY_UP_B) * 0.5 + vec3(END_SKY_DOWN_R, END_SKY_DOWN_G, END_SKY_DOWN_B) * 0.5;
-const vec3 lightmapNether = vec3(1,.4,.3);
+//const vec3 lightmapNether = vec3(1,.4,.3);
+vec3 lightmapNether = mix(fogColor, vec3(1,.4,.3), 0.5);
 
 vec3 mixLightmap(vec3 lmcoord /* lmcoord (xy) + AO (z) */, vec3 skyLight, vec3 blockLight) {
 
