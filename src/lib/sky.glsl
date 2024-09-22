@@ -30,6 +30,8 @@ uniform float far;
 uniform vec3  up;
 uniform vec3  sunDir;
 
+uniform float frameTimeCounter;
+
 // SKY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 vec4 getSkyColor_fogArea(vec3 viewDir) {
@@ -121,7 +123,7 @@ vec3 getFogSkyColor(vec3 viewDir) {
 }
 
 	
-#if FOG_ADVANCED && defined OVERWORLD 
+#if FOG_ADVANCED
 
 #include "/core/transform.glsl"
 
@@ -145,6 +147,8 @@ float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
     
     const float dynamicFactorStart = FA_DYNAMIC_FACTOR_START;
     const float dynamicFactorMultiplier = FA_DYNAMIC_FACTOR_MULTIPLIER;
+
+#if defined OVERWORLD
 
     const float morningShift  = 20;
     const float morningScale  = 0.02;
@@ -188,6 +192,50 @@ float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
     float fe = exp2(-length(playerPos) * density);
 
     return 1 - fe;
+
+#elif defined NETHER
+
+    const float density = 20;
+    const float wind    = 25;
+
+    vec3 windOffset = vec3(0, 0, frameTimeCounter * wind);
+
+    #if 0
+
+    const vec3  scale   = vec3(1, 0.1, 1) * 0.5;
+
+    float playerLength  = length(playerPos);
+    vec3  softPlayerDir = playerPos * (log2(playerLength + 1.0) / playerLength);
+    vec3  softWorldPos  = (cameraPosition + windOffset) * 0.1 + softPlayerDir;
+    vec3  noisePos      = softWorldPos * scale;
+
+    float dynamicFactor = pnoise(noisePos) * 0.66 + 0.34;
+
+    #else
+
+    const vec3  scale = vec3(1, 0.25, 1) * 0.015;
+    const float fade  = 0.01;
+
+    float playerLength  = length(playerPos);
+    vec3  noisePos      = (worldPos + windOffset) * scale;
+
+    float noiseMix = 1 / (playerLength * fade + 1);
+    float noiseFac = noiseMix;
+    float noiseAdd = 1 - noiseMix;
+
+    float dynamicFactor = pnoise(noisePos) * noiseFac + noiseAdd;
+
+    #endif
+
+    return 1 - exp2(-length(playerPos) * density * constantDensity * dynamicFactor);
+
+#elif defined END 
+
+    const float density = 5;
+    return 1 - exp2(-length(playerPos) * density * constantDensity);
+
+#endif
+
 }
 
 #endif

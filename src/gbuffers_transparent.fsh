@@ -41,7 +41,7 @@ void main() {
 		vec3  playerPos = toPlayer(viewPos);
 		float fog       = fogFactorTerrain(playerPos);
 		
-		#if FOG_ADVANCED && defined OVERWORLD 
+		#if FOG_ADVANCED
 		float fa = fogFactorAdvanced(viewDir, playerPos);
 		fog      = max(fog, fa);
 		#endif

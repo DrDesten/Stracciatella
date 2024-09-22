@@ -176,9 +176,11 @@ option.LIGHTMAP_COLOR_LOD_BIAS.comment=Controls the detail level at which colors
 
 screen.CUSTOM_LIGHTMAP_COLOR_CONFIG=Lightmap Colors
 
-screen.END_SKYLIGHT=End Skylight
-option.LIGHTMAP_END_SKY_BRIGHTNESS=End Skylight Brightness
-option.LIGHTMAP_END_SKY_SATURATION=End Skylight Saturation
+option.LIGHTMAP_NETHER_SKY_BRIGHTNESS=Nether Ambient Brightness
+
+screen.END_SKYLIGHT=End Ambient Light
+option.LIGHTMAP_END_SKY_BRIGHTNESS=End Ambient Brightness
+option.LIGHTMAP_END_SKY_SATURATION=End Ambient Saturation
 
 option.LIGHTMAP_BLOCKLIGHT_REDUCTION=Adaptive Blocklight Reduction
 option.LIGHTMAP_BLOCKLIGHT_REDUCTION.comment=Reduces blocklight when the sky is bright to avoid clipping. If the blocklight is too bright during daytime, increase this slider.
