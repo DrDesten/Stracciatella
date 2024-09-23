@@ -39,6 +39,9 @@ option.FA_DYNAMIC_FACTOR_MULTIPLIER=Dynamic Density Multiplier
 option.FA_DYNAMIC_FACTOR_MULTIPLIER.comment=Controls how much player height influences fog density
 
 screen.FA_NETHER=Nether
+option.FA_NETHER_WIND=Wind Speed
+suffix.FA_NETHER_WIND=blocks/s
+
 screen.FA_END=End
 
 option.FOG_START=Fog Start
