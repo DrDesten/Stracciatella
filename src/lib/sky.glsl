@@ -202,9 +202,9 @@ float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
 
     const float constantDensity = FANetherDensity;
     const float playerDensity   = 5;
-    const float wind            = 10;
+    const float wind            = FA_NETHER_WIND;
 
-    vec3 windOffset = vec3(0, 0, frameTimeCounter * wind);
+    vec3 windOffset = vec3(frameTimeCounter * wind, 0, 0);
 
     const vec3  scale = vec3(1, 0.25, 1) * 0.03;
     const float fade  = 0.008;
