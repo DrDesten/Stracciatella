@@ -110,9 +110,9 @@ void main() {
 #ifdef DIRECTIONAL_LIGHTMAPS
 
 	directionalLightmapStrength = 1.0;
-	if      (blockId == 2  || blockId == 16) directionalLightmapStrength = 0;
-	else if (blockId == 20 || blockId == 21 || blockId == 14) directionalLightmapStrength = 0.25;
-	else if (blockId >= 10 && blockId <= 13 || blockId == 15) directionalLightmapStrength = 0.5;
+	if      (blockId == 2  || blockId == 17) directionalLightmapStrength = 0;
+	else if (blockId == 20 || blockId == 21 || blockId == 15) directionalLightmapStrength = 0.25;
+	else if (blockId >= 10 && blockId <= 13 || blockId == 16) directionalLightmapStrength = 0.5;
 
 #endif
 
@@ -122,9 +122,15 @@ void main() {
 
 #endif
 
+#if defined HDR_EMISSIVES || defined WAVING_BLOCKS || defined WAVING_LIQUIDS || defined RAIN_PUDDLES
+
+	vec3 worldPos = getWorld();
+
+#endif
+
 #ifdef HDR_EMISSIVES
 
-	worldPosY = getWorld().y;
+	worldPosY = worldPos.y;
 
 #endif
 
@@ -178,36 +184,32 @@ void main() {
 #ifdef WAVING_BLOCKS
 
 	// Waving Blocks Upper Vertices
-	if ((blockId == 10 || blockId == 11
+	if ( ( blockId == 10 || blockId == 11
 	#ifdef WAVING_FIRE
-	|| blockId == 16
+		|| blockId == 17
 	#endif
 	) && basecoord.y < mc_midTexCoord.y) { 
 
-		vec3 worldPos = getWorld();
-		vec3 offset   = wavyChaotic(worldPos, WAVING_BLOCKS_AMOUNT, WAVING_BLOCKS_SPEED);
+		vec3 wPos   = worldPos;
+		vec3 offset = wavyChaotic(wPos, WAVING_BLOCKS_AMOUNT, WAVING_BLOCKS_SPEED);
 
-		worldPos     += offset;
-
-		gl_Position   = worldToClip(worldPos);
+		wPos       += offset;
+		gl_Position = worldToClip(wPos);
 
 	}
 
-	#ifdef WAVING_LANTERNS
-
+#ifdef WAVING_LANTERNS
 	// Waving Lanterns
-	else if (blockId == 14) {
+	else if (blockId == 15) {
 
-		vec3 worldPos = getWorld();
-		vec3 offset   = wavyChaotic(worldPos, (WAVING_BLOCKS_AMOUNT * 0.3), WAVING_BLOCKS_SPEED);
+		vec3 wPos   = worldPos;
+		vec3 offset = wavyChaotic(wPos, (WAVING_BLOCKS_AMOUNT * 0.3), WAVING_BLOCKS_SPEED);
 
-		worldPos     += offset * (1 - fract(worldPos.y - 0.01));
-
-		gl_Position   = worldToClip(worldPos);
+		wPos        += offset * (1 - fract(wPos.y - 0.01));
+		gl_Position = worldToClip(wPos);
 
 	}
-
-	#endif
+#endif
 
 	// Waving Blocks All Vertices
 	else if (blockId == 12     // Upper section of 2-Tall plants
@@ -216,29 +218,25 @@ void main() {
 	#endif
 	) {
 
-		vec3 worldPos = getWorld();
-		vec3 offset   = wavyChaotic(worldPos, WAVING_BLOCKS_AMOUNT, WAVING_BLOCKS_SPEED);
+		vec3 wPos   = worldPos;
+		vec3 offset = wavyChaotic(wPos, WAVING_BLOCKS_AMOUNT, WAVING_BLOCKS_SPEED);
 
-		worldPos     += offset;
-
-		gl_Position   = worldToClip(worldPos);
-
-	}
-
-	#ifdef WAVING_LILYPADS
-
-	else if (blockId == 15) {
-
-		vec3  worldPos  = getWorld();
-
-		float offset  = wavySineY(worldPos, WAVING_LIQUIDS_AMOUNT, WAVING_LIQUIDS_SPEED * 2).y;
-		worldPos.y   += offset;
-
-		gl_Position   = worldToClip(worldPos);
+		wPos       += offset;
+		gl_Position = worldToClip(wPos);
 
 	}
-	
-	#endif
+
+#ifdef WAVING_LILYPADS
+	else if (blockId == 17) {
+
+		vec3  wPos   = worldPos;
+		float offset = wavySineY(wPos, WAVING_LIQUIDS_AMOUNT, WAVING_LIQUIDS_SPEED * 2).y;
+
+		wPos.y     += offset;
+		gl_Position = worldToClip(wPos);
+
+	}
+#endif
 
 #endif
 
@@ -247,14 +245,14 @@ void main() {
 	// Waving Liquids
 	if (blockId == 2) {
 
-		vec3  worldPos  = getWorld();
-		float flowHeight = fract(worldPos.y + 0.01);
+		vec3  wPos       = worldPos;
+		float flowHeight = fract(wPos.y + 0.01);
 
-		float offset  = wavySineY(worldPos, WAVING_LIQUIDS_AMOUNT * flowHeight, WAVING_LIQUIDS_SPEED).y;
+		float offset  = wavySineY(wPos, WAVING_LIQUIDS_AMOUNT * flowHeight, WAVING_LIQUIDS_SPEED).y;
 		offset       -= WAVING_LIQUIDS_AMOUNT * flowHeight * 0.5;
-		worldPos.y   += offset;
+		wPos.y       += offset;
 
-		gl_Position   = worldToClip(worldPos);
+		gl_Position   = worldToClip(wPos);
 
 	}
 
@@ -264,15 +262,15 @@ void main() {
 
 	if (rainPuddle > 1e-10) {
 
-		vec3 worldPos = getWorld();
+		vec3 wPos = worldPos;
 
-		blockCoords = floor(worldPos.xz + 0.5);
+		blockCoords = floor(wPos.xz + 0.5);
 
 		puddle  = saturate(lmcoord.y * 32 - 30);                     // Only blocks exposed to sky
-		puddle *= saturate(gl_Normal.y * 0.5 + 0.5);                             // Only blocks facing up
+		puddle *= saturate(gl_Normal.y * 0.5 + 0.5);                 // Only blocks facing up
 		puddle *= float(blockId != 13 && blockId != 2);              // Not Leaves and not lava
 
-		puddle *= saturate(noise(worldPos.xz * RAIN_PUDDLE_SIZE) * RAIN_PUDDLE_OPACITY - (RAIN_PUDDLE_OPACITY * (1 - RAIN_PUDDLE_COVERAGE) - RAIN_PUDDLE_COVERAGE)); // Puddles
+		puddle *= saturate(noise(wPos.xz * RAIN_PUDDLE_SIZE) * RAIN_PUDDLE_OPACITY - (RAIN_PUDDLE_OPACITY * (1 - RAIN_PUDDLE_COVERAGE) - RAIN_PUDDLE_COVERAGE)); // Puddles
 		puddle *= saturate(gl_Color.a * 3 - 2);                      // No puddle in cavities
 		puddle *= rainPuddle;                                        // Rain
 

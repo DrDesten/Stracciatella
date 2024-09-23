@@ -64,9 +64,12 @@ void main() {
 #ifdef HDR_EMISSIVES
             
         bool isEmissive = materialId == DH_BLOCK_LAVA || materialId == DH_BLOCK_ILLUMINATED;
+        bool isLava     = materialId == DH_BLOCK_LAVA;
         if ( isEmissive ) {
             color.rgb    = tm_reinhard_sqrt_inverse(color.rgb * 0.996, 0.5);
-            emissiveness = saturate(maxc(color.rgb) * 7 - 2);
+
+            if (isLava) emissiveness = saturate(maxc(color.rgb) * 6 - 3) * 0.65;
+            else emissiveness = saturate(maxc(color.rgb) * 7 - 2);
 
             color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 1.5) * color.rgb;
             color.rgb  = tm_reinhard_sqrt(color.rgb, 0.5);

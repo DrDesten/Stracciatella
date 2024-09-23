@@ -13,11 +13,20 @@ flat out int materialId;
 float getBlockShade(vec3 playerNormal) {
     playerNormal /= maxc(abs(playerNormal));
 
+#if defined OVERWORLD
     const float brightnessLevels[6] = float[](
         0.85, 0.85, // +x, -x (east, west)
         1, 0.5,     // +y, -y (up, down)
         0.75, 0.75  // +z, -z (south, north)
     );
+#else 
+    const float brightnessLevels[6] = float[](
+        0.85, 0.85, // +x, -x (east, west)
+        1, 1,     // +y, -y (up, down)
+        0.7, 0.75  // +z, -z (south, north)
+    );
+#endif
+
     float components[6] = float[](
         saturate(playerNormal.x),
         saturate(-playerNormal.x),

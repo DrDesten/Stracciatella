@@ -40,7 +40,7 @@ option.FA_DYNAMIC_FACTOR_MULTIPLIER.comment=Controls how much player height infl
 
 screen.FA_NETHER=Nether
 option.FA_NETHER_WIND=Wind Speed
-suffix.FA_NETHER_WIND=blocks/s
+suffix.FA_NETHER_WIND=\ blocks/s
 
 screen.FA_END=End
 

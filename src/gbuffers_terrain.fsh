@@ -187,14 +187,14 @@ void main() {
 
 		// Adds an HDR effect to Emissive blocks. Works by boosting the brightness of emissive parts of blocks and the applying tonemapping to avoid clipping.
 
-		bool white   = block.id == 20 || block.id == 16 || block.id == 2;
+		bool white   = block.id == 20 || block.id == 17 || block.id == 2;
 		bool orange  = block.id == 21;
 		bool red     = block.id == 22;
 		bool redPure = block.id == 23;
 		bool redOre  = block.id == 45;
 		bool blue    = block.id == 24;
 		bool purple  = block.id == 25;
-		bool anyCol  = block.id == 26 || block.id == 14;
+		bool anyCol  = block.id == 26 || block.id == 15;
 		bool anyLow  = block.id == 27;
 		bool candle  = block.id == 28;
 
