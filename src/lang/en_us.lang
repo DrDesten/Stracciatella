@@ -12,9 +12,16 @@ value.FOG.2=Auto
 value.FOG.3=Advanced
 
 screen.FOG_ADVANCED_CONFIG=Advanced Fog
-option.FA_CONSTANT_DENSITY=Constant Density
-option.FA_CONSTANT_DENSITY.comment=Constant fog density applied regardless of world height
+option.FA_GLOBAL_DENSITY=Global Density
+option.FA_GLOBAL_DENSITY.comment=Constant fog density applied to exponential fog. Overworld, Nether and End densities are relative to this value.
+option.FA_OVERWORLD_DENSITY_FACTOR=Overworld Density
+option.FA_OVERWORLD_DENSITY_FACTOR.comment=Density of constant Overworld fog. Relative to "Global Density"
+option.FA_NETHER_DENSITY_FACTOR=Nether Density
+option.FA_NETHER_DENSITY_FACTOR.comment=Density of constant Nether fog. Relative to "Global Density"
+option.FA_END_DENSITY_FACTOR=End Density
+option.FA_END_DENSITY_FACTOR.comment=Density of constant End fog. Relative to "Global Density"
 
+screen.FA_OVERWORLD=Overworld
 option.FA_SCALE_MULTIPLIER=Height Scale Multiplier
 option.FA_SCALE_MULTIPLIER.comment=Multiplier applied to the scale factor used to calculate height fog. Higher values correspond to a harsher density falloff.
 option.FA_FACTOR_MULTIPLIER=Height Density Multiplier
@@ -30,6 +37,9 @@ suffix.FA_DYNAMIC_FACTOR_START=\ blocks
 option.FA_DYNAMIC_FACTOR_START.comment=Fog density starts to increase with player height after the selected world height. Set to the default value, this acts as a correctional factor to keep the fog density (visually) constant.
 option.FA_DYNAMIC_FACTOR_MULTIPLIER=Dynamic Density Multiplier
 option.FA_DYNAMIC_FACTOR_MULTIPLIER.comment=Controls how much player height influences fog density
+
+screen.FA_NETHER=Nether
+screen.FA_END=End
 
 option.FOG_START=Fog Start
 option.FOG_START.comment=Sets where the fog starts appearing. Relative to render distance.
