@@ -37,7 +37,7 @@ uniform float frameTimeCounter;
 vec4 getSkyColor_fogArea(vec3 viewDir) {
     #ifdef NETHER
 
-        return vec4(fogColor, 1);
+        return vec4(fogColor / (maxc(fogColor) + 0.25), 1);
 
     #endif
     #ifdef END 
@@ -127,6 +127,11 @@ vec3 getFogSkyColor(vec3 viewDir) {
 
 #include "/core/transform.glsl"
 
+const float FAGlobalDensity = FA_GLOBAL_DENSITY;
+const float FAOverworldDensity = FAGlobalDensity * FA_OVERWORLD_DENSITY_FACTOR;
+const float FANetherDensity = FAGlobalDensity * FA_NETHER_DENSITY_FACTOR;
+const float FAEndDensity = FAGlobalDensity * FA_END_DENSITY_FACTOR;
+
 // Height fog density based on y-value
 float FE_density(float y, float df) {
 	return 1 - exp(-df * y);
@@ -139,7 +144,9 @@ float FE_densityI(float y, float df) {
 float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
     vec3 worldPos = toWorld(playerPos);
 
-    const float constantDensity = FA_CONSTANT_DENSITY;
+#if defined OVERWORLD
+
+    const float constantDensity = FAOverworldDensity;
 
     const float scaleMultiplier  = FA_SCALE_MULTIPLIER;
     const float factorMultiplier = FA_FACTOR_MULTIPLIER;
@@ -147,8 +154,6 @@ float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
     
     const float dynamicFactorStart = FA_DYNAMIC_FACTOR_START;
     const float dynamicFactorMultiplier = FA_DYNAMIC_FACTOR_MULTIPLIER;
-
-#if defined OVERWORLD
 
     const float morningShift  = 20;
     const float morningScale  = 0.02;
@@ -195,41 +200,37 @@ float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
 
 #elif defined NETHER
 
-    const float density = 20;
-    const float wind    = 25;
+    const float constantDensity = FANetherDensity;
+    const float playerDensity   = 5;
+    const float wind            = 10;
 
     vec3 windOffset = vec3(0, 0, frameTimeCounter * wind);
 
-    #if 0
+    const vec3  scale = vec3(1, 0.25, 1) * 0.03;
+    const float fade  = 0.008;
 
-    const vec3  scale   = vec3(1, 0.1, 1) * 0.5;
-
-    float playerLength  = length(playerPos);
-    vec3  softPlayerDir = playerPos * (log2(playerLength + 1.0) / playerLength);
-    vec3  softWorldPos  = (cameraPosition + windOffset) * 0.1 + softPlayerDir;
-    vec3  noisePos      = softWorldPos * scale;
-
-    float dynamicFactor = pnoise(noisePos) * 0.66 + 0.34;
-
-    #else
-
-    const vec3  scale = vec3(1, 0.25, 1) * 0.015;
-    const float fade  = 0.01;
-
-    float playerLength  = length(playerPos);
-    vec3  noisePos      = (worldPos + windOffset) * scale;
+    float playerLength   = length(playerPos);
+    vec3  playerDir      = normalize(playerPos);
+    vec3  worldNoisePos  = (worldPos  + windOffset) * scale;
+    vec3  playerNoisePos = (cameraPosition + windOffset) * scale + playerDir;
 
     float noiseMix = 1 / (playerLength * fade + 1);
     float noiseFac = noiseMix;
     float noiseAdd = 1 - noiseMix;
 
-    float dynamicFactor = pnoise(noisePos) * noiseFac + noiseAdd;
+    float worldFog  = sq(snoise(worldNoisePos)) * noiseFac + noiseAdd;
+    float playerFog = sqsq(snoise(playerNoisePos)) * playerDensity;
 
-    #endif
+    float expFactor = -playerLength * constantDensity;
 
-    return 1 - exp2(-length(playerPos) * density * constantDensity * dynamicFactor);
+    float fog = exp2( expFactor * worldFog ) * exp2( expFactor * playerFog );
+    fog       = 1 - fog;
+
+    return fog;
 
 #elif defined END 
+
+    const float constantDensity = FAEndDensity;
 
     const float density = 5;
     return 1 - exp2(-length(playerPos) * density * constantDensity);
