@@ -248,9 +248,10 @@ float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
     float worldFog  = sq(snoise(worldNoisePos)) * noiseFac + noiseAdd;
     float playerFog = sqsq(snoise(playerNoisePos)) * playerFogMultiplier;
 
-    float expFactor = -playerLength * globalFogDensity;
+    float expFactor       = -playerLength * globalFogDensity;
+    float expFactorPlayer = -(25 * playerLength / (playerLength + 25)) * globalFogDensity;
 
-    float fog = exp2( expFactor * (worldFog + playerFog) );
+    float fog = exp2( expFactor * worldFog + expFactorPlayer * playerFog );
 
 #else
 
