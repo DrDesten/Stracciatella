@@ -40,7 +40,12 @@ void main() {
 	float end  = sq(far * 2 * SQRT2);
 	float fog  = smoothstep(0, end, dist);
 
-	color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos)), fog);
+	vec3 playerDir;
+	#if defined END 
+	playerDir = normalize(playerPos);
+	#endif
+
+	color.rgb = mix(color.rgb, getSkyColor(normalize(viewPos), playerDir), fog);
 
 #endif
 

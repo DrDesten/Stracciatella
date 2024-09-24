@@ -39,6 +39,11 @@ void main() {
 
 		vec3  viewDir   = normalize(viewPos);
 		vec3  playerPos = toPlayer(viewPos);
+		vec3  playerDir;
+        #if defined END 
+        playerDir       = normalize(playerPos);
+        #endif
+
 		float fog       = fogFactorTerrain(playerPos);
 		
 		#if FOG_ADVANCED
@@ -53,7 +58,7 @@ void main() {
 			float cave = 1;
 		#endif
 
-		color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(viewDir), cave), fog);
+		color.rgb  = mix(color.rgb, mix(fogCaveColor, getFogSkyColor(viewDir, playerDir), cave), fog);
 
 	#endif
 
