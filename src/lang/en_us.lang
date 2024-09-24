@@ -11,14 +11,22 @@ value.FOG.1=Border
 value.FOG.2=Auto
 value.FOG.3=Advanced
 
+// ADVANCED FOG ///////////////////////////////////////////
+
 screen.FOG_ADVANCED_CONFIG=Advanced Fog
-option.FA_GLOBAL_DENSITY=Global Density
+
+option.FA_GLOBAL_DENSITY=Global Fog Density
 option.FA_GLOBAL_DENSITY.comment=Constant fog density applied to exponential fog. Overworld, Nether and End densities are relative to this value.
-option.FA_OVERWORLD_DENSITY_FACTOR=Overworld Density
+
+option.FA_OVERWORLD_DENSITY_FACTOR=Overworld Fog Density
 option.FA_OVERWORLD_DENSITY_FACTOR.comment=Density of constant Overworld fog. Relative to "Global Density"
-option.FA_NETHER_DENSITY_FACTOR=Nether Density
+option.FA_OVERWORLD_NOISE_FOG=Overworld Noise Fog
+
+option.FA_NETHER_DENSITY_FACTOR=Nether Fog Density
 option.FA_NETHER_DENSITY_FACTOR.comment=Density of constant Nether fog. Relative to "Global Density"
-option.FA_END_DENSITY_FACTOR=End Density
+option.FA_NETHER_NOISE_FOG=Nether Noise Fog
+
+option.FA_END_DENSITY_FACTOR=End Fog Density
 option.FA_END_DENSITY_FACTOR.comment=Density of constant End fog. Relative to "Global Density"
 
 screen.FA_OVERWORLD=Overworld
@@ -27,8 +35,10 @@ option.FA_SCALE_MULTIPLIER.comment=Multiplier applied to the scale factor used t
 option.FA_FACTOR_MULTIPLIER=Height Density Multiplier
 option.FA_FACTOR_MULTIPLIER.comment=Multiplier applied to the density calculated from world height
 
-option.FA_SUNSET_ANISOTROPY=Anisotropic Sunset Fog
-option.FA_SUNSET_ANISOTROPY.comment=Fog density at sunset and sunrise increases more in direction of the sun
+option.FA_SUNSET_ANISOTROPIC=Anisotropic Sunset Fog
+option.FA_SUNSET_ANISOTROPIC.comment=Fog density at sunset and sunrise increases more in direction of the sun
+option.FA_SUNSET_ANISOTROPY=Sunset Fog Anisotropy
+option.FA_SUNSET_ANISOTROPY.comment=Amount of Anisotropy
 option.FA_SUNSET_MULTIPLIER=Sunset Fog Multiplier
 option.FA_SUNSET_MULTIPLIER.comment=Controls how much the fog changes during sunset and sunrise
 
@@ -38,9 +48,18 @@ option.FA_DYNAMIC_FACTOR_START.comment=Fog density starts to increase with playe
 option.FA_DYNAMIC_FACTOR_MULTIPLIER=Dynamic Density Multiplier
 option.FA_DYNAMIC_FACTOR_MULTIPLIER.comment=Controls how much player height influences fog density
 
+option.FA_OVERWORLD_WIND=Wind Speed
+suffix.FA_OVERWORLD_WIND=\ blocks/s
+option.FA_OVERWORLD_NOISE_SCALE=Noise Fog Scale
+option.FA_OVERWORLD_NOISE_FADE=Noise Fog Fade
+option.FA_OVERWORLD_NOISE_FOG_FACTOR=Noise Fog Density Multiplier
+
 screen.FA_NETHER=Nether
 option.FA_NETHER_WIND=Wind Speed
 suffix.FA_NETHER_WIND=\ blocks/s
+option.FA_NETHER_NOISE_SCALE=Noise Fog Scale
+option.FA_NETHER_NOISE_FADE=Noise Fog Fade
+option.FA_NETHER_PLAYER_FOG_MULTIPLIER=Near Fog Density Multiplier
 
 screen.FA_END=End
 

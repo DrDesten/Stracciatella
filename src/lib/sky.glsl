@@ -142,7 +142,8 @@ float FE_densityI(float y, float df) {
 }
 
 float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
-    vec3 worldPos = toWorld(playerPos);
+    vec3  worldPos     = toWorld(playerPos);
+    float playerLength = length(playerPos);
 
 #if defined OVERWORLD
 
@@ -152,30 +153,33 @@ float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
     const float factorMultiplier = FA_FACTOR_MULTIPLIER;
     const float sunsetMultiplier = FA_SUNSET_MULTIPLIER;
     
-    const float dynamicFactorStart = FA_DYNAMIC_FACTOR_START;
+    const float dynamicFactorStart      = FA_DYNAMIC_FACTOR_START;
     const float dynamicFactorMultiplier = FA_DYNAMIC_FACTOR_MULTIPLIER;
 
-    const float morningShift  = 20;
-    const float morningScale  = 0.02;
-    const float morningFactor = 0.008;
+    const float wind              = FA_OVERWORLD_WIND;
+    const float noiseScale        = FA_OVERWORLD_NOISE_SCALE;
+    const float noiseFade         = FA_OVERWORLD_NOISE_FADE;
+    const float worldNoiseFactor  = FA_OVERWORLD_NOISE_FOG_FACTOR;
 
-    const float noonShift  = 20;
-    const float noonScale  = 0.03;
-    const float noonFactor = 0.004;
+    const float morningShift  = 30;
+    const float morningScale  = 0.025;
+    const float morningFactor = 0.016;
+
+    const float noonShift  = 30;
+    const float noonScale  = 0.035;
+    const float noonFactor = 0.008;
     
     const float rainShift  = 40;
     const float rainScale  = 0.027;
     const float rainFactor = 0.07;
 
-    float dynamicFactor = clamp(cameraPosition.y - dynamicFactorStart, 0, 512) * dynamicFactorMultiplier + 1;
-
-#ifdef FA_SUNSET_ANISOTROPY
+#ifdef FA_SUNSET_ANISOTROPIC
     float anisotropy        = dot(viewDir, sunDir);
-    float sunAnisotropy     = anisotropy * .5 + .5;
+    float sunAnisotropy     = anisotropy * (FA_SUNSET_ANISOTROPY * 0.5) + .5;
     float anisotropicSunset = sunset * sunAnisotropy;
     float sunsetMix         = anisotropicSunset * sunsetMultiplier;
 #else
-    float sunsetMix = sunset * sunsetMultiplier;
+    float sunsetMix = sunset * sunsetMultiplier * 0.5;
 #endif
 
     #if 1
@@ -183,57 +187,85 @@ float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
     float scale  = mix( mix(noonScale,  morningScale, sunsetMix), rainScale, rainStrength ) * scaleMultiplier;
     float factor = mix( mix(noonFactor, morningFactor, sunsetMix), rainFactor, rainStrength ) * factorMultiplier;
     #else
-    const float shift = 40;
-    const float scale = 0.027;
+    const float shift  = 40;
+    const float scale  = 0.027;
     const float factor = 0.08;
     #endif
-
-    float diff = (
+    
+    float integratedHeightDensity = (
         FE_densityI(worldPos.y - shift, scale) - 
         FE_densityI(cameraPosition.y - shift, scale)
     ) / (worldPos.y - cameraPosition.y);
 
-    float density = saturate(1 - diff) * factor * dynamicFactor + constantDensity;
-    float fe = exp2(-length(playerPos) * density);
+    float dynamicFactor = clamp(cameraPosition.y - dynamicFactorStart, 0, 512) * dynamicFactorMultiplier + 1;
 
-    return 1 - fe;
+#ifdef FA_OVERWORLD_NOISE_FOG
+
+    vec3  playerDir     = normalize(playerPos);
+
+    vec2  windOffset     = vec2(frameTimeCounter * wind, 0);
+    vec2  worldNoisePos  = (worldPos.xz + windOffset) * noiseScale;
+    float worldNoiseMix  = sqrtf01(abs(playerDir.y))
+                         / (playerLength * noiseFade + 1);
+    float worldFogFactor = sqsq(sfbm(worldNoisePos, 3) * 1.25)
+                         * worldNoiseMix * worldNoiseFactor 
+                         + (1 - worldNoiseMix);
+
+#endif
+
+    float heightFogFactor   = saturate(1 - integratedHeightDensity) * factor * dynamicFactor;
+    float constantFogFactor = constantDensity;
+
+#ifdef FA_OVERWORLD_NOISE_FOG
+    heightFogFactor *= worldFogFactor;
+#endif
+
+    float combinedFogFactor = heightFogFactor + constantFogFactor;
+    float worldFog          = exp2(-playerLength * combinedFogFactor);
+
+    return 1 - worldFog;
 
 #elif defined NETHER
 
-    const float constantDensity = FANetherDensity;
-    const float playerDensity   = 5;
-    const float wind            = FA_NETHER_WIND;
+    const float globalFogDensity    = FANetherDensity;
+    const float wind                = FA_NETHER_WIND;
+    const vec3  noiseScale          = FA_NETHER_NOISE_SCALE * vec3(1, 0.25, 1);
+    const float noiseFade           = FA_NETHER_NOISE_FADE;
+    const float playerFogMultiplier = FA_NETHER_PLAYER_FOG_MULTIPLIER;
+
+#ifdef FA_NETHER_NOISE_FOG
 
     vec3 windOffset = vec3(frameTimeCounter * wind, 0, 0);
 
-    const vec3  scale = vec3(1, 0.25, 1) * 0.03;
-    const float fade  = 0.008;
-
-    float playerLength   = length(playerPos);
     vec3  playerDir      = normalize(playerPos);
-    vec3  worldNoisePos  = (worldPos  + windOffset) * scale;
-    vec3  playerNoisePos = (cameraPosition + windOffset) * scale + playerDir;
+    vec3  worldNoisePos  = (worldPos  + windOffset) * noiseScale;
+    vec3  playerNoisePos = (cameraPosition + windOffset) * noiseScale + playerDir;
 
-    float noiseMix = 1 / (playerLength * fade + 1);
+    float noiseMix = 1 / (playerLength * noiseFade + 1);
     float noiseFac = noiseMix;
     float noiseAdd = 1 - noiseMix;
 
     float worldFog  = sq(snoise(worldNoisePos)) * noiseFac + noiseAdd;
-    float playerFog = sqsq(snoise(playerNoisePos)) * playerDensity;
+    float playerFog = sqsq(snoise(playerNoisePos)) * playerFogMultiplier;
 
-    float expFactor = -playerLength * constantDensity;
+    float expFactor = -playerLength * globalFogDensity;
 
-    float fog = exp2( expFactor * worldFog ) * exp2( expFactor * playerFog );
-    fog       = 1 - fog;
+    float fog = exp2( expFactor * (worldFog + playerFog) );
 
-    return fog;
+#else
+
+    float fog = exp2(-playerLength * globalFogDensity);
+
+#endif
+
+    return 1 - fog;
 
 #elif defined END 
 
     const float constantDensity = FAEndDensity;
 
     const float density = 5;
-    return 1 - exp2(-length(playerPos) * density * constantDensity);
+    return 1 - exp2(-playerLength * density * constantDensity);
 
 #endif
 
