@@ -72,7 +72,7 @@ void main() {
 	vec3  combinedPlayerPos = playerPos;
 #endif
 
-	vec4 skyGradient = getSkyColor_fogArea(viewDir);
+	vec4 skyGradient = getSkyColor_fogArea(viewDir, playerDir);
 
 #ifdef OVERWORLD
 #ifdef CUSTOM_STARS

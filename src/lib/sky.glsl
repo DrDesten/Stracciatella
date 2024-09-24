@@ -34,7 +34,8 @@ uniform float frameTimeCounter;
 
 // SKY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-vec4 getSkyColor_fogArea(vec3 viewDir) {
+// playerDir is only defined in END
+vec4 getSkyColor_fogArea(vec3 viewDir, vec3 playerDir) {
     #ifdef NETHER
 
         return vec4(fogColor / (maxc(fogColor) + 0.25), 1);
@@ -42,7 +43,11 @@ vec4 getSkyColor_fogArea(vec3 viewDir) {
     #endif
     #ifdef END 
     
-        float viewHeight = dot(viewDir, up) * 0.5 + 0.5;
+        float viewHeight = playerDir.y;
+        float offset     = noise(vec2(abs(atan(playerDir.z, playerDir.x))) * 4.4) - 0.5;
+        offset          *= sq(1 - sq(viewHeight)) * 0.25;
+        viewHeight       = saturate(viewHeight * 0.5 + 0.5 + offset);
+
         return vec4(mix(endSkyDown, endSkyUp, viewHeight), 1);
 
     #endif
@@ -79,7 +84,7 @@ vec4 getSkyColor_fogArea(vec3 viewDir) {
 	return vec4(mix(skyCol, fogCol, fogArea), fogArea);
 }
 
-vec3 getSkyColor(vec3 viewDir) { return getSkyColor_fogArea(viewDir).rgb; }
+vec3 getSkyColor(vec3 viewDir, vec3 playerDir) { return getSkyColor_fogArea(viewDir, playerDir).rgb; }
 
 
 // FOG /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,9 +119,9 @@ float fogBorderExp( float dist, float far, float density ) {
     return 1 - saturate( expFog - farFog ) * (1 + farFog); // Dividing by (1 - farFog) is technically correct here, but for small farFog they are close. Multiplication is faster.
 }
 
-vec3 getFogSkyColor(vec3 viewDir) {
+vec3 getFogSkyColor(vec3 viewDir, vec3 playerDir) {
     if (isEyeInWater == 0) {
-        return getSkyColor(viewDir);
+        return getSkyColor(viewDir, playerDir);
     } else {
         return fogColor;
     }
@@ -264,9 +269,7 @@ float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
 #elif defined END 
 
     const float constantDensity = FAEndDensity;
-
-    const float density = 5;
-    return 1 - exp2(-playerLength * density * constantDensity);
+    return 1 - exp2(-playerLength * constantDensity);
 
 #endif
 

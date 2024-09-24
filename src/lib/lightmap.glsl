@@ -91,10 +91,10 @@ vec3 getCustomLightmap(vec3 lmcoord /* lmcoord + AO */, float customLightmapBlen
 
     #ifdef NETHER
     vec3 skyLight = (lightmapNether / maxc(lightmapNether));
-    lmcoord.y = LIGHTMAP_NETHER_SKY_BRIGHTNESS;
+    lmcoord.y     = LIGHTMAP_NETHER_SKY_BRIGHTNESS;
     #elif defined END
     vec3 skyLight = applySaturation(lightmapEnd / maxc(lightmapEnd), LIGHTMAP_END_SKY_SATURATION);
-    lmcoord.y = LIGHTMAP_END_SKY_BRIGHTNESS;
+    lmcoord.y     = LIGHTMAP_END_SKY_BRIGHTNESS;
     #else
     vec3 skyLight = mix(lightmapNight, lightmapDay, customLightmapBlend);
     #endif
