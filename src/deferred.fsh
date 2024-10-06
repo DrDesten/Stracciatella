@@ -195,7 +195,7 @@ void main() {
 		float falloff = smoothstep(0.05, 1, exp2( -dist * 0.03 / handLight.a ));
 		blockLightColor = blockLightColor + handLight.rgb * falloff;
 		blockLightColor = mix(blockLightColor, handLight.rgb, falloff);
-		lmcoord.x = max(lmcoord.x, falloff * handLight.a);
+		lmcoord.x = max(lmcoord.x, saturate(falloff * handLight.a));
 
 		#else
 
