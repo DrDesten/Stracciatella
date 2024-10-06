@@ -24,7 +24,7 @@ vec4 getHandlightColor(int itemId) {
 void main() {
 	gl_Position = getPosition();
 
-	vec4  handLight1 = getHandlightColor( getID(heldItemId) );
+	/* vec4  handLight1 = getHandlightColor( getID(heldItemId) );
 	vec4  handLight2 = getHandlightColor( getID(heldItemId2) );
 	float brightness = heldBlockLightValue / 15.;
 
@@ -33,20 +33,18 @@ void main() {
 	} else {
 		handLight.rgb = (handLight1.rgb + handLight2.rgb) / (handLight1.a + handLight2.a);
 		handLight.a   = brightness;
+	} */
+
+	vec4  handLight1           = getHandlightColor( getID(heldItemId) );
+	vec4  handLight2           = getHandlightColor( getID(heldItemId2) );
+	float handLight1Brightness = heldBlockLightValue / 15.; 
+	float handLight2Brightness = heldBlockLightValue2 / 15.; 
+
+	if (handLight1.a == 0 && handLight2.a == 0) {
+		handLight = vec4(0);
+	} else {
+		handLight.rgb = (handLight1.rgb + handLight2.rgb) / (handLight1.a + handLight2.a);
+		handLight.a   = handLight1Brightness + handLight2Brightness;
 	}
-
-	/*
-	vec4 handLight1 = vec4( getHandlightColor( getID( heldItemId ) ), heldBlockLightValue / 15. );
-	vec4 handLight2 = vec4( getHandlightColor( getID( heldItemId2 ) ), heldBlockLightValue2 / 15. ); 
-	
-	float handLight1Mix = sqrtf01(handLight1.a); 
-	float handLight2Mix = sqrtf01(handLight2.a); 
-
-	float handLightMix = handLight1Mix != 0. && handLight2Mix != 0.
-		? handLight2Mix / ( handLight1Mix + handLight2Mix )
-		: 0.5;
-	float handLightBrightness = sqrtf01(handLight1.a + handLight2.a);
-
-	handLight = vec4( mix(handLight1.rgb, handLight2.rgb, handLightMix), handLightBrightness ); 
-	*/	
+		
 }
