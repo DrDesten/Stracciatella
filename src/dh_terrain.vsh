@@ -15,15 +15,15 @@ float getBlockShade(vec3 playerNormal) {
 
 #if defined OVERWORLD
     const float brightnessLevels[6] = float[](
-        0.85, 0.85, // +x, -x (east, west)
-        1, 0.5,     // +y, -y (up, down)
-        0.75, 0.75  // +z, -z (south, north)
+        0.8,  0.8, // +x, -x (east, west)
+        1,    0.4, // +y, -y (up, down)
+        0.65, 0.65 // +z, -z (south, north)
     );
 #else 
     const float brightnessLevels[6] = float[](
         0.85, 0.85, // +x, -x (east, west)
-        1, 1,     // +y, -y (up, down)
-        0.7, 0.75  // +z, -z (south, north)
+        1,    1,    // +y, -y (up, down)
+        0.7,  0.75  // +z, -z (south, north)
     );
 #endif
 

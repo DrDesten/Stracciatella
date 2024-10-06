@@ -215,7 +215,7 @@ float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
     float worldFogFactor = sqsq(sfbm(worldNoisePos, 3) * 1.25)
                          * worldNoiseMix * worldNoiseFactor 
                          + (1 - worldNoiseMix);
-    worldFogFactor      *= linstep( 50, 70, worldPos.y );
+    worldFogFactor      *= linstep( 40, 80, cameraPosition.y );
 
 #endif
 
