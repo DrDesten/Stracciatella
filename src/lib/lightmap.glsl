@@ -159,8 +159,11 @@ vec3 getCustomLightmap(vec3 lmcoord /* lmcoord + AO */, float customLightmapBlen
 }
 
 #else 
+////////////////////////////////////////////////
+// Simple Lightmap
+////////////////////////////////////////////////
 
-vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
+vec3 getCustomLightmap(vec3 lmcoord /* lmcoord + AO */, float customLightmapBlend) {
 
     #ifdef NETHER
 
@@ -184,10 +187,10 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO) {
         lightmapBlock * lmcoord.x * (luminance(skyLight) * -lmcoord.y * 0.95 + 1) +
         skyLight * lmcoord.y * lmcoord.y +
         caveLight 
-    ) * AO;
+    ) * lmcoord.z;
 }
 
-vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO, vec3 blocklightExtraColor) {
+vec3 getCustomLightmap(vec3 lmcoord /* lmcoord + AO */, float customLightmapBlend, vec3 blocklightExtraColor) {
 
     #ifdef NETHER
 
@@ -216,7 +219,7 @@ vec3 getCustomLightmap(vec2 lmcoord, float customLightmapBlend, float AO, vec3 b
         blocklightColor * lmcoord.x * (luminance(skyLight) * -lmcoord.y * 0.95 + 1) +
         skyLight * lmcoord.y * lmcoord.y +
         caveLight 
-    ) * AO;
+    ) * lmcoord.z;
 }
 
 #endif
