@@ -43,7 +43,8 @@ void main() {
         discard;
     }
 #else
-    if (sqmag(playerPos) < sq(far - 16 * DH_TRANSPARENT_DISCARD_TOLERANCE)) {
+    float fade = smoothstep( dhNearPlane, min(dhNearPlane * 2 + 32, far * 0.5), -viewPos.z ) - sq(Bayer8(gl_FragCoord.xy));
+    if ( fade < 0 ) {
         discard;
     }
 #endif

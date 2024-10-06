@@ -60,5 +60,5 @@ void main() {
         shade = (shade - 1) * 0.5 + 1;
     }
 
-    glcolor.rgb *= shade;
+    glcolor.a = shade;
 }
