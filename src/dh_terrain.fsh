@@ -32,8 +32,8 @@ void main() {
     }
 #endif
     
-    vec4 color = glcolor;
-
+    vec4  color        = vec4(glcolor.rgb, 1);
+    float ao           = glcolor.a;
     float emissiveness = 0;
 
     if ( !isCloud ) {
@@ -80,7 +80,7 @@ void main() {
     }
 
     FragOut0 = color;
-	FragOut1 = encodeLightmapData(vec4(lmcoord, 1, emissiveness));
+	FragOut1 = encodeLightmapData(vec4(lmcoord, ao, emissiveness));
 
 #ifdef COLORED_LIGHTS
 
