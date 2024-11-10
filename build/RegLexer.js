@@ -89,14 +89,14 @@ export class TokenMatcher {
 export class Lexer {
     /** @template {string} T @param {TokenMatcher<T>[]} matchers */
     static compileMatchers( matchers ) {
-        let compiled = matchers.map(({regex}, i) => `(?<__${i}>${regex.source})`).join("|")
-        return new RegExp(compiled, "y")
+        let compiled = matchers.map( ( { regex }, i ) => `(?<__${i}>${regex.source})` ).join( "|" )
+        return new RegExp( compiled, "y" )
     }
 
     /** @param {TokenMatcher<T>[]} matchers @param {T} errorToken @param {T} eofToken */
     constructor( matchers, errorToken, eofToken, { postprocess = true } = {} ) {
         this.matchers = matchers
-        this.regex = Lexer.compileMatchers(matchers)
+        this.regex = Lexer.compileMatchers( matchers )
         this.errorToken = errorToken
         this.eofToken = eofToken
         this.props = { postprocess }
@@ -114,13 +114,13 @@ export class Lexer {
         let index = position.index
         this.regex.lastIndex = index
 
-        const result = this.regex.exec(text)
+        const result = this.regex.exec( text )
         if ( !result ) return null
 
-        const matcherIndex = +Object.keys(result.groups)
-            .filter(key => /__\d+/.test(key) && result.groups[key] !== undefined)
-            [0].slice(2)
-        
+        const matcherIndex = +Object.keys( result.groups )
+            .filter( key => /__\d+/.test( key ) && result.groups[key] !== undefined )
+        [0].slice( 2 )
+
         const match = result
         const matcher = this.matchers[matcherIndex]
 
@@ -140,7 +140,7 @@ export class Lexer {
      * Tokenizes the input text based on the defined TokenMatchers.
      * Matches all tokens in the input text.
      * @param {string} text - The input text to be tokenized.
-     * @returns {Token<T>[]} An array of tokenized results.
+     * @returns {Token<T>[] & { text: string }} An array of tokenized results.
      */
     lex( text ) {
         const tokens = []
@@ -151,10 +151,10 @@ export class Lexer {
 
             if ( !token ) {
                 // If no token found, add an error token and advance text by one character
-                tokens.push( new Token( 
-                    this.errorToken, 
-                    text[position.index], 
-                    new Range( position.clone(), position.clone().advance( text[position.index] ) ) ) 
+                tokens.push( new Token(
+                    this.errorToken,
+                    text[position.index],
+                    new Range( position.clone(), position.clone().advance( text[position.index] ) ) )
                 )
                 position.advance( text[position.index] )
                 continue
@@ -179,6 +179,7 @@ export class Lexer {
         }
 
         tokens.push( new Token( this.eofToken, '', new Range( position.clone(), position.clone() ) ) ) // Add EOF token at end of text
+        tokens.text = text
         return tokens
     }
 }

@@ -2,12 +2,14 @@
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
-#include "/lib/vertex_transform_simple.glsl"
-#include "/core/transform.glsl"
+#include "/lib/vertex_transform.glsl"
+
+#define AMBIENT_ONLY
+#include "/lib/sky.glsl"
 
 out vec2 lmcoord;
 out vec4 glcolor;
-out vec3 viewPos;
+out vec3 worldPos;
 flat out int materialId;
 
 float getBlockShade(vec3 playerNormal) {
@@ -47,17 +49,28 @@ float getBlockShade(vec3 playerNormal) {
 void main() {
     glcolor     = gl_Color;
     lmcoord     = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
-    viewPos     = getView();
     materialId  = dhMaterialId;
     gl_Position = getPosition();
 
+    vec3 viewPos      = getView();
     vec3 viewNormal   = getNormal();
     vec3 playerPos    = toPlayer(viewPos);
     vec3 playerNormal = normalize(toPlayer(viewPos + viewNormal) - playerPos);
+    worldPos          = toWorld(playerPos);
 
     float shade = getBlockShade(playerNormal);
     if (materialId == DH_BLOCK_LEAVES) {
         shade = (shade - 1) * 0.5 + 1;
+    }
+
+    if (worldPos.y > 500) {
+        
+        lmcoord.xy   = vec2(0,1);
+
+        vec3 ambient = sqrtf01(getSkyAmbient() * 0.9 + 0.1);
+        vec3 scatter = mix(ambient, vec3(avg(ambient)), 0.33);
+        glcolor.rgb  = scatter;
+
     }
 
     glcolor.a = shade;

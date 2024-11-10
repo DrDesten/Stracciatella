@@ -39,8 +39,8 @@ uniform sampler2D normals;
 #endif
 
 #ifdef RAIN_PUDDLES
+#include "/lib/time.glsl"
 uniform sampler2D colortex4;
-uniform float     frameTimeCounter;
 uniform float     rainPuddle;
 in      float     puddle;
 in      vec2      blockCoords;
@@ -140,7 +140,7 @@ void main() {
 		vec2  waterTextureSize   = vec2(textureSize(colortex4, 0));
 		float waterTextureAspect = waterTextureSize.x / waterTextureSize.y;
 		vec2  waterCoords        = vec2(blockCoords.x, blockCoords.y * waterTextureAspect);
-		waterCoords.y           += waterTextureAspect * round(frameTimeCounter * 2);
+		waterCoords.y           += waterTextureAspect * round(time * 2);
 		vec4  waterTexture       = texture(colortex4, waterCoords);
 		waterTexture.rgb         = waterTexture.rgb * vec3(RAIN_PUDDLE_COLOR_R, RAIN_PUDDLE_COLOR_G, RAIN_PUDDLE_COLOR_B);
 

@@ -3,12 +3,11 @@
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-#include "/core/transform.glsl"
 #include "/lib/dh.glsl"
 
 in vec2 lmcoord;
 in vec4 glcolor;
-in vec3 viewPos;
+in vec3 worldPos;
 flat in int materialId;
 
 #ifdef COLORED_LIGHTS
@@ -22,10 +21,7 @@ layout(location = 0) out vec4 FragOut0;
 layout(location = 1) out vec2 FragOut1;
 #endif
 void main() {
-    vec3 playerPos = toPlayer(viewPos);
-    vec3 worldPos  = toWorld(playerPos);
-
-    bool isCloud =  worldPos.y > 256; 
+    bool isCloud =  worldPos.y > 500; 
 #ifdef DH_TERRAIN_DISCARD
     if ( !isCloud && discardDH(worldPos, DH_TERRAIN_DISCARD_TOLERANCE) ) {
         discard;

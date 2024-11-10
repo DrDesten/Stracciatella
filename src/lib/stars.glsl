@@ -1,6 +1,7 @@
+#include "/lib/time.glsl"
+
 uniform float normalizedTime;
 uniform float customStarBlend;
-uniform float frameTimeCounter;
 
 float starVoronoi(vec2 coord, float maxDeviation) {
     vec2 guv = fract(coord) - 0.5;
@@ -50,7 +51,7 @@ vec4 getStars(vec3 playerDir, float starMask) {
     vec2 shootingStarCoord = normalize(playerDir * vec3(1,2,1)).xz * shooting_stars_length;
 
     const vec2 lineDir = vec2(sin(SHOOTING_STARS_ANGLE * TWO_PI), cos(SHOOTING_STARS_ANGLE * TWO_PI));
-    shootingStarCoord -= frameTimeCounter * vec2(lineDir * 2 * SHOOTING_STARS_SPEED);
+    shootingStarCoord -= time * vec2(lineDir * 2 * SHOOTING_STARS_SPEED);
     vec2  gridID       = floor(shootingStarCoord);
     vec2  gridUV       = fract(shootingStarCoord) - 0.5;
     

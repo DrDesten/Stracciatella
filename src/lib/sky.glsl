@@ -1,6 +1,3 @@
-#include "/core/dh/uniforms.glsl"
-#include "/core/transform.glsl"
-
 const vec3 sunsetColor = vec3(SKY_SUNSET_R, SKY_SUNSET_G, SKY_SUNSET_B);
 
 const vec3 skyDayColor       = vec3(SKY_DAY_R, SKY_DAY_G, SKY_DAY_B);
@@ -30,7 +27,11 @@ uniform float far;
 uniform vec3  up;
 uniform vec3  sunDir;
 
-uniform float frameTimeCounter;
+#ifndef AMBIENT_ONLY
+
+#include "/core/dh/uniforms.glsl"
+#include "/core/transform.glsl"
+#include "/lib/time.glsl"
 
 // SKY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -86,6 +87,46 @@ vec4 getSkyColor_fogArea(vec3 viewDir, vec3 playerDir) {
 
 vec3 getSkyColor(vec3 viewDir, vec3 playerDir) { return getSkyColor_fogArea(viewDir, playerDir).rgb; }
 
+#endif
+
+// Get Ambient Sky Lighting
+vec3 getSkyAmbient() {
+    #ifdef NETHER
+
+        return fogColor / (maxc(fogColor) + 0.25);
+
+    #endif
+    #ifdef END 
+
+        return mix(endSkyDown, endSkyUp, 0.5);
+
+    #endif
+    
+    #ifdef SKY_CUSTOM_COLOR
+        // Custom Sky Color
+	    vec3 skyRainColor  = mix(skyNightRainColor, skyDayRainColor, daynight);
+	    vec3 skyClearColor = mix(skyNightColor,     skyDayColor,     daynight);
+        vec3 skyCol        = mix(skyClearColor,     skyRainColor,    rainStrength);
+    #else
+        vec3 skyCol = skyColor;
+    #endif
+    #ifdef FOG_CUSTOM_COLOR
+        // Custom Fog Color
+	    vec3 fogRainColor  = mix(fogNightRainColor, fogDayRainColor, daynight);
+	    vec3 fogClearColor = mix(fogNightColor,     fogDayColor,     daynight);
+        vec3 fogCol        = mix(fogClearColor,     fogRainColor,    rainStrength);
+    #else
+        vec3 fogCol = fogColor;
+    #endif
+
+    #ifdef SKY_CUSTOM_SUNSET
+	    fogCol = mix(fogCol, sunsetColor, sunset); // Make fog Color change for sunsets
+    #endif
+
+	return mix(skyCol, fogCol, 0.5);
+}
+
+#ifndef AMBIENT_ONLY
 
 // FOG /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -96,7 +137,7 @@ float fogSmoothStep(float distSq, float far) {
 
 #ifdef DISTANT_HORIZONS
 float fogFactorTerrain(vec3 playerPos) {
-    return fogSmoothStep(sqmag(playerPos.xz), dhFarPlane);
+    return fogSmoothStep(sqmag(playerPos.xz), dhFarPlane / SQRT2);
 }
 #else
 float fogFactorTerrain(vec3 playerPos) {
@@ -208,7 +249,7 @@ float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
 
     vec3  playerDir     = normalize(playerPos);
 
-    vec2  windOffset     = vec2(frameTimeCounter * wind, 0);
+    vec2  windOffset     = vec2(time * wind, 0);
     vec2  worldNoisePos  = (worldPos.xz + windOffset) * noiseScale;
     float worldNoiseMix  = sqrtf01(abs(playerDir.y))
                          / (playerLength * noiseFade + 1);
@@ -241,7 +282,7 @@ float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
 
 #ifdef FA_NETHER_NOISE_FOG
 
-    vec3 windOffset = vec3(frameTimeCounter * wind, 0, 0);
+    vec3 windOffset = vec3(time * wind, 0, 0);
 
     vec3  playerDir      = normalize(playerPos);
     vec3  worldNoisePos  = (worldPos  + windOffset) * noiseScale;
@@ -275,5 +316,7 @@ float fogFactorAdvanced(vec3 viewDir, vec3 playerPos)	{
 #endif
 
 }
+
+#endif
 
 #endif

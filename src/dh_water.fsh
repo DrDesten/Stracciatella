@@ -6,9 +6,9 @@
 #include "/core/transform.glsl"
 #include "/core/dh/uniforms.glsl"
 #include "/lib/dh.glsl"
+#include "/lib/time.glsl"
 
 uniform vec2 screenSize;
-uniform float frameTimeCounter;
 #include "/lib/lightmap.glsl"
 
 uniform sampler2D depthtex0;
@@ -64,7 +64,7 @@ void main() {
         float waterTextureAspect = waterTextureSize.x / waterTextureSize.y;
         vec2  blockCoords        = fract(worldPos.xz);
         vec2  waterCoords        = vec2(blockCoords.x, blockCoords.y * waterTextureAspect);
-        waterCoords.y           += waterTextureAspect * floor(frameTimeCounter * 10);
+        waterCoords.y           += waterTextureAspect * floor(time * 10);
 
         float texelDensity = max(
             length(dFdx(worldPos.xz)),
