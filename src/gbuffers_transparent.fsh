@@ -3,8 +3,6 @@
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
-
-uniform float frameTimeCounter;
 #include "/lib/lightmap.glsl"
 
 #ifdef DISTANT_HORIZONS

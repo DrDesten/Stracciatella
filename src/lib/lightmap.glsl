@@ -1,5 +1,8 @@
 #include "/core/core/tonemap.glsl"
 
+uniform float frameTimeCounter;
+uniform float customLightmapBlend;
+
 uniform float nightVision;
 uniform float darknessFactor;
 uniform vec3  fogColor;

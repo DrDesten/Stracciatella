@@ -1,6 +1,7 @@
 #include "/lib/settings.glsl"
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
+#include "/lib/time.glsl"
 #include "/core/kernels.glsl"
 
 uniform float  frameTimeCounter;
@@ -13,37 +14,17 @@ uniform float  frameTimeCounter;
 
 #if defined WAVING_BLOCKS || defined WAVING_LIQUIDS
 
-	#ifdef WORLD_TIME_ANIMATION
+	vec3 wavyChaotic(vec3 worldPos, float amount, float speed) {
+		vec2 seed = time * vec2(1.5 * speed, -2. * speed);
+		seed     += worldPos.xz + (worldPos.y * 0.25);
+		vec2 XZ   = sin(seed) * amount;
+		return vec3(XZ.x, -1e-3, XZ.y);
+	}
 
-		uniform int worldTime;
-	
-		vec3 wavyChaotic(vec3 worldPos, float amount, float speed) {
-			vec2 seed = (worldTime * (1./24.)) * vec2(1.5 * speed, -2. * speed);
-			seed     += worldPos.xz + (worldPos.y * 0.25);
-			vec2 XZ   = sin(seed) * amount;
-			return vec3(XZ.x, -1e-3, XZ.y);
-		}
-
-		vec3 wavySineY(vec3 worldPos, float amount, float speed) {
-			float seed = dot(worldPos, vec3(0.5, 0.1, 0.5)) + ((worldTime * (1./24.)) * speed);
-			return vec3(0, sin(seed) * amount, 0);
-		}
-
-	#else
-
-		vec3 wavyChaotic(vec3 worldPos, float amount, float speed) {
-			vec2 seed = frameTimeCounter * vec2(1.5 * speed, -2. * speed);
-			seed     += worldPos.xz + (worldPos.y * 0.25);
-			vec2 XZ   = sin(seed) * amount;
-			return vec3(XZ.x, -1e-3, XZ.y);
-		}
-
-		vec3 wavySineY(vec3 worldPos, float amount, float speed) {
-			float seed = dot(worldPos, vec3(0.5, 0.1, 0.5)) + (frameTimeCounter * speed);
-			return vec3(0, sin(seed) * amount, 0);
-		}
-
-	#endif
+	vec3 wavySineY(vec3 worldPos, float amount, float speed) {
+		float seed = dot(worldPos, vec3(0.5, 0.1, 0.5)) + (time * speed);
+		return vec3(0, sin(seed) * amount, 0);
+	}
 
 #endif
 

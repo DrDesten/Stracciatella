@@ -5,7 +5,6 @@
 #include "/lib/gbuffers_basics.glsl"
 
 #ifdef HAND_WATER
-uniform float frameTimeCounter;
 #include "/lib/lightmap.glsl"
 #endif
 

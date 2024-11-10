@@ -16,6 +16,13 @@ vec4 toPlayer(vec4 viewPos) {
     return gbufferModelViewInverse * viewPos;
 }
 
+vec3 toWorld(vec3 playerPos) {
+    return playerPos + cameraPosition;
+}
+vec4 toWorld(vec4 playerPos) {
+    return vec4(playerPos.xyz + cameraPosition, 1);
+}
+
 #ifndef GEO
 #ifdef SMOOTHCAM
 vec3 getPlayer() { return smoothPlayer().xyz; }
