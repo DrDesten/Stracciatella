@@ -415,8 +415,15 @@ value.DITHERING.1=Smart
 value.DITHERING.2=Full
 option.DITHERING.comment=Removes Banding. Smart: Enables dithering in select programs. Full: Enables dithering in all programs.
 
-option.WORLD_TIME_ANIMATION=World Time Animation
-option.WORLD_TIME_ANIMATION.comment=Uses the ingame time instead of real time for animations, such as waving leaves or water. This can be useful for animation tools like replaymod, enable this when waving things seem jittery.
+option.TIME_MODE=Time Mode
+option.TIME_MODE.comment=Sets which method the shader uses to determine the time. Time is used for driving animations, for example waving leaves and water. §nRealtime§r. Uses the actual time. §nWorldtime§r. Uses the ingame time. This can be useful for animation tools like replaymod. §nFramecount§r. Uses the frame count based on a fixed framerate. This can be useful for animation tools like replaymod.
+value.TIME_MODE.0=Realtime
+value.TIME_MODE.1=Worldtime
+value.TIME_MODE.2=Framecount
+
+option.TIME_MODE_FRAME_RATE=Time Mode Framerate
+option.TIME_MODE_FRAME_RATE.comment=Framerate used for calculating the time when "Time Mode: Framecount" is selected.
+suffix.TIME_MODE_FRAME_RATE=fps
 
 option.BLOCK_OUTLINE_SOLID=Solid Block Outline
 option.LINE_THICKNESS.comment=Makes the block outline no longer transparent.
