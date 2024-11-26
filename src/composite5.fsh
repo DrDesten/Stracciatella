@@ -5,6 +5,10 @@
 #include "/lib/composite_basics.glsl"
 #include "/lib/setup.glsl"
 
+#include "/core/dh/uniforms.glsl"
+#include "/core/dh/transform.glsl"
+#include "/core/dh/textures.glsl"
+
 const float wetnessHalflife = 200;
 const float drynessHalflife = 400;
 
@@ -116,7 +120,16 @@ void main() {
 	vec3 viewPos;
 	bool requireViewPos = isEyeInWater > 0 || blindness > 0 || darknessFactor > 0;
 	if (requireViewPos) {
-		viewPos = toView(vec3(coord, getDepth(coord)) * 2 - 1);
+		float depth = getDepth(coord);
+		#ifdef DISTANT_HORIZONS
+		float dhDepth     = getDepthDH(coord);
+		vec3  dhScreenPos = vec3(coord, dhDepth);
+		vec3  dhViewPos   = screenToViewDH(dhScreenPos);
+		float mappedDepth = backToClip(dhViewPos).z * 0.5 + 0.5;
+		depth = min(depth, mappedDepth);
+		#endif
+
+		viewPos = toView(vec3(coord, depth) * 2 - 1);
 	}
 
 	if (isEyeInWater == 1) {

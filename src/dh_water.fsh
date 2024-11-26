@@ -4,11 +4,14 @@
 #include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 #include "/core/transform.glsl"
-#include "/core/dh/uniforms.glsl"
 #include "/lib/dh.glsl"
 #include "/lib/time.glsl"
 
+#include "/core/dh/uniforms.glsl"
+#include "/core/dh/transform.glsl"
+
 uniform vec2 screenSize;
+uniform vec2 screenSizeInverse;
 #include "/lib/lightmap.glsl"
 
 uniform sampler2D depthtex0;
@@ -49,11 +52,13 @@ void main() {
     }
 #endif
 
-    float depth    = texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x;
-    float ldepth   = linearizeDepth(depth, near, far);
-    float ldhdepth = linearizeDepth(gl_FragCoord.z, dhNearPlane, dhFarPlane);
+    float depth         = texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x;
+    float dhDepth       = gl_FragCoord.z;
+    vec3  dhScreenPos   = vec3(gl_FragCoord.xy * screenSizeInverse, dhDepth);
+    vec3  dhViewPos     = screenToViewDH(dhScreenPos);
+    float dhMappedDepth = backToScreen(dhViewPos).z;
 
-    if (depth < 1 && ldepth < ldhdepth) {
+    if (depth < 1 && depth < dhMappedDepth) {
         discard;
     }
     
