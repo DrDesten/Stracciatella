@@ -53,7 +53,7 @@ void main() {
             scale     *= 2;
         }
         dhNoise /= iter;
-        dhNoise  = (dhNoise * 0.25 + 0.875);
+        dhNoise  = (dhNoise * 0.25 + 0.9);
 
         color.rgb *= dhNoise;
         
