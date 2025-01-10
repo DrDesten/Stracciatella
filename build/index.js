@@ -11,12 +11,15 @@ import { parseArgv } from "./argv.js"
 import { Semver } from "./semver.js"
 import { generateFeatureList } from "./featurelist.js"
 import { filterDeep } from "./utils.js"
+import { generatePaletteColors, generatePaletteHtml } from "./colors.js"
+import { GLSL } from "./glsl.js"
 
 const changes = new Changes( src )
 
 // Command line Options
 const options = parseArgv( {
     "feature-list": {},
+    "palette": {},
     persistent: false,
     force: false,
     debug: false,
@@ -76,11 +79,24 @@ changes.addChangeListener( ["block.properties", "item.properties", "entity.prope
     console.info( `Compiled ${filepath}` )
 } )
 
+// Generate palette file
+changes.addUnconditionalListener( () => {
+    const dstpath = path.join( shaders, "lib", "palette.glsl" )
+    const palette = generatePaletteColors()
+    const file = GLSL.constant( "CL_PALETTE", GLSL.array( palette ) ).string
+    fs.mkdirSync( path.dirname( dstpath ), { recursive: true } )
+    fs.writeFileSync( dstpath, file )
+    console.info( "Generated color palette" )
+} )
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if ( options.command === "feature-list" ) {
     generateFeatureList()
+    process.exit()
+}
+if ( options.command === "palette" ) {
+    generatePaletteHtml()
     process.exit()
 }
 
