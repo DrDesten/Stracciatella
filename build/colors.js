@@ -114,7 +114,6 @@ export function generatePaletteColors() {
         [.7, .3, 1],
         [0, 0, 0],
         [0, 0, 0],
-        [0, 0, 0],
     ]
 
     // Blackbody Colors
@@ -136,6 +135,7 @@ export function generatePaletteColors() {
     } )
 
     return [
+        [0, 0, 0],
         ...customPalette,
         ...blackbodyPalette,
         ...colorPalette,

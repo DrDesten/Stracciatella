@@ -2,6 +2,7 @@
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
+#include "/lib/palette.glsl"
 #include "/lib/gbuffers_basics.glsl"
 #include "/core/transform.glsl"
 
@@ -221,36 +222,22 @@ void main() {
 
 	}
 
-	#define coloredLightEmissive float(block.emissive) * ( block.data / 63. ) * blockLightEmissiveColor
+	#define coloredLightEmissive float(block.emissive) * blockLightEmissiveColor
 	
 #else
 
 	float emissiveness = 0;
-	#define coloredLightEmissive float(block.emissive) * ( block.data / 63. ) * blockLightEmissiveColor
+	#define coloredLightEmissive float(block.emissive) * blockLightEmissiveColor
 
 #endif
 
 #ifdef COLORED_LIGHTS
 	vec3 blockLightEmissiveColor;
-	switch (block.id) {
-		case 21:
-			blockLightEmissiveColor = LIGHTMAP_COLOR_ORANGE; // Orange
-			break;
-		case 22:
-		case 23:
-		case 45: // Redstone Ore
-			blockLightEmissiveColor = LIGHTMAP_COLOR_RED; // Red
-			break;
-		case 24:
-			blockLightEmissiveColor = LIGHTMAP_COLOR_BLUE; // Blue
-			break;
-		case 25:
-			blockLightEmissiveColor = LIGHTMAP_COLOR_PURPLE; // Purple
-			break;
-		default:
-			blockLightEmissiveColor = color.rgb; // Keep Color (all other id's)
+	if (block.data == 7) {
+		blockLightEmissiveColor = color.rgb;
+	} else {
+		blockLightEmissiveColor = CL_PALETTE[block.data];
 	}
-	//blockLightEmissiveColor *= lmcoord.x;
 #endif
 
 #ifdef DIRECTIONAL_LIGHTMAPS
