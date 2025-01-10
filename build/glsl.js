@@ -57,10 +57,18 @@ function constant( identifier, expr ) {
     return o( undefined, `const ${expr.type} ${identifier} = ${expr};` )
 }
 
+// File
+
+function guard( file, identifier = "FILE" + ( ~~( Math.random() * 2 ** 32 ) ).toString( 16 ) ) {
+    return o( undefined, `#if ! defined ${identifier}\n#define ${identifier}\n${file}\n#endif\n` )
+}
+
 export const GLSL = {
     float: float,
     vector: vector,
     array: array,
 
     constant: constant,
+
+    guard: guard
 }
