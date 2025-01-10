@@ -265,7 +265,7 @@ void main() {
 	FragOut2 = vec4(coloredLightEmissive, 1);
 	#endif
 
-#ifdef DH_DISCARD_SMOOTH
+#if defined DISTANT_HORIZONS && defined DH_DISCARD_SMOOTH
 	float viewDistSq = sqmag(viewPos);
 	float viewDistBlend = smoothstep(far*far * 0.75, far*far, viewDistSq);
 	if (Bayer4(gl_FragCoord.xy) < viewDistBlend) discard;
