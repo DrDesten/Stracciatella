@@ -7,6 +7,7 @@
 
 #ifdef DISTANT_HORIZONS
 #include "/lib/dh.glsl"
+uniform float far;
 #endif
 
 #if FOG != 0
@@ -64,9 +65,16 @@ void main() {
 		color.rgb += ditherColor(gl_FragCoord.xy);
 	#endif
 
-	FragOut0 = color; //gcolor
-#if defined DISTANT_HORIZONS && defined DH_TRANSPARENT_DISCARD
+	FragOut0 = color; //gcolor< viewDistBlend) discard;
+#endif
+#if defined DISTANT_HORIZONS
+#if defined DH_DISCARD_SMOOTH
+	float viewDistSq = sqmag(viewPos);
+	float viewDistBlend = smoothstep(far*far * 0.75, far*far, viewDistSq);
+	if (FragOut0.a < 0.1 || Bayer4(gl_FragCoord.xy) < viewDistBlend) discard;
+#elif defined DH_TRANSPARENT_DISCARD
     if (FragOut0.a < 0.1 || !discardDH(worldPos, DH_TRANSPARENT_DISCARD_TOLERANCE)) discard;
+#endif
 #else
     if (FragOut0.a < 0.1) discard;
 #endif
