@@ -403,6 +403,8 @@ option.DAMAGE_EFFECT_DISPLACEMENT_SIZE=Damage Effect Cell Size
 screen.OTHER=Other
 
 screen.DH_CONFIG=Distant Horizons
+option.DH_DISCARD_SMOOTH=Fade Terrain
+option.DH_DISCARD_SMOOTH.comment=Smoothly fades out Minecraft terrain, reducing the transition between Distant Horizons' terrain and Minecraft's terrain.
 option.DH_TERRAIN_DISCARD=Discard DH Terrain
 option.DH_TERRAIN_DISCARD_TOLERANCE=Terrain Discard Tolerance
 option.DH_TRANSPARENT_DISCARD=Chunk Discard DH Transparents
