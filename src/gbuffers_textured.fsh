@@ -35,7 +35,14 @@ void main() {
 	color.rgb *= getCustomLightmap(vec3(lmcoord, glcolor.a), customLightmapBlend);
 
 #if FOG != 0
-	float fog = fogFactorTerrain(toPlayer(viewPos));
+	vec3  playerPos = toPlayer(viewPos);
+	float fog       = fogFactorTerrain(playerPos);
+
+	#if FOG_ADVANCED
+	float fa = fogFactorAdvanced(normalize(viewPos), playerPos);
+	fog      = max(fog, fa);
+	#endif
+
 	color.a  *= (1-fog);
 	color.a  -= Bayer4(gl_FragCoord.xy) * 0.05;
 #endif
