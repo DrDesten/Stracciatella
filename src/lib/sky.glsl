@@ -139,7 +139,7 @@ float fogSmoothStep(float distSq, float far) {
     return smoothstep( farSQ * (SQRT2 * FOG_START / FOG_END), farSQ, distSq * (SQRT2 / FOG_END));
 }
 
-#ifdef DISTANT_HORIZONS
+#if defined DISTANT_HORIZONS
 float fogFactorTerrain(vec3 playerPos) {
     return fogSmoothStep(sqmag(playerPos.xz), dhFarPlane / SQRT2);
 }
@@ -173,7 +173,7 @@ vec3 getFogSkyColor(vec3 viewDir, vec3 playerDir) {
 }
 
 	
-#if FOG_ADVANCED
+#ifdef FOG_ADVANCED
 
 #include "/core/transform.glsl"
 

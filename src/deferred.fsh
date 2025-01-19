@@ -59,7 +59,7 @@ void main() {
 	vec3  playerPos = toPlayer(viewPos);
 	vec3  playerDir = normalize(playerPos);
 
-#ifdef DISTANT_HORIZONS
+#if defined DISTANT_HORIZONS
 	float dhDepth     = getDepthDH(coord);
 	vec3  dhScreenPos = vec3(coord, dhDepth);
 	vec3  dhViewPos   = screenToViewDH(dhScreenPos);
@@ -257,7 +257,7 @@ void main() {
 
 	float fog = fogFactorTerrain(combinedPlayerPos);
 
-	#if FOG_ADVANCED
+	#ifdef FOG_ADVANCED
 	float fa = fogFactorAdvanced(viewDir, combinedPlayerPos);
 	fog      = max(fog, fa);
 	#endif

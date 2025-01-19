@@ -38,7 +38,7 @@ void main() {
 	vec3  playerPos = toPlayer(viewPos);
 	float fog       = fogFactorTerrain(playerPos);
 
-	#if FOG_ADVANCED
+	#ifdef FOG_ADVANCED
 	float fa = fogFactorAdvanced(normalize(viewPos), playerPos);
 	fog      = max(fog, fa);
 	#endif

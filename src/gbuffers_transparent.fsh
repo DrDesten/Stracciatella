@@ -5,7 +5,7 @@
 #include "/lib/gbuffers_basics.glsl"
 #include "/lib/lightmap.glsl"
 
-#ifdef DISTANT_HORIZONS
+#if defined DISTANT_HORIZONS
 #include "/lib/dh.glsl"
 uniform float far;
 #endif
@@ -23,7 +23,7 @@ in vec2 coord;
 in vec4 glcolor;
 in vec3 viewPos;
 
-#ifdef DISTANT_HORIZONS
+#if defined DISTANT_HORIZONS
 in vec3 worldPos;
 #endif
 
@@ -45,7 +45,7 @@ void main() {
 
 		float fog       = fogFactorTerrain(playerPos);
 		
-		#if FOG_ADVANCED
+		#ifdef FOG_ADVANCED
 		float fa = fogFactorAdvanced(viewDir, playerPos);
 		fog      = max(fog, fa);
 		#endif
@@ -66,14 +66,14 @@ void main() {
 	#endif
 
 	FragOut0 = color; //gcolor< viewDistBlend) discard;
-#endif
+	
 #if defined DISTANT_HORIZONS
 #if defined DH_DISCARD_SMOOTH
 	float viewDistSq = sqmag(viewPos);
 	float viewDistBlend = smoothstep(far*far * 0.75, far*far, viewDistSq);
 	if (FragOut0.a < 0.1 || Bayer4(gl_FragCoord.xy) < viewDistBlend) discard;
 #elif defined DH_TRANSPARENT_DISCARD
-    if (FragOut0.a < 0.1 || !discardDH(worldPos, DH_TRANSPARENT_DISCARD_TOLERANCE)) discard;
+	if (FragOut0.a < 0.1 || !discardDH(worldPos, DH_TRANSPARENT_DISCARD_TOLERANCE)) discard;
 #endif
 #else
     if (FragOut0.a < 0.1) discard;
