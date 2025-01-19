@@ -59,7 +59,7 @@ function constant( identifier, expr ) {
 
 // File
 
-function guard( file, identifier = "FILE" + ( ~~( Math.random() * 2 ** 32 ) ).toString( 16 ) ) {
+function guard( file, identifier = "FILE" + Math.abs( ~~( Math.random() * 2 ** 32 ) ).toString( 16 ) ) {
     return o( undefined, `#if ! defined ${identifier}\n#define ${identifier}\n${file}\n#endif\n` )
 }
 

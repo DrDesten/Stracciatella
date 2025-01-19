@@ -121,7 +121,7 @@ void main() {
 	bool requireViewPos = isEyeInWater > 0 || blindness > 0 || darknessFactor > 0;
 	if (requireViewPos) {
 		float depth = getDepth(coord);
-		#ifdef DISTANT_HORIZONS
+		#if defined DISTANT_HORIZONS
 		float dhDepth     = getDepthDH(coord);
 		vec3  dhScreenPos = vec3(coord, dhDepth);
 		vec3  dhViewPos   = screenToViewDH(dhScreenPos);

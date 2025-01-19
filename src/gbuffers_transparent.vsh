@@ -3,7 +3,7 @@
 #include "/lib/utils.glsl"
 #include "/core/kernels.glsl"
 
-#if defined DISTANT_HORIZONS || defined WAVING_BLOCKS || defined WAVING_LIQUIDS
+#if (defined DISTANT_HORIZONS) || defined WAVING_BLOCKS || defined WAVING_LIQUIDS
 #include "/lib/vertex_transform.glsl"
 #else
 #include "/lib/vertex_transform_simple.glsl"
@@ -22,7 +22,7 @@
 
 #endif
 
-#ifdef DISTANT_HORIZONS
+#if defined DISTANT_HORIZONS
 uniform float far;
 out vec3 worldPos;
 #endif
@@ -39,7 +39,7 @@ void main() {
 	glcolor     = gl_Color;
 	viewPos     = getView();
 	
-	#ifdef DISTANT_HORIZONS
+	#if defined DISTANT_HORIZONS
 	worldPos = getWorld();
 	#endif
 
@@ -57,7 +57,7 @@ void main() {
 		float offset  = wavySineY(worldPos, WAVING_LIQUIDS_AMOUNT * flowHeight, WAVING_LIQUIDS_SPEED * 2.).y;
 		offset       -= WAVING_LIQUIDS_AMOUNT * flowHeight * 0.5;
 
-		#ifdef DISTANT_HORIZONS
+		#if defined DISTANT_HORIZONS
 		float edgeFade = 1 - smoothstep(0.75, 0.95, sqmag(worldPos.xz - cameraPosition.xz) / (far * far));
 		offset        *= edgeFade;
 		#endif
