@@ -39,7 +39,11 @@ uniform vec3  sunDir;
 vec4 getSkyColor_fogArea(vec3 viewDir, vec3 playerDir) {
     #ifdef NETHER
 
-        return vec4(fogColor / (maxc(fogColor) + 0.25), 1);
+        vec3  color = fogColor / (maxc(fogColor) + 0.15);
+        float luma  = min(1, 2.6 * maxc(color));
+        float lift  = sqsq(1 - luma);
+        color       = applySaturation(color + lift, 1 + 2 * lift);
+        return vec4(color, 1);
 
     #endif
     #ifdef END 
