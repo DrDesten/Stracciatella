@@ -54,7 +54,7 @@ class Preprocessor {
 class Property {
     /** @param {string} key @param {string} value  */
     constructor( key, value ) {
-        this.key = key.split(".")
+        this.key = key.split( "." )
         this.value = value.trim()
     }
 }
@@ -86,20 +86,19 @@ class PropertiesParser extends Parser {
     }
     parsePreprocessor() {
         const token = this.advance( TokenType.Preprocessor )
-        console.log(token)
         return new Preprocessor( token.toPrimitive() )
     }
     parseProperty() {
-        const key = this.advance(TokenType.Key).text
-        this.advance(TokenType.Equals)
-        const value = this.advance(TokenType.Value).text
-        return new Property(key, value)
+        const key = this.advance( TokenType.Key ).text
+        this.advance( TokenType.Equals )
+        const value = this.eof() || this.peek().type === TokenType.Newline ? "" : this.advance( TokenType.Value ).text
+        return new Property( key, value )
     }
 }
 
 export function parseLang( text ) {
-    const tokens = new Lexer(Tokens, TokenType.Error, TokenType.Eof).lex(text)
-    const ast = new PropertiesParser(tokens).parse()[0]
+    const tokens = new Lexer( Tokens, TokenType.Error, TokenType.Eof ).lex( text )
+    const ast = new PropertiesParser( tokens ).parse()[0]
     return ast
 }
 

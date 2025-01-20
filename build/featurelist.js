@@ -4,8 +4,9 @@ import { root, src, out, shaders } from "./constants.js"
 import { parseLang } from "./parseProperties.js"
 import { compilePropertiesFile, parseProperties } from "./parsePropertiesID.js"
 
-export function generateFeatureList() {
-    const enUsLang = fs.readFileSync( path.join( src, "lang", "en_us.lang" ), "utf8" )
+/** @param {string} shaderpath Path to shader */
+export function generateFeatureList( shaderpath = src ) {
+    const enUsLang = fs.readFileSync( path.join( shaderpath, "lang", "en_us.lang" ), "utf8" )
     const parsedLang = parseLang( enUsLang )
 
     const parsedLangData = Object.fromEntries(
@@ -31,7 +32,7 @@ export function generateFeatureList() {
         }
     }
 
-    const shadersProperties = fs.readFileSync( path.join( src, "shaders.properties" ), "utf8" )
+    const shadersProperties = fs.readFileSync( path.join( shaderpath, "shaders.properties" ), "utf8" )
     const parsedProperties = parseProperties( shadersProperties ).filter( blk => blk.type === "properties" )
     const allScreens = new Map
     for ( const block of parsedProperties ) {
