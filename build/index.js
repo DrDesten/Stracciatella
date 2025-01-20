@@ -18,7 +18,7 @@ const changes = new Changes( src )
 
 // Command line Options
 const options = parseArgv( {
-    "feature-list": {},
+    "feature-list": { path: src },
     "palette": {},
     persistent: false,
     force: false,
@@ -92,7 +92,7 @@ changes.addUnconditionalListener( () => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if ( options.command === "feature-list" ) {
-    generateFeatureList()
+    generateFeatureList( options["feature-list"].path )
     process.exit()
 }
 if ( options.command === "palette" ) {
