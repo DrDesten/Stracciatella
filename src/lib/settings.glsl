@@ -8,6 +8,12 @@ swamp colors?
 #define OPT_SAFE (AGRESSIVE_OPTIMISATION >= 1)
 #define OPT_UNSAFE (AGRESSIVE_OPTIMISATION >= 2)
 
+// Patches
+
+#if !defined IS_IRIS && MC_VERSION <= 11603
+#define COLORED_LIGHTS_TEXTURE_SIZE_COMPATIBILTY 
+#endif
+
 ///////////////////////////////////////////////////////////
 // ATMOSPHERICS
 ///////////////////////////////////////////////////////////

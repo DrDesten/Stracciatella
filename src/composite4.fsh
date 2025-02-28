@@ -6,9 +6,6 @@
 #include "/core/transform.glsl"
 #include "/lib/colored_lights.glsl"
 
-const vec2 pixel = vec2(1) / LIGHTMAP_COLOR_RES;
-vec2       coord = gl_FragCoord.xy * pixel;
-
 #ifdef COLORED_LIGHTS
 
 const bool colortex4MipmapEnabled = true;
@@ -19,6 +16,26 @@ uniform sampler2D colortex6;
 
 uniform int frameCounter;
 uniform float nearInverse;
+
+#endif 
+
+#if defined COLORED_LIGHTS_TEXTURE_SIZE_COMPATIBILTY
+// On Optifine 1.8.9 gl_FragCoord gives incorrect values. 
+// I assume optifine creates a 32x32 instead of the specified 32x18 buffer, causing the issue.
+in vec2 coord;
+
+#undef LIGHTMAP_COLOR_RES
+vec2 LIGHTMAP_COLOR_RES = vec2(textureSize(colortex4, 0));
+vec2 pixel = 1 / LIGHTMAP_COLOR_RES;
+
+#else
+
+const vec2 pixel = vec2(1) / LIGHTMAP_COLOR_RES;
+vec2       coord = gl_FragCoord.xy * pixel;
+
+#endif 
+
+#ifdef COLORED_LIGHTS
 
 /* vec3 gauss3x3(sampler2D tex, vec2 coord, vec2 pix) {
 	return texture(tex, coord + .5 * pix.xy).rgb * .25 +
@@ -31,7 +48,7 @@ vec3 gauss3x3(sampler2D tex, vec2 coord, vec2 pix) {
     vec3 b = texture(tex, coord - .5 * pix.xy).rgb;
     vec3 c = texture(tex, coord + .5 * vec2(pix.x, -pix.y)).rgb;
     vec3 d = texture(tex, coord + .5 * vec2(-pix.x, pix.y)).rgb;
-	return a * .25 + (b * .25 + (c * .25 + (d * .25)));
+	return a * .25 + b * .25 + c * .25 + d * .25;
 }
 vec4 gauss3x3full(sampler2D tex, vec2 coord, vec2 pix) {
 	vec4 a = texture(tex, coord + .5 * pix.xy);
@@ -75,14 +92,17 @@ void main() {
 	vec4 prevProj   = reprojectScreen(screenPos);
 	vec2 prevCoord  = prevProj.xy;
 
-	vec4  prevColRaw = textureBicubic(colortex4, prevProj.xy, LIGHTMAP_COLOR_RES, 1./LIGHTMAP_COLOR_RES);
+#if defined COLORED_LIGHTS_TEXTURE_SIZE_COMPATIBILTY
+	vec4  prevColRaw = gauss3x3full(colortex4, prevCoord, pixel * 16.);
+#else 
+	vec4  prevColRaw = textureBicubic(colortex4, prevCoord, LIGHTMAP_COLOR_RES, 1./LIGHTMAP_COLOR_RES);
+#endif
 	vec3  prevCol    = oklab2rgb(prevColRaw.rgb);
 	float prevDepth  = prevColRaw.a;
 
 	//vec2 mipCoords = coord / 81 + (2./3. + 2./9. + 2./27. + 2./81.);
 	vec2  mipCoords = coord / 16 + (1./2 + 1./4 + 1./8 + 1./16) - screenSizeInverse;
 	float lod       = max(0, log2(avg((screenSize / 16) / LIGHTMAP_COLOR_RES)) + LIGHTMAP_COLOR_LOD_BIAS);
-	vec2  jitter    = R2(frameCounter%1000) * (pixel / 32) - ((pixel / 32) * .5);
 	vec3  newColor  = gauss3x3Lod(colortex6, mipCoords, screenSizeInverse, lod);
 
 	// Improves Accumulation by guessing pixel age and sample importance (there is no buffer space left for pixel age)
@@ -93,13 +113,13 @@ void main() {
 
 	#if LIGHTMAP_COLOR_REJECTION == 0
 	// Weak Rejection (coordinates and depth, high tolerances)
-	float rejection = max(saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -2 + 1), saturate( abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse)) * -0.25 + 1 ));
+	float rejection = max(saturate(sqmag(saturate(prevCoord) - prevCoord) * -2 + 1), saturate( abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse)) * -0.25 + 1 ));
 	#elif LIGHTMAP_COLOR_REJECTION == 1
 	// Normal Rejection (coordinates and depth, normal tolarance)
-	float rejection = max(saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -4 + 1), saturate( abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse)) * -0.5 + 1 ));
+	float rejection = max(saturate(sqmag(saturate(prevCoord) - prevCoord) * -4 + 1), saturate( abs(linearizeDepthf(prevDepth, nearInverse) - linearizeDepthf(prevProj.z, nearInverse)) * -0.5 + 1 ));
 	#elif LIGHTMAP_COLOR_REJECTION == 2
 	// Strong Rejection (only coordinates, no fallback)
-	float rejection = saturate(sqmag(saturate(prevProj.xy) - prevProj.xy) * -4 + 1);
+	float rejection = saturate(sqmag(saturate(prevCoord) - prevCoord) * -4 + 1);
 	#endif
 
 	// if the mix blend is 0, new color is used
