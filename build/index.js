@@ -80,14 +80,14 @@ changes.addChangeListener( ["block.properties", "item.properties", "entity.prope
 } )
 
 // Generate palette file
-changes.addUnconditionalListener( () => {
+/* changes.addUnconditionalListener( () => {
     const dstpath = path.join( shaders, "lib", "palette.glsl" )
     const palette = generatePaletteColors()
     const file = GLSL.guard( GLSL.constant( "CL_PALETTE", GLSL.array( palette ) ) ).string
     fs.mkdirSync( path.dirname( dstpath ), { recursive: true } )
     fs.writeFileSync( dstpath, file )
     console.info( "Generated color palette" )
-} )
+} ) */
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
