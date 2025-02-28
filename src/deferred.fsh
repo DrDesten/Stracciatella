@@ -28,11 +28,18 @@ uniform float frameTimeCounter;
 uniform float customLightmapBlend;
 
 #ifdef COLORED_LIGHTS
+
 const bool colortex4MipmapEnabled = true;
 uniform sampler2D colortex4; 
 #if defined DEBUG && DEBUG_MODE == 2
 uniform sampler2D colortex5;
 #endif
+
+#if defined COLORED_LIGHTS_TEXTURE_SIZE_COMPATIBILTY
+#undef LIGHTMAP_COLOR_RES
+vec2 LIGHTMAP_COLOR_RES = vec2(textureSize(colortex4, 0));
+#endif
+
 #endif
 
 flat in vec4 handLight;
@@ -190,6 +197,7 @@ void main() {
 		blockLightColor  = saturate(applyVibrance(blockLightColor, LIGHTMAP_COLOR_VIBRANCE));
 
 		float dist = sqmag(playerPos);
+
 		#ifdef IS_IRIS
 
 		float falloff = smoothstep(0.05, 1, exp2( -dist * 0.03 / handLight.a ));

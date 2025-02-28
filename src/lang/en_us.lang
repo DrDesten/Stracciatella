@@ -463,6 +463,7 @@ option.DEBUG_BLEND=Debug View Opacity
 
 option.DEBUG_BUFFER_INDEX=Buffer
 prefix.DEBUG_BUFFER_INDEX=colortex
+option.DEBUG_BUFFER_INDEX.comment=§ncolortex0:§r Main. §ncolortex1:§r Lightmap, AO and Emission. §ncolortex2:§r LUT. §ncolortex3:§r Rain Stencil. §ncolortex4:§r Colored Lights (Main). §ncolortex5:§r Colored Lights (Input). §ncolortex6:§r Colored Lights (Mipmap).
 option.DEBUG_BUFFER_CHANNELS=Buffer > Channel
 value.DEBUG_BUFFER_CHANNELS.0=RGB / XYZ
 value.DEBUG_BUFFER_CHANNELS.1=R / X
