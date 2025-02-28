@@ -471,6 +471,7 @@ value.DEBUG_BUFFER_CHANNELS.3=B / Z
 value.DEBUG_BUFFER_CHANNELS.4=A / W
 
 option.DEBUG_LIGHTMAP_MODE=Lightmap > View
+option.DEBUG_LIGHTMAP_MODE.comment=§nLightmap + AO:§r Blocklight: R, Skylight: G, AO: B. §nLightmap:§r Blocklight: R, Skylight: G. §nAO:§r AO: RGB. §nEmission:§r Emission: RGB.
 value.DEBUG_LIGHTMAP_MODE.0=Lightmap + AO
 value.DEBUG_LIGHTMAP_MODE.1=Lightmap
 value.DEBUG_LIGHTMAP_MODE.2=AO
@@ -490,7 +491,6 @@ screen.DEBUG_DUMP=Ze Dumpster
 
 option.SHADER_NAME=Stracciatella Shaders
 value.SHADER_NAME.0=v1.6
-value.SHADER_NAME.1=§c§lfrom §6§lTogo §2§lwith§f ❤
 
 profile.VANILLA=Vanilla
 profile.DEFAULT=Default
