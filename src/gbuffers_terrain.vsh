@@ -6,7 +6,7 @@
 
 uniform float  frameTimeCounter;
 
-#if defined WAVING_BLOCKS || defined WAVING_LIQUIDS || defined RAIN_PUDDLES
+#if defined HDR_EMISSIVES || defined WAVING_BLOCKS || defined WAVING_LIQUIDS || defined RAIN_PUDDLES
 	#include "/lib/vertex_transform.glsl"
 #else
 	#include "/lib/vertex_transform_simple.glsl"
