@@ -42,7 +42,7 @@ const Tokens = [
     new TokenMatcher( TokenType.Whitespace, /([^\S\r\n]|\r(?!\n))+/, { ignore: true } ),
     new TokenMatcher( TokenType.EscapedNewline, /\\\r?\n/, { ignore: true } ),
 
-    new TokenMatcher( TokenType.Ident, /[[<]?[a-zA-Z_][a-zA-Z0-9_\-/]*(:[a-zA-Z_][a-zA-Z0-9_\-/]*(=[a-zA-Z_][a-zA-Z0-9_\-/]*)?)*[\]>]?/ ),
+    new TokenMatcher( TokenType.Ident, /[[<]?[a-zA-Z_][a-zA-Z0-9_\-/]*(:[a-zA-Z_][a-zA-Z0-9_\-/]*(=[a-zA-Z0-9_\-/]+)?)*[\]>]?/ ),
     new TokenMatcher( TokenType.Number, /[+-]?\d+/, token => token.props.value = +token.text ),
 
     new TokenMatcher( TokenType.Newline, /(\r?\n)+/, { merge: true } ),
@@ -179,7 +179,7 @@ class PropertiesParser extends Parser {
         return new Preprocessor( token.toPrimitive() )
     }
     parseProperty() {
-        
+
     }
 }
 
