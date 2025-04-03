@@ -395,6 +395,10 @@ option.DAMAGE_EFFECT_REDNESS=Damage Effect §cRedness§r
 option.DAMAGE_EFFECT_DISPLACEMENT=Damage Effect D§li§rs§lp§rl§la§rc§le§rm§le§rn§lt§r
 option.DAMAGE_EFFECT_DISPLACEMENT_SIZE=Damage Effect Cell Size
 
+option.SPEED_EFFECT=§o§lSpeed§r Effect
+option.SPEED_EFFECT.comment=Adds streaks when moving fast.
+option.SPEED_EFFECT_STRENGTH=Speed Effect Strength
+option.SPEED_EFFECT_STREAK_LENGTH=Speed Effect Streak Length
 
 ///////////////////////////////////////////////////////////
 // OTHER

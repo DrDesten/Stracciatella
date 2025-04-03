@@ -11,7 +11,6 @@ uniform float customLightmapBlend;
 flat in vec2 lmcoord;
 in      vec2 coord;
 flat in vec4 glcolor;
-in      vec3 viewPos;
 
 /* DRAWBUFFERS:01 */
 layout(location = 0) out vec4 FragOut0;
