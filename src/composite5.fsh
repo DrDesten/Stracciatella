@@ -27,6 +27,14 @@ uniform sampler2D colortex3; // Rain Effects
 #include "/core/transform.glsl"
 #include "/lib/sky.glsl"
 
+#ifdef SPEED_EFFECT
+#include "/core/misc.glsl"
+uniform vec3  cameraMove;
+uniform vec3  cameraMoveSmooth;
+uniform float cameraSpeedSmooth;
+uniform float cameraSpeedLinesFade;
+#endif
+
 uniform int   isEyeInWater;
 uniform float far;
 uniform float daynight;
@@ -118,7 +126,11 @@ void main() {
 #endif
 
 	vec3 viewPos;
+#ifdef SPEED_EFFECT
+	bool requireViewPos = isEyeInWater > 0 || blindness > 0 || darknessFactor > 0 || sqmag(cameraMoveSmooth) > 0.05;
+#else
 	bool requireViewPos = isEyeInWater > 0 || blindness > 0 || darknessFactor > 0;
+#endif
 	if (requireViewPos) {
 		float depth = getDepth(coord);
 		#if defined DISTANT_HORIZONS
@@ -147,6 +159,27 @@ void main() {
 	if (blindness > 0 || darknessFactor > 0) {
 		color *= 1. / (sqmag(viewPos) * max(blindness, darknessFactor * 0.1) + 1);
 	}
+
+#ifdef SPEED_EFFECT
+	// Anime Speed Lines
+	if (sqmag(cameraMoveSmooth) > 0.05) {
+		vec3 playerPos      = toPlayer(viewPos);
+		vec3 playerDir      = normalize(playerPos);
+		vec3 cameraMoveDir  = normalize(cameraMoveSmooth);
+
+		vec2  cCoords = cylinder(playerDir, cameraMoveDir, arbitraryTangent(cameraMoveDir), 2);
+		vec3  nCoords = vec3(
+			cCoords.x * 0.4 + frameTimeCounter * 15, 
+			cCoords.y * 50, 
+			frameTimeCounter
+		);
+		float lowerthresh = clamp(1 / (1 + cameraSpeedLinesFade * 0.05) + 0.1, 1. - SPEED_EFFECT_STRENGTH, 1.0);
+		float upperthresh = min(lowerthresh + 0.02, 1);
+		float noise       = smoothstep(lowerthresh, upperthresh, snoise(nCoords));
+
+		color = mix(color, vec3(1), noise / (1 + sqsq(cCoords.x * (1./SPEED_EFFECT_STREAK_LENGTH))));
+	}
+#endif
 
 #if CONTRAST != 0
 	const float contrastAmount = 1 / (1 - (CONTRAST / 300. + 0.5)) - 1;
