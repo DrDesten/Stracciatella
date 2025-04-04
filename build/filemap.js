@@ -2,12 +2,17 @@ import path from "path"
 import { Semver } from "./semver.js"
 
 export class ShaderFile {
-    /** @param {string} filename @param {BigInt} targetVersion @param {string[]} includes @param {string[]} defines   */
-    constructor( filename, targetVersion, includes = [], defines = [] ) {
+    /** @param {string} filename @param {BigInt} targetVersion @param {string[]} [includes] @param {string[]} [defines] @param {{version?:string}} [opts]  */
+    constructor( filename, targetVersion, includes = [], defines = [], opts = {} ) {
         this.filename = filename
         this.targetVersion = targetVersion
         this.includes = includes
         this.defines = defines
+
+        this.opts = {
+            version: "150 compatibility",
+            ...opts,
+        }
 
         this.addDefine( {
             ".gsh": "GEO",
@@ -29,7 +34,7 @@ export class ShaderFile {
 
     generate() {
         let content = ""
-        content = "#version 150 compatibility\n#extension GL_ARB_explicit_attrib_location : enable"
+        content = `#version ${this.opts.version}\n#extension GL_ARB_explicit_attrib_location : enable`
         for ( const define of this.defines ) {
             content += `\n#define ${define}`
         }
@@ -73,6 +78,11 @@ function gbuffers( filename, version ) {
         return [
             simpleShaderFile( filename, version ),
             new ShaderFile( filename.replace( "gbuffers_terrain", "gbuffers_terrain_cutout" ), version, [`/${filename}`], ["CUTOUT"] ),
+        ]
+    }
+    if ( filename.startsWith( "gbuffers_line" ) ) {
+        return [
+            new ShaderFile( filename, version, [`/${filename}`], [], { version: "330 compatibility" } )
         ]
     }
 
