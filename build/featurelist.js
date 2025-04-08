@@ -9,24 +9,27 @@ export function generateFeatureList( shaderpath = src ) {
     const enUsLang = fs.readFileSync( path.join( shaderpath, "lang", "en_us.lang" ), "utf8" )
     const parsedLang = parseLang( enUsLang )
 
-    const parsedLangData = Object.fromEntries(
-        parsedLang.map( prop => [prop.key[1], { name: "", comment: "", values: null }] )
+    const parsedLangScreens = Object.fromEntries(
+        parsedLang.map( prop => [prop.key[1], { name: prop.key[1], comment: "", values: null }] )
+    )
+    const parsedLangOptions = Object.fromEntries(
+        parsedLang.map( prop => [prop.key[1], { name: prop.key[1], comment: "", values: null }] )
     )
     for ( let { key: [type, id, sub], value } of parsedLang ) {
         if ( type === "screen" && sub !== "comment" ) {
-            parsedLangData[id].name = value
+            parsedLangScreens[id].name = value
             continue
         }
         if ( type === "value" && sub !== "comment" ) {
-            parsedLangData[id].values ??= {}
-            parsedLangData[id].values[sub] = value
+            parsedLangOptions[id].values ??= {}
+            parsedLangOptions[id].values[sub] = value
             continue
         }
         if ( type === "option" ) {
             if ( sub === "comment" ) {
-                parsedLangData[id].comment = value
+                parsedLangOptions[id].comment = value
             } else {
-                parsedLangData[id].name = value
+                parsedLangOptions[id].name = value
             }
             continue
         }
@@ -40,18 +43,35 @@ export function generateFeatureList( shaderpath = src ) {
             const key = p.key[1] ?? ""
             const values = p.value
                 .filter( x => x !== "<empty>" && x !== "*" )
-                .map( x => x.replace( /\W/g, "" ) )
             allScreens.set( key, values )
         }
     }
 
     function createScreen( keys ) {
+        function isScreen( key ) {
+            return /\[\w+\]/.test( key )
+        }
+        function getScreenKey( key ) {
+            return key.match( /\[(\w+)\]/ )[1]
+        }
+
         // Create nested options screen structure
         const screen = {}
         for ( const key of keys ) {
-            screen[key] = parsedLangData[key] ?? { name: key }
-            if ( allScreens.has( key ) ) {
-                screen[key].children = createScreen( allScreens.get( key ) )
+
+            if ( isScreen( key ) ) {
+                const screenKey = getScreenKey( key )
+
+                screen[screenKey] = parsedLangScreens[screenKey] ?? { name: screenKey }
+
+                if ( allScreens.has( screenKey ) ) {
+                    screen[screenKey].children = createScreen( allScreens.get( screenKey ) )
+                }
+
+            } else {
+
+                screen[key] = parsedLangOptions[key] ?? { name: key }
+
             }
         }
 
@@ -78,6 +98,8 @@ export function generateFeatureList( shaderpath = src ) {
         return screen
     }
     const screen = createScreen( allScreens.get( "" ) )
+    console.log( allScreens )
+    console.log( screen )
 
     function generateFeatureList( screen, indent = -1 ) {
         let string = ""
