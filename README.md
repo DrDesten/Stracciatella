@@ -42,6 +42,8 @@ You can now select `Stracciatella` (same name as the folder) from within Minecra
 
 ### Fog and Sky
 
+[Gallery](https://modrinth.com/shader/stracciatella-shaders/gallery)
+
 - Sun and Moon Size
 - Sun Angle
 - Horizon Cutoff for Sun and Moon
