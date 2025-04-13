@@ -1,3 +1,10 @@
+#if defined PP_PREPASS
+
+#include "noprepass.glsl"
+
+#endif
+#if defined PP_MAIN
+
 #include "/lib/settings.glsl"
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
@@ -6,6 +13,12 @@
 #include "/core/transform.glsl"
 
 vec2 coord = gl_FragCoord.xy * screenSizeInverse;
+
+uniform sampler2D colortex7;
+const bool colortex0MipmapEnabled = true;
+const bool colortex7MipmapEnabled = true;
+vec4 getBuffer(vec2 coord) { return texture(colortex7, coord); }
+vec4 getBufferLod(vec2 coord, float lod) { return textureLod(colortex7, coord, lod); }
 
 uniform float nearInverse;
 uniform float near;
@@ -50,27 +63,34 @@ void main() {
 	// Get Color Information
 	
 	vec3  color = getAlbedo(coord);
+	
+	float brightness = luminance(color);
+	color           /= brightness;
+	color 			 = min(color, 1);
+
+	color *= 0.75;
+	color  = applySaturation(color, 1.5);
 
 	// Noise
 
-	vec2  lineCoord = gl_FragCoord.xy;
+	vec2  lineCoord     = gl_FragCoord.xy;
 	float noiseStepFast = mod(floor(frameTimeCounter * 8), 5);
 	float noiseStepSlow = mod(floor(frameTimeCounter * 3), 5);
 
 	vec2 detailNoise = ( noise2(lineCoord / 4 + noiseStepFast) * 2 - 1 );
 	vec2 coarseNoise = ( noise2(lineCoord / 8 + noiseStepSlow) * 2 - 1 );
 
-	vec2 noiseCoord = coord + detailNoise * screenSizeInverse;
+	vec2 ncDetail = coord + detailNoise * screenSizeInverse;
 
 	// Get Depth Information
 
 	float depth = getDepth(coord);
 
-	float d  = getDepth(noiseCoord);
-	float dn = getDepth(noiseCoord + vec2(0, screenSizeInverse.y));
-	float ds = getDepth(noiseCoord - vec2(0, screenSizeInverse.y));
-	float de = getDepth(noiseCoord + vec2(screenSizeInverse.x, 0));
-	float dw = getDepth(noiseCoord - vec2(screenSizeInverse.x, 0));
+	float d  = getDepth(ncDetail);
+	float dn = getDepth(ncDetail + vec2(0, screenSizeInverse.y));
+	float ds = getDepth(ncDetail - vec2(0, screenSizeInverse.y));
+	float de = getDepth(ncDetail + vec2(screenSizeInverse.x, 0));
+	float dw = getDepth(ncDetail - vec2(screenSizeInverse.x, 0));
 
 	float maxDepthDiff =
 		max( max(
@@ -158,15 +178,6 @@ void main() {
 	float screenTangentAlign        = dot(normalize(screenLineDir), normalize(screenLineTangent));
 	float correctedScreenLineLength = screenLineLength * sqrt( 1 - sq(acos(screenTangentAlign) / HALF_PI - 1) );
 
-	// Process Color
-
-	float brightness = luminance(color);
-	color           /= brightness;
-	color 			 = min(color, 1);
-
-	color *= 0.75;
-	color  = applySaturation(color, 1.5);
-
 	int lineLevel = int(brightness * 8 + 0.5);
 
 	// Effect
@@ -176,6 +187,10 @@ void main() {
 			color *= float(int(gl_FragCoord.x) % 2);
 		case 1: 
 			color *= float(int(gl_FragCoord.y) % 2);
+		/* case 2: 
+			color *= float(int(gl_FragCoord.x) % 2) * 0.25 + 0.75;
+		case 3: 
+			color *= float(int(gl_FragCoord.y) % 2) * 0.25 + 0.75; */
 		/* case 2:
 			color *= lines((lineCoord + detailNoise * 0.5) / 4, screenLineDir )  * 0.5 + 0.5; 
 		case 3:
@@ -210,3 +225,5 @@ void main() {
  */
 	FragOut0   = vec4(color, 1);
 }
+
+#endif

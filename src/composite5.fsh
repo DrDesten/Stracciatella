@@ -9,6 +9,9 @@
 #include "/core/dh/transform.glsl"
 #include "/core/dh/textures.glsl"
 
+#include "/core/transform.glsl"
+#include "/lib/sky.glsl"
+
 const float wetnessHalflife = 200;
 const float drynessHalflife = 400;
 
@@ -23,9 +26,6 @@ uniform sampler2D colortex2; // LUT
 #if RAIN_REFRACTION != 0
 uniform sampler2D colortex3; // Rain Effects
 #endif
-
-#include "/core/transform.glsl"
-#include "/lib/sky.glsl"
 
 #ifdef SPEED_EFFECT
 #include "/core/misc.glsl"
