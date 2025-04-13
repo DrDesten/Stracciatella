@@ -296,6 +296,7 @@ const float lightmap_complex_blocklight_blend_curve = ( ((100 - LIGHTMAP_COMPLEX
 ///////////////////////////////////////////////////////////
 
 //#define POST_PROCESS_SHADERS
+#define PP_PROGRAM 1 // 1:comic 2:bubblegum [1 2]
 
 ///////////////////////////////////////////////////////////
 // UTILITIES AND EFFECTS
