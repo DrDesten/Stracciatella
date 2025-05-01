@@ -1,8 +1,7 @@
 #include "/lib/settings.glsl"
 #include "/core/math.glsl"
 #include "/lib/vertex_transform_simple.glsl"
-
-uniform vec3 up;
+#include "/lib/lightmap_vertex.glsl"
 
 flat out vec2 lmcoord;
 out      vec2 coord;
@@ -14,5 +13,5 @@ void main() {
 	lmcoord      = getLmCoord();
 
 	glcolor      = gl_Color;
-	glcolor.rgb *= dot(up, getNormal()) * 0.35 + 0.65;
+	glcolor.rgb *= getEntityShading(getNormal());
 }

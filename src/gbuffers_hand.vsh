@@ -2,8 +2,8 @@
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
 #include "/lib/vertex_transform_simple.glsl"
+#include "/lib/lightmap_vertex.glsl"
 
-uniform vec3 up;
 uniform int  heldItemId;
 
 flat out vec2  lmcoord;
@@ -17,7 +17,7 @@ void main() {
 	lmcoord      = getLmCoord();
 
 	glcolor      = gl_Color;
-	glcolor.rgb *= dot(up, getNormal()) * 0.35 + 0.65;
+	glcolor.rgb *= getEntityShading(getNormal());
 
 	switch (getID(heldItemId)) {
 		case 20:

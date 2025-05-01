@@ -185,7 +185,12 @@ option.LIGHTMAP_BLOCKLIGHT_CONTRAST=Blocklight Gamma
 option.LIGHTMAP_BLOCKLIGHT_CONTRAST.comment=Higher = Darker. Lower = Brighter.
 
 option.LIGHTMAP_MINIMUM_LIGHT=Minimum Light
-option.LIGHTMAP_MINIMUM_LIGHT.comment=Restricts blocklight to never go below this value. Prevents caves from being pitch black (unless you set it to zero that is)
+option.LIGHTMAP_MINIMUM_LIGHT.comment=Sets the minimum lightmap luminance. Prevents caves from being pitch black (unless you set it to zero that is)
+option.LIGHTMAP_NIGHT_VISION_MINIMUM_LIGHT=Night Vision Minimum Light
+option.LIGHTMAP_NIGHT_VISION_MINIMUM_LIGHT.comment=Sets the minimum lightmap luminance when the night vision effect is applied.
+
+option.LIGHTMAP_TERRAIN_SHADING=Terrain Shading
+option.LIGHTMAP_TERRAIN_SHADING.comment=Vanilla-Style Terrain Shading. Useful when smooth lighting is disabled.
 
 option.COLORED_LIGHTS=§cC§6o§el§ao§br§de§cd§r Lights
 option.COLORED_LIGHTS.comment=Enabled colored lighting on blocks

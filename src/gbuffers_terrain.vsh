@@ -3,6 +3,7 @@
 #include "/lib/utils.glsl"
 #include "/lib/time.glsl"
 #include "/core/kernels.glsl"
+#include "/lib/lightmap_vertex.glsl"
 
 uniform float  frameTimeCounter;
 
@@ -73,8 +74,8 @@ void main() {
 	gl_Position = getPosition();
 	basecoord   = getCoord();
 	lmcoord 	= getLmCoord();
-	glcolor 	= gl_Color;
 	viewPos 	= getView();
+	glcolor 	= gl_Color;
 
 	mcEntity    = int(max(0,mc_Entity.x));
 	int blockId = getID(mcEntity);
@@ -158,6 +159,12 @@ void main() {
 		default:
 			oreBlink = 0;
 	}
+
+#endif
+
+#ifdef LIGHTMAP_TERRAIN_SHADING
+
+	glcolor.a *= getTerrainShading(gl_Normal, blockId);
 
 #endif
 	
