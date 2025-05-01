@@ -21,7 +21,7 @@ layout(location = 0) out vec4 FragOut0;
 layout(location = 1) out vec2 FragOut1;
 #endif
 void main() {
-    bool isCloud =  worldPos.y > 500; 
+    bool isCloud =  worldPos.y > 400; 
 #ifdef DH_TERRAIN_DISCARD
     if ( !isCloud && discardDH(worldPos, DH_TERRAIN_DISCARD_TOLERANCE) ) {
         discard;
