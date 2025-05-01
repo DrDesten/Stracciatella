@@ -2,7 +2,6 @@
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
 #include "/lib/time.glsl"
-#include "/core/kernels.glsl"
 #include "/lib/lightmap_vertex.glsl"
 
 uniform float  frameTimeCounter;

@@ -1,7 +1,6 @@
 #include "/lib/settings.glsl"
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
-#include "/core/kernels.glsl"
 
 #if (defined DISTANT_HORIZONS) || defined WAVING_BLOCKS || defined WAVING_LIQUIDS
 #include "/lib/vertex_transform.glsl"

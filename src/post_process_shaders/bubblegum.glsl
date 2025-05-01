@@ -1,7 +1,6 @@
 
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
-#include "/core/kernels.glsl"
 #include "/lib/composite_basics.glsl"
 #include "/core/transform.glsl"
 

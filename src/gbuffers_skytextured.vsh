@@ -3,7 +3,6 @@
 
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
-#include "/core/kernels.glsl"
 #include "/lib/vertex_transform_simple.glsl"
 
 #ifdef SUN_SIZE_CHANGE
