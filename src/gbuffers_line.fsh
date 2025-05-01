@@ -1,18 +1,15 @@
 #include "/lib/settings.glsl"
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
-#include "/core/kernels.glsl"
 #include "/lib/gbuffers_basics.glsl"
 
-flat in vec4 glcolor;
-
-#if BLOCK_OUTLINE_STYLE == 2
 uniform float frameTimeCounter;
-#endif
 
 #if BLOCK_OUTLINE_STYLE != 0
 uniform int renderStage;
 #endif
+
+flat in vec4 glcolor;
 
 /* DRAWBUFFERS:01 */
 layout(location = 0) out vec4 FragOut0;

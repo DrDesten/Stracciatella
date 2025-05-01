@@ -3,7 +3,6 @@
 #include "/lib/settings.glsl"
 #include "/core/math.glsl"
 #include "/lib/utils.glsl"
-#include "/core/kernels.glsl"
 #include "/lib/vertex_transform.glsl"
 
 out vec2 coord;

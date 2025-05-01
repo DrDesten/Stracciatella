@@ -177,10 +177,10 @@ vec3 getFogSkyColor(vec3 viewDir, vec3 playerDir) {
 
 #include "/core/transform.glsl"
 
-const float FAGlobalDensity = FA_GLOBAL_DENSITY;
+const float FAGlobalDensity    = FA_GLOBAL_DENSITY;
 const float FAOverworldDensity = FAGlobalDensity * FA_OVERWORLD_DENSITY_FACTOR;
-const float FANetherDensity = FAGlobalDensity * FA_NETHER_DENSITY_FACTOR;
-const float FAEndDensity = FAGlobalDensity * FA_END_DENSITY_FACTOR;
+const float FANetherDensity    = FAGlobalDensity * FA_NETHER_DENSITY_FACTOR;
+const float FAEndDensity       = FAGlobalDensity * FA_END_DENSITY_FACTOR;
 
 // Height fog density based on y-value
 float FE_density(float y, float df) {
