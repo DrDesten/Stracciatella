@@ -156,9 +156,13 @@ void main() {
 		color        = mix(color, fogColor * 0.75, fogFac);
 	}
 
-	if (blindness > 0 || darknessFactor > 0) {
-		color *= 1. / (sqmag(viewPos) * max(blindness, darknessFactor * 0.1) + 1);
+	if (blindness > 0) {
+		color *= 1. / (sqmag(viewPos) * blindness + 1);
 	}
+	if (darknessFactor > 0) {
+		color *= 1. / (sq(sqmag(viewPos)) * 0.0001 * darknessFactor + 1);
+	}
+
 
 #ifdef SPEED_EFFECT
 	// Anime Speed Lines
