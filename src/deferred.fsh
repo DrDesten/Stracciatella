@@ -13,11 +13,8 @@
 
 uniform sampler2D colortex1;
 
-#if (defined FOG || defined CAVE_SKY) && defined OVERWORLD
 uniform ivec2 eyeBrightnessSmooth;
-#endif
-
-uniform vec3 sunDir;
+uniform vec3  sunDir;
 
 #ifdef CUSTOM_STARS
 #include "/lib/stars.glsl"

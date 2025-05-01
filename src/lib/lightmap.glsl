@@ -94,7 +94,6 @@ vec3 getCustomLightmap(vec3 lmcoord /* lmcoord + AO */, float customLightmapBlen
         #if MC_VERSION >= 11900
             if (darknessFactor > 0) {
 
-                blocklightColor *= sqsq(lmcoord.x);
                 float timeOszillator  = sin(frameTimeCounter) * 0.5 + .5;
                 float lightOszillator = sin(lmcoord.x * 15 + (frameTimeCounter * 2));
                 float glitter         = saturate(lightOszillator * 500 - 495);
@@ -143,8 +142,8 @@ vec3 getCustomLightmap(vec3 lmcoord /* lmcoord + AO */, float customLightmapBlen
             vec3  blocklightColor = mix(lightmapComplexBlockDark, lightmapComplexBlockBright, lmcoord.x);
         #endif
 
-        //blocklightExtraColor  = blocklightExtraColor * (luminance(lightmapBlock) / luminance(blocklightExtraColor));
-        blocklightExtraColor  = saturate(blocklightExtraColor);
+        blocklightExtraColor  = blocklightExtraColor * ( luminance(lightmapBlock) / luminance(blocklightExtraColor) );
+        //blocklightExtraColor  = saturate(blocklightExtraColor);
         blocklightColor       = mix(
             lightmapBlock, 
             saturate(oklab2rgb(vec3(rgb2oklab(lightmapBlock).x, rgb2oklab(blocklightExtraColor).yz))), 
@@ -154,7 +153,6 @@ vec3 getCustomLightmap(vec3 lmcoord /* lmcoord + AO */, float customLightmapBlen
         #if MC_VERSION >= 11900
             if (darknessFactor > 0) {
 
-                blocklightColor *= sqsq(lmcoord.x);
                 float timeOszillator  = sin(frameTimeCounter) * 0.5 + .5;
                 float lightOszillator = sin(lmcoord.x * 15 + (frameTimeCounter * 2));
                 float glitter         = saturate(lightOszillator * 500 - 495);
