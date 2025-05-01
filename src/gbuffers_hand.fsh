@@ -10,9 +10,9 @@
 
 uniform float customLightmapBlend;
 
-flat in vec2 lmcoord;
-in vec2 coord;
-flat in vec4 glcolor;
+flat in vec2  lmcoord;
+in      vec2  coord;
+flat in vec4  glcolor;
 flat in float emissiveness;
 
 /* DRAWBUFFERS:01 */
