@@ -91,11 +91,11 @@ layout(location = 1) out vec2 FragOut1;
 #endif
 void main() {
 	
-#if (defined DISTANT_HORIZONS)
+#if defined DISTANT_HORIZONS
 #ifdef DH_DISCARD_SMOOTH
-	float viewDistSq = sqmag(viewPos);
-	float viewDistBlend = smoothstep(far*far * 0.75, far*far, viewDistSq);
-	if (Bayer4(gl_FragCoord.xy) < viewDistBlend) discard;
+	float playerDistSq    = sqmag(toPlayer(viewPos).xz);
+	float playerDistBlend = smoothstep(far*far * 0.75, far*far, playerDistSq);
+	if (Bayer4(gl_FragCoord.xy) < playerDistBlend) discard;
 #endif
 #endif
 

@@ -69,9 +69,9 @@ void main() {
 	
 #if defined DISTANT_HORIZONS
 #if defined DH_DISCARD_SMOOTH
-	float viewDistSq = sqmag(viewPos);
-	float viewDistBlend = smoothstep(far*far * 0.75, far*far, viewDistSq);
-	if (FragOut0.a < 0.1 || Bayer4(gl_FragCoord.xy) < viewDistBlend) discard;
+	float playerDistSq    = sqmag(toPlayer(viewPos).xz);
+	float playerDistBlend = smoothstep(far*far * 0.75, far*far, playerDistSq);
+	if (FragOut0.a < 0.1 || Bayer4(gl_FragCoord.xy) < playerDistBlend) discard;
 #elif defined DH_TRANSPARENT_DISCARD
 	if (FragOut0.a < 0.1 || !discardDH(worldPos, DH_TRANSPARENT_DISCARD_TOLERANCE)) discard;
 #endif

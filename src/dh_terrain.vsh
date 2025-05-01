@@ -63,7 +63,7 @@ void main() {
         shade = (shade - 1) * 0.5 + 1;
     }
 
-    if (worldPos.y > 500) {
+    if (worldPos.y > 400) {
         
         lmcoord.xy   = vec2(0,1);
 
