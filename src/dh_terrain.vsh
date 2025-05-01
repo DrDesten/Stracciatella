@@ -60,7 +60,7 @@ void main() {
 
     float shade = getBlockShade(playerNormal);
     if (materialId == DH_BLOCK_LEAVES) {
-        shade = (shade - 1) * 0.5 + 1;
+        shade = shade * 0.5 + 0.6;
     }
 
     if (worldPos.y > 400) {
