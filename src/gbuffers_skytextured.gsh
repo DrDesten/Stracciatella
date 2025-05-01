@@ -70,19 +70,19 @@ void main() {
 
         float progression = float(i) / (AURORA_STRIP_LENGTH - 1);
 
-        float angle = start + len * progression;
-        float seed = angle + frameTimeCounter * 0.2 + radius;
-        float offset = noise(seed) + noise(seed * 1.5) * 0.5 + noise(seed * 2) * 0.25; 
-        vec2 position = vec2(sin(angle), cos(angle)) * (radius - offset * 250);
+        float angle    = start + len * progression;
+        float seed     = angle + frameTimeCounter * 0.2 + radius;
+        float offset   = noise(seed) + noise(seed * 1.5) * 0.5 + noise(seed * 2) * 0.25; 
+        vec2  position = vec2(sin(angle), cos(angle)) * (radius - offset * 250);
 
-        gl_Position = playerToClip( vec3(position.x, AURORA_HEIGHT, position.y) );
+        gl_Position    = playerToClip( vec3(position.x, AURORA_HEIGHT, position.y) );
         gl_Position.z /= 8;
-        coord = vec2(progression, 0);
+        coord          = vec2(progression, 0);
         EmitVertex();
 
-        gl_Position = playerToClip( vec3(position.x, AURORA_HEIGHT + AURORA_SIZE, position.y) );
+        gl_Position    = playerToClip( vec3(position.x, AURORA_HEIGHT + AURORA_SIZE, position.y) );
         gl_Position.z /= 8;
-        coord = vec2(progression, 1);
+        coord          = vec2(progression, 1);
         EmitVertex();
 
     }

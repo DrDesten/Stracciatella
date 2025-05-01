@@ -119,7 +119,7 @@ void main() {
 
 	oreBlink = sin(frameTimeCounter * 3) * 0.5 + 0.5;
 
-	switch (int(blockId + 0.5)) {
+	switch (blockId) {
 
 		#ifdef BLINKING_ORES_DIAMOND
 			case 40: break;
