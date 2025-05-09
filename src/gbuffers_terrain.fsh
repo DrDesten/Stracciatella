@@ -218,8 +218,8 @@ void main() {
 		else if (anyCol)  emissiveness = saturate(max(saturate(hsv.y * 2 - 0.5), saturate(hsv.z * 2 - 1)) * 2 - 0.5);
 		else if (anyLow)  emissiveness = saturate(0.75 * hsv.z * hsv.z);
 		else if (orange)  emissiveness = saturate(peak05(fract(hsv.x + 0.45)) * 2 - 1) * saturate(hsv.z * 3 - 2);
-		else if (red)     emissiveness = saturate(brownness * 1.25 - .25) + saturate(hsv.z * 4 - 3);
-		else if (redPure) emissiveness = saturate( saturate( 5 * fract(worldPosY) - 1 ) + saturate( saturate(peak05(fract(hsv.x + .5)) * 2 - 1) * saturate( hsv.y * 2 - 1) ) * 0.5 );
+		else if (red)     emissiveness = saturate(color.r - maxc(color.gb));
+		else if (redPure) emissiveness = saturate( saturate(peak05(fract(hsv.x + .5)) * 2 - 1) * saturate( hsv.y * 2 - 1) ) * 0.5;
 		else if (redOre)  emissiveness = saturate( saturate(sq(peak05(fract(hsv.x + .5)))) * saturate( hsv.y * 2 - 1) * 0.5 );
 		else if (blue)    emissiveness = saturate(sqmag((vec3(0.57, .8, .8) - hsv) * vec3(2,2,2)) * -1 + 1) + saturate(hsv.y * -5 + 4) * saturate(hsv.z * 5 - 4) * brownness;
 		else if (purple)  emissiveness = saturate(hsv.z * 1.5 - .5) * saturate(hsv.y * 3 - 2) + sq(saturate(hsv.z * 5 - 4));
