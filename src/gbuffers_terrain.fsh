@@ -93,7 +93,7 @@ void main() {
 #if defined DISTANT_HORIZONS
 #ifdef DH_DISCARD_SMOOTH
 	float playerDistSq    = sqmag(toPlayer(viewPos).xz);
-	float playerDistBlend = smoothstep(far*far * 0.75, far*far, playerDistSq);
+	float playerDistBlend = smoothstep(far*far * .85*.85, far*far, playerDistSq);
 	if (Bayer4(gl_FragCoord.xy) < playerDistBlend) discard;
 #endif
 #endif
@@ -259,7 +259,7 @@ void main() {
 #endif
 
 #ifdef BLINKING_ORES
-	color.rgb = mix(color.rgb, sqrtf01(color.rgb) * 0.9 + 0.1, oreBlink * BLINKING_ORES_BRIGHTNESS);
+	color.rgb = mix(color.rgb, qrtf(color.rgb), oreBlink * BLINKING_ORES_BRIGHTNESS);
 #endif
 
 #if DITHERING >= 2

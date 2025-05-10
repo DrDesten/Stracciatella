@@ -117,7 +117,7 @@ void main() {
 
 #ifdef BLINKING_ORES
 
-	oreBlink = sin(frameTimeCounter * 3) * 0.5 + 0.5;
+	oreBlink = sin(frameTimeCounter * 4) * 0.5 + 0.5;
 
 	switch (blockId) {
 

@@ -40,15 +40,18 @@ void main() {
     // Discarding Logic
     
 #ifdef DH_TRANSPARENT_DISCARD
+#ifdef DH_DISCARD_SMOOTH
+	float playerDist      = sqmag(playerPos);
+	float playerDistBlend = smoothstep(sq(far * .6 - DH_TRANSPARENT_DISCARD_TOLERANCE), sq(far * .8 - DH_TRANSPARENT_DISCARD_TOLERANCE), playerDist);
+    if ( playerDistBlend <= Bayer4(gl_FragCoord.xy) ) {
+        discard;
+    }
+#else
     float borderTolerance = (materialId == DH_BLOCK_WATER ? 0 : 1e-5) + DH_TRANSPARENT_DISCARD_TOLERANCE;
     if ( discardDH(worldPos, borderTolerance) ) {
         discard;
     }
-#else
-    float fade = smoothstep( dhNearPlane, min(dhNearPlane * 2 + 32, far * 0.5), -viewPos.z ) - sq(Bayer8(gl_FragCoord.xy));
-    if ( fade < 0 ) {
-        discard;
-    }
+#endif
 #endif
 
     float depth         = texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x;
