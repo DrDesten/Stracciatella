@@ -4,6 +4,9 @@
 #include "/lib/gbuffers_basics.glsl"
 #include "/lib/dh.glsl"
 
+uniform vec3 cameraPosition;
+uniform float far;
+
 in vec2 lmcoord;
 in vec4 glcolor;
 in vec3 worldPos;
@@ -22,9 +25,16 @@ layout(location = 1) out vec2 FragOut1;
 void main() {
     bool isCloud =  worldPos.y > 400; 
 #ifdef DH_TERRAIN_DISCARD
+#ifdef DH_DISCARD_SMOOTH
+	float playerDistSq = sqmag(worldPos - cameraPosition);
+    if ( !isCloud && playerDistSq < sq(far * .85 - DH_TERRAIN_DISCARD_TOLERANCE) ) {
+        discard;
+    }
+#else
     if ( !isCloud && discardDH(worldPos, DH_TERRAIN_DISCARD_TOLERANCE) ) {
         discard;
     }
+#endif
 #endif
     
     vec4  color        = vec4(glcolor.rgb, 1);
