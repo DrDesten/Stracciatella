@@ -72,7 +72,7 @@ void main() {
 
         float angle    = start + len * progression;
         float seed     = angle + frameTimeCounter * 0.2 + radius;
-        float offset   = noise(seed) + noise(seed * 1.5) * 0.5 + noise(seed * 2) * 0.25; 
+        float offset   = snoise(seed) + snoise(seed * 1.5) * 0.5 + snoise(seed * 2) * 0.25; 
         vec2  position = vec2(sin(angle), cos(angle)) * (radius - offset * 250);
 
         gl_Position    = playerToClip( vec3(position.x, AURORA_HEIGHT, position.y) );

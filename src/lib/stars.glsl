@@ -42,7 +42,7 @@ vec4 getStars(vec3 playerDir, float starMask) {
     float starGlow  = exp(-starNoise * star_glow_size) * STAR_GLOW_AMOUNT * (customStarBlend * 3 - 2);
     stars           = saturate(stars + starGlow);
 
-    stars          *= fstep(noise(skyCoord * 10), STAR_COVERAGE, 2);
+    stars          *= fstep(snoise(skyCoord * 10), STAR_COVERAGE, 2);
     stars          *= starMask;
 
 #ifdef SHOOTING_STARS

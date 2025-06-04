@@ -41,7 +41,7 @@ void main() {
         aurora.a *= 1 - sq(sqmag(coord * 2 - 1));
         FragOut0 = vec4(aurora.rgb * aurora.a, 1);
 
-        //FragOut0.rgb = vec3(noise(coord.x * 10) * 0.5);
+        //FragOut0.rgb = vec3(snoise(coord.x * 10) * 0.5);
     }
 
 #endif
