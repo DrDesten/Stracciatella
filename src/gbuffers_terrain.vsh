@@ -59,9 +59,10 @@ out float worldPosY;
 #endif
 
 #ifdef RAIN_PUDDLES
-uniform float rainPuddle;
-out     float puddle;
-out     vec2  blockCoords;
+uniform  float rainPuddle;
+out      float puddle;
+flat out int   puddleParallax;
+out      vec2  blockCoords;
 #endif
 
 #ifdef BLINKING_ORES
@@ -251,15 +252,17 @@ void main() {
 
 		vec3 wPos = worldPos;
 
-		blockCoords = floor(wPos.xz + 0.5);
+		blockCoords = round(wPos.xz);
 
 		puddle  = saturate(lmcoord.y * 32 - 30);                     // Only blocks exposed to sky
 		puddle *= saturate(gl_Normal.y * 0.5 + 0.5);                 // Only blocks facing up
-		puddle *= float(blockId != 13 && blockId != 2);              // Not Leaves and not lava
+		puddle *= float(!(blockId == 2 || blockId == 13 || blockId == 17)); // No lava, leaves, fire
 
 		puddle *= saturate(noise(wPos.xz * RAIN_PUDDLE_SIZE) * RAIN_PUDDLE_OPACITY - (RAIN_PUDDLE_OPACITY * (1 - RAIN_PUDDLE_COVERAGE) - RAIN_PUDDLE_COVERAGE)); // Puddles
 		puddle *= saturate(gl_Color.a * 3 - 2);                      // No puddle in cavities
 		puddle *= rainPuddle;                                        // Rain
+
+		puddleParallax = int(!(2 <= blockId && blockId <= 18));
 
 	}
 

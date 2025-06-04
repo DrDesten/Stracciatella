@@ -44,6 +44,7 @@ uniform sampler2D normals;
 uniform sampler2D colortex4;
 uniform float     rainPuddle;
 in      float     puddle;
+flat in int       puddleParallax;
 in      vec2      blockCoords;
 #endif
 
@@ -103,7 +104,7 @@ void main() {
 #ifdef RAIN_PUDDLES
 #ifdef RAIN_PUDDLE_PARALLAX
 
-	if (glNormal.y > 0.9 && rainPuddle > 1e-10) {
+	if (bool(puddleParallax) && glNormal.y > 0.9 && rainPuddle > 1e-10) {
 
 		vec3 playerPos           = toPlayer(viewPos);
 		#ifdef RAIN_PUDDLE_PARALLAX_REFRACTION
