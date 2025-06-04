@@ -85,8 +85,8 @@ void main() {
 	float noiseStepFast = mod(floor(frameTimeCounter * 8), 5);
 	float noiseStepSlow = mod(floor(frameTimeCounter * 3), 5);
 
-	vec2 detailNoise = ( noise2(lineCoord / 4 + noiseStepFast) * 2 - 1 );
-	vec2 coarseNoise = ( noise2(lineCoord / 8 + noiseStepSlow) * 4 - 2 );
+	vec2 detailNoise = ( snoise2(lineCoord / 4 + noiseStepFast) * 2 - 1 );
+	vec2 coarseNoise = ( snoise2(lineCoord / 8 + noiseStepSlow) * 4 - 2 );
 
 	vec2 noiseCoord       = coord + detailNoise * screenSizeInverse;
 	vec2 noiseCoordCoarse = coord + coarseNoise * screenSizeInverse;
@@ -160,8 +160,8 @@ void main() {
 	const float worldLineSmudgeScale  = 0.2;
 	const float worldLineSmudgeFactor = 0.5;
 
-	vec3 worldLineSmudge           = noise3(worldPos * worldLineSmudgeScale) * 2 - 1;
-	                               + noise3(worldPos * worldLineSmudgeScale * 0.25) * 8 - 4;
+	vec3 worldLineSmudge           = snoise3(worldPos * worldLineSmudgeScale) * 2 - 1;
+	                               + snoise3(worldPos * worldLineSmudgeScale * 0.25) * 8 - 4;
 	vec3 worldLinePos = worldPos;
 	worldLinePos.xz   = MAT2_ROT(PI/4, 1) * worldLinePos.xz;
 	worldLinePos      = worldLinePos + worldLineSmudge * worldLineSmudgeFactor;

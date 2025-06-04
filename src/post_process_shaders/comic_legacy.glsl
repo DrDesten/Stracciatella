@@ -76,8 +76,8 @@ void main() {
 	float noiseStepFast = mod(floor(frameTimeCounter * 8), 5);
 	float noiseStepSlow = mod(floor(frameTimeCounter * 3), 5);
 
-	vec2 detailNoise = ( noise2(lineCoord / 4 + noiseStepFast) * 2 - 1 );
-	vec2 coarseNoise = ( noise2(lineCoord / 8 + noiseStepSlow) * 2 - 1 );
+	vec2 detailNoise = ( snoise2(lineCoord / 4 + noiseStepFast) * 2 - 1 );
+	vec2 coarseNoise = ( snoise2(lineCoord / 8 + noiseStepSlow) * 2 - 1 );
 
 	vec2 ncDetail = coord + detailNoise * screenSizeInverse;
 
