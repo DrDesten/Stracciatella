@@ -214,7 +214,7 @@ void main() {
 	}
 
 #ifdef WAVING_LILYPADS
-	else if (blockId == 17) {
+	else if (blockId == 16) {
 
 		vec3  wPos   = worldPos;
 		float offset = wavySineY(wPos, WAVING_LIQUIDS_AMOUNT, WAVING_LIQUIDS_SPEED * 2).y;

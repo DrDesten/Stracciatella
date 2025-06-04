@@ -1,3 +1,11 @@
+#if defined PP_PREPASS
+
+#include "noprepass.glsl"
+
+#endif
+
+#if defined PP_MAIN
+
 #include "/lib/settings.glsl"
 #include "/core/math.glsl"
 #include "/core/transform.glsl"
@@ -122,6 +130,26 @@ void main() {
 
 #if 1
 
+vec3 getEyeView(vec2 coord) {
+    // Get Color
+	vec3 eyeColor = getAlbedo(coord);
+
+    // Color Corrections
+    //eyeColor = applyBrightness(eyeColor, 0.1);
+    //eyeColor.r  *= 0.75;
+    //eyeColor.gb  = eyeColor.gb * 0.75 + eyeColor.rr * 0.25;
+    eyeColor     = applyVibrance(eyeColor, -0.85);
+    //eyeColor = applyContrast(eyeColor, 1.5);
+
+    //eyeColor = vec3(luminance(eyeColor));
+
+    // Reduce peak luminance
+	float eyeLuma  = luminance(eyeColor);
+	eyeColor      *= saturate(0.8 / eyeLuma);
+
+    return eyeColor;
+}
+
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 FragOut0;
 void main() {
@@ -143,7 +171,6 @@ void main() {
 	vec3 playerLeft  = -normalize(gbufferModelViewInverse[0].xyz);
 	vec3 playerRight = -playerLeft;
 
-	// 6cm
 	const float eyeOffset      = (3. / 100.) / 2.;
 	const float screenOffset   = 1;
 	const float depthClamp     = 1;
@@ -155,14 +182,8 @@ void main() {
 	// Idea:
 	// Binary search to avoid disocclusion artifacts
 
-	vec3  leftEyeColor = getAlbedo(coord - vec2(coordShift * eyeOffset, 0));
-	float leftLuma     = luminance(leftEyeColor);
-	//leftEyeColor      *= saturate(0.75 / leftLuma);
-
-	
-	vec3  rightEyeColor = getAlbedo(coord + vec2(coordShift * eyeOffset, 0));
-	float rightLuma     = luminance(rightEyeColor);
-	//rightEyeColor      *= saturate(0.75 / rightLuma);
+	vec3 leftEyeColor  = getEyeView(coord - vec2(coordShift * eyeOffset, 0));
+	vec3 rightEyeColor = getEyeView(coord + vec2(coordShift * eyeOffset, 0));
 
 	// Color Filters
 	vec3 leftEyeFilterColor  = vec3(1.0, 0.0, 0.0);
@@ -176,5 +197,7 @@ void main() {
 
 	FragOut0 = vec4(color, 1);
 }
+
+#endif
 
 #endif
