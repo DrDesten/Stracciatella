@@ -90,6 +90,10 @@ option.SUN_SIZE.comment=Changes the size of sun and moon
 option.sunPathRotation=Sun Angle
 option.sunPathRotation.comment=Tilts the rotation axis of sun and moon. Vanilla is 0.
 
+option.SUN_RAIN_OPACITY=Opacity when raining
+suffix.SUN_RAIN_OPACITY=%
+option.SUN_RAIN_OPACITY.comment=100% full visibility. 0% fully hidden when raining.
+
 option.HORIZON_CLIP=Hide under Horizon
 option.HORIZON_CLIP.comment=Sun and moon start disappearing under the horizon
 option.HORIZON_CLIP_HEIGHT=Transition Height
@@ -269,33 +273,33 @@ option.HDR_EMISSIVES_BRIGHTNESS=HDR Emissive Brightness
 
 screen.WEATHER=Weather
 
-option.RAIN_DETECTION_MODE=§9Rain§r Detection
+option.RAIN_DETECTION_MODE=Rain§r Detection
 option.RAIN_DETECTION_MODE.comment=How the shader detects if rain is present. "Color" is generally the better option. §nSelect "Temperature" if:§r. Rain does not receive rain effects. Things that are not rain receive rain effects.
 value.RAIN_DETECTION_MODE.0=Temperature 
 value.RAIN_DETECTION_MODE.1=Color
 
-option.RAIN_REFRACTION=Rain Refraction
+option.RAIN_REFRACTION=Rain§r §oRefraction§r
 value.RAIN_REFRACTION.0=OFF
 value.RAIN_REFRACTION.1=Fast
 value.RAIN_REFRACTION.2=Fancy
-option.RAIN_REFRACTION_STRENGTH=Rain Refraction Strength
-option.RAIN_OPACITY=Rain Opacity
+option.RAIN_REFRACTION_STRENGTH=Rain§r §oRefraction§r Strength
+option.RAIN_OPACITY=Rain§r Opacity
 
 option.ANGLED_DOWNFALL=§oAngled§r Downfall
-option.ANGLED_DOWNFALL_AMOUNT=Angled Downfall Amount
-option.ANGLED_DOWNFALL_ROTATION_SPEED=Angled Downfall Rotation Speed
+option.ANGLED_DOWNFALL_AMOUNT=§oAngled§r Downfall Amount
+option.ANGLED_DOWNFALL_ROTATION_SPEED=§oAngled§r Downfall Rotation Speed
 
-option.RAIN_PUDDLES=Rain Puddles
-option.RAIN_PUDDLE_COVERAGE=Rain Puddle Coverage
-option.RAIN_PUDDLE_SIZE=Rain Puddle Size
-option.RAIN_PUDDLE_OPACITY=Rain Puddle Opacity
+option.RAIN_PUDDLES=Rain§r Puddles
+option.RAIN_PUDDLE_COVERAGE=Rain§r Puddle Coverage
+option.RAIN_PUDDLE_SIZE=Rain§r Puddle Size
+option.RAIN_PUDDLE_OPACITY=Rain§r Puddle Opacity
 
-screen.RAIN_PUDDLE_COLOR_CONFIG=Rain Puddle Color
+screen.RAIN_PUDDLE_COLOR_CONFIG=Rain§r Puddle Color
 option.RAIN_PUDDLE_COLOR_R=Rain Puddle Color §cR
 option.RAIN_PUDDLE_COLOR_G=Rain Puddle Color §2G
 option.RAIN_PUDDLE_COLOR_B=Rain Puddle Color §9B
 
-option.RAIN_PUDDLE_PARALLAX=Rain Puddle Parallax
+option.RAIN_PUDDLE_PARALLAX=Rain§r Puddle Parallax
 option.RAIN_PUDDLE_PARALLAX_REFRACTION=Parallax Refraction
 option.RAIN_PUDDLE_PARALLAX_DEPTH=Parallax Depth
 suffix.RAIN_PUDDLE_PARALLAX_DEPTH=m
@@ -500,7 +504,7 @@ screen.DEBUG_DUMP=Ze Dumpster
 ///////////////////////////////////////////////////////////
 
 option.SHADER_NAME=Stracciatella Shaders
-value.SHADER_NAME.0=v1.6.2
+value.SHADER_NAME.0=v1.6.3
 
 profile.VANILLA=Vanilla
 profile.DEFAULT=Default
