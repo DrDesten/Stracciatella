@@ -5,13 +5,17 @@
 
 in vec2 coord;
 
-#ifdef AURORA
-    in float isAurora;
-#endif
-
 #ifdef HORIZON_CLIP
     uniform vec3 up;
     in vec3 viewPos;
+#endif
+
+#if SUN_RAIN_OPACITY != 100
+    uniform float rainStrength;
+#endif
+
+#ifdef AURORA
+    in float isAurora;
 #endif
 
 /* DRAWBUFFERS:0 */
@@ -19,9 +23,13 @@ layout(location = 0) out vec4 FragOut0;
 void main() {
 	vec4 color = getAlbedo(coord);
 
-	#ifdef HORIZON_CLIP
-		color.rgb *= saturate(dot(normalize(viewPos), up) * HORIZON_CLIP_TRANSITION - (HORIZON_CLIP_HEIGHT * HORIZON_CLIP_TRANSITION));
-	#endif
+#ifdef HORIZON_CLIP
+    color.rgb *= saturate(dot(normalize(viewPos), up) * HORIZON_CLIP_TRANSITION - (HORIZON_CLIP_HEIGHT * HORIZON_CLIP_TRANSITION));
+#endif
+
+#if SUN_RAIN_OPACITY != 100
+    color.rgb *= (1. - rainStrength * (1 - sun_rain_opacity));
+#endif
 
 #if DITHERING >= 2
     color.rgb += ditherColor(gl_FragCoord.xy);
