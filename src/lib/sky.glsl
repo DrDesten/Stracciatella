@@ -143,11 +143,15 @@ float fogSmoothStep(float distSq, float far) {
 float fogFactorTerrain(vec3 playerPos) {
     return fogSmoothStep(sqmag(playerPos.xz), dhFarPlane / SQRT2);
 }
+float fogFactorClouds(vec3 playerPos) {
+    return fogSmoothStep(sqmag(playerPos.xz), dhFarPlane);
+}
 #else
 float fogFactorTerrain(vec3 playerPos) {
     playerPos.y *= 0.25;
     return fogSmoothStep(sqmag(playerPos), far);
 }
+#define fogFactorClouds fogFactorTerrain
 #endif
 
 

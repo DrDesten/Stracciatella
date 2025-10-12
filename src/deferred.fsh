@@ -259,7 +259,9 @@ void main() {
 
 #if FOG != 0
 
-	float fog = fogFactorTerrain(combinedPlayerPos);
+	float fog = combinedPlayerPos.y + cameraPosition.y < 400 
+		? fogFactorTerrain(combinedPlayerPos)
+		: fogFactorClouds(combinedPlayerPos);
 
 	#ifdef FOG_ADVANCED
 	float fa = fogFactorAdvanced(viewDir, combinedPlayerPos);
