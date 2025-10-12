@@ -1,8 +1,8 @@
 
 struct blockInfo {
-    int id;
+    int  id;
     bool emissive;
-    int data;
+    int  data;
 };
 
 blockInfo decodeID( int id ) {

@@ -8,7 +8,7 @@ uniform float customLightmapBlend;
 in vec2 lmcoord;
 in vec2 coord;
 flat in vec4 glcolor;
-in vec3 viewPos;
+flat in int  blockId;
 
 /* DRAWBUFFERS:01 */
 layout(location = 0) out vec4 FragOut0;
@@ -17,11 +17,22 @@ void main() {
 	vec4 color = getAlbedo(coord);
 	color.rgb *= glcolor.rgb;
 
+#if MC_VERSION >= 11700
+	// Handle glow signs
+	float emission = 0;
+	if (lmcoord.x > 15./16) {
+		emission  = 1;
+		color.rgb = saturate(color.rgb * 2);
+	}
+#else
+	#define emission 0.
+#endif
+
 #if DITHERING >= 2
 	color.rgb += ditherColor(gl_FragCoord.xy);
 #endif
 	
 	FragOut0 = color; //gcolor
     if (FragOut0.a < 0.1) discard;
-	FragOut1 = encodeLightmapData(vec4(lmcoord, 1,0));
+	FragOut1 = encodeLightmapData(vec4(lmcoord, 1, emission));
 }
