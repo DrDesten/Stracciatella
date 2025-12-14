@@ -504,7 +504,7 @@ screen.DEBUG_DUMP=Ze Dumpster
 ///////////////////////////////////////////////////////////
 
 option.SHADER_NAME=Stracciatella Shaders
-value.SHADER_NAME.0=v1.6.3
+value.SHADER_NAME.0=v1.6.4
 
 profile.VANILLA=Vanilla
 profile.DEFAULT=Default
