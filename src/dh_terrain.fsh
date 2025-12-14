@@ -55,8 +55,8 @@ void main() {
             case DH_BLOCK_LEAVES: { // All types of leaves, bamboo, or cactus
                 baseScale   = 2;
                 octaveDecay = 1.5;
-                valueShift  = 0.6;
-                valueScale  = 1.3;
+                valueShift  = 0.75;
+                valueScale  = 1.;
             } break;
             case DH_BLOCK_STONE: { // Stone or ore
             
