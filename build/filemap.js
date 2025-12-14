@@ -82,7 +82,7 @@ function gbuffers( filename, version ) {
     }
     if ( filename.startsWith( "gbuffers_line" ) ) {
         return [
-            new ShaderFile( filename, version, [`/${filename}`], [], { version: "330 compatibility" } )
+            new ShaderFile( filename, version, [`/${filename}`], [], { version: "130" } )
         ]
     }
 
