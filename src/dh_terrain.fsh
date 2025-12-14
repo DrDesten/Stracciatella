@@ -94,7 +94,9 @@ void main() {
                 valueScale  = 0.1;
             } break;
             case DH_BLOCK_NETHER_STONE: { // Blocks that have the "base_stone_nether" tag
-            
+                octaveDecay = 2;
+                valueShift  = 0.8;
+                valueScale  = 0.4;
             } break;
         }
 
@@ -102,16 +104,17 @@ void main() {
             maxc(abs(dFdx(worldPos))),
             maxc(abs(dFdy(worldPos)))
         );
+        /* float texelDensity = sqrt(sqmag(dFdx(worldPos)) + sqmag(dFdy(worldPos))); */
 
-        float idealScale = (1./16) * baseScale / texelDensity;
+        float idealScale = (1./8) * baseScale / texelDensity;
         float scale      = clamp(exp2(round(log2(idealScale))), 0, 4);
         vec3  globalRef  = fract(worldPos / 1024) * 1024;
 
         float dhNoise = 0;
         float tw      = 0;
         float w       = 1;
-        for (float i = 1; i <= 4; i++) {
-            vec3 seed = floor(globalRef * scale + 1e-2) / scale;
+        for (float i = 0; i < 3; i++) {
+            vec3 seed = floor(globalRef * scale + 2e-3) / scale;
         
             dhNoise  += rand(seed) * w;
 
@@ -131,8 +134,8 @@ void main() {
         if ( isEmissive ) {
             color.rgb    = tm_reinhard_sqrt_inverse(color.rgb * 0.996, 0.5);
 
-            if (isLava) emissiveness = saturate(maxc(color.rgb) * 6 - 3) * 0.65;
-            else emissiveness = saturate(maxc(color.rgb) * 7 - 2);
+            if (isLava) emissiveness = saturate(maxc(color.rgb) * 5 - 1.5);
+            else        emissiveness = saturate(maxc(color.rgb) * 7 - 2);
 
             color.rgb += (emissiveness * HDR_EMISSIVES_BRIGHTNESS * 1.5) * color.rgb;
             color.rgb  = tm_reinhard_sqrt(color.rgb, 0.5);
