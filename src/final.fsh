@@ -14,6 +14,21 @@ uniform sampler2D colortex4;
 uniform sampler2D colortex5;
 uniform sampler2D colortex6;
 
+vec3 getBufferProcessedDebug(vec2 coord) {
+	vec3 color;
+	switch (DEBUG_BUFFER_INDEX) {
+	case 0: color = texture(colortex0, coord).rgb; break;
+	case 1: color = texture(colortex1, coord).rgb; break;
+	case 2: color = texture(colortex2, coord).rgb; break;
+	case 3: color = texture(colortex3, coord).rgb; break;
+	case 4: color = texture(colortex4, coord).rgb; break;
+	case 5: color = texture(colortex5, coord).rgb; break;
+	case 6: color = oklab2rgb(texture(colortex6, coord).rgb); break;
+	}
+
+	return color;
+}
+
 vec3 getBufferDebug(vec2 coord) {
 	vec4 data;
 	switch (DEBUG_BUFFER_INDEX) {
@@ -33,6 +48,12 @@ vec3 getBufferDebug(vec2 coord) {
 	case 2: color = data.yyy; break;
 	case 3: color = data.zzz; break;
 	case 4: color = data.www; break;
+	case 5: color = oklab2rgb(data.xyz); break;
+	}
+
+	switch (DEBUG_BUFFER_RANGE_MODE) {
+	case 0: break;
+	case 1: color = color * .5 + .5; break;
 	}
 
 	return color;

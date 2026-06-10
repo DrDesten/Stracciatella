@@ -9,8 +9,6 @@
 
 const bool colortex4MipmapEnabled = true;
 uniform sampler2D colortex4;
-
-const bool colortex6MipmapEnabled = true;
 uniform sampler2D colortex6;
 
 uniform int frameCounter;
@@ -63,6 +61,13 @@ vec3 gauss3x3Lod(sampler2D tex, vec2 coord, vec2 pix, float lod) {
     vec3 d = textureLod(tex, coord + .5 * vec2(-pix.x, pix.y), lod).rgb;
 	return a * .25 + b * .25 + c * .25 + d * .25;
 }
+vec4 gauss3x3LodFull(sampler2D tex, vec2 coord, vec2 pix, float lod) {
+	vec4 a = textureLod(tex, coord + .5 * pix.xy, lod);
+    vec4 b = textureLod(tex, coord - .5 * pix.xy, lod);
+    vec4 c = textureLod(tex, coord + .5 * vec2(pix.x, -pix.y), lod);
+    vec4 d = textureLod(tex, coord + .5 * vec2(-pix.x, pix.y), lod);
+	return a * .25 + b * .25 + c * .25 + d * .25;
+}
 
 vec4 gauss3x3LodHit(sampler2D tex, vec2 coord, vec2 pix, float lod) {
 	vec3 a = textureLod(tex, coord + .5 * pix.xy, lod).rgb;
@@ -99,12 +104,12 @@ void main() {
 	vec3  prevCol    = oklab2rgb(prevColRaw.rgb);
 	float prevDepth  = prevColRaw.a;
 
-	float lod       = max(0, log2(avg((screenSize / 16) / LIGHTMAP_COLOR_RES)) + LIGHTMAP_COLOR_LOD_BIAS);
-	vec3  newColor  = gauss3x3Lod(colortex6, coord, screenSizeInverse, lod);
+	vec4  newSample = gauss3x3full(colortex6, coord, screenSizeInverse * 32);
+	vec3  newColor  = oklab2rgb(newSample.rgb);
 
 	// Improves Accumulation by guessing pixel age and sample importance (there is no buffer space left for pixel age)
 	float age              = maxc(prevCol); // Estimates age using pixel brightness
-	float sampleImportance = qrtf(maxc(newColor)); // Estimates sample importance using sample brightness
+	float sampleImportance = newSample.a;
 	float mixTweak         = age * (sampleImportance) + (1 - sampleImportance); // If the age is high (value low), let more of the sample in, but only if there is something to sample
 	mixTweak = mixTweak * (1 - LIGHTMAP_COLOR_FLICKER_RED) + LIGHTMAP_COLOR_FLICKER_RED; // Tweak value using user defined setting
 
