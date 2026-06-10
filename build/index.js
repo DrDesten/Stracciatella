@@ -44,7 +44,7 @@ changes.addChangeListener( "**", filepath => {
 } )
 
 // generate world folders
-changes.addChangeListener( ["*.fsh", "*.vsh", "*.gsh"], filepath => {
+changes.addChangeListener( ["*.fsh", "*.vsh", "*.gsh", "*.csh"], filepath => {
     const worlds = [["world-1", "NETHER"], ["world0", "OVERWORLD"], ["world1", "END"]]
     const fileMapping = FileMapping( options["target-version"] )
     for ( const [world, define] of worlds ) {
@@ -60,7 +60,7 @@ changes.addChangeListener( ["*.fsh", "*.vsh", "*.gsh"], filepath => {
 } )
 
 // guard includes and uniforms
-changes.addChangeListener( ["**.fsh", "**.vsh", "**.gsh", "**.glsl", "!core/**"], filepath => {
+changes.addChangeListener( ["**.fsh", "**.vsh", "**.gsh", "**.csh", "**.glsl", "!core/**"], filepath => {
     const dstpath = path.join( shaders, filepath )
     guardFiles( dstpath )
     guardUniforms( dstpath )

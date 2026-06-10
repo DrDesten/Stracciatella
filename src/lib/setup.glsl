@@ -18,7 +18,7 @@ const int colortex4Format = RGBA16_SNORM;
 // Emissive Colors ( used for colored lights )
 const int colortex5Format = RGB8;
 // Emissive Colors - Mipmap
-const int colortex6Format = RGB8;
+const int colortex6Format = RGBA8;
 
 */
 

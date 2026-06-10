@@ -2,7 +2,7 @@ import path from "path"
 import { Semver } from "./semver.js"
 
 export class ShaderFile {
-    /** @param {string} filename @param {BigInt} targetVersion @param {string[]} [includes] @param {string[]} [defines] @param {{version?:string}} [opts]  */
+    /** @param {string} filename @param {BigInt} targetVersion @param {string[]} [includes] @param {string[]} [defines] @param {{version?:string,extensions?:string[]}} [opts]  */
     constructor( filename, targetVersion, includes = [], defines = [], opts = {} ) {
         this.filename = filename
         this.targetVersion = targetVersion
@@ -11,10 +11,12 @@ export class ShaderFile {
 
         this.opts = {
             version: "150 compatibility",
+            extensions: ["GL_ARB_explicit_attrib_location : enable"],
             ...opts,
         }
 
         this.addDefine( {
+            ".csh": "COMP",
             ".gsh": "GEO",
             ".vsh": "VERT",
             ".fsh": "FRAG",
@@ -34,7 +36,10 @@ export class ShaderFile {
 
     generate() {
         let content = ""
-        content = `#version ${this.opts.version}\n#extension GL_ARB_explicit_attrib_location : enable`
+        content = `#version ${this.opts.version}`
+        for ( const extension of this.opts.extensions ) {
+            content += `\n#extension ${extension}`
+        }
         for ( const define of this.defines ) {
             content += `\n#define ${define}`
         }
@@ -96,6 +101,9 @@ function deferred( filename, version ) {
 
 /** @param {string} filename */
 function composite( filename, version ) {
+    if ( path.extname( filename ) == ".csh" ) {
+        return [new ShaderFile( filename, version, [`/${filename}`], [], { version: "450", extensions: [] } )]
+    }
     return [simpleShaderFile( filename, version )]
 }
 

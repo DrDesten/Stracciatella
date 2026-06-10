@@ -99,10 +99,8 @@ void main() {
 	vec3  prevCol    = oklab2rgb(prevColRaw.rgb);
 	float prevDepth  = prevColRaw.a;
 
-	//vec2 mipCoords = coord / 81 + (2./3. + 2./9. + 2./27. + 2./81.);
-	vec2  mipCoords = coord / 16 + (1./2 + 1./4 + 1./8 + 1./16) - screenSizeInverse;
 	float lod       = max(0, log2(avg((screenSize / 16) / LIGHTMAP_COLOR_RES)) + LIGHTMAP_COLOR_LOD_BIAS);
-	vec3  newColor  = gauss3x3Lod(colortex6, mipCoords, screenSizeInverse, lod);
+	vec3  newColor  = gauss3x3Lod(colortex6, coord, screenSizeInverse, lod);
 
 	// Improves Accumulation by guessing pixel age and sample importance (there is no buffer space left for pixel age)
 	float age              = maxc(prevCol); // Estimates age using pixel brightness
