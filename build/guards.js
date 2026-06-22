@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "path"
 import crypto from "crypto"
 
-export function guardFiles( filepath ) {
+export function guardFile( filepath ) {
     let content = fs.readFileSync( filepath )
     const hash = crypto.createHash( "sha1" ).update( filepath ).digest( "hex" ).slice( 0, 4 )
     const define = `INCLUDE_${path.basename( filepath ).replace( /\W+/g, "_" )}_${hash}`.toUpperCase()
