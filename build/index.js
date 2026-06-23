@@ -42,11 +42,11 @@ changes.addChangeListener( "**", filepath => {
     fs.cpSync( path.join( src, filepath ), dst )
     console.info( `Copied ${filepath}` )
 } )
-changes.addDeleteListener("**", filepath => {
+changes.on( 'delete', "**", filepath => {
     const dst = path.join( shaders, filepath )
     fs.rmSync( dst )
     console.info( `Deleted ${filepath}` )
-})
+} )
 
 // generate world folders
 changes.addChangeListener( ["*.fsh", "*.vsh", "*.gsh", "*.csh"], filepath => {
@@ -63,16 +63,16 @@ changes.addChangeListener( ["*.fsh", "*.vsh", "*.gsh", "*.csh"], filepath => {
         }
     }
 } )
-changes.addDeleteListener( ["*.fsh", "*.vsh", "*.gsh", "*.csh"], filepath => {
+changes.on( 'delete', ["*.fsh", "*.vsh", "*.gsh", "*.csh"], filepath => {
     const fileMapping = FileMapping( options["target-version"] )
     for ( const world of ["world-1", "world0", "world1"] ) {
         const files = fileMapping[filepath]
         for ( const file of files ) {
-            fs.rmSync( path.join( shaders, world, file.filename ))
+            fs.rmSync( path.join( shaders, world, file.filename ) )
             console.info( `Deleted ${world}/${file.filename}` )
         }
     }
-})
+} )
 
 // guard includes and uniforms
 changes.addChangeListener( ["**.fsh", "**.vsh", "**.gsh", "**.csh", "**.glsl", "!core/**"], filepath => {
