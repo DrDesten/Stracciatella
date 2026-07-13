@@ -103,8 +103,9 @@ export function Type( typename ) {
 export const Partial = ( type, components ) => ( {
     type, components,
 } )
-export const Atom = ( type, value ) => ( {
-    type, value,
-    get components() { return [value] },
-    toString() { return value },
+export const Atom = ( type, value, literal = false ) => ( {
+    type, value, literal,
+    get components() { return [this] },
+    toString() { return ""+value },
+    valueOf() { return ""+value },
 } )

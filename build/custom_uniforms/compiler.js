@@ -58,13 +58,17 @@ function Compiler( program ) {
             const comps = partial.components.map( compile )
             return `${name}(${comps.join( ", " )})`
         }
+        if ( partial.type.matrix ) {
+            const name = partial.type.name
+            const comps = partial.components.map( compile )
+            return `${name}(${comps.join( ", " )})`
+        }
     }
 
     const declarations = program.declarations
     const results = []
     for ( let i = 0; i < declarations.length; i++ ) {
         const partial = expression( declarations[i].expr )
-        console.log( partial )
         const compiled = compile( partial )
         VARIABLES.set( declarations[i].name, Variable( declarations[i].name, partial.type ) )
         results.push( compiled )
@@ -77,16 +81,15 @@ function Compiler( program ) {
 // Turns an expression AST back into GLSL-ish source, useful for sanity checks.
 function stringify( node ) {
     switch ( node.kind ) {
-        case 'NumberLiteral': return String( node.value )
-        case 'Identifier': return node.name
-        case 'UnaryExpr': return `${node.op}${stringify( node.argument )}`
-        case 'BinaryExpr': return `(${stringify( node.left )} ${node.op} ${stringify( node.right )})`
-        case 'CallExpr': return `${node.name}(${node.args.map( stringify ).join( ', ' )})`
-        case 'SwizzleExpr': return `${stringify( node.target )}.${node.swizzle}`
-        case 'IndexExpr': return `${stringify( node.target )}[${node.index}]`
-        case 'Declaration':
-            return `${node.qualifier} ${node.valueType} ${node.name} = ${stringify( node.expr )}`
-        case 'Program': return node.declarations.map( stringify ).join( '\n' )
+        case 'NumberLiteral': return "" + node.value
+        case 'Identifier':    return node.name
+        case 'UnaryExpr':     return `${node.op}${stringify( node.argument )}`
+        case 'BinaryExpr':    return `(${stringify( node.left )} ${node.op} ${stringify( node.right )})`
+        case 'CallExpr':      return `${node.name}(${node.args.map( stringify ).join( ', ' )})`
+        case 'SwizzleExpr':   return `${stringify( node.target )}.${node.swizzle}`
+        case 'IndexExpr':     return `${stringify( node.target )}[${node.index}]`
+        case 'Declaration':   return `${node.qualifier} ${node.valueType} ${node.name} = ${stringify( node.expr )}`
+        case 'Program':       return node.declarations.map( stringify ).join( '\n' )
         default: throw new Error( `Unknown node type: ${node.kind}` )
     }
 }
@@ -103,9 +106,24 @@ const   float sunLength  = length(sunPosition)
 uniform vec3  sunDir     = sunPosition / sunLength
 const   float moonLength = length(moonPosition.xyz)
 uniform vec3  moonDir    = moonPosition.xyz / moonLength
-const   float upLength   = length(vec3(gbufferModelView[0][0], gbufferModelView[1][0], gbufferModelView[2][0]))
-uniform vec3  up         = vec3(gbufferModelView[0][0], gbufferModelView[1][0], gbufferModelView[2][0]) / upLength
-uniform vec3  up2        = (gbufferModelView * vec4(1,0,0,0)).xyz
+const   float upLength   = length(vec3(gbufferModelView[0][1], gbufferModelView[1][1], gbufferModelView[2][1]))
+uniform vec3  up         = vec3(gbufferModelView[0][1], gbufferModelView[1][1], gbufferModelView[2][1]) / upLength
+
+const vec3 up2 = mat3(gbufferModelView) * vec3(0,1,0)
+
+
+uniform mat4 gbufferModelViewProjectionInverse  = gbufferModelViewInverse * gbufferProjectionInverse
+uniform mat4 gbufferPreviousModelViewProjection = gbufferPreviousProjection * gbufferPreviousModelView
+/* uniform mat4  reproject  = 
+    gbufferPreviousProjection * gbufferPreviousModelView * // prev. player -> prev. clip
+    mat4(
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        vec4(cameraPosition - previousCameraPosition, 1)
+    ) *                                                    // player -> prev. player
+    gbufferModelViewInverse * gbufferProjectionInverse     // clip   -> player
+ */
 `
 
 const ast = parse( source )
