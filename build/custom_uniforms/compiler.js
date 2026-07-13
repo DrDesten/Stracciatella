@@ -103,8 +103,9 @@ const   float sunLength  = length(sunPosition)
 uniform vec3  sunDir     = sunPosition / sunLength
 const   float moonLength = length(moonPosition.xyz)
 uniform vec3  moonDir    = moonPosition.xyz / moonLength
-const   float upLength   = sqrt(dot(gbufferModelView[1].xyz, gbufferModelView[1].xyz))
-uniform vec3  up         = vec3(gbufferModelView[1].xyz / upLength)
+const   float upLength   = length(vec3(gbufferModelView[0][0], gbufferModelView[1][0], gbufferModelView[2][0]))
+uniform vec3  up         = vec3(gbufferModelView[0][0], gbufferModelView[1][0], gbufferModelView[2][0]) / upLength
+uniform vec3  up2        = (gbufferModelView * vec4(1,0,0,0)).xyz
 `
 
 const ast = parse( source )
