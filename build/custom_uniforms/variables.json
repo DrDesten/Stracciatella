@@ -1,0 +1,642 @@
+[
+    {
+        "name": "cameraPosition",
+        "type": "vec3",
+        "description": "Position of the camera in world space"
+    },
+    {
+        "name": "eyeAltitude",
+        "type": "float",
+        "description": "Y coordinate of the player in blocks"
+    },
+    {
+        "name": "cameraPositionFract",
+        "type": "vec3",
+        "description": "Fractional component of the camera position in world space"
+    },
+    {
+        "name": "cameraPositionInt",
+        "type": "ivec3",
+        "description": "Integer component of the camera position in world space"
+    },
+    {
+        "name": "previousCameraPosition",
+        "type": "vec3",
+        "description": "Value of cameraPosition from the previous frame"
+    },
+    {
+        "name": "previousCameraPositionFract",
+        "type": "vec3",
+        "description": "Value of cameraPositionFract from the previous frame"
+    },
+    {
+        "name": "previousCameraPositionInt",
+        "type": "ivec3",
+        "description": "Value of cameraPositionInt from the previous frame"
+    },
+    {
+        "name": "eyePosition",
+        "type": "vec3",
+        "description": "World-space position of the player's head"
+    },
+    {
+        "name": "relativeEyePosition",
+        "type": "vec3",
+        "description": "World-space offset from the player's head to the camera"
+    },
+    {
+        "name": "playerBodyVector",
+        "type": "vec3",
+        "description": "World-aligned direction of the player's body"
+    },
+    {
+        "name": "playerLookVector",
+        "type": "vec3",
+        "description": "World-aligned direction of the player's head"
+    },
+    {
+        "name": "vehicleLookVector",
+        "type": "vec3",
+        "description": "World-aligned direction of the current vehicle"
+    },
+    {
+        "name": "relativeVehiclePosition",
+        "type": "vec3",
+        "description": "World-space offset from the current vehicle to the camera"
+    },
+    {
+        "name": "upPosition",
+        "type": "vec3",
+        "description": "Up direction in view space with length 100"
+    },
+    {
+        "name": "eyeBrightness",
+        "type": "ivec2",
+        "description": "Light value at the player's location (block, sky)"
+    },
+    {
+        "name": "eyeBrightnessSmooth",
+        "type": "ivec2",
+        "description": "Smoothed eyeBrightness"
+    },
+    {
+        "name": "centerDepthSmooth",
+        "type": "float",
+        "description": "Smoothed depth value at the center of the screen"
+    },
+    {
+        "name": "firstPersonCamera",
+        "type": "bool",
+        "description": "Whether the camera is in first-person mode"
+    },
+    {
+        "name": "isEyeInWater",
+        "type": "int",
+        "description": "Fluid the camera is currently inside"
+    },
+    {
+        "name": "isSpectator",
+        "type": "bool",
+        "description": "Whether the player is in spectator mode"
+    },
+    {
+        "name": "isRightHanded",
+        "type": "bool",
+        "description": "Whether the player's main hand is right"
+    },
+    {
+        "name": "blindness",
+        "type": "float",
+        "description": "Blindness effect multiplier"
+    },
+    {
+        "name": "darknessFactor",
+        "type": "float",
+        "description": "Strength of the darkness effect"
+    },
+    {
+        "name": "darknessLightFactor",
+        "type": "float",
+        "description": "Strength of darkness dimming"
+    },
+    {
+        "name": "nightVision",
+        "type": "float",
+        "description": "Night vision effect multiplier"
+    },
+    {
+        "name": "playerMood",
+        "type": "float",
+        "description": "Player mood value"
+    },
+    {
+        "name": "constantMood",
+        "type": "float",
+        "description": "Mood value that does not reset at 1.0"
+    },
+    {
+        "name": "currentPlayerAir",
+        "type": "float",
+        "description": "Normalized remaining air"
+    },
+    {
+        "name": "maxPlayerAir",
+        "type": "float",
+        "description": "Maximum underwater air"
+    },
+    {
+        "name": "currentPlayerArmor",
+        "type": "float",
+        "description": "Normalized armor"
+    },
+    {
+        "name": "maxPlayerArmor",
+        "type": "float",
+        "description": "Maximum armor value"
+    },
+    {
+        "name": "currentPlayerHealth",
+        "type": "float",
+        "description": "Normalized health"
+    },
+    {
+        "name": "maxPlayerHealth",
+        "type": "float",
+        "description": "Maximum health"
+    },
+    {
+        "name": "currentPlayerHunger",
+        "type": "float",
+        "description": "Normalized hunger"
+    },
+    {
+        "name": "maxPlayerHunger",
+        "type": "float",
+        "description": "Maximum hunger"
+    },
+    {
+        "name": "vehicleInWater",
+        "type": "bool",
+        "description": "Whether the vehicle is touching water"
+    },
+    {
+        "name": "isRiding",
+        "type": "bool",
+        "description": "Whether the player is riding an entity"
+    },
+    {
+        "name": "inSwimmingAnimation",
+        "type": "bool",
+        "description": "Whether the swimming animation is active"
+    },
+    {
+        "name": "feetInWater",
+        "type": "bool",
+        "description": "Whether the player's feet are touching water"
+    },
+    {
+        "name": "isElytraFlying",
+        "type": "bool",
+        "description": "Whether the player is flying with an elytra"
+    },
+    {
+        "name": "is_burning",
+        "type": "bool",
+        "description": "Whether the player is on fire"
+    },
+    {
+        "name": "is_hurt",
+        "type": "bool",
+        "description": "Whether the player is taking damage"
+    },
+    {
+        "name": "is_invisible",
+        "type": "bool",
+        "description": "Whether the player is invisible"
+    },
+    {
+        "name": "is_on_ground",
+        "type": "bool",
+        "description": "Whether the player is on the ground"
+    },
+    {
+        "name": "is_sneaking",
+        "type": "bool",
+        "description": "Whether the player is sneaking"
+    },
+    {
+        "name": "is_sprinting",
+        "type": "bool",
+        "description": "Whether the player is sprinting"
+    },
+    {
+        "name": "hideGUI",
+        "type": "bool",
+        "description": "Whether the GUI is hidden"
+    },
+    {
+        "name": "viewHeight",
+        "type": "float",
+        "description": "Window height in pixels"
+    },
+    {
+        "name": "viewWidth",
+        "type": "float",
+        "description": "Window width in pixels"
+    },
+    {
+        "name": "aspectRatio",
+        "type": "float",
+        "description": "Window aspect ratio"
+    },
+    {
+        "name": "screenBrightness",
+        "type": "float",
+        "description": "Brightness setting"
+    },
+    {
+        "name": "frameCounter",
+        "type": "int",
+        "description": "Frames since program start"
+    },
+    {
+        "name": "frameTime",
+        "type": "float",
+        "description": "Duration of the previous frame"
+    },
+    {
+        "name": "frameTimeCounter",
+        "type": "float",
+        "description": "Running time in seconds"
+    },
+    {
+        "name": "currentColorSpace",
+        "type": "int",
+        "description": "Current display color space"
+    },
+    {
+        "name": "currentDate",
+        "type": "ivec3",
+        "description": "System date (year, month, day)"
+    },
+    {
+        "name": "currentTime",
+        "type": "ivec3",
+        "description": "System time (hour, minute, second)"
+    },
+    {
+        "name": "currentYearTime",
+        "type": "ivec2",
+        "description": "Elapsed and remaining time in the year"
+    },
+    {
+        "name": "entityId",
+        "type": "int",
+        "description": "ID of the currently rendered entity"
+    },
+    {
+        "name": "blockEntityId",
+        "type": "int",
+        "description": "ID of the currently rendered block entity"
+    },
+    {
+        "name": "vehicleId",
+        "type": "int",
+        "description": "ID of the current vehicle"
+    },
+    {
+        "name": "currentRenderedItemId",
+        "type": "int",
+        "description": "ID of the currently rendered item"
+    },
+    {
+        "name": "currentSelectedBlockId",
+        "type": "int",
+        "description": "ID of the selected block"
+    },
+    {
+        "name": "currentSelectedBlockPos",
+        "type": "vec3",
+        "description": "Position of the selected block"
+    },
+    {
+        "name": "heldItemId",
+        "type": "int",
+        "description": "Main-hand item ID"
+    },
+    {
+        "name": "heldItemId2",
+        "type": "int",
+        "description": "Off-hand item ID"
+    },
+    {
+        "name": "heldBlockLightValue",
+        "type": "int",
+        "description": "Main-hand emitted light"
+    },
+    {
+        "name": "heldBlockLightValue2",
+        "type": "int",
+        "description": "Off-hand emitted light"
+    },
+    {
+        "name": "sunPosition",
+        "type": "vec3",
+        "description": "Sun position in view space"
+    },
+    {
+        "name": "moonPosition",
+        "type": "vec3",
+        "description": "Moon position in view space"
+    },
+    {
+        "name": "shadowLightPosition",
+        "type": "vec3",
+        "description": "Shadow light position in view space"
+    },
+    {
+        "name": "sunAngle",
+        "type": "float",
+        "description": "Sun angle over the day-night cycle"
+    },
+    {
+        "name": "shadowAngle",
+        "type": "float",
+        "description": "Shadow source angle"
+    },
+    {
+        "name": "moonPhase",
+        "type": "int",
+        "description": "Current moon phase"
+    },
+    {
+        "name": "rainStrength",
+        "type": "float",
+        "description": "Rain intensity"
+    },
+    {
+        "name": "wetness",
+        "type": "float",
+        "description": "Smoothed rain intensity"
+    },
+    {
+        "name": "thunderStrength",
+        "type": "float",
+        "description": "Thunderstorm intensity"
+    },
+    {
+        "name": "lightningBoltPosition",
+        "type": "vec4",
+        "description": "Position of the rendered lightning bolt"
+    },
+    {
+        "name": "worldTime",
+        "type": "int",
+        "description": "Current in-game time"
+    },
+    {
+        "name": "worldDay",
+        "type": "int",
+        "description": "Current in-game day"
+    },
+    {
+        "name": "endFlashPosition",
+        "type": "vec3",
+        "description": "End flash position"
+    },
+    {
+        "name": "endFlashIntensity",
+        "type": "float",
+        "description": "Current End flash intensity"
+    },
+    {
+        "name": "previousEndFlashIntensity",
+        "type": "float",
+        "description": "Previous End flash intensity"
+    },
+    {
+        "name": "biome",
+        "type": "int",
+        "description": "Current biome"
+    },
+    {
+        "name": "biome_category",
+        "type": "int",
+        "description": "Current biome category"
+    },
+    {
+        "name": "biome_precipitation",
+        "type": "int",
+        "description": "Biome precipitation type"
+    },
+    {
+        "name": "rainfall",
+        "type": "float",
+        "description": "Biome rainfall"
+    },
+    {
+        "name": "temperature",
+        "type": "float",
+        "description": "Biome temperature"
+    },
+    {
+        "name": "ambientLight",
+        "type": "float",
+        "description": "Dimension ambient light"
+    },
+    {
+        "name": "bedrockLevel",
+        "type": "int",
+        "description": "Bedrock floor Y coordinate"
+    },
+    {
+        "name": "cloudHeight",
+        "type": "float",
+        "description": "Vanilla cloud height"
+    },
+    {
+        "name": "hasCeiling",
+        "type": "bool",
+        "description": "Whether the dimension has a ceiling"
+    },
+    {
+        "name": "hasSkylight",
+        "type": "bool",
+        "description": "Whether the dimension has skylight"
+    },
+    {
+        "name": "heightLimit",
+        "type": "int",
+        "description": "Dimension build height"
+    },
+    {
+        "name": "logicalHeightLimit",
+        "type": "int",
+        "description": "Logical dimension height"
+    },
+    {
+        "name": "near",
+        "type": "float",
+        "description": "Near clipping plane"
+    },
+    {
+        "name": "far",
+        "type": "float",
+        "description": "Render distance"
+    },
+    {
+        "name": "alphaTestRef",
+        "type": "float",
+        "description": "Alpha discard threshold"
+    },
+    {
+        "name": "chunkOffset",
+        "type": "vec3",
+        "description": "Chunk model-space offset"
+    },
+    {
+        "name": "entityColor",
+        "type": "vec4",
+        "description": "Entity tint color"
+    },
+    {
+        "name": "blendFunc",
+        "type": "ivec4",
+        "description": "Blend function multipliers"
+    },
+    {
+        "name": "atlasSize",
+        "type": "ivec2",
+        "description": "Texture atlas resolution"
+    },
+    {
+        "name": "renderStage",
+        "type": "int",
+        "description": "Current render stage"
+    },
+    {
+        "name": "fogColor",
+        "type": "vec3",
+        "description": "Fog color"
+    },
+    {
+        "name": "skyColor",
+        "type": "vec3",
+        "description": "Sky color"
+    },
+    {
+        "name": "fogDensity",
+        "type": "float",
+        "description": "Fog density"
+    },
+    {
+        "name": "fogStart",
+        "type": "float",
+        "description": "Fog start distance"
+    },
+    {
+        "name": "fogEnd",
+        "type": "float",
+        "description": "Fog end distance"
+    },
+    {
+        "name": "fogMode",
+        "type": "int",
+        "description": "Fog mode"
+    },
+    {
+        "name": "fogShape",
+        "type": "int",
+        "description": "Fog shape"
+    },
+    {
+        "name": "textureFilteringMode",
+        "type": "int",
+        "description": "Texture filtering mode"
+    },
+    {
+        "name": "gbufferModelView",
+        "type": "mat4",
+        "description": "Player space to view space"
+    },
+    {
+        "name": "gbufferModelViewInverse",
+        "type": "mat4",
+        "description": "Inverse player/view transform"
+    },
+    {
+        "name": "gbufferProjection",
+        "type": "mat4",
+        "description": "View to clip transform"
+    },
+    {
+        "name": "gbufferProjectionInverse",
+        "type": "mat4",
+        "description": "Inverse clip/view transform"
+    },
+    {
+        "name": "shadowModelView",
+        "type": "mat4",
+        "description": "Player to shadow view transform"
+    },
+    {
+        "name": "shadowModelViewInverse",
+        "type": "mat4",
+        "description": "Inverse shadow/player transform"
+    },
+    {
+        "name": "shadowProjection",
+        "type": "mat4",
+        "description": "Shadow view to clip transform"
+    },
+    {
+        "name": "shadowProjectionInverse",
+        "type": "mat4",
+        "description": "Inverse shadow clip/view transform"
+    },
+    {
+        "name": "gbufferPreviousModelView",
+        "type": "mat4",
+        "description": "Previous frame model-view matrix"
+    },
+    {
+        "name": "gbufferPreviousProjection",
+        "type": "mat4",
+        "description": "Previous frame projection matrix"
+    },
+    {
+        "name": "gl_ModelViewMatrix",
+        "type": "mat4",
+        "description": "Model to view transform"
+    },
+    {
+        "name": "gl_ModelViewMatrixInverse",
+        "type": "mat4",
+        "description": "View to model transform"
+    },
+    {
+        "name": "gl_ProjectionMatrix",
+        "type": "mat4",
+        "description": "View to clip transform for current geometry"
+    },
+    {
+        "name": "gl_ProjectionMatrixInverse",
+        "type": "mat4",
+        "description": "Clip to view transform for current geometry"
+    },
+    {
+        "name": "gl_ModelViewProjectionMatrix",
+        "type": "mat4",
+        "description": "Model to clip transform"
+    },
+    {
+        "name": "gl_NormalMatrix",
+        "type": "mat3",
+        "description": "Normal transform"
+    },
+    {
+        "name": "gl_TextureMatrix[0]",
+        "type": "mat4",
+        "description": "Texture coordinate transform"
+    }
+]
