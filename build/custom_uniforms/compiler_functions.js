@@ -1,35 +1,152 @@
-import { Type, Partial, Atom } from "./compiler_type.js"
+import { Type, Partial, Atom, Precedence, type_underlying, type_rebase, type_promote } from "./compiler_type.js"
 
-function util_scalar_map( partial, fn ) {
-    if ( partial.components.length === 1 )
-        return constructor_leaf( partial.type, fn( partial.components[0] ) )
-
-    let components = partial.components.map( c => constructor_leaf( c.type, fn( c ) ) )
-    return Partial( partial.type, components )
-}
-
-function constructor_leaf( type, string, literal = false ) {
-    const atom = Atom( type, string, literal )
+function constructor_leaf( type, string, literal = false, precedence = Precedence.PRIMARY ) {
+    const atom = Atom( type, string, literal, precedence )
     return Partial( atom.type, [atom] )
 }
 
 function constructor_constant( type, value ) {
-    if ( !Number.isFinite( value ) )
+    if ( !Number.isFinite( value ) && !type.boolean )
         throw new Error( "Constant expression produced a non-finite value" )
 
     if ( Object.is( value, -0 ) ) value = 0
     return constructor_leaf( type, value, true )
 }
 
-function fold_binary( type, a, b, fn ) {
-    if ( !a.literal || !b.literal ) return
-    return constructor_constant( type, fn( a.value, b.value ) )
+function scalar_atom( x ) {
+    if ( !x.type.scalar )
+        throw new Error( "Expected scalar expression" )
+    return x.components[0]
 }
 
+function render_operand( x, precedence, right = false ) {
+    const atom = scalar_atom( x )
+    const parens = atom.precedence < precedence || right && atom.precedence === precedence
+    return parens ? `(${atom})` : `${atom}`
+}
+
+function convert_constant( type, value ) {
+    if ( type.boolean ) return !!value
+    if ( type.name === 'uint' ) return Math.trunc( value ) >>> 0
+    if ( type.integral ) return Math.trunc( value )
+    return value
+}
+
+function convert_scalar( x, type ) {
+    if ( !x.type.scalar || !type.scalar )
+        throw new Error( "Scalar conversion requires scalar types" )
+
+    if ( x.type === type ) return x
+    if ( x.type.boolean || type.boolean )
+        throw new Error( `Cannot convert '${x.type}' to '${type}'` )
+
+    const atom = scalar_atom( x )
+    if ( atom.literal )
+        return constructor_constant( type, convert_constant( type, atom.value ) )
+
+    // shaders.properties has no cast function. Adding a floating zero is the
+    // smallest expression which preserves a GLSL int -> float conversion.
+    if ( x.type.integral && type.floating ) {
+        const value = `${render_operand( x, Precedence.ADDITIVE )} + 0.0`
+        return constructor_leaf( type, value, false, Precedence.ADDITIVE )
+    }
+
+    if ( x.type.floating && type.floating )
+        return constructor_leaf( type, `${atom}`, false, atom.precedence )
+
+    throw new Error( `Cannot lower conversion from '${x.type}' to '${type}'` )
+}
+
+function promote_scalar( x, type ) {
+    if ( x.type === type ) return x
+    if ( x.type.boolean || type.boolean )
+        throw new Error( `Cannot promote '${x.type}' to '${type}'` )
+
+    const atom = scalar_atom( x )
+    if ( atom.literal )
+        return constructor_constant( type, convert_constant( type, atom.value ) )
+
+    return constructor_leaf( type, `${atom}`, false, atom.precedence )
+}
+
+export function constructor_convert( x, type ) {
+    if ( x.type.scalar || type.scalar ) {
+        if ( !x.type.scalar || !type.scalar )
+            throw new Error( `Cannot convert '${x.type}' to '${type}'` )
+        return convert_scalar( x, type )
+    }
+
+    const same_shape =
+        x.type.vector && type.vector && x.type.components === type.components ||
+        x.type.matrix && type.matrix && x.type.rows === type.rows && x.type.cols === type.cols
+
+    if ( !same_shape )
+        throw new Error( `Cannot convert '${x.type}' to '${type}'` )
+
+    const component_type = type_underlying( type )
+    return Partial( type, x.components.map( c => convert_scalar( c, component_type ) ) )
+}
+
+function fold_unary( type, x, fn ) {
+    const atom = scalar_atom( x )
+    if ( !atom.literal ) return
+    return constructor_constant( type, convert_constant( type, fn( atom.value ) ) )
+}
+
+function fold_binary( type, a, b, fn ) {
+    const ac = scalar_atom( a ), bc = scalar_atom( b )
+    if ( !ac.literal || !bc.literal ) return
+    return constructor_constant( type, convert_constant( type, fn( ac.value, bc.value ) ) )
+}
+
+function partial_shape( shape, components ) {
+    if ( shape.type.scalar ) return components[0]
+    return Partial( type_rebase( shape.type, components[0].type ), components )
+}
+
+function same_component_shape( a, b ) {
+    return a.type.vector && b.type.vector && a.type.components === b.type.components ||
+        a.type.matrix && b.type.matrix && a.type.rows === b.type.rows && a.type.cols === b.type.cols
+}
+
+function operator_componentwise( a, b, fn, symbol ) {
+    if ( a.type.scalar && b.type.scalar )
+        return fn( a, b )
+
+    if ( a.type.scalar ) {
+        const components = b.components.map( bc => fn( a, bc ) )
+        return partial_shape( b, components )
+    }
+
+    if ( b.type.scalar ) {
+        const components = a.components.map( ac => fn( ac, b ) )
+        return partial_shape( a, components )
+    }
+
+    if ( same_component_shape( a, b ) ) {
+        const components = a.components.map( ( ac, i ) => fn( ac, b.components[i] ) )
+        return partial_shape( a, components )
+    }
+
+    throw new Error( `Unsupported '${symbol}' operands '${a.type}' and '${b.type}'` )
+}
+
+function binary_scalar( symbol, precedence, a, b, fold ) {
+    const type = type_promote( a.type, b.type )
+    a = promote_scalar( a, type )
+    b = promote_scalar( b, type )
+
+    const folded = fold_binary( type, a, b, fold )
+    if ( folded ) return folded
+
+    const value = `${render_operand( a, precedence )} ${symbol} ${render_operand( b, precedence, true )}`
+    return constructor_leaf( type, value, false, precedence )
+}
 
 export function constructor_number( value, type ) {
-    return constructor_leaf( type, value, true )
+    return constructor_constant( type, convert_constant( type, value ) )
 }
+
 export function constructor_identifier( string, builtin_varset, user_varset ) {
     if ( !builtin_varset.has( string ) && !user_varset.has( string ) )
         throw new Error( `Unknown identifier: ${string}` )
@@ -40,17 +157,17 @@ export function constructor_identifier( string, builtin_varset, user_varset ) {
     const comp_override = variable.components
 
     if ( type.scalar ) {
-        if ( typeof comp_override === 'number' )
+        if ( typeof comp_override === 'number' || typeof comp_override === 'boolean' )
             return constructor_number( comp_override, type )
 
         return constructor_leaf( type, string )
     }
 
     if ( type.vector ) {
-        let underlying = Type( type.underlying )
+        let underlying = type_underlying( type )
         let components = []
         for ( let i = 0; i < type.components; i++ ) {
-            const leaf = typeof comp_override?.[i] === 'number'
+            const leaf = typeof comp_override?.[i] === 'number' || typeof comp_override?.[i] === 'boolean'
                 ? constructor_number( comp_override[i], underlying )
                 : constructor_leaf( underlying, string + '.' + 'xyzw'[i] )
             components.push( leaf )
@@ -59,7 +176,7 @@ export function constructor_identifier( string, builtin_varset, user_varset ) {
     }
 
     if ( type.matrix ) {
-        let underlying = Type( type.underlying )
+        let underlying = type_underlying( type )
         let components = []
 
         for ( let c = 0; c < type.cols; c++ ) { // first: columns
@@ -80,137 +197,106 @@ export function constructor_identifier( string, builtin_varset, user_varset ) {
                     s = string + `.${c}.${r}`
                 }
 
-                const leaf = constructor_leaf( underlying, s )
-                components.push( leaf )
-
+                components.push( constructor_leaf( underlying, s ) )
             }
         }
 
         return Partial( type, components )
     }
 
-    throw new Error( `Unknown Type:`, type )
+    throw new Error( `Unknown Type: ${type}` )
 }
 
 function operator_neg( x ) {
-    // TODO: add constant propagation
-    return util_scalar_map( x, c => `(-${c})` )
+    if ( x.type.boolean )
+        throw new Error( "Unary '-' requires a numeric operand" )
+
+    if ( !x.type.scalar ) {
+        const components = x.components.map( operator_neg )
+        return Partial( x.type, components )
+    }
+
+    const folded = fold_unary( x.type, x, value => -value )
+    if ( folded ) return folded
+
+    return constructor_leaf(
+        x.type,
+        `-${render_operand( x, Precedence.UNARY, true )}`,
+        false,
+        Precedence.UNARY
+    )
 }
 
 function operator_pos( x ) {
+    if ( x.type.boolean )
+        throw new Error( "Unary '+' requires a numeric operand" )
     return x
 }
 
+function scalar_add( a, b ) {
+    const type = type_promote( a.type, b.type )
+    a = promote_scalar( a, type )
+    b = promote_scalar( b, type )
+
+    const ac = scalar_atom( a ), bc = scalar_atom( b )
+    const folded = fold_binary( type, a, b, ( a, b ) => a + b )
+    if ( folded ) return folded
+
+    if ( ac.literal && ac.value === 0 ) return b
+    if ( bc.literal && bc.value === 0 ) return a
+
+    return binary_scalar( '+', Precedence.ADDITIVE, a, b, ( a, b ) => a + b )
+}
+
 function operator_add( a, b ) {
-    if ( a.type.scalar && b.type.scalar ) {
-        let ac = a.components[0], bc = b.components[0]
+    return operator_componentwise( a, b, scalar_add, '+' )
+}
 
-        const folded = fold_binary( a.type, ac, bc, ( a, b ) => a + b )
-        if ( folded ) return folded
+function scalar_sub( a, b ) {
+    const type = type_promote( a.type, b.type )
+    a = promote_scalar( a, type )
+    b = promote_scalar( b, type )
 
-        if ( ac.literal && ac.value === 0 ) return b
-        if ( bc.literal && bc.value === 0 ) return a
+    const ac = scalar_atom( a ), bc = scalar_atom( b )
+    const folded = fold_binary( type, a, b, ( a, b ) => a - b )
+    if ( folded ) return folded
 
-        return constructor_leaf( a.type, `(${ac} + ${bc})` )
-    }
+    if ( ac.literal && ac.value === 0 ) return operator_neg( b )
+    if ( bc.literal && bc.value === 0 ) return a
 
-    if ( a.type.scalar ) {
-        let components = b.components.map( bc => operator_add( a, bc ) )
-        return Partial( b.type, components )
-    }
-
-    if ( b.type.scalar ) {
-        let components = a.components.map( ac => operator_add( ac, b ) )
-        return Partial( a.type, components )
-    }
-
-    if ( a.type.vector && b.type.vector ) {
-        if ( a.type.components !== b.type.components )
-            throw new Error( "Cannot broadcast different size vectors" )
-
-        let components = a.components.map( ( ac, i ) => operator_add( ac, b.components[i] ) )
-        return Partial( a.type, components )
-    }
-
-    throw new Error( "Unsupported '+' operands" )
+    return binary_scalar( '-', Precedence.ADDITIVE, a, b, ( a, b ) => a - b )
 }
 
 function operator_sub( a, b ) {
-    if ( a.type.scalar && b.type.scalar ) {
-        let ac = a.components[0], bc = b.components[0]
+    return operator_componentwise( a, b, scalar_sub, '-' )
+}
 
-        const folded = fold_binary( a.type, ac, bc, ( a, b ) => a - b )
-        if ( folded ) return folded
+function scalar_mul( a, b ) {
+    const type = type_promote( a.type, b.type )
+    a = promote_scalar( a, type )
+    b = promote_scalar( b, type )
 
-        if ( ac.literal && ac.value === 0 ) return constructor_leaf( b.type, `(-${bc})` )
-        if ( bc.literal && bc.value === 0 ) return a
+    const ac = scalar_atom( a ), bc = scalar_atom( b )
+    const folded = fold_binary( type, a, b, ( a, b ) => a * b )
+    if ( folded ) return folded
 
-        return constructor_leaf( a.type, `(${ac} - ${bc})` )
+    if ( ac.literal ) {
+        if ( ac.value === 0 ) return a
+        if ( ac.value === 1 ) return b
+        if ( ac.value === -1 ) return operator_neg( b )
+    }
+    if ( bc.literal ) {
+        if ( bc.value === 0 ) return b
+        if ( bc.value === 1 ) return a
+        if ( bc.value === -1 ) return operator_neg( a )
     }
 
-    if ( a.type.scalar ) {
-        let components = b.components.map( bc => operator_sub( a, bc ) )
-        return Partial( b.type, components )
-    }
-
-    if ( b.type.scalar ) {
-        let components = a.components.map( ac => operator_sub( ac, b ) )
-        return Partial( a.type, components )
-    }
-
-    if ( a.type.vector && b.type.vector ) {
-        if ( a.type.components !== b.type.components )
-            throw new Error( "Cannot broadcast different size vectors" )
-
-        let components = a.components.map( ( ac, i ) => operator_sub( ac, b.components[i] ) )
-        return Partial( a.type, components )
-    }
-
-    throw new Error( "Unsupported '-' operands" )
+    return binary_scalar( '*', Precedence.MULTIPLICATIVE, a, b, ( a, b ) => a * b )
 }
 
 function operator_mul( a, b ) {
-    if ( a.type.scalar && b.type.scalar ) {
-        let ac = a.components[0], bc = b.components[0]
-
-        const folded = fold_binary( a.type, ac, bc, ( a, b ) => a * b )
-        if ( folded ) return folded
-
-        if ( ac.literal ) {
-            if ( ac.value === 0 ) return a
-            if ( ac.value === 1 ) return b
-        }
-        if ( bc.literal ) {
-            if ( bc.value === 0 ) return b
-            if ( bc.value === 1 ) return a
-        }
-
-        return constructor_leaf( a.type, `(${ac} * ${bc})` )
-    }
-
-    if ( a.type.scalar ) {
-        return Partial(
-            b.type,
-            b.components.map( bc => operator_mul( a, bc ) )
-        )
-    }
-
-    if ( b.type.scalar ) {
-        return Partial(
-            a.type,
-            a.components.map( ac => operator_mul( ac, b ) )
-        )
-    }
-
-    if ( a.type.vector && b.type.vector ) {
-        if ( a.type.components !== b.type.components )
-            throw new Error( "Cannot broadcast different size vectors" )
-
-        return Partial(
-            a.type,
-            a.components.map( ( ac, i ) => operator_mul( ac, b.components[i] ) )
-        )
-    }
+    if ( a.type.scalar || b.type.scalar || a.type.vector && b.type.vector )
+        return operator_componentwise( a, b, scalar_mul, '*' )
 
     // matrix * vector
     if ( a.type.matrix && b.type.vector ) {
@@ -227,15 +313,13 @@ function operator_mul( a, b ) {
                     b.components[c]
                 )
 
-                expr = expr
-                    ? operator_add( expr, term )
-                    : term
+                expr = expr ? operator_add( expr, term ) : term
             }
 
             components.push( expr )
         }
 
-        return Partial( Type( `vec${a.type.rows}` ), components )
+        return Partial( type_rebase( Type( `vec${a.type.rows}` ), components[0].type ), components )
     }
 
     // vector * matrix
@@ -253,15 +337,13 @@ function operator_mul( a, b ) {
                     b.components[c * b.type.rows + r]
                 )
 
-                expr = expr
-                    ? operator_add( expr, term )
-                    : term
+                expr = expr ? operator_add( expr, term ) : term
             }
 
             components.push( expr )
         }
 
-        return Partial( Type( `vec${b.type.cols}` ), components )
+        return Partial( type_rebase( Type( `vec${b.type.cols}` ), components[0].type ), components )
     }
 
     // matrix * matrix
@@ -284,60 +366,117 @@ function operator_mul( a, b ) {
                         b.components[c * b.type.rows + k]
                     )
 
-                    expr = expr
-                        ? operator_add( expr, term )
-                        : term
+                    expr = expr ? operator_add( expr, term ) : term
                 }
 
                 components.push( expr )
             }
         }
 
-        return Partial( Type( rows === cols ? `mat${rows}` : `mat${cols}x${rows}` ), components )
+        const shape = Type( rows === cols ? `mat${rows}` : `mat${cols}x${rows}` )
+        return Partial( type_rebase( shape, components[0].type ), components )
     }
 
     throw new Error( "Unsupported '*' operands" )
 }
 
+function scalar_div( a, b ) {
+    const type = type_promote( a.type, b.type )
+    a = promote_scalar( a, type )
+    b = promote_scalar( b, type )
+
+    const ac = scalar_atom( a ), bc = scalar_atom( b )
+    const divide = type.integral
+        ? ( a, b ) => Math.trunc( a / b )
+        : ( a, b ) => a / b
+
+    const folded = fold_binary( type, a, b, divide )
+    if ( folded ) return folded
+
+    if ( ac.literal && ac.value === 0 ) return a
+    if ( bc.literal && bc.value === 1 ) return a
+    if ( bc.literal && bc.value === -1 ) return operator_neg( a )
+
+    return binary_scalar( '/', Precedence.MULTIPLICATIVE, a, b, divide )
+}
+
 function operator_div( a, b ) {
-    if ( a.type.scalar && b.type.scalar ) {
-        let ac = a.components[0], bc = b.components[0]
+    return operator_componentwise( a, b, scalar_div, '/' )
+}
 
-        const folded = fold_binary( a.type, ac, bc, ( a, b ) => a / b )
-        if ( folded ) return folded
+function operator_compare( operator, a, b ) {
+    if ( !a.type.scalar || !b.type.scalar )
+        throw new Error( `Comparison '${operator}' only supports scalar operands` )
 
-        if ( ac.literal && ac.value === 0 ) return a
-        if ( bc.literal && bc.value === 1 ) return a
-
-        return constructor_leaf( a.type, `(${ac} / ${bc})` )
+    const equality = operator === '==' || operator === '!='
+    if ( a.type.boolean || b.type.boolean ) {
+        if ( !equality || !a.type.boolean || !b.type.boolean )
+            throw new Error( `Unsupported '${operator}' operands '${a.type}' and '${b.type}'` )
+    } else {
+        const type = type_promote( a.type, b.type )
+        a = promote_scalar( a, type )
+        b = promote_scalar( b, type )
     }
 
-    if ( a.type.scalar ) {
-        let components = b.components.map( bc => operator_div( a, bc ) )
-        return Partial( b.type, components )
+    const fn = {
+        '<': ( a, b ) => a < b,
+        '<=': ( a, b ) => a <= b,
+        '>': ( a, b ) => a > b,
+        '>=': ( a, b ) => a >= b,
+        '==': ( a, b ) => a === b,
+        '!=': ( a, b ) => a !== b,
+    }[operator]
+
+    const folded = fold_binary( Type.bool, a, b, fn )
+    if ( folded ) return folded
+
+    const value = `${render_operand( a, Precedence.COMPARISON )} ${operator} ${render_operand( b, Precedence.COMPARISON, true )}`
+    return constructor_leaf( Type.bool, value, false, Precedence.COMPARISON )
+}
+
+function common_branch_type( a, b ) {
+    if ( a.scalar && b.scalar )
+        return type_promote( a, b )
+
+    const same_shape =
+        a.vector && b.vector && a.components === b.components ||
+        a.matrix && b.matrix && a.rows === b.rows && a.cols === b.cols
+
+    if ( !same_shape )
+        throw new Error( `Ternary branches have incompatible types '${a}' and '${b}'` )
+
+    return type_rebase( a, type_promote( a, b ) )
+}
+
+function operator_select( condition, if_true, if_false ) {
+    if ( !condition.type.scalar || !condition.type.boolean )
+        throw new Error( "Ternary condition must be a scalar bool" )
+
+    const type = common_branch_type( if_true.type, if_false.type )
+    if_true = constructor_convert( if_true, type )
+    if_false = constructor_convert( if_false, type )
+
+    const condition_atom = scalar_atom( condition )
+    if ( condition_atom.literal )
+        return condition_atom.value ? if_true : if_false
+
+    function select_scalar( a, b ) {
+        const value = `if(${condition_atom}, ${scalar_atom( a )}, ${scalar_atom( b )})`
+        return constructor_leaf( a.type, value, false, Precedence.CALL )
     }
 
-    if ( b.type.scalar ) {
-        let components = a.components.map( ac => operator_div( ac, b ) )
-        return Partial( a.type, components )
-    }
+    if ( type.scalar )
+        return select_scalar( if_true, if_false )
 
-    if ( a.type.vector && b.type.vector ) {
-        if ( a.type.components !== b.type.components )
-            throw new Error( "Cannot broadcast different size vectors" )
-
-        let components = a.components.map( ( ac, i ) => operator_div( ac, b.components[i] ) )
-        return Partial( a.type, components )
-    }
-
-    throw new Error( "Unsupported '/' operands" )
+    const components = if_true.components.map( ( c, i ) => select_scalar( c, if_false.components[i] ) )
+    return Partial( type, components )
 }
 
 function operator_swizzle( x, swizzle ) {
     let indices = swizzle.split( "" ).map( c => ( {
         x: 0, y: 1, z: 2, w: 3,
         r: 0, g: 1, b: 2, a: 3,
-        s: 0, t: 1, u: 2, v: 3,
+        s: 0, t: 1, p: 2, q: 3,
     }[c] ) )
 
     if ( x.type.matrix )
@@ -354,10 +493,12 @@ function operator_swizzle( x, swizzle ) {
     if ( components.length === 1 )
         return components[0]
 
-    return Partial( Type( "vec" + components.length ), components )
+    return Partial( type_rebase( Type( "vec" + components.length ), components[0].type ), components )
 }
 
 function operator_index( x, index ) {
+    index = +index
+
     if ( x.type.scalar ) {
         if ( index !== 0 ) throw new Error( "Index out of range" )
         return x
@@ -378,43 +519,43 @@ function operator_index( x, index ) {
             components.push( x.components[idx] )
         }
 
-        return Partial( Type( "vec" + components.length ), components )
+        return Partial( type_rebase( Type( "vec" + components.length ), components[0].type ), components )
     }
 
     throw new Error( "Cannot index this type" )
 }
 
+function builtin_scalar( typename, ...args ) {
+    let components = args.flatMap( arg => arg.components )
+    if ( components.length !== 1 )
+        throw new Error( `${typename} constructor expects a single argument` )
+    return convert_scalar( components[0], Type( typename ) )
+}
 
-function builtin_float( ...args ) {
+function builtin_vector( typename, ...args ) {
+    const type = Type( typename )
     let components = args.flatMap( arg => arg.components )
-    if ( components.length !== 1 ) throw new Error( "float constructor expects a single argument" )
-    return Partial( Type( "float" ), components )
-}
-function builtin_vec2( ...args ) {
-    let components = args.flatMap( arg => arg.components )
-    if ( components.length !== 2 ) throw new Error( "vec2 constructor expects exactly 2 components" )
-    return Partial( Type( "vec2" ), components )
-}
-function builtin_vec3( ...args ) {
-    let components = args.flatMap( arg => arg.components )
-    if ( components.length !== 3 ) throw new Error( "vec3 constructor expects exactly 3 components" )
-    return Partial( Type( "vec3" ), components )
-}
-function builtin_vec4( ...args ) {
-    let components = args.flatMap( arg => arg.components )
-    if ( components.length !== 4 ) throw new Error( "vec4 constructor expects exactly 4 components" )
-    return Partial( Type( "vec4" ), components )
+
+    if ( components.length === 1 )
+        components = Array( type.components ).fill( components[0] )
+
+    if ( components.length !== type.components )
+        throw new Error( `${typename} constructor expects exactly ${type.components} components` )
+
+    const component_type = type_underlying( type )
+    return Partial( type, components.map( c => convert_scalar( c, component_type ) ) )
 }
 
 function builtin_matrix( typename, ...args ) {
     const type = Type( typename )
+    const underlying = type_underlying( type )
 
     //
     // matN(s)
     //
     if ( args.length === 1 && args[0].type.scalar ) {
-        const zero = constructor_number( 0, Type.float )
-        const diag = args[0]
+        const zero = constructor_number( 0, underlying )
+        const diag = convert_scalar( args[0], underlying )
 
         let components = []
         for ( let c = 0; c < type.cols; c++ )
@@ -429,14 +570,14 @@ function builtin_matrix( typename, ...args ) {
     //
     if ( args.length === 1 && args[0].type.matrix ) {
         const src = args[0]
-        const zero = constructor_number( 0, Type.float )
-        const diag = constructor_number( 1, Type.float )
+        const zero = constructor_number( 0, underlying )
+        const diag = constructor_number( 1, underlying )
 
         let components = []
         for ( let c = 0; c < type.cols; c++ ) {
             for ( let r = 0; r < type.rows; r++ ) {
                 if ( c < src.type.cols && r < src.type.rows ) {
-                    components.push( src.components[c * src.type.rows + r] )
+                    components.push( convert_scalar( src.components[c * src.type.rows + r], underlying ) )
                 } else {
                     components.push( r === c ? diag : zero )
                 }
@@ -453,26 +594,42 @@ function builtin_matrix( typename, ...args ) {
     if ( components.length !== type.components )
         throw new Error( `${type.name} constructor expects ${type.components} scalar components` )
 
-    return Partial( type, components )
+    return Partial( type, components.map( c => convert_scalar( c, underlying ) ) )
+}
+
+function builtin_scalar_map( name, x, fn, require_floating = false ) {
+    if ( require_floating && !x.type.floating )
+        throw new Error( `${name}() requires floating-point arguments` )
+
+    function scalar( c ) {
+        const folded = fold_unary( c.type, c, fn )
+        if ( folded ) return folded
+        return constructor_leaf( c.type, `${name}(${scalar_atom( c )})`, false, Precedence.CALL )
+    }
+
+    if ( x.type.scalar ) return scalar( x )
+    return Partial( x.type, x.components.map( scalar ) )
 }
 
 function builtin_sqrt( x ) {
-    return util_scalar_map( x, c => `sqrt(${c})` )
+    return builtin_scalar_map( 'sqrt', x, Math.sqrt, true )
 }
 function builtin_fract( x ) {
-    return util_scalar_map( x, c => `frac(${c})` )
+    return builtin_scalar_map( 'frac', x, x => x - Math.floor( x ), true )
 }
 
 function builtin_dot( a, b ) {
-    if ( a.type.components !== b.type.components )
+    if ( !a.type.vector || !b.type.vector || a.type.components !== b.type.components )
         throw new Error( "Unsupported 'dot()' operands" )
+    if ( !a.type.floating || !b.type.floating )
+        throw new Error( "dot() requires floating-point vectors" )
 
-    let comps = []
+    let result
     for ( let i = 0; i < a.type.components; i++ ) {
-        let ac = a.components[i], bc = b.components[i]
-        comps.push( operator_mul( ac, bc ).components[0] )
+        const term = operator_mul( a.components[i], b.components[i] )
+        result = result ? operator_add( result, term ) : term
     }
-    return constructor_leaf( Type( "float" ), "(" + comps.join( " + " ) + ")" )
+    return result
 }
 function builtin_length( x ) {
     return builtin_sqrt( builtin_dot( x, x ) )
@@ -481,12 +638,12 @@ function builtin_normalize( x ) {
     return operator_div( x, builtin_length( x ) )
 }
 
-
 export const BuiltinFunctions = {
-    float: builtin_float,
-    vec2: builtin_vec2,
-    vec3: builtin_vec3,
-    vec4: builtin_vec4,
+    float: ( ...a ) => builtin_scalar( 'float', ...a ),
+
+    vec2: ( ...a ) => builtin_vector( 'vec2', ...a ),
+    vec3: ( ...a ) => builtin_vector( 'vec3', ...a ),
+    vec4: ( ...a ) => builtin_vector( 'vec4', ...a ),
 
     mat2: ( ...a ) => builtin_matrix( "mat2", ...a ),
     mat3: ( ...a ) => builtin_matrix( "mat3", ...a ),
@@ -510,6 +667,14 @@ export const BuiltinOperators = {
     '-': operator_sub,
     '*': operator_mul,
     '/': operator_div,
+
+    '<': ( a, b ) => operator_compare( '<', a, b ),
+    '<=': ( a, b ) => operator_compare( '<=', a, b ),
+    '>': ( a, b ) => operator_compare( '>', a, b ),
+    '>=': ( a, b ) => operator_compare( '>=', a, b ),
+    '==': ( a, b ) => operator_compare( '==', a, b ),
+    '!=': ( a, b ) => operator_compare( '!=', a, b ),
+    '?:': operator_select,
 
     '-u': operator_neg,
     '+u': operator_pos,

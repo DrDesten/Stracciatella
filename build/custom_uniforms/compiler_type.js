@@ -112,7 +112,7 @@ const type_rank = {
     double: 3,
 }
 
-export function type_scalar( type ) {
+export function type_underlying( type ) {
     return Type( type.underlying )
 }
 
@@ -143,8 +143,8 @@ export function type_rebase( type, underlying ) {
 }
 
 export function type_promote( a, b ) {
-    a = type_scalar( a )
-    b = type_scalar( b )
+    a = type_underlying( a )
+    b = type_underlying( b )
 
     if ( a.boolean || b.boolean ) {
         if ( a.boolean && b.boolean ) return Type.bool
