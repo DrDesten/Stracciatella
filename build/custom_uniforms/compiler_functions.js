@@ -13,9 +13,22 @@ function constructor_leaf( type, string, literal = false ) {
     return Partial( atom.type, [atom] )
 }
 
+function constructor_constant( type, value ) {
+    if ( !Number.isFinite( value ) )
+        throw new Error( "Constant expression produced a non-finite value" )
 
-export function constructor_number( value, typestring ) {
-    return constructor_leaf( Type( typestring ), value, true )
+    if ( Object.is( value, -0 ) ) value = 0
+    return constructor_leaf( type, value, true )
+}
+
+function fold_binary( type, a, b, fn ) {
+    if ( !a.literal || !b.literal ) return
+    return constructor_constant( type, fn( a.value, b.value ) )
+}
+
+
+export function constructor_number( value, type ) {
+    return constructor_leaf( type, value, true )
 }
 export function constructor_identifier( string, builtin_varset, user_varset ) {
     if ( !builtin_varset.has( string ) && !user_varset.has( string ) )
@@ -27,6 +40,9 @@ export function constructor_identifier( string, builtin_varset, user_varset ) {
     const comp_override = variable.components
 
     if ( type.scalar ) {
+        if ( typeof comp_override === 'number' )
+            return constructor_number( comp_override, type )
+
         return constructor_leaf( type, string )
     }
 
@@ -34,7 +50,9 @@ export function constructor_identifier( string, builtin_varset, user_varset ) {
         let underlying = Type( type.underlying )
         let components = []
         for ( let i = 0; i < type.components; i++ ) {
-            const leaf = constructor_leaf( underlying, string + '.' + 'xyzw'[i] )
+            const leaf = typeof comp_override?.[i] === 'number'
+                ? constructor_number( comp_override[i], underlying )
+                : constructor_leaf( underlying, string + '.' + 'xyzw'[i] )
             components.push( leaf )
         }
         return Partial( type, components )
@@ -47,8 +65,8 @@ export function constructor_identifier( string, builtin_varset, user_varset ) {
         for ( let c = 0; c < type.cols; c++ ) { // first: columns
             for ( let r = 0; r < type.rows; r++ ) { // then: rows
 
-                if ( comp_override && typeof comp_override[c][r] === 'number' ) {
-                    const num = constructor_number( comp_override[c][r], "float" )
+                if ( typeof comp_override?.[c]?.[r] === 'number' ) {
+                    const num = constructor_number( comp_override[c][r], underlying )
                     components.push( num )
                     continue
                 }
@@ -75,12 +93,20 @@ export function constructor_identifier( string, builtin_varset, user_varset ) {
 }
 
 function operator_neg( x ) {
+    // TODO: add constant propagation
     return util_scalar_map( x, c => `(-${c})` )
+}
+
+function operator_pos( x ) {
+    return x
 }
 
 function operator_add( a, b ) {
     if ( a.type.scalar && b.type.scalar ) {
         let ac = a.components[0], bc = b.components[0]
+
+        const folded = fold_binary( a.type, ac, bc, ( a, b ) => a + b )
+        if ( folded ) return folded
 
         if ( ac.literal && ac.value === 0 ) return b
         if ( bc.literal && bc.value === 0 ) return a
@@ -113,6 +139,9 @@ function operator_sub( a, b ) {
     if ( a.type.scalar && b.type.scalar ) {
         let ac = a.components[0], bc = b.components[0]
 
+        const folded = fold_binary( a.type, ac, bc, ( a, b ) => a - b )
+        if ( folded ) return folded
+
         if ( ac.literal && ac.value === 0 ) return constructor_leaf( b.type, `(-${bc})` )
         if ( bc.literal && bc.value === 0 ) return a
 
@@ -143,6 +172,9 @@ function operator_sub( a, b ) {
 function operator_mul( a, b ) {
     if ( a.type.scalar && b.type.scalar ) {
         let ac = a.components[0], bc = b.components[0]
+
+        const folded = fold_binary( a.type, ac, bc, ( a, b ) => a * b )
+        if ( folded ) return folded
 
         if ( ac.literal ) {
             if ( ac.value === 0 ) return a
@@ -271,6 +303,9 @@ function operator_div( a, b ) {
     if ( a.type.scalar && b.type.scalar ) {
         let ac = a.components[0], bc = b.components[0]
 
+        const folded = fold_binary( a.type, ac, bc, ( a, b ) => a / b )
+        if ( folded ) return folded
+
         if ( ac.literal && ac.value === 0 ) return a
         if ( bc.literal && bc.value === 1 ) return a
 
@@ -304,14 +339,17 @@ function operator_swizzle( x, swizzle ) {
         r: 0, g: 1, b: 2, a: 3,
         s: 0, t: 1, u: 2, v: 3,
     }[c] ) )
-    let components = indices.map( i => x.components[i] )
 
     if ( x.type.matrix )
         throw new Error( "Cannot swizzle matrix" )
     if ( indices.length > 4 )
-        throw new Error( "Swizzle to long" )
-    if ( indices.some( i => i > x.components.length ) )
+        throw new Error( "Swizzle too long" )
+    if ( indices.some( i => i === undefined ) )
+        throw new Error( `Invalid swizzle '${swizzle}'` )
+    if ( indices.some( i => i >= x.components.length ) )
         throw new Error( "Swizzle out of range" )
+
+    let components = indices.map( i => x.components[i] )
 
     if ( components.length === 1 )
         return components[0]
@@ -326,13 +364,13 @@ function operator_index( x, index ) {
     }
 
     if ( x.type.vector ) {
-        if ( index >= x.type.components ) throw new Error( "Index out of range" )
+        if ( index < 0 || index >= x.type.components ) throw new Error( "Index out of range" )
         return x.components[index]
     }
 
     if ( x.type.matrix ) {
         // in GLSL, matrices have column vectors
-        if ( index >= x.type.cols ) throw new Error( "Index out of range" )
+        if ( index < 0 || index >= x.type.cols ) throw new Error( "Index out of range" )
 
         let components = []
         for ( let i = 0; i < x.type.rows; i++ ) {
@@ -375,7 +413,7 @@ function builtin_matrix( typename, ...args ) {
     // matN(s)
     //
     if ( args.length === 1 && args[0].type.scalar ) {
-        const zero = constructor_number( 0, "float" )
+        const zero = constructor_number( 0, Type.float )
         const diag = args[0]
 
         let components = []
@@ -391,8 +429,8 @@ function builtin_matrix( typename, ...args ) {
     //
     if ( args.length === 1 && args[0].type.matrix ) {
         const src = args[0]
-        const zero = constructor_number( 0, "float" )
-        const diag = constructor_number( 1, "float" )
+        const zero = constructor_number( 0, Type.float )
+        const diag = constructor_number( 1, Type.float )
 
         let components = []
         for ( let c = 0; c < type.cols; c++ ) {
@@ -474,6 +512,7 @@ export const BuiltinOperators = {
     '/': operator_div,
 
     '-u': operator_neg,
+    '+u': operator_pos,
 
     'swizzle': operator_swizzle,
     'index': operator_index,

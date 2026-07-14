@@ -99,6 +99,11 @@ export function Type( typename ) {
     _TypeCache.set( name, type )
     return type
 }
+Type.bool = Type( "bool" )
+Type.int = Type( "int" )
+Type.uint = Type( "uint" )
+Type.float = Type( "float" )
+Type.double = Type( "double" )
 
 export const Partial = ( type, components ) => ( {
     type, components,
@@ -106,6 +111,6 @@ export const Partial = ( type, components ) => ( {
 export const Atom = ( type, value, literal = false ) => ( {
     type, value, literal,
     get components() { return [this] },
-    toString() { return ""+value },
-    valueOf() { return ""+value },
+    toString() { return "" + value },
+    valueOf() { return "" + value },
 } )

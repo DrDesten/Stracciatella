@@ -14,35 +14,50 @@ const VARIABLES = new Map(
     JSON.parse( fs.readFileSync( path.join( __dirname, "variables.json" ) ) )
         .map( ( { name, type, components } ) => [name, Variable( name, Type( type ), components )] )
 )
-const USER_VARIABLES = new Map
-
 function Compiler( program ) {
-    function expression( node ) {
-        switch ( node.kind ) {
-            case 'NumberLiteral': {
-                return constructor_number( node.value, node.type )
-            }
-            case 'Identifier': {
-                return constructor_identifier( node.name, VARIABLES, USER_VARIABLES )
-            }
-            case 'UnaryExpr': {
-                return BuiltinOperators[node.op + 'u']( expression( node.expr ) )
-            }
-            case 'BinaryExpr': {
-                return BuiltinOperators[node.op]( expression( node.left ), expression( node.right ) )
-            }
-            case 'CallExpr': {
-                return BuiltinFunctions[node.name]( ...node.args.map( expression ) )
-            }
-            case 'SwizzleExpr': {
-                return BuiltinOperators['swizzle']( expression( node.target ), node.swizzle )
-            }
-            case 'IndexExpr': {
-                return BuiltinOperators['index']( expression( node.target ), node.index )
-            }
-            default:
-                throw new Error( `Unknown node type: ${node.kind}` )
+    const USER_VARIABLES = new Map
+
+    function positioned( node, fn ) {
+        try {
+            return fn()
+        } catch ( error ) {
+            if ( error.pos !== undefined ) throw error
+
+            const result = new Error( `Compile error at pos ${node.pos}: ${error.message}` )
+            result.pos = node.pos
+            result.cause = error
+            throw result
         }
+    }
+
+    function expression( node ) {
+        return positioned( node, () => {
+            switch ( node.kind ) {
+                case 'NumberLiteral': {
+                    return constructor_number( node.value, Type( node.type ) )
+                }
+                case 'Identifier': {
+                    return constructor_identifier( node.name, VARIABLES, USER_VARIABLES )
+                }
+                case 'UnaryExpr': {
+                    return BuiltinOperators[node.op + 'u']( expression( node.expr ) )
+                }
+                case 'BinaryExpr': {
+                    return BuiltinOperators[node.op]( expression( node.left ), expression( node.right ) )
+                }
+                case 'CallExpr': {
+                    return BuiltinFunctions[node.name]( ...node.args.map( expression ) )
+                }
+                case 'SwizzleExpr': {
+                    return BuiltinOperators['swizzle']( expression( node.target ), node.swizzle )
+                }
+                case 'IndexExpr': {
+                    return BuiltinOperators['index']( expression( node.target ), node.index )
+                }
+                default:
+                    throw new Error( `Unknown node type: ${node.kind}` )
+            }
+        } )
     }
 
     function compileScalar( partial ) {
@@ -68,43 +83,45 @@ function Compiler( program ) {
     }
 
     function compile( declaration ) {
-        const partial = expression( declaration.expr )
-        const name = partial.type.name
-        const comps = partial.components.map( compileScalar )
-        const valueType = Type( declaration.valueType )
+        return positioned( declaration, () => {
+            const partial = expression( declaration.expr )
+            const name = partial.type.name
+            const comps = partial.components.map( compileScalar )
+            const valueType = Type( declaration.valueType )
 
-        const user_component_literals = extractComponents( partial )
-        USER_VARIABLES.set(
-            declaration.name,
-            Variable( declaration.name, partial.type, user_component_literals )
-        )
+            const user_component_literals = extractComponents( partial )
+            USER_VARIABLES.set(
+                declaration.name,
+                Variable( declaration.name, valueType, user_component_literals )
+            )
 
-        // declaration
-        let declqual = { const: "variable", uniform: "uniform" }[declaration.qualifier]
-        let decltype = valueType.matrix ? `vec${valueType.rows}` : valueType.name
-        let declname = declaration.name
+            // declaration
+            let declqual = { const: "variable", uniform: "uniform" }[declaration.qualifier]
+            let decltype = valueType.matrix ? `vec${valueType.rows}` : valueType.name
+            let declname = declaration.name
 
-        const prefix = `${declqual}.${decltype}.${declname}`
+            const prefix = `${declqual}.${decltype}.${declname}`
 
-        // scalars
-        if ( partial.type.scalar ) {
-            return `${prefix} = ${comps[0]}`
-        }
+            // scalars
+            if ( partial.type.scalar ) {
+                return `${prefix} = ${comps[0]}`
+            }
 
-        // vectors
-        if ( partial.type.vector ) {
-            return `${prefix} = ${name}(${comps.join( ", " )})`
-        }
+            // vectors
+            if ( partial.type.vector ) {
+                return `${prefix} = ${name}(${comps.join( ", " )})`
+            }
 
-        // matrices
-        let c = []
-        for ( let i = 0; i < partial.type.cols; i++ ) {
-            let vec = comps.slice( partial.type.rows * i, partial.type.rows * ( i + 1 ) )
-            let s = `vec${partial.type.rows}(${vec.join( ", " )})`
-            c.push( `${prefix}_${i} = ${s}` )
-        }
+            // matrices
+            let c = []
+            for ( let i = 0; i < partial.type.cols; i++ ) {
+                let vec = comps.slice( partial.type.rows * i, partial.type.rows * ( i + 1 ) )
+                let s = `vec${partial.type.rows}(${vec.join( ", " )})`
+                c.push( `${prefix}_${i} = ${s}` )
+            }
 
-        return c.join( "\n" )
+            return c.join( "\n" )
+        } )
     }
 
     const declarations = program.declarations
