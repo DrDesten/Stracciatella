@@ -557,21 +557,45 @@
     {
         "name": "gbufferModelView",
         "type": "mat4",
+        "components": [
+            ["", "", "",  0], 
+            ["", "", "",  0], 
+            ["", "", "",  0],
+            ["", "",  0,  1]
+        ],
         "description": "Player space to view space"
     },
     {
         "name": "gbufferModelViewInverse",
         "type": "mat4",
+        "components": [
+            ["", "", "",  0], 
+            ["", "", "",  0], 
+            ["", "", "",  0],
+            ["", "", "", ""]
+        ],
         "description": "Inverse player/view transform"
     },
     {
         "name": "gbufferProjection",
         "type": "mat4",
+        "components": [
+            ["",  0,  0,  0], 
+            [ 0, "",  0,  0], 
+            [ 0,  0, -1, -1],
+            [ 0,  0, "",  0]
+        ],
         "description": "View to clip transform"
     },
     {
         "name": "gbufferProjectionInverse",
         "type": "mat4",
+        "components": [
+            ["",  0,  0,  0], 
+            [ 0, "",  0,  0], 
+            [ 0,  0,  0, ""],
+            [ 0,  0, "", ""]
+        ],
         "description": "Inverse clip/view transform"
     },
     {
@@ -597,11 +621,23 @@
     {
         "name": "gbufferPreviousModelView",
         "type": "mat4",
+        "components": [
+            ["", "", "",  0], 
+            ["", "", "",  0], 
+            ["", "", "",  0],
+            ["", "",  0,  1]
+        ],
         "description": "Previous frame model-view matrix"
     },
     {
         "name": "gbufferPreviousProjection",
         "type": "mat4",
+        "components": [
+            ["",  0,  0,  0], 
+            [ 0, "",  0,  0], 
+            [ 0,  0, -1, -1],
+            [ 0,  0, "",  0]
+        ],
         "description": "Previous frame projection matrix"
     },
     {

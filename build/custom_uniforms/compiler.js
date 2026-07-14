@@ -8,26 +8,25 @@ import { inspect } from 'util'
 
 const __dirname = path.dirname( url.fileURLToPath( import.meta.url ) )
 
-const Variable = ( name, type ) => ( { name, type } )
+const Variable = ( name, type, components ) => ( { name, type, components } )
 
 const VARIABLES = new Map(
     JSON.parse( fs.readFileSync( path.join( __dirname, "variables.json" ) ) )
-        .map( ( { name, type } ) => [name, Variable( name, Type( type ) )] )
+        .map( ( { name, type, components } ) => [name, Variable( name, Type( type ), components )] )
 )
-
-console.log( VARIABLES )
+const USER_VARIABLES = new Map
 
 function Compiler( program ) {
     function expression( node ) {
         switch ( node.kind ) {
             case 'NumberLiteral': {
-                return constructor_number( node.value )
+                return constructor_number( node.value, node.type )
             }
             case 'Identifier': {
-                return constructor_identifier( node.name, VARIABLES )
+                return constructor_identifier( node.name, VARIABLES, USER_VARIABLES )
             }
             case 'UnaryExpr': {
-                return `${node.op}${stringify( node.argument )}`
+                return BuiltinOperators[node.op + 'u']( expression( node.expr ) )
             }
             case 'BinaryExpr': {
                 return BuiltinOperators[node.op]( expression( node.left ), expression( node.right ) )
@@ -46,92 +45,130 @@ function Compiler( program ) {
         }
     }
 
-    function compile( partial ) {
-        if ( partial.value ) {
+    function compileScalar( partial ) {
+        if ( partial.value !== undefined ) {
             return partial.value
         }
-        if ( partial.type.scalar ) {
-            return compile( partial.components[0] )
-        }
-        if ( partial.type.vector ) {
-            const name = partial.type.name
-            const comps = partial.components.map( compile )
-            return `${name}(${comps.join( ", " )})`
-        }
+        return compileScalar( partial.components[0] )
+    }
+
+    function extractComponents( partial ) {
         if ( partial.type.matrix ) {
-            const name = partial.type.name
-            const comps = partial.components.map( compile )
-            return `${name}(${comps.join( ", " )})`
+            let matrix = []
+            for ( let c = 0; c < partial.type.cols; c++ ) {
+                let col = []
+                for ( let r = 0; r < partial.type.rows; r++ ) {
+                    let comp = partial.components[c * partial.type.rows + r].components[0]
+                    col.push( comp.literal ? comp.value : "" )
+                }
+                matrix.push( col )
+            }
+            return matrix
         }
+    }
+
+    function compile( declaration ) {
+        const partial = expression( declaration.expr )
+        const name = partial.type.name
+        const comps = partial.components.map( compileScalar )
+        const valueType = Type( declaration.valueType )
+
+        const user_component_literals = extractComponents( partial )
+        USER_VARIABLES.set(
+            declaration.name,
+            Variable( declaration.name, partial.type, user_component_literals )
+        )
+
+        // declaration
+        let declqual = { const: "variable", uniform: "uniform" }[declaration.qualifier]
+        let decltype = valueType.matrix ? `vec${valueType.rows}` : valueType.name
+        let declname = declaration.name
+
+        const prefix = `${declqual}.${decltype}.${declname}`
+
+        // scalars
+        if ( partial.type.scalar ) {
+            return `${prefix} = ${comps[0]}`
+        }
+
+        // vectors
+        if ( partial.type.vector ) {
+            return `${prefix} = ${name}(${comps.join( ", " )})`
+        }
+
+        // matrices
+        let c = []
+        for ( let i = 0; i < partial.type.cols; i++ ) {
+            let vec = comps.slice( partial.type.rows * i, partial.type.rows * ( i + 1 ) )
+            let s = `vec${partial.type.rows}(${vec.join( ", " )})`
+            c.push( `${prefix}_${i} = ${s}` )
+        }
+
+        return c.join( "\n" )
     }
 
     const declarations = program.declarations
     const results = []
     for ( let i = 0; i < declarations.length; i++ ) {
-        const partial = expression( declarations[i].expr )
-        const compiled = compile( partial )
-        VARIABLES.set( declarations[i].name, Variable( declarations[i].name, partial.type ) )
+        const compiled = compile( declarations[i] )
         results.push( compiled )
     }
 
     return results
 }
 
-
-// Turns an expression AST back into GLSL-ish source, useful for sanity checks.
-function stringify( node ) {
-    switch ( node.kind ) {
-        case 'NumberLiteral': return "" + node.value
-        case 'Identifier':    return node.name
-        case 'UnaryExpr':     return `${node.op}${stringify( node.argument )}`
-        case 'BinaryExpr':    return `(${stringify( node.left )} ${node.op} ${stringify( node.right )})`
-        case 'CallExpr':      return `${node.name}(${node.args.map( stringify ).join( ', ' )})`
-        case 'SwizzleExpr':   return `${stringify( node.target )}.${node.swizzle}`
-        case 'IndexExpr':     return `${stringify( node.target )}[${node.index}]`
-        case 'Declaration':   return `${node.qualifier} ${node.valueType} ${node.name} = ${stringify( node.expr )}`
-        case 'Program':       return node.declarations.map( stringify ).join( '\n' )
-        default: throw new Error( `Unknown node type: ${node.kind}` )
-    }
-}
-
-// ---------------------------------------------------------------------------
-// Demo / self-test — runs only when this file is executed directly.
-// ---------------------------------------------------------------------------
-
 const source = `
-uniform vec2 screenSize        = vec2(viewWidth, viewHeight)
-uniform vec2 screenSizeInverse = 1.0 / screenSize
+const float sunLength = length(sunPosition);
+uniform vec3 sunDir = sunPosition / sunLength;
 
-const   float sunLength  = length(sunPosition)
-uniform vec3  sunDir     = sunPosition / sunLength
-const   float moonLength = length(moonPosition.xyz)
-uniform vec3  moonDir    = moonPosition.xyz / moonLength
-const   float upLength   = length(vec3(gbufferModelView[0][1], gbufferModelView[1][1], gbufferModelView[2][1]))
-uniform vec3  up         = vec3(gbufferModelView[0][1], gbufferModelView[1][1], gbufferModelView[2][1]) / upLength
+const float moonLength = length(moonPosition);
+uniform vec3 moonDir = moonPosition / moonLength;
 
-const vec3 up2 = mat3(gbufferModelView) * vec3(0,1,0)
+const float upLength = length(mat3(gbufferModelView) * vec3(0, 1, 0));
+uniform vec3 up = mat3(gbufferModelView) * vec3(0, 1, 0) / upLength;
 
+const float dayLength = (12786.0 + 785.0) / 24000.0;
+const float nightLength = 1. - dayLength;
+const float normalizedTimeAligned = fract((float(worldTime) + 785.0) / 24000.0);
 
-uniform mat4 gbufferModelViewProjectionInverse  = gbufferModelViewInverse * gbufferProjectionInverse
-uniform mat4 gbufferPreviousModelViewProjection = gbufferPreviousProjection * gbufferPreviousModelView
-/* uniform mat4  reproject  = 
+uniform vec2 screenSize        = vec2(viewWidth, viewHeight);
+uniform vec2 screenSizeInverse = 1.0 / screenSize;
+
+uniform vec2 lightPositionClip = (gbufferProjection * vec4(sunPosition, 1)).xy / -sunPosition.z;
+
+uniform mat4 cu_gbufferModelView = gbufferModelView
+uniform mat4 cu_gbufferModelViewInverse = gbufferModelViewInverse
+uniform mat4 cu_gbufferProjection = gbufferProjection
+uniform mat4 cu_gbufferProjectionInverse = gbufferProjectionInverse
+uniform mat4 cu_gbufferPreviousModelView = gbufferPreviousModelView
+uniform mat4 cu_gbufferPreviousProjection = gbufferPreviousProjection
+
+uniform mat4 reproject = 
+    mat4(
+        .5,  0,  0, 0,
+         0, .5,  0, 0,
+         0,  0, .5, 0,
+        .5, .5, .5, 1
+    ) *                                                    // prev. clip -> prev. screen
     gbufferPreviousProjection * gbufferPreviousModelView * // prev. player -> prev. clip
     mat4(
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
-        vec4(cameraPosition - previousCameraPosition, 1)
+        cameraPosition - previousCameraPosition, 1
     ) *                                                    // player -> prev. player
-    gbufferModelViewInverse * gbufferProjectionInverse     // clip   -> player
- */
+    gbufferModelViewInverse * gbufferProjectionInverse *   // clip   -> player
+    mat4(
+         2,  0,  0, 0,
+         0,  2,  0, 0,
+         0,  0,  2, 0,
+        -1, -1, -1, 1
+    );                                                      // screen -> clip
 `
 
 const ast = parse( source )
 
-console.log( '--- Round-tripped source ---' )
-console.log( stringify( ast ) )
-
 console.log( '\n--- AST (first declaration) ---' )
 console.log( inspect( ast.declarations, { colors: true, depth: Infinity } ) )
 
-console.log( Compiler( ast ) )
+console.log( Compiler( ast ).join( "\n" ) )

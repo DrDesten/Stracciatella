@@ -11,7 +11,8 @@ uniform vec3  up         = vec3(gbufferModelView[1].xyz / upLength)
 */
 
 export const TokenType = {
-    NUMBER: 'NUMBER',
+    FLOAT: 'FLOAT',
+    INT: 'INT',
     IDENT: 'IDENT',
     PLUS: 'PLUS',
     MINUS: 'MINUS',
@@ -60,7 +61,7 @@ function Lexer( source, index = 0 ) {
 
             function advanceWhitespace() {
                 let c
-                while ( c = peek(), c === ' ' || c === '\t' || c === '\r' || c === '\n' )
+                while ( c = peek(), c === ' ' || c === '\t' || c === '\r' || c === '\n' || c == ';' )
                     advance()
             }
             function advanceSingleComment() {
@@ -96,8 +97,13 @@ function Lexer( source, index = 0 ) {
             let m
             if ( c === undefined )
                 return Token( TokenType.EOF, "", index )
-            if ( m = /^(\d+\.?\d*|\.\d+?)([eE][+-]?\d+)?/.exec( s ) ) {
-                const token = Token( TokenType.NUMBER, m[0], index )
+            if ( m = /^(\d+\.\d*|\.\d+?)([eE][+-]?\d+)?|\d+[eE][+-]?\d+/.exec( s ) ) {
+                const token = Token( TokenType.FLOAT, m[0], index )
+                advance( m[0].length )
+                return token
+            }
+            if ( m = /^\d+/.exec( s ) ) {
+                const token = Token( TokenType.INT, m[0], index )
                 advance( m[0].length )
                 return token
             }
@@ -122,9 +128,9 @@ const Node = {
     Declaration: ( qualifier, valueType, name, expr ) => ( {
         kind: 'Declaration', qualifier, valueType, name, expr,
     } ),
-    NumberLiteral: ( value ) => ( { kind: 'NumberLiteral', value } ),
+    NumberLiteral: ( value, type ) => ( { kind: 'NumberLiteral', value, type } ),
     Identifier: ( name ) => ( { kind: 'Identifier', name } ),
-    UnaryExpr: ( op, argument ) => ( { kind: 'UnaryExpr', op, argument } ),
+    UnaryExpr: ( op, expr ) => ( { kind: 'UnaryExpr', op, expr } ),
     BinaryExpr: ( op, left, right ) => ( { kind: 'BinaryExpr', op, left, right } ),
     CallExpr: ( name, args ) => ( { kind: 'CallExpr', name, args } ),
     SwizzleExpr: ( target, swizzle ) => ( { kind: 'SwizzleExpr', target, swizzle } ),
@@ -271,9 +277,13 @@ class Parser {
 
     parsePrimary() {
         const t = this.peek()
-        if ( t.type === TokenType.NUMBER ) {
+        if ( t.type === TokenType.FLOAT ) {
             this.advance()
-            return Node.NumberLiteral( parseFloat( t.value ) )
+            return Node.NumberLiteral( +t.value, "float" )
+        }
+        if ( t.type === TokenType.INT ) {
+            this.advance()
+            return Node.NumberLiteral( +t.value, "int" )
         }
         if ( t.type === TokenType.IDENT ) {
             this.advance()
