@@ -1,6 +1,6 @@
 import { parse } from "./parser.js"
 import { Type } from "./compiler_type.js"
-import { BuiltinFunctions, BuiltinOperators, constructor_identifier, constructor_number } from "./compiler_functions.js"
+import { BuiltinFunctions, BuiltinOperators, constructor_identifier, constructor_number, constructor_convert } from "./compiler_functions.js"
 import fs from 'fs'
 import path from 'path'
 import url from 'url'
@@ -14,7 +14,8 @@ const VARIABLES = new Map(
     JSON.parse( fs.readFileSync( path.join( __dirname, "variables.json" ) ) )
         .map( ( { name, type, components } ) => [name, Variable( name, Type( type ), components )] )
 )
-function Compiler( program ) {
+
+export function Compiler( program ) {
     const USER_VARIABLES = new Map
 
     function positioned( node, fn ) {
@@ -36,6 +37,9 @@ function Compiler( program ) {
                 case 'NumberLiteral': {
                     return constructor_number( node.value, Type( node.type ) )
                 }
+                case 'BoolLiteral': {
+                    return constructor_number( node.value, Type.bool )
+                }
                 case 'Identifier': {
                     return constructor_identifier( node.name, VARIABLES, USER_VARIABLES )
                 }
@@ -45,8 +49,17 @@ function Compiler( program ) {
                 case 'BinaryExpr': {
                     return BuiltinOperators[node.op]( expression( node.left ), expression( node.right ) )
                 }
+                case 'TernaryExpr': {
+                    return BuiltinOperators['?:'](
+                        expression( node.condition ),
+                        expression( node.if_true ),
+                        expression( node.if_false )
+                    )
+                }
                 case 'CallExpr': {
-                    return BuiltinFunctions[node.name]( ...node.args.map( expression ) )
+                    const fn = BuiltinFunctions[node.name]
+                    if ( !fn ) throw new Error( `Unknown function '${node.name}'` )
+                    return fn( ...node.args.map( expression ) )
                 }
                 case 'SwizzleExpr': {
                     return BuiltinOperators['swizzle']( expression( node.target ), node.swizzle )
@@ -61,9 +74,8 @@ function Compiler( program ) {
     }
 
     function compileScalar( partial ) {
-        if ( partial.value !== undefined ) {
-            return partial.value
-        }
+        if ( partial.value !== undefined )
+            return `${partial}`
         return compileScalar( partial.components[0] )
     }
 
@@ -95,10 +107,10 @@ function Compiler( program ) {
 
     function compile( declaration ) {
         return positioned( declaration, () => {
-            const partial = expression( declaration.expr )
-            const name = partial.type.name
-            const comps = partial.components.map( compileScalar )
             const valueType = Type( declaration.valueType )
+            const partial = constructor_convert( expression( declaration.expr ), valueType )
+            const name = valueType.name
+            const comps = partial.components.map( compileScalar )
 
             const user_component_literals = extractComponents( partial )
             USER_VARIABLES.set(
@@ -143,6 +155,10 @@ function Compiler( program ) {
     }
 
     return results
+}
+
+export function transpile( source ) {
+    return Compiler( parse( source ) ).join( "\n" )
 }
 
 const source = `
@@ -194,9 +210,11 @@ uniform mat4 reproject =
     );                                                      // screen -> clip
 `
 
-const ast = parse( source )
+if ( process.argv[1] && import.meta.url === url.pathToFileURL( process.argv[1] ).href ) {
+    const ast = parse( source )
 
-console.log( '\n--- AST (first declaration) ---' )
-console.log( inspect( ast.declarations, { colors: true, depth: Infinity } ) )
+    console.log( '\n--- AST ---' )
+    console.log( inspect( ast.declarations, { colors: true, depth: Infinity } ) )
 
-console.log( Compiler( ast ).join( "\n" ) )
+    console.log( Compiler( ast ).join( "\n" ) )
+}
