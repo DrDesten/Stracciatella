@@ -68,13 +68,24 @@ function Compiler( program ) {
     }
 
     function extractComponents( partial ) {
+        function extract( component ) {
+            const atom = component.components[0]
+            return atom.literal ? atom.value : ""
+        }
+
+        if ( partial.type.scalar )
+            return extract( partial )
+
+        if ( partial.type.vector )
+            return partial.components.map( extract )
+
         if ( partial.type.matrix ) {
             let matrix = []
             for ( let c = 0; c < partial.type.cols; c++ ) {
                 let col = []
                 for ( let r = 0; r < partial.type.rows; r++ ) {
-                    let comp = partial.components[c * partial.type.rows + r].components[0]
-                    col.push( comp.literal ? comp.value : "" )
+                    let comp = partial.components[c * partial.type.rows + r]
+                    col.push( extract( comp ) )
                 }
                 matrix.push( col )
             }
