@@ -105,12 +105,81 @@ Type.uint = Type( "uint" )
 Type.float = Type( "float" )
 Type.double = Type( "double" )
 
+const type_rank = {
+    int: 0,
+    uint: 1,
+    float: 2,
+    double: 3,
+}
+
+export function type_scalar( type ) {
+    return Type( type.underlying )
+}
+
+export function type_rebase( type, underlying ) {
+    underlying = typeof underlying === 'string' ? underlying : underlying.name
+
+    if ( type.scalar )
+        return Type( underlying )
+
+    if ( type.vector ) {
+        const prefix = { bool: 'b', int: 'i', uint: 'u', float: '', double: 'd' }[underlying]
+
+        if ( prefix === undefined )
+            throw new Error( `Cannot use '${underlying}' as vector component type` )
+
+        return Type( `${prefix}vec${type.components}` )
+    }
+
+    if ( type.matrix ) {
+        if ( underlying !== 'float' && underlying !== 'double' )
+            throw new Error( "Matrices require floating-point components" )
+
+        const name = type.name.replace( /^d/, '' )
+        return Type( ( underlying === 'double' ? 'd' : '' ) + name )
+    }
+
+    throw new Error( `Unknown type '${type}'` )
+}
+
+export function type_promote( a, b ) {
+    a = type_scalar( a )
+    b = type_scalar( b )
+
+    if ( a.boolean || b.boolean ) {
+        if ( a.boolean && b.boolean ) return Type.bool
+        throw new Error( "Cannot mix boolean and numeric values" )
+    }
+
+    return type_rank[a.name] >= type_rank[b.name] ? a : b
+}
+
+function literal_string( type, value ) {
+    if ( type.boolean )
+        return value ? 'true' : 'false'
+
+    if ( type.floating && Number.isInteger( value ) )
+        return `${value}.0`
+
+    return `${value}`
+}
+
+export const Precedence = {
+    CONDITIONAL: 10,
+    COMPARISON: 20,
+    ADDITIVE: 30,
+    MULTIPLICATIVE: 40,
+    UNARY: 50,
+    CALL: 60,
+    PRIMARY: 70,
+}
+
 export const Partial = ( type, components ) => ( {
     type, components,
 } )
-export const Atom = ( type, value, literal = false ) => ( {
-    type, value, literal,
+export const Atom = ( type, value, literal = false, precedence = Precedence.PRIMARY ) => ( {
+    type, value, literal, precedence,
     get components() { return [this] },
-    toString() { return "" + value },
-    valueOf() { return "" + value },
+    toString() { return literal ? literal_string( type, value ) : "" + value },
+    valueOf() { return this.toString() },
 } )
