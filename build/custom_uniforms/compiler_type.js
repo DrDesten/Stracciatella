@@ -166,12 +166,14 @@ function literal_string( type, value ) {
 
 export const Precedence = {
     CONDITIONAL: 10,
-    COMPARISON: 20,
-    ADDITIVE: 30,
-    MULTIPLICATIVE: 40,
-    UNARY: 50,
-    CALL: 60,
-    PRIMARY: 70,
+    LOGICAL_OR: 20,
+    LOGICAL_AND: 30,
+    COMPARISON: 40,
+    ADDITIVE: 50,
+    MULTIPLICATIVE: 60,
+    UNARY: 70,
+    CALL: 80,
+    PRIMARY: 90,
 }
 
 export const Partial = ( type, components ) => ( {

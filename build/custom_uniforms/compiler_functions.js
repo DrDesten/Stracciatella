@@ -37,7 +37,12 @@ function convert_scalar( x, type ) {
         throw new Error( "Scalar conversion requires scalar types" )
 
     if ( x.type === type ) return x
-    if ( x.type.boolean || type.boolean )
+    if ( x.type.boolean )
+        return operator_ternary( x,
+            constructor_constant( type, 1 ),
+            constructor_constant( type, 0 )
+        )
+    if ( type.boolean )
         throw new Error( `Cannot convert '${x.type}' to '${type}'` )
 
     const atom = scalar_atom( x )
@@ -434,6 +439,36 @@ function operator_compare( operator, a, b ) {
     return constructor_leaf( Type.bool, value, false, Precedence.COMPARISON )
 }
 
+function operator_logical( operator, a, b ) {
+    if ( !a.type.scalar || !b.type.scalar || !a.type.boolean || !b.type.boolean )
+        throw new Error( `Logical '${operator}' requires scalar bool operands` )
+
+    const prec = { '&&': Precedence.LOGICAL_AND, '||': Precedence.LOGICAL_OR }[operator]
+    const fn = { '&&': ( a, b ) => a && b, '||': ( a, b ) => a || b }[operator]
+
+    const folded = fold_binary( Type.bool, a, b, fn )
+    if ( folded ) return folded
+
+    const ac = scalar_atom( a )
+    const bc = scalar_atom( b )
+
+    if ( operator === '&&' ) {
+        if ( ac.literal ) return ac.value ? b : a
+        if ( bc.literal ) return bc.value ? a : b
+    }
+
+    if ( operator === '||' ) {
+        if ( ac.literal ) return ac.value ? a : b
+        if ( bc.literal ) return bc.value ? b : a
+    }
+
+    const value =
+        `${render_operand( a, prec )} ${operator} ` +
+        `${render_operand( b, prec )}`
+
+    return constructor_leaf( Type.bool, value, false, prec )
+}
+
 function common_branch_type( a, b ) {
     if ( a.scalar && b.scalar )
         return type_promote( a, b )
@@ -448,7 +483,7 @@ function common_branch_type( a, b ) {
     return type_rebase( a, type_promote( a, b ) )
 }
 
-function operator_select( condition, if_true, if_false ) {
+function operator_ternary( condition, if_true, if_false ) {
     if ( !condition.type.scalar || !condition.type.boolean )
         throw new Error( "Ternary condition must be a scalar bool" )
 
@@ -611,11 +646,39 @@ function builtin_scalar_map( name, x, fn, require_floating = false ) {
     return Partial( x.type, x.components.map( scalar ) )
 }
 
+let builtin_smooth_idx = 0
+function builtin_smooth( ...args ) {
+    if ( args.length != 2 )
+        throw new Error( `smooth() requires exactly two parameters` )
+
+    let [x, smooth] = args
+    if ( !smooth.type.scalar )
+        throw new Error( `smooth() requires smoothness to be a scalar` )
+    if ( !scalar_atom( smooth ).literal )
+        throw new Error( `smooth() requires smoothness to be a constant literal` )
+
+    function scalar_smooth( x, smooth ) {
+        const s = `smooth(${builtin_smooth_idx++}, ${scalar_atom( x )}, ${scalar_atom( smooth )})`
+        return constructor_leaf( x.type, s, false, Precedence.CALL )
+    }
+
+    if ( x.type.scalar ) return scalar_smooth( x, smooth )
+    return Partial( x.type, x.components.map( c => scalar_smooth( c, smooth ) ) )
+}
 function builtin_sqrt( x ) {
     return builtin_scalar_map( 'sqrt', x, Math.sqrt, true )
 }
 function builtin_fract( x ) {
     return builtin_scalar_map( 'frac', x, x => x - Math.floor( x ), true )
+}
+function builtin_sin( x ) {
+    return builtin_scalar_map( 'sin', x, Math.sin, true )
+}
+function builtin_cos( x ) {
+    return builtin_scalar_map( 'cos', x, Math.cos, true )
+}
+function builtin_tan( x ) {
+    return builtin_scalar_map( 'tan', x, Math.tan, true )
 }
 
 function builtin_dot( a, b ) {
@@ -656,6 +719,8 @@ export const BuiltinFunctions = {
     mat4x2: ( ...a ) => builtin_matrix( "mat4x2", ...a ),
     mat4x3: ( ...a ) => builtin_matrix( "mat4x3", ...a ),
 
+    smooth: builtin_smooth,
+
     sqrt: builtin_sqrt,
     fract: builtin_fract,
     dot: builtin_dot,
@@ -674,7 +739,9 @@ export const BuiltinOperators = {
     '>=': ( a, b ) => operator_compare( '>=', a, b ),
     '==': ( a, b ) => operator_compare( '==', a, b ),
     '!=': ( a, b ) => operator_compare( '!=', a, b ),
-    '?:': operator_select,
+    '&&': ( a, b ) => operator_logical( '&&', a, b ),
+    '||': ( a, b ) => operator_logical( '||', a, b ),
+    '?:': operator_ternary,
 
     '-u': operator_neg,
     '+u': operator_pos,

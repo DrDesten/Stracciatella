@@ -25,6 +25,8 @@ export const TokenType = {
     EQUAL_EQUAL: 'EQUAL_EQUAL',
     NOT_EQUAL: 'NOT_EQUAL',
     EQUALS: 'EQUALS',
+    AND_AND: 'AND_AND',
+    PIPE_PIPE: 'PIPE_PIPE',
     QUESTION: 'QUESTION',
     COLON: 'COLON',
     LPAREN: 'LPAREN',
@@ -59,6 +61,8 @@ const COMPOUND_TOKENS = {
     '>=': TokenType.GREATER_EQUAL,
     '==': TokenType.EQUAL_EQUAL,
     '!=': TokenType.NOT_EQUAL,
+    '&&': TokenType.AND_AND,
+    '||': TokenType.PIPE_PIPE,
 }
 
 const Token = ( type, value, pos ) => ( { type, value, pos } )
@@ -240,7 +244,7 @@ function Parser( source ) {
     }
 
     function parseConditional() {
-        let condition = parseEquality()
+        let condition = parseLogicalOr()
         if ( !at( TokenType.QUESTION ) ) return condition
 
         const token = advance()
@@ -248,6 +252,26 @@ function Parser( source ) {
         expect( TokenType.COLON, "':'" )
         const if_false = parseConditional()
         return Node.TernaryExpr( condition, if_true, if_false, token.pos )
+    }
+
+    function parseLogicalOr() {
+        let left = parseLogicalAnd()
+        while ( at( TokenType.PIPE_PIPE ) ) {
+            const token = advance()
+            const right = parseLogicalAnd()
+            left = Node.BinaryExpr( token.value, left, right, token.pos )
+        }
+        return left
+    }
+
+    function parseLogicalAnd() {
+        let left = parseEquality()
+        while ( at( TokenType.AND_AND ) ) {
+            const token = advance()
+            const right = parseEquality()
+            left = Node.BinaryExpr( token.value, left, right, token.pos )
+        }
+        return left
     }
 
     function parseEquality() {
