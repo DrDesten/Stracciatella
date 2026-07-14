@@ -68,6 +68,7 @@ function Lexer( source, index = 0 ) {
                 if ( peek() === '/' && peek( 1 ) === '/' ) while ( peek() != undefined && advance() != '\n' ) {}
             }
             function advanceMultiComment() {
+                const start = index
                 let level = 0
                 if ( peek() === '/' && peek( 1 ) === '*' )
                     advance(), advance(), level++
@@ -80,6 +81,9 @@ function Lexer( source, index = 0 ) {
                     else
                         advance()
                 }
+
+                if ( level > 0 )
+                    throw new SyntaxError( `Lexer error at pos ${start}: unterminated block comment` )
             }
 
             // advance ignored
@@ -118,23 +122,23 @@ function Lexer( source, index = 0 ) {
                 return token
             }
 
-            throw new SyntaxError( "Lexer failure" )
+            throw new SyntaxError( `Lexer error at pos ${index}: unexpected character '${c}'` )
         }
     }
 }
 
 const Node = {
     Program: ( declarations ) => ( { kind: 'Program', declarations } ),
-    Declaration: ( qualifier, valueType, name, expr ) => ( {
-        kind: 'Declaration', qualifier, valueType, name, expr,
+    Declaration: ( qualifier, valueType, name, expr, pos ) => ( {
+        kind: 'Declaration', qualifier, valueType, name, expr, pos
     } ),
-    NumberLiteral: ( value, type ) => ( { kind: 'NumberLiteral', value, type } ),
-    Identifier: ( name ) => ( { kind: 'Identifier', name } ),
-    UnaryExpr: ( op, expr ) => ( { kind: 'UnaryExpr', op, expr } ),
-    BinaryExpr: ( op, left, right ) => ( { kind: 'BinaryExpr', op, left, right } ),
-    CallExpr: ( name, args ) => ( { kind: 'CallExpr', name, args } ),
-    SwizzleExpr: ( target, swizzle ) => ( { kind: 'SwizzleExpr', target, swizzle } ),
-    IndexExpr: ( target, index ) => ( { kind: 'IndexExpr', target, index: index.value } ),
+    NumberLiteral: ( value, type, pos ) => ( { kind: 'NumberLiteral', value, type, pos } ),
+    Identifier: ( name, pos ) => ( { kind: 'Identifier', name, pos } ),
+    UnaryExpr: ( op, expr, pos ) => ( { kind: 'UnaryExpr', op, expr, pos } ),
+    BinaryExpr: ( op, left, right, pos ) => ( { kind: 'BinaryExpr', op, left, right, pos } ),
+    CallExpr: ( name, args, pos ) => ( { kind: 'CallExpr', name, args, pos } ),
+    SwizzleExpr: ( target, swizzle, pos ) => ( { kind: 'SwizzleExpr', target, swizzle, pos } ),
+    IndexExpr: ( target, index, pos ) => ( { kind: 'IndexExpr', target, index, pos } ),
 }
 
 // ---------------------------------------------------------------------------
@@ -191,17 +195,17 @@ class Parser {
     }
 
     parseDeclaration() {
-        const qualTok = this.expect( TokenType.IDENT, 'qualifier (uniform/const)' )
-        if ( !QUALIFIERS.has( qualTok.value ) ) {
+        const qualt = this.expect( TokenType.IDENT, 'qualifier (uniform/const)' )
+        if ( !QUALIFIERS.has( qualt.value ) ) {
             throw new SyntaxError(
-                `Parse error at pos ${qualTok.pos}: expected 'uniform' or 'const', got '${qualTok.value}'`
+                `Parse error at pos ${qualt.pos}: expected 'uniform' or 'const', got '${qualt.value}'`
             )
         }
-        const typeTok = this.expect( TokenType.IDENT, 'type name' )
-        const nameTok = this.expect( TokenType.IDENT, 'declaration name' )
+        const typet = this.expect( TokenType.IDENT, 'type name' )
+        const namet = this.expect( TokenType.IDENT, 'declaration name' )
         this.expect( TokenType.EQUALS, "'='" )
-        const init = this.parseExpression()
-        return Node.Declaration( qualTok.value, typeTok.value, nameTok.value, init )
+        const expr = this.parseExpression()
+        return Node.Declaration( qualt.value, typet.value, namet.value, expr, qualt.pos )
     }
 
     // expressions 
@@ -213,9 +217,9 @@ class Parser {
     parseAdditive() {
         let left = this.parseMultiplicative()
         while ( this.at( TokenType.PLUS ) || this.at( TokenType.MINUS ) ) {
-            const op = this.advance().value
+            const token = this.advance()
             const right = this.parseMultiplicative()
-            left = Node.BinaryExpr( op, left, right )
+            left = Node.BinaryExpr( token.value, left, right, token.pos )
         }
         return left
     }
@@ -223,17 +227,17 @@ class Parser {
     parseMultiplicative() {
         let left = this.parseUnary()
         while ( this.at( TokenType.STAR ) || this.at( TokenType.SLASH ) ) {
-            const op = this.advance().value
+            const token = this.advance()
             const right = this.parseUnary()
-            left = Node.BinaryExpr( op, left, right )
+            left = Node.BinaryExpr( token.value, left, right, token.pos )
         }
         return left
     }
 
     parseUnary() {
         if ( this.at( TokenType.PLUS ) || this.at( TokenType.MINUS ) ) {
-            const op = this.advance().value
-            return Node.UnaryExpr( op, this.parseUnary() )
+            const token = this.advance()
+            return Node.UnaryExpr( token.value, this.parseUnary(), token.pos )
         }
         return this.parsePostfix()
     }
@@ -243,20 +247,23 @@ class Parser {
         while ( true ) {
             if ( this.at( TokenType.DOT ) ) {
 
-                this.advance()
-                const prop = this.expect( TokenType.IDENT, 'member name after .' )
-                expr = Node.SwizzleExpr( expr, prop.value )
+                const token = this.advance()
+                const swizzle = this.expect( TokenType.IDENT, 'swizzle after .' )
+                expr = Node.SwizzleExpr( expr, swizzle.value, token.pos )
 
             } else if ( this.at( TokenType.LBRACKET ) ) {
 
-                this.advance()
-                const index = this.parseExpression()
+                const token = this.advance()
+                const index = this.expect( TokenType.INT, 'index must be integer constant' )
                 this.expect( TokenType.RBRACKET, "']'" )
-                expr = Node.IndexExpr( expr, index )
+                expr = Node.IndexExpr( expr, index.value, token.pos )
 
             } else if ( this.at( TokenType.LPAREN ) ) {
 
-                this.advance()
+                const token = this.advance()
+                if ( expr.kind !== 'Identifier' )
+                    throw new SyntaxError( `Parse error at pos ${token.pos}: only identifiers can be called` )
+
                 const args = []
                 if ( !this.at( TokenType.RPAREN ) ) {
                     args.push( this.parseExpression() )
@@ -266,7 +273,7 @@ class Parser {
                     }
                 }
                 this.expect( TokenType.RPAREN, "')'" )
-                expr = Node.CallExpr( expr.name, args )
+                expr = Node.CallExpr( expr.name, args, expr.pos )
 
             } else {
                 break
@@ -279,15 +286,15 @@ class Parser {
         const t = this.peek()
         if ( t.type === TokenType.FLOAT ) {
             this.advance()
-            return Node.NumberLiteral( +t.value, "float" )
+            return Node.NumberLiteral( +t.value, "float", t.pos )
         }
         if ( t.type === TokenType.INT ) {
             this.advance()
-            return Node.NumberLiteral( +t.value, "int" )
+            return Node.NumberLiteral( +t.value, "int", t.pos )
         }
         if ( t.type === TokenType.IDENT ) {
             this.advance()
-            return Node.Identifier( t.value )
+            return Node.Identifier( t.value, t.pos )
         }
         if ( t.type === TokenType.LPAREN ) {
             this.advance()
