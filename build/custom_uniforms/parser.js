@@ -239,7 +239,7 @@ function Parser( source ) {
     }
 
     function parseConditional() {
-        let condition = parseLogicalOr()
+        let condition = parseBinary()
         if ( !at( TokenType.QUESTION ) ) return condition
 
         const token = advance()
@@ -249,66 +249,37 @@ function Parser( source ) {
         return Node.TernaryExpr( condition, if_true, if_false, token.pos )
     }
 
-    function parseLogicalOr() {
-        let left = parseLogicalAnd()
-        while ( at( TokenType.PIPE_PIPE ) ) {
-            const token = advance()
-            const right = parseLogicalAnd()
-            left = Node.BinaryExpr( token.value, left, right, token.pos )
-        }
-        return left
-    }
+    const BINARY_PRECEDENCE = {
+        [TokenType.PIPE_PIPE]:     1,
+        [TokenType.AND_AND]:       2,
 
-    function parseLogicalAnd() {
-        let left = parseEquality()
-        while ( at( TokenType.AND_AND ) ) {
-            const token = advance()
-            const right = parseEquality()
-            left = Node.BinaryExpr( token.value, left, right, token.pos )
-        }
-        return left
-    }
+        [TokenType.EQUAL_EQUAL]:   3,
+        [TokenType.NOT_EQUAL]:     3,
 
-    function parseEquality() {
-        let left = parseRelational()
-        while ( at( TokenType.EQUAL_EQUAL ) || at( TokenType.NOT_EQUAL ) ) {
-            const token = advance()
-            const right = parseRelational()
-            left = Node.BinaryExpr( token.value, left, right, token.pos )
-        }
-        return left
-    }
+        [TokenType.LESS]:          4,
+        [TokenType.LESS_EQUAL]:    4,
+        [TokenType.GREATER]:       4,
+        [TokenType.GREATER_EQUAL]: 4,
 
-    function parseRelational() {
-        let left = parseAdditive()
-        while (
-            at( TokenType.LESS ) || at( TokenType.LESS_EQUAL ) ||
-            at( TokenType.GREATER ) || at( TokenType.GREATER_EQUAL )
-        ) {
-            const token = advance()
-            const right = parseAdditive()
-            left = Node.BinaryExpr( token.value, left, right, token.pos )
-        }
-        return left
-    }
+        [TokenType.PLUS]:          5,
+        [TokenType.MINUS]:         5,
 
-    function parseAdditive() {
-        let left = parseMultiplicative()
-        while ( at( TokenType.PLUS ) || at( TokenType.MINUS ) ) {
-            const token = advance()
-            const right = parseMultiplicative()
-            left = Node.BinaryExpr( token.value, left, right, token.pos )
-        }
-        return left
+        [TokenType.STAR]:          6,
+        [TokenType.SLASH]:         6,
     }
-
-    function parseMultiplicative() {
+    function parseBinary(minPrecedence = 1) {
         let left = parseUnary()
-        while ( at( TokenType.STAR ) || at( TokenType.SLASH ) ) {
-            const token = advance()
-            const right = parseUnary()
-            left = Node.BinaryExpr( token.value, left, right, token.pos )
+
+        let token, prec
+        while (
+            token = peek(), prec = BINARY_PRECEDENCE[token.type], 
+            prec !== undefined && prec >= minPrecedence
+        ) {
+            advance()
+            const right = parseBinary(prec + 1)
+            left = Node.BinaryExpr(token.value, left, right, token.pos)
         }
+
         return left
     }
 

@@ -36,26 +36,28 @@ function convert_scalar( x, type ) {
     if ( !x.type.scalar || !type.scalar )
         throw new Error( "Scalar conversion requires scalar types" )
 
-    if ( x.type === type ) return x
+    // same type
+    if ( x.type.name === type.name ) 
+        return x
+    // constant
+    const atom = scalar_atom( x )
+    if ( atom.literal )
+        return constructor_constant( type, convert_constant( type, atom.value ) )
+    // from boolean
     if ( x.type.boolean )
         return operator_ternary( x,
             constructor_constant( type, 1 ),
             constructor_constant( type, 0 )
         )
+    // to boolean
     if ( type.boolean )
-        throw new Error( `Cannot convert '${x.type}' to '${type}'` )
-
-    const atom = scalar_atom( x )
-    if ( atom.literal )
-        return constructor_constant( type, convert_constant( type, atom.value ) )
-
-    // shaders.properties has no cast function. Adding a floating zero is the
-    // smallest expression which preserves a GLSL int -> float conversion.
+        return operator_compare("!=", x, constructor_constant(x.type, 0))
+    // int to float
     if ( x.type.integral && type.floating ) {
-        const value = `${render_operand( x, Precedence.ADDITIVE )} + 0.0`
+        const value = `${render_operand( x, Precedence.ADDITIVE )} + 0.`
         return constructor_leaf( type, value, false, Precedence.ADDITIVE )
     }
-
+    // float to float
     if ( x.type.floating && type.floating )
         return constructor_leaf( type, `${atom}`, false, atom.precedence )
 
@@ -101,24 +103,6 @@ export function constructor_convert( x, type ) {
     throw new Error(`Illegal conversion from '${x.type.name}' to '${type.name}'`)
 }
 
-/* export function constructor_convert( x, type ) {
-    if ( x.type.scalar || type.scalar ) {
-        if ( !x.type.scalar || !type.scalar )
-            throw new Error( `Cannot convert '${x.type}' to '${type}'` )
-        return convert_scalar( x, type )
-    }
-
-    const same_shape =
-        x.type.vector && type.vector && x.type.components === type.components ||
-        x.type.matrix && type.matrix && x.type.rows === type.rows && x.type.cols === type.cols
-
-    if ( !same_shape )
-        throw new Error( `Cannot convert '${x.type}' to '${type}'` )
-
-    const component_type = type_underlying( type )
-    return Partial( type, x.components.map( c => convert_scalar( c, component_type ) ) )
-} */
-
 function fold_unary( type, x, comptime_fn ) {
     const atom = scalar_atom( x )
     if ( !atom.literal ) return
@@ -136,11 +120,6 @@ function partial_shape( shape, components ) {
     return Partial( type_from( shape.type, components[0].type ), components )
 }
 
-function same_component_shape( a, b ) {
-    return a.type.vector && b.type.vector && a.type.components === b.type.components ||
-        a.type.matrix && b.type.matrix && a.type.rows === b.type.rows && a.type.cols === b.type.cols
-}
-
 function operator_componentwise( a, b, fn, symbol ) {
     if ( a.type.scalar && b.type.scalar )
         return fn( a, b )
@@ -155,7 +134,7 @@ function operator_componentwise( a, b, fn, symbol ) {
         return partial_shape( a, components )
     }
 
-    if ( same_component_shape( a, b ) ) {
+    if ( type_shape_eq( a.type, b.type ) ) {
         const components = a.components.map( ( ac, i ) => fn( ac, b.components[i] ) )
         return partial_shape( a, components )
     }
@@ -225,7 +204,6 @@ export function constructor_identifier( string, builtin_varset, user_varset ) {
                     // if user variable, its split into vectors
                     s = string + `_${c}.` + "xyzw"[r]
                 } else {
-                    // in shaders.properties, order is reversed compared to glsl
                     s = string + `.${c}.${r}`
                 }
 
@@ -665,7 +643,7 @@ function util_promote_equalize(partials) {
 }
 
 
-function builtin_distributed_multi_scalar(scalar_fn, comptime_fn) {
+function builtin_distributed_multi_scalar(scalar_fn) {
     let scalar = typeof scalar_fn === 'string'
         ? function(...args) {
             return constructor_leaf( 
@@ -715,25 +693,7 @@ function builtin_smooth_scalar(x, smooth_in, smooth_out) {
     ]
     const s = `smooth(${a.join(", ")})`
     return constructor_leaf( x.type, s, false, Precedence.CALL )
-}/* 
-function builtin_smooth( ...args ) {
-    if ( args.length != 2 && args.length != 3 )
-        throw new Error( `smooth() requires two or three parameters` )
-
-    let [x, smooth_in, smooth_out] = args
-    if ( !smooth_in.type.scalar )
-        throw new Error( `smooth() requires smoothness to be a scalar` )
-    if ( !scalar_atom( smooth_in ).literal )
-        throw new Error( `smooth() requires smoothness to be a constant literal` )
-
-    function scalar_smooth( x, smooth ) {
-        const s = `smooth(${builtin_smooth_idx++}, ${scalar_atom( x )}, ${scalar_atom( smooth )})`
-        return constructor_leaf( x.type, s, false, Precedence.CALL )
-    }
-
-    if ( x.type.scalar ) return scalar_smooth( x, smooth_in )
-    return Partial( x.type, x.components.map( c => scalar_smooth( c, smooth_in ) ) )
-} */
+}
 
 const builtin_sqrt = builtin_distributed_scalar("sqrt", Math.sqrt, true)
 const builtin_sin = builtin_distributed_scalar("sin", Math.sin, true)
@@ -757,8 +717,6 @@ const builtin_pow = builtin_distributed_multi_scalar("pow")
 function builtin_dot( a, b ) {
     if ( !a.type.vector || !b.type.vector || a.type.components !== b.type.components )
         throw new Error( "Unsupported 'dot()' operands" )
-    if ( !a.type.floating || !b.type.floating )
-        throw new Error( "dot() requires floating-point vectors" )
 
     let result
     for ( let i = 0; i < a.type.components; i++ ) {
