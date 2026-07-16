@@ -1,5 +1,10 @@
 [
     {
+        "name": "pi",
+        "type": "float",
+        "description": "π"
+    },
+    {
         "name": "cameraPosition",
         "type": "vec3",
         "description": "Position of the camera in world space"

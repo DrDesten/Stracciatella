@@ -15,21 +15,85 @@ const VARIABLES = new Map(
         .map( ( { name, type, components } ) => [name, Variable( name, Type( type ), components )] )
 )
 
-export function Compiler( program ) {
+export function Compiler( program, source = "" ) {
     const USER_VARIABLES = new Map
+
+    function sourceLocation( pos ) {
+        const offset = Math.max( 0, Math.min( pos, source.length ) )
+
+        let line_start = source.lastIndexOf( "\n", offset - 1 ) + 1
+        let line_end   = source.indexOf( "\n", offset )
+
+        if ( line_end < 0 )
+            line_end = source.length
+
+        const line_number   = source.slice( 0, line_start ).split( "\n" ).length
+        const column_number = offset - line_start + 1
+        const line          = source.slice( line_start, line_end )
+
+        return {
+            offset,
+            line_start,
+            line_end,
+            line_number,
+            column_number,
+            line,
+        }
+    }
+
+    function sourceError( message, pos, end = pos + 1 ) {
+        const location = sourceLocation( pos )
+
+        const underline_end = Math.max(
+            location.offset + 1,
+            Math.min( end, location.line_end )
+        )
+
+        const prefix = location.line.slice(
+            0,
+            location.offset - location.line_start
+        )
+
+        const width = Math.max(
+            1,
+            underline_end - location.offset
+        )
+
+        const indentation = prefix.replace( /[^\t]/g, " " )
+        const underline   = "^" + "~".repeat( width - 1 )
+
+        return [
+            `Compile error at ${location.line_number}:${location.column_number}: ${message}`,
+            "",
+            location.line,
+            indentation + underline,
+        ].join( "\n" )
+    }
 
     function positioned( node, fn ) {
         try {
             return fn()
         } catch ( error ) {
-            if ( error.pos !== undefined ) throw error
+            if ( error.pos !== undefined )
+                throw error
 
-            const result = new Error( `Compile error at pos ${node.pos}: ${error.message}` )
-            result.pos = node.pos
+            const pos = node.pos ?? 0
+            const end = node.end ?? pos + 1
+
+            const result = new Error(
+                source
+                    ? sourceError( error.message, pos, end )
+                    : `Compile error at pos ${pos}: ${error.message}`
+            )
+
+            result.pos   = pos
+            result.end   = end
             result.cause = error
+
             throw result
         }
     }
+
 
     function expression( node ) {
         return positioned( node, () => {
@@ -147,10 +211,9 @@ export function Compiler( program ) {
         } )
     }
 
-    const declarations = program.declarations
     const results = []
-    for ( let i = 0; i < declarations.length; i++ ) {
-        const compiled = compile( declarations[i] )
+    for ( const declaration of program ) {
+        const compiled = compile( declaration )
         results.push( compiled )
     }
 
@@ -158,7 +221,7 @@ export function Compiler( program ) {
 }
 
 export function transpile( source ) {
-    return Compiler( parse( source ) ).join( "\n" )
+    return Compiler( parse( source ), source ).join( "\n" )
 }
 
 const source = `
@@ -208,8 +271,7 @@ uniform mat4 reproject =
          0,  0,  2, 0,
         -1, -1, -1, 1
     );                                                      // screen -> clip
-` && `
-// Normalized Positions
+` && `// Normalized Positions
 const float sunLength  = length(sunPosition);
 uniform vec3 sunDir    = sunPosition / sunLength;
 
@@ -249,13 +311,55 @@ uniform vec2 lightPositionClip = (gbufferProjection * vec4(sunPosition, 1)).xy /
 uniform int   precipitation     = biome_precipitation
 uniform float playerTemperature = temperature
 uniform float rainPuddle        = smooth(float(biome_precipitation == 1 && temperature >= 0.15), 1.5) * wetness
+
+// Sunset Curve
+uniform float sunset              = pow(cos(normalizedTime * pi * 4) * 0.5 + 0.5, 25)
+// Brightness Curve
+uniform float daynight            = clamp(sin(normalizedTime * pi * 2) + 0.6, 0, 1)
+uniform float customLightmapBlend = clamp(sin(normalizedTime * pi * 2) + 0.6, 0, 1) * (rainStrength * -0.5 + 1)
+uniform float customStarBlend     = clamp(sin(normalizedTime * pi * 2) * -4.25, 0, 1) * (1 - rainStrength)
+
+uniform float farInverse          = 1.0 / far
+uniform float nearInverse         = 1.0 / near
+
+// Water effects
+uniform vec2 playerLMCSmooth = smooth(eyeBrightness.xy / 240, 1)
+
+// Damage Glitch
+const float isHurtSmooth = smooth(float(is_hurt), 0.5, 0)
+uniform float damage = 4 * isHurtSmooth * ( 1 - isHurtSmooth )
+
+// Anime Speed Lines
+uniform vec3 cameraMove = vec3(
+    abs(cameraPosition.x - previousCameraPosition.x) > 10 ? 0 : (cameraPosition.x - previousCameraPosition.x) / max(frameTime, 0.001),
+    abs(cameraPosition.y - previousCameraPosition.y) > 10 ? 0 : (cameraPosition.y - previousCameraPosition.y) / max(frameTime, 0.001),
+    abs(cameraPosition.z - previousCameraPosition.z) > 10 ? 0 : (cameraPosition.z - previousCameraPosition.z) / max(frameTime, 0.001)
+)
+uniform vec3 cameraMoveSmooth = vec3(
+    smooth(cameraMove.x, 3),
+    smooth(cameraMove.y, 10, 3),
+    smooth(cameraMove.z, 3)
+)
+const float cameraSpeed = length(cameraMove)
+uniform float cameraSpeedSmooth    = smooth(cameraSpeed, 15)
+uniform float cameraSpeedLinesFade = smooth(cameraSpeed, 30, 0.25)
+
+// Experiments
+const float cameraSmoothness = 2
+const float cameraErrorSmoothness = 10
+
+const vec3 cLocSmooth = smooth(cameraPosition, cameraSmoothness)
+const vec3 cLocSmoothErrorSmooth = smooth(cameraPosition - cLocSmooth, cameraErrorSmoothness)
+
+/* #if 1
+uniform vec3 cameraPositionSmooth = cLocSmooth + cLocSmoothErrorSmooth
+#else
+uniform vec3 cameraPositionSmooth = smooth(cameraPosition, cameraSmoothness)
+#endif */
 `
 
 if ( process.argv[1] && import.meta.url === url.pathToFileURL( process.argv[1] ).href ) {
     const ast = parse( source )
-
-    console.log( '\n--- AST ---' )
-    console.log( inspect( ast.declarations, { colors: true, depth: Infinity } ) )
-
-    console.log( Compiler( ast ).join( "\n" ) )
+    console.log( inspect( ast, { colors: true, depth: Infinity, compact: true } ) )
+    console.log( Compiler( ast, source ).join( "\n" ) )
 }

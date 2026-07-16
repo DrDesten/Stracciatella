@@ -1,15 +1,16 @@
 const _TypeCache = new Map
 export function Type( typename ) {
-    const name = typename.trim()
     function constructor() {
         const type = {
-            name: name,
+            name: typename,
             underlying: "", // bool, int, uint, float, double
             unsigned: false,
             signed: false,
             integral: false,
             floating: false,
             boolean: false,
+
+            shape: [],
 
             scalar: false,
             vector: false,
@@ -23,33 +24,34 @@ export function Type( typename ) {
             bits: 0,
             components: 1,
 
-            valueOf() { return name },
-            toString() { return name },
+            valueOf() { return this.name },
+            toString() { return this.name },
         }
 
         const scalars = {
-            bool: { bits: 1, boolean: true },
-            int: { bits: 32, integral: true, signed: true },
-            uint: { bits: 32, integral: true, unsigned: true },
-            float: { bits: 32, floating: true },
-            double: { bits: 64, floating: true },
+            bool: { bits: 1, shape: [1], boolean: true },
+            int: { bits: 32, shape: [1], integral: true, signed: true },
+            uint: { bits: 32, shape: [1], integral: true, unsigned: true },
+            float: { bits: 32, shape: [1], floating: true },
+            double: { bits: 64, shape: [1], floating: true },
         }
 
-        if ( name in scalars ) {
-            Object.assign( type, scalars[name] )
+        if ( typename in scalars ) {
+            Object.assign( type, scalars[typename] )
             type.scalar = true
-            type.underlying = name
+            type.underlying = typename
             return type
         }
 
         let m
 
         // vectors
-        if ( m = name.match( /^(b|i|u|d)?vec([2-4])$/ ) ) {
+        if ( m = typename.match( /^(b|i|u|d)?vec([2-4])$/ ) ) {
             const prefix = m[1] ?? ""
             const dim = +m[2]
 
             type.vector = true
+            type.shape = [dim]
             type.vec = dim
             type.components = dim
             type.rows = dim
@@ -69,17 +71,18 @@ export function Type( typename ) {
         }
 
         // matrices
-        if ( m = name.match( /^d?mat([2-4])(?:x([2-4]))?$/ ) ) {
-            const double = name[0] === "d"
-            const rows = +m[1]
-            const cols = +m[2] || rows
+        if ( m = typename.match( /^d?mat([2-4])(?:x([2-4]))?$/ ) ) {
+            const double = typename[0] === "d"
+            const cols = +m[1]
+            const rows = +m[2] || cols
 
             type.matrix = true
+            type.shape = [cols, rows]
             type.rows = rows
             type.cols = cols
             type.vec = cols
-            type.components = rows * cols
-            type.square = rows === cols
+            type.components = cols * rows
+            type.square = cols === rows
 
             type.underlying = double ? "double" : "float"
             type.floating = true
@@ -91,12 +94,12 @@ export function Type( typename ) {
         throw new Error( `Unknown GLSL type '${typename}'` )
     }
 
-    if ( _TypeCache.has( name ) ) {
-        return _TypeCache.get( name )
+    if ( _TypeCache.has( typename ) ) {
+        return _TypeCache.get( typename )
     }
 
     const type = constructor()
-    _TypeCache.set( name, type )
+    _TypeCache.set( typename, type )
     return type
 }
 Type.bool = Type( "bool" )
@@ -116,33 +119,82 @@ export function type_underlying( type ) {
     return Type( type.underlying )
 }
 
-export function type_rebase( type, underlying ) {
-    underlying = typeof underlying === 'string' ? underlying : underlying.name
-
-    if ( type.scalar )
-        return Type( underlying )
-
-    if ( type.vector ) {
-        const prefix = { bool: 'b', int: 'i', uint: 'u', float: '', double: 'd' }[underlying]
-
-        if ( prefix === undefined )
-            throw new Error( `Cannot use '${underlying}' as vector component type` )
-
-        return Type( `${prefix}vec${type.components}` )
+function shape_eq(a, b) {
+    return a.length === b.length && a.every((ad, i) => ad === b[i])
+}
+function shape_classify(shape) {
+    return {
+        scalar: shape.length === 1 && shape[0] === 1,
+        vector: shape.length === 1 && shape[0] > 1,
+        matrix: shape.length === 2,
     }
-
-    if ( type.matrix ) {
-        if ( underlying !== 'float' && underlying !== 'double' )
-            throw new Error( "Matrices require floating-point components" )
-
-        const name = type.name.replace( /^d/, '' )
-        return Type( ( underlying === 'double' ? 'd' : '' ) + name )
-    }
-
-    throw new Error( `Unknown type '${type}'` )
 }
 
-export function type_promote( a, b ) {
+export function type_shape_eq(a, b) {
+    return shape_eq(a.shape, b.shape)
+}
+
+export function type_from(shape, underlying) {
+    if (shape.shape) shape = shape.shape
+    if (underlying.name) underlying = underlying.name
+
+    const { scalar, vector, matrix } = shape_classify(shape)
+
+    if (scalar) {
+        return Type(underlying)
+    }
+
+    if (vector) {
+        const prefix = { bool: 'b', int: 'i', uint: 'u', float: '', double: 'd' }[underlying]
+        if ( prefix === undefined )
+            throw new Error( `Illegal underlying type '${underlying}' for vector` )
+        return Type( `${prefix}vec${shape[0]}` )        
+    }
+
+    if (matrix) {
+        const prefix = { float: '', double: 'd' }[underlying]
+        if ( prefix === undefined )
+            throw new Error( `Illegal underlying type '${underlying}' for matrix` )
+        return Type(`${prefix}mat${shape[0]}${shape[0] === shape[1] ? "" : "x" + shape[1]}`)
+    }
+
+    throw new Error( `Illegal shape/underlying ${shape}/${underlying} combination` )
+}
+
+export function type_promote(...types) {
+    // Handle Booleans
+    let underlying_types = types.map(t => t.underlying)
+    if (underlying_types.every(t => t === "bool")) 
+        return Type.bool
+    if (underlying_types.some(t => t === "bool")) 
+        throw new Error( "Cannot mix boolean and numeric values" )
+
+    // Determine underlying promotions
+    let underlying = underlying_types[0]
+    for (const t of underlying_types.slice(1)) {
+        if (type_rank[t] > type_rank[underlying])
+            underlying = t
+    }
+
+    // Determine shape promotions
+    let shape = types[0]
+    for (const t of types.slice(1)) {
+        // scalars are always ok
+        if (t.scalar) continue
+        // first non-scalar, sets shape
+        if (shape.scalar) {
+            shape = t
+            continue
+        }
+        // different non-scalar, illegal
+        if (!shape_eq(shape.shape, t.shape)) 
+            throw new Error(`Can't mix multiple different compound type shapes. Got '${shape.name}' and '${t.name}'`)
+    }
+
+    return type_from(shape.shape, underlying)
+}
+
+export function type_promote_underlying( a, b ) {
     a = type_underlying( a )
     b = type_underlying( b )
 

@@ -1,4 +1,4 @@
-import { Type, Partial, Atom, Precedence, type_underlying, type_rebase, type_promote } from "./compiler_type.js"
+import { Type, Partial, Atom, Precedence, type_underlying, type_from, type_promote_underlying, type_promote, type_shape_eq } from "./compiler_type.js"
 
 function constructor_leaf( type, string, literal = false, precedence = Precedence.PRIMARY ) {
     const atom = Atom( type, string, literal, precedence )
@@ -75,6 +75,33 @@ function promote_scalar( x, type ) {
 }
 
 export function constructor_convert( x, type ) {
+    // same type
+    if (x.type.name === type.name) 
+        return x
+    // promote to scalar
+    if (type.scalar) {
+        if (x.type.scalar) return convert_scalar(x, type)
+        else throw new Error(`Cannot downcast non-scalar '${x.type.name}' to scalar '${type.name}'`)
+    }
+    // promote scalar to non-scalar
+    if (x.type.scalar) {
+        const underlying = type_underlying(type)
+        const components = Array.from(
+            {length:type.components}, 
+            () => convert_scalar(x, underlying)
+        )
+        return Partial(type, components)
+    }
+    // promote non-scalar to non-scalar
+    if (type_shape_eq(x.type, type)) {
+        const underlying = type_underlying(type)
+        const components = x.components.map(c => convert_scalar(c, underlying))
+        return Partial(type, components)
+    }
+    throw new Error(`Illegal conversion from '${x.type.name}' to '${type.name}'`)
+}
+
+/* export function constructor_convert( x, type ) {
     if ( x.type.scalar || type.scalar ) {
         if ( !x.type.scalar || !type.scalar )
             throw new Error( `Cannot convert '${x.type}' to '${type}'` )
@@ -90,23 +117,23 @@ export function constructor_convert( x, type ) {
 
     const component_type = type_underlying( type )
     return Partial( type, x.components.map( c => convert_scalar( c, component_type ) ) )
-}
+} */
 
-function fold_unary( type, x, fn ) {
+function fold_unary( type, x, comptime_fn ) {
     const atom = scalar_atom( x )
     if ( !atom.literal ) return
-    return constructor_constant( type, convert_constant( type, fn( atom.value ) ) )
+    return constructor_constant( type, convert_constant( type, comptime_fn( atom.value ) ) )
 }
 
-function fold_binary( type, a, b, fn ) {
+function fold_binary( type, a, b, comptime_fn ) {
     const ac = scalar_atom( a ), bc = scalar_atom( b )
     if ( !ac.literal || !bc.literal ) return
-    return constructor_constant( type, convert_constant( type, fn( ac.value, bc.value ) ) )
+    return constructor_constant( type, convert_constant( type, comptime_fn( ac.value, bc.value ) ) )
 }
 
 function partial_shape( shape, components ) {
     if ( shape.type.scalar ) return components[0]
-    return Partial( type_rebase( shape.type, components[0].type ), components )
+    return Partial( type_from( shape.type, components[0].type ), components )
 }
 
 function same_component_shape( a, b ) {
@@ -137,7 +164,7 @@ function operator_componentwise( a, b, fn, symbol ) {
 }
 
 function binary_scalar( symbol, precedence, a, b, fold ) {
-    const type = type_promote( a.type, b.type )
+    const type = type_promote_underlying( a.type, b.type )
     a = promote_scalar( a, type )
     b = promote_scalar( b, type )
 
@@ -239,7 +266,7 @@ function operator_pos( x ) {
 }
 
 function scalar_add( a, b ) {
-    const type = type_promote( a.type, b.type )
+    const type = type_promote_underlying( a.type, b.type )
     a = promote_scalar( a, type )
     b = promote_scalar( b, type )
 
@@ -258,7 +285,7 @@ function operator_add( a, b ) {
 }
 
 function scalar_sub( a, b ) {
-    const type = type_promote( a.type, b.type )
+    const type = type_promote_underlying( a.type, b.type )
     a = promote_scalar( a, type )
     b = promote_scalar( b, type )
 
@@ -277,7 +304,7 @@ function operator_sub( a, b ) {
 }
 
 function scalar_mul( a, b ) {
-    const type = type_promote( a.type, b.type )
+    const type = type_promote_underlying( a.type, b.type )
     a = promote_scalar( a, type )
     b = promote_scalar( b, type )
 
@@ -324,7 +351,7 @@ function operator_mul( a, b ) {
             components.push( expr )
         }
 
-        return Partial( type_rebase( Type( `vec${a.type.rows}` ), components[0].type ), components )
+        return Partial( type_from( [a.type.rows], components[0].type ), components )
     }
 
     // vector * matrix
@@ -348,7 +375,7 @@ function operator_mul( a, b ) {
             components.push( expr )
         }
 
-        return Partial( type_rebase( Type( `vec${b.type.cols}` ), components[0].type ), components )
+        return Partial( type_from( [b.type.cols], components[0].type ), components )
     }
 
     // matrix * matrix
@@ -378,15 +405,14 @@ function operator_mul( a, b ) {
             }
         }
 
-        const shape = Type( rows === cols ? `mat${rows}` : `mat${cols}x${rows}` )
-        return Partial( type_rebase( shape, components[0].type ), components )
+        return Partial( type_from( [cols, rows], components[0].type ), components )
     }
 
     throw new Error( "Unsupported '*' operands" )
 }
 
 function scalar_div( a, b ) {
-    const type = type_promote( a.type, b.type )
+    const type = type_promote_underlying( a.type, b.type )
     a = promote_scalar( a, type )
     b = promote_scalar( b, type )
 
@@ -418,7 +444,7 @@ function operator_compare( operator, a, b ) {
         if ( !equality || !a.type.boolean || !b.type.boolean )
             throw new Error( `Unsupported '${operator}' operands '${a.type}' and '${b.type}'` )
     } else {
-        const type = type_promote( a.type, b.type )
+        const type = type_promote_underlying( a.type, b.type )
         a = promote_scalar( a, type )
         b = promote_scalar( b, type )
     }
@@ -471,7 +497,7 @@ function operator_logical( operator, a, b ) {
 
 function common_branch_type( a, b ) {
     if ( a.scalar && b.scalar )
-        return type_promote( a, b )
+        return type_promote_underlying( a, b )
 
     const same_shape =
         a.vector && b.vector && a.components === b.components ||
@@ -480,7 +506,7 @@ function common_branch_type( a, b ) {
     if ( !same_shape )
         throw new Error( `Ternary branches have incompatible types '${a}' and '${b}'` )
 
-    return type_rebase( a, type_promote( a, b ) )
+    return type_from( a, type_promote_underlying( a, b ) )
 }
 
 function operator_ternary( condition, if_true, if_false ) {
@@ -528,7 +554,7 @@ function operator_swizzle( x, swizzle ) {
     if ( components.length === 1 )
         return components[0]
 
-    return Partial( type_rebase( Type( "vec" + components.length ), components[0].type ), components )
+    return Partial( type_from( Type( "vec" + components.length ), components[0].type ), components )
 }
 
 function operator_index( x, index ) {
@@ -554,7 +580,7 @@ function operator_index( x, index ) {
             components.push( x.components[idx] )
         }
 
-        return Partial( type_rebase( Type( "vec" + components.length ), components[0].type ), components )
+        return Partial( type_from( Type( "vec" + components.length ), components[0].type ), components )
     }
 
     throw new Error( "Cannot index this type" )
@@ -632,29 +658,72 @@ function builtin_matrix( typename, ...args ) {
     return Partial( type, components.map( c => convert_scalar( c, underlying ) ) )
 }
 
-function builtin_scalar_map( name, x, fn, require_floating = false ) {
-    if ( require_floating && !x.type.floating )
-        throw new Error( `${name}() requires floating-point arguments` )
+function util_promote_equalize(partials) {
+    const type = type_promote(...partials.map(x => x.type))
+    const promoted = partials.map(x => constructor_convert(x, type))
+    return [type, promoted]
+}
 
-    function scalar( c ) {
-        const folded = fold_unary( c.type, c, fn )
-        if ( folded ) return folded
-        return constructor_leaf( c.type, `${name}(${scalar_atom( c )})`, false, Precedence.CALL )
+
+function builtin_distributed_multi_scalar(scalar_fn, comptime_fn) {
+    let scalar = typeof scalar_fn === 'string'
+        ? function(...args) {
+            return constructor_leaf( 
+                args[0].type, 
+                `${scalar_fn}(${args.map(scalar_atom).join(", ")})`, 
+                false, Precedence.CALL 
+            )
+        }
+        : scalar_fn 
+
+    return function(...args) {
+        const [type, promoted] = util_promote_equalize(args)
+        return type.scalar
+            ? scalar(...promoted)
+            : Partial(type, Array.from(
+                {length:type.components},
+                (_,i) => scalar(...promoted.map(x => x.components[i]))
+            ))
     }
+}
 
-    if ( x.type.scalar ) return scalar( x )
-    return Partial( x.type, x.components.map( scalar ) )
+function builtin_distributed_scalar(name, comptime_fn, require_floating = false) {
+    const scalar_fn = comptime_fn
+        ? function(c) {
+            const folded = fold_unary( c.type, c, comptime_fn )
+            if ( folded ) return folded
+            return constructor_leaf( c.type, `${name}(${scalar_atom( c )})`, false, Precedence.CALL )
+        }
+        : function(c) {
+            return constructor_leaf( c.type, `${name}(${scalar_atom( c )})`, false, Precedence.CALL )
+        }
+
+    return function(x) {
+        return x.type.scalar 
+            ? scalar_fn(x)
+            : Partial(x.type, x.components.map(scalar_fn))
+    }
 }
 
 let builtin_smooth_idx = 0
+function builtin_smooth_scalar(x, smooth_in, smooth_out) {
+    const a = [
+        builtin_smooth_idx++, 
+        scalar_atom(x), 
+        scalar_atom(smooth_in), 
+        ...(smooth_out ? [scalar_atom(smooth_out)] : [])
+    ]
+    const s = `smooth(${a.join(", ")})`
+    return constructor_leaf( x.type, s, false, Precedence.CALL )
+}/* 
 function builtin_smooth( ...args ) {
-    if ( args.length != 2 )
-        throw new Error( `smooth() requires exactly two parameters` )
+    if ( args.length != 2 && args.length != 3 )
+        throw new Error( `smooth() requires two or three parameters` )
 
-    let [x, smooth] = args
-    if ( !smooth.type.scalar )
+    let [x, smooth_in, smooth_out] = args
+    if ( !smooth_in.type.scalar )
         throw new Error( `smooth() requires smoothness to be a scalar` )
-    if ( !scalar_atom( smooth ).literal )
+    if ( !scalar_atom( smooth_in ).literal )
         throw new Error( `smooth() requires smoothness to be a constant literal` )
 
     function scalar_smooth( x, smooth ) {
@@ -662,24 +731,28 @@ function builtin_smooth( ...args ) {
         return constructor_leaf( x.type, s, false, Precedence.CALL )
     }
 
-    if ( x.type.scalar ) return scalar_smooth( x, smooth )
-    return Partial( x.type, x.components.map( c => scalar_smooth( c, smooth ) ) )
-}
-function builtin_sqrt( x ) {
-    return builtin_scalar_map( 'sqrt', x, Math.sqrt, true )
-}
-function builtin_fract( x ) {
-    return builtin_scalar_map( 'frac', x, x => x - Math.floor( x ), true )
-}
-function builtin_sin( x ) {
-    return builtin_scalar_map( 'sin', x, Math.sin, true )
-}
-function builtin_cos( x ) {
-    return builtin_scalar_map( 'cos', x, Math.cos, true )
-}
-function builtin_tan( x ) {
-    return builtin_scalar_map( 'tan', x, Math.tan, true )
-}
+    if ( x.type.scalar ) return scalar_smooth( x, smooth_in )
+    return Partial( x.type, x.components.map( c => scalar_smooth( c, smooth_in ) ) )
+} */
+
+const builtin_sqrt = builtin_distributed_scalar("sqrt", Math.sqrt, true)
+const builtin_sin = builtin_distributed_scalar("sin", Math.sin, true)
+const builtin_cos = builtin_distributed_scalar("cos", Math.cos, true)
+const builtin_tan = builtin_distributed_scalar("tan", Math.tan, true)
+
+const builtin_abs = builtin_distributed_scalar("abs", Math.abs, true)
+const builtin_floor = builtin_distributed_scalar("floor", Math.floor, true)
+const builtin_ceil = builtin_distributed_scalar("ceil", Math.ceil, true)
+const builtin_round = builtin_distributed_scalar("round", Math.round, true)
+const builtin_fract = builtin_distributed_scalar("frac", x => x - Math.floor( x ), true)
+
+const builtin_min = builtin_distributed_multi_scalar("min")
+const builtin_max = builtin_distributed_multi_scalar("max")
+const builtin_clamp = builtin_distributed_multi_scalar("clamp")
+
+const builtin_smooth = builtin_distributed_multi_scalar(builtin_smooth_scalar)
+
+const builtin_pow = builtin_distributed_multi_scalar("pow")
 
 function builtin_dot( a, b ) {
     if ( !a.type.vector || !b.type.vector || a.type.components !== b.type.components )
@@ -721,11 +794,26 @@ export const BuiltinFunctions = {
 
     smooth: builtin_smooth,
 
-    sqrt: builtin_sqrt,
+    abs: builtin_abs,
+    floor: builtin_floor,
+    ceil: builtin_ceil,
+    round: builtin_round,
     fract: builtin_fract,
+
     dot: builtin_dot,
     length: builtin_length,
     normalize: builtin_normalize,
+    
+    sqrt: builtin_sqrt,
+    sin: builtin_sin,
+    cos: builtin_cos,
+    tan: builtin_tan,
+
+    min: builtin_min,
+    max: builtin_max,
+    clamp: builtin_clamp,
+
+    pow: builtin_pow,
 }
 export const BuiltinOperators = {
     '+': operator_add,

@@ -157,18 +157,13 @@ function Lexer( source, index = 0 ) {
 }
 
 const Node = {
-    Program: ( declarations ) => ( { kind: 'Program', declarations } ),
-    Declaration: ( qualifier, valueType, name, expr, pos ) => ( {
-        kind: 'Declaration', qualifier, valueType, name, expr, pos
-    } ),
+    Declaration: ( qualifier, valueType, name, expr, pos ) => ( {kind: 'Declaration', qualifier, valueType, name, expr, pos} ),
     NumberLiteral: ( value, type, pos ) => ( { kind: 'NumberLiteral', value, type, pos } ),
     BoolLiteral: ( value, pos ) => ( { kind: 'BoolLiteral', value, pos } ),
     Identifier: ( name, pos ) => ( { kind: 'Identifier', name, pos } ),
     UnaryExpr: ( op, expr, pos ) => ( { kind: 'UnaryExpr', op, expr, pos } ),
     BinaryExpr: ( op, left, right, pos ) => ( { kind: 'BinaryExpr', op, left, right, pos } ),
-    TernaryExpr: ( condition, if_true, if_false, pos ) => ( {
-        kind: 'TernaryExpr', condition, if_true, if_false, pos
-    } ),
+    TernaryExpr: ( condition, if_true, if_false, pos ) => ( {kind: 'TernaryExpr', condition, if_true, if_false, pos} ),
     CallExpr: ( name, args, pos ) => ( { kind: 'CallExpr', name, args, pos } ),
     SwizzleExpr: ( target, swizzle, pos ) => ( { kind: 'SwizzleExpr', target, swizzle, pos } ),
     IndexExpr: ( target, index, pos ) => ( { kind: 'IndexExpr', target, index, pos } ),
@@ -221,7 +216,7 @@ function Parser( source ) {
         const declarations = []
         while ( !at( TokenType.EOF ) )
             declarations.push( parseDeclaration() )
-        return Node.Program( declarations )
+        return declarations
     }
 
     function parseDeclaration() {
