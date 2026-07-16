@@ -1,6 +1,6 @@
 const _TypeCache = new Map
 export function Type( typename ) {
-    function constructor() {
+    function constructor(typename) {
         const type = {
             name: typename,
             underlying: "", // bool, int, uint, float, double
@@ -98,7 +98,7 @@ export function Type( typename ) {
         return _TypeCache.get( typename )
     }
 
-    const type = constructor()
+    const type = constructor(typename)
     _TypeCache.set( typename, type )
     return type
 }
