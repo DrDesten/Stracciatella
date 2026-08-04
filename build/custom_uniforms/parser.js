@@ -235,125 +235,131 @@ function Parser( source ) {
     }
 
     function parseExpression() {
-        return parseConditional()
-    }
+        /* [prefix, postfix, infix, precedence] */
+        const ParseTable = {
+            [TokenType.FLOAT]:         [float,,,,],
+            [TokenType.INT]:           [int,,,,],
+            [TokenType.IDENT]:         [ident,,,,],
+            [TokenType.DOT]:           [,swizzle,,,],
 
-    function parseConditional() {
-        let condition = parseBinary()
-        if ( !at( TokenType.QUESTION ) ) return condition
+            [TokenType.LPAREN]:        [group,call,,,],
+            [TokenType.LBRACKET]:      [,index,,,],
 
-        const token = advance()
-        const if_true = parseExpression()
-        expect( TokenType.COLON, "':'" )
-        const if_false = parseConditional()
-        return Node.TernaryExpr( condition, if_true, if_false, token.pos )
-    }
+            [TokenType.QUESTION]:      [,,ternary,0],
 
-    const BINARY_PRECEDENCE = {
-        [TokenType.PIPE_PIPE]:     1,
-        [TokenType.AND_AND]:       2,
+            [TokenType.PIPE_PIPE]:     [,,binary,1],
+            [TokenType.AND_AND]:       [,,binary,2],
 
-        [TokenType.EQUAL_EQUAL]:   3,
-        [TokenType.NOT_EQUAL]:     3,
+            [TokenType.EQUAL_EQUAL]:   [,,binary,3],
+            [TokenType.NOT_EQUAL]:     [,,binary,3],
 
-        [TokenType.LESS]:          4,
-        [TokenType.LESS_EQUAL]:    4,
-        [TokenType.GREATER]:       4,
-        [TokenType.GREATER_EQUAL]: 4,
+            [TokenType.LESS]:          [,,binary,4],
+            [TokenType.LESS_EQUAL]:    [,,binary,4],
+            [TokenType.GREATER]:       [,,binary,4],
+            [TokenType.GREATER_EQUAL]: [,,binary,4],
 
-        [TokenType.PLUS]:          5,
-        [TokenType.MINUS]:         5,
+            [TokenType.PLUS]:          [unary,,binary,5],
+            [TokenType.MINUS]:         [unary,,binary,5],
 
-        [TokenType.STAR]:          6,
-        [TokenType.SLASH]:         6,
-    }
-    function parseBinary(minPrecedence = 1) {
-        let left = parseUnary()
-
-        let token, prec
-        while (
-            token = peek(), prec = BINARY_PRECEDENCE[token.type], 
-            prec !== undefined && prec >= minPrecedence
-        ) {
-            advance()
-            const right = parseBinary(prec + 1)
-            left = Node.BinaryExpr(token.value, left, right, token.pos)
+            [TokenType.STAR]:          [,,binary,6],
+            [TokenType.SLASH]:         [,,binary,6],
         }
 
-        return left
-    }
+        function expression(precedence = -Infinity) {
+            // prefix
+            let prefix_token = advance()
+            let prefix_fn = ParseTable[prefix_token.type]?.[0]
+            if (!prefix_fn) throw new SyntaxError(
+                `Parse error at pos ${prefix_token.pos}: expected expression, got '${prefix_token.value}'`
+            )
+            let left = prefix_fn(prefix_token)
 
-    function parseUnary() {
-        if ( at( TokenType.PLUS ) || at( TokenType.MINUS ) ) {
-            const token = advance()
-            return Node.UnaryExpr( token.value, parseUnary(), token.pos )
-        }
-        return parsePostfix()
-    }
+            // postfix
+            while (true) {
+                let postfix_token = peek()
+                let postfix_fn = ParseTable[postfix_token.type]?.[1] 
+                if (!postfix_fn) break
+                
+                advance()
+                left = postfix_fn(left, postfix_token)
+            }               
 
-    function parsePostfix() {
-        let expr = parsePrimary()
-        while ( true ) {
-            if ( at( TokenType.DOT ) ) {
+            // infix
+            while (true) {
+                let infix_token = peek()
+                let [,,infix_fn,infix_prec] = ParseTable[infix_token.type] ?? []
+                if (!infix_fn) break
+                if (infix_prec < precedence) break
 
-                const token = advance()
-                const swizzle = expect( TokenType.IDENT, 'swizzle after .' )
-                expr = Node.SwizzleExpr( expr, swizzle.value, token.pos )
-
-            } else if ( at( TokenType.LBRACKET ) ) {
-
-                const token = advance()
-                const index = expect( TokenType.INT, 'index must be integer constant' )
-                expect( TokenType.RBRACKET, "']'" )
-                expr = Node.IndexExpr( expr, index.value, token.pos )
-
-            } else if ( at( TokenType.LPAREN ) ) {
-
-                const token = advance()
-                if ( expr.kind !== 'Identifier' )
-                    throw new SyntaxError( `Parse error at pos ${token.pos}: only identifiers can be called` )
-
-                const args = []
-                if ( !at( TokenType.RPAREN ) ) {
-                    args.push( parseExpression() )
-                    while ( at( TokenType.COMMA ) ) {
-                        advance()
-                        args.push( parseExpression() )
-                    }
-                }
-                expect( TokenType.RPAREN, "')'" )
-                expr = Node.CallExpr( expr.name, args, expr.pos )
-
-            } else {
-                break
+                advance()
+                left = infix_fn(left, infix_token, infix_prec)
             }
-        }
-        return expr
-    }
 
-    function parsePrimary() {
-        const t = peek()
-        if ( t.type === TokenType.FLOAT ) {
-            advance()
-            return Node.NumberLiteral( +t.value, "float", t.pos )
+            return left
         }
-        if ( t.type === TokenType.INT ) {
-            advance()
-            return Node.NumberLiteral( +t.value, "int", t.pos )
+        
+        // prefix
+        function float(token) {
+            return Node.NumberLiteral( +token.value, "float", token.pos )
         }
-        if ( t.type === TokenType.IDENT ) {
-            advance()
-            if ( t.value === 'true' || t.value === 'false' )
-                return Node.BoolLiteral( t.value === 'true', t.pos )
-            return Node.Identifier( t.value, t.pos )
+        function int(token) {
+            return Node.NumberLiteral( +token.value, "int", token.pos )
         }
-        if ( t.type === TokenType.LPAREN ) {
-            advance()
-            const expr = parseExpression()
-            expect( TokenType.RPAREN, "')'" )
+        function ident(token) {
+            if ( token.value === 'true' || token.value === 'false' )
+                return Node.BoolLiteral( token.value === 'true', token.pos )
+            return Node.Identifier( token.value, token.pos )
+        }
+        function group(token) {
+            let expr = expression()
+            expect(TokenType.RPAREN, "')")
             return expr
         }
-        throw new SyntaxError( `Parse error at pos ${t.pos}: unexpected token '${t.value ?? t.type}'` )
+        function unary(token) {
+            let expr = expression(Infinity)
+            return Node.UnaryExpr( token.value, expr, token.pos )
+        }
+
+        // postfix
+        function swizzle(expr, token) {
+            let swizzle = expect( TokenType.IDENT, 'swizzle after .' )
+            return Node.SwizzleExpr( expr, swizzle.value, token.pos )
+        }
+        function index(expr, token) {
+            let index = expect( TokenType.INT, 'index must be integer constant' )
+            expect( TokenType.RBRACKET, "']'" )
+            return Node.IndexExpr( expr, index.value, token.pos )
+        }
+        function call(expr, token) {
+            if ( expr.kind !== 'Identifier' )
+                throw new SyntaxError( `Parse error at pos ${token.pos}: only identifiers can be called` )
+
+            const args = []
+            if ( !at( TokenType.RPAREN ) ) {
+                args.push( expression() )
+                while ( at( TokenType.COMMA ) ) {
+                    advance()
+                    args.push( expression() )
+                }
+            }
+            expect( TokenType.RPAREN, "')'" )
+
+            return Node.CallExpr( expr.name, args, expr.pos )
+        }
+
+        // infix
+        function binary(left, token, precedence) {
+            let right = expression(precedence + 1)
+            return Node.BinaryExpr(token.value, left, right, token.pos)
+        }
+        function ternary(left, token, precedence) {
+            let expr_true = expression()
+            expect( TokenType.COLON, "':'" )
+            let expr_false = expression(precedence + 1)
+            return Node.TernaryExpr( left, expr_true, expr_false, token.pos )
+        }
+
+        return expression()
     }
 
     return { parseProgram }
